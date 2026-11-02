@@ -1,9 +1,11 @@
 import { itemDefinitions, startingInventory } from "./catalog.js";
 import ja from "./ja.js";
+import campaign from "./campaign.js";
 
 export default {
   id: "fantasy",
   contentVersion: 1,
+  campaign,
   itemDefinitions,
   presentation: {
   "iron_axe": {

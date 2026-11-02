@@ -1,3 +1,4 @@
+import { createCampaignActions } from "./campaign.js";
 import { createInventorySystem } from "../systems/inventory.js";
 import { createStoreSystem } from "../systems/stores.js";
 
@@ -46,6 +47,10 @@ export function createGame(state, skin, i18n) {
     presentation: skin.presentation,
     inventory,
     i18n,
+    campaign: skin.campaign ? createCampaignActions(state, skin.campaign, skin.itemDefinitions, inventory, result => {
+      if (result.ok) warehouseUndo = null;
+      return commit(result);
+    }) : null,
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);

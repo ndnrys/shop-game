@@ -47,6 +47,14 @@ export function validateSave(value, skin) {
   if (skin.campaign) {
     const c = s.campaign; const config = skin.campaign;
     if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
+    if (c.customerVisits === undefined) c.customerVisits = [];
+    if (!Array.isArray(c.customerVisits) || c.customerVisits.length > config.customers.length || new Set(c.customerVisits.map(visit=>visit.customerId)).size!==c.customerVisits.length) reject();
+    for (const visit of c.customerVisits) {
+      const customer = config.customers.find(entry=>entry.id===visit.customerId);
+      if (!customer || visit.dialogueKey!==customer.dialogueKey) reject();
+      const purchase = visit.purchase;
+      if (purchase!==null && (!purchase || purchase.customerId!==visit.customerId || !skin.itemDefinitions[purchase.itemId] || !integer(purchase.amount) || !integer(purchase.cost))) reject();
+    }
     if (c.today && c.today.cogs === undefined) c.today.cogs = 0;
     if (!c.today || ['cogs','sales','purchasing','buyback','support','rewards','aid'].some(key=>!integer(c.today[key]))) reject();
     if (!c.milestones || ['sold','supported','purchased'].some(key=>typeof c.milestones[key]!=='boolean')) reject();
@@ -73,7 +81,7 @@ export function validateSave(value, skin) {
       if (!e || e.questId !== config.quest.id || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay > c.day || e.returnDay <= c.day || !Number.isFinite(e.chance) || e.chance<0 || e.chance>1 || !Number.isFinite(e.roll) || e.roll<0 || e.roll>=1 || !integer(e.funds) || !Array.isArray(e.heroIds) || e.heroIds.length !== c.heroes.length || new Set(e.heroIds).size !== c.heroes.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id))) reject();
     }
     if (!Array.isArray(c.journal) || c.journal.length>100000) reject();
-    const types = ['purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
+    const types = ['visit','purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
     for (const entry of c.journal) {
       if (!integer(entry.day,1) || entry.day>c.day || !types.includes(entry.type) || !entry.details || typeof entry.details!=='object' || Array.isArray(entry.details)) reject();
       const d=entry.details;
@@ -82,6 +90,7 @@ export function validateSave(value, skin) {
       if (d.merchantId && !config.merchants.some(merchant=>merchant.id===d.merchantId)) reject();
       if (d.customerId && !config.customers.some(customer=>customer.id===d.customerId)) reject();
       for (const key of ['amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
+      if (entry.type==='visit' && d.dialogueKey!==config.customers.find(customer=>customer.id===d.customerId)?.dialogueKey) reject();
       if (d.net!==undefined && !Number.isSafeInteger(d.net)) reject();
     }
     if (c.region==='next-town') {

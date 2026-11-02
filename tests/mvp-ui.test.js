@@ -25,6 +25,8 @@ async function check(name,fn){await fn();passed++;const li=document.createElemen
 try {
   await check('three supporters receive equipment and preparation money through forms',()=>{
     page('support');give('lina','stock-001',50);give('bran','stock-003',50);give('noa','stock-006',50);
+    assert(!get('[data-screen="support"]').querySelector('[data-action="returnGear"]'),'no gift return');
+    assert(get('[data-screen="support"]').textContent.includes('盾:'),'slot labels');
     assert(game.state.campaign.gold===250,'funds paid');
     assert(game.state.campaign.heroes.every(h=>Object.keys(h.equipment).length>0&&h.funds===50),'all supporters prepared');
     assert(get('[data-screen="support"]').textContent.includes(`${Math.round(game.campaign.chance()*100)}%`),'success preview');
@@ -43,6 +45,9 @@ try {
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     page('home');const before=game.state.campaign.gold;action('open');
     assert(game.state.campaign.gold>before,'sales income');assert(game.state.campaign.milestones.sold,'outside customers');
+    assert(get('.visitor-list').children.length===5,'all visitors speak');
+    assert(get('.visitor-list').textContent.includes('今日は何が並んでいるんだい？'),'customer dialogue');
+    assert(get('[data-screen="home"]').querySelector('section [data-action="open"]'),'opening control');
   });
   await check('dispatch, persisted return, and retry lead to a safe village',async()=>{
     page('support');action('dispatch');assert(game.state.campaign.expedition.heroIds.length===3,'one three-person party');

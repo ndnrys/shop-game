@@ -62,3 +62,9 @@
   .campaign-view .intro { font-size: 12px; }
   .mvp-actions .mvp-button, .mvp-actions .mvp-link { flex: 1 1 auto; }
 }
+
+.visitor-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 12px; margin-bottom: 16px; }
+.visitor-list article { padding: 16px; border: 1px solid #e3ddce; border-radius: 8px; background: #f8f6ed; }
+.visitor-list strong { font-size: 13px; color: var(--green-dark); }
+.visitor-list blockquote { margin: 12px 0; font-size: 14px; line-height: 1.8; }
+@media(max-width:700px) { .visitor-list { grid-template-columns: 1fr; } }

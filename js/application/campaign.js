@@ -61,10 +61,14 @@ export function createCampaignActions(state, config, definitions, inventory, com
     openShop() {
       if (!ready() || c.opened) return fail("opened");
       if (!state.shop.displayedItems.length) return fail("shelf");
-      const receipts = sellToCustomers(state, definitions, config);
+      const { receipts, visits } = sellToCustomers(state, definitions, config);
       c.opened = true;
       if (receipts.length) c.milestones.sold = true;
-      for (const receipt of receipts) addJournal(state, "sale", receipt);
+      c.customerVisits = visits;
+      for (const visit of visits) {
+        addJournal(state, "visit", { customerId: visit.customerId, dialogueKey: visit.dialogueKey });
+        if (visit.purchase) addJournal(state, "sale", visit.purchase);
+      }
       if (!receipts.length) addJournal(state, "noSale");
       return commit({ ok: true });
     },
@@ -104,6 +108,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
       addJournal(state, "summary", { ...c.today, ...dailyTotals(c.today) });
       c.day += 1;
       c.opened = false;
+      c.customerVisits = [];
       c.today = { sales: 0, cogs: 0, purchasing: 0, buyback: 0, support: 0, rewards: 0, aid: 0 };
       if (c.expedition && c.day >= c.expedition.returnDay) {
         const success = c.expedition.roll < c.expedition.chance;

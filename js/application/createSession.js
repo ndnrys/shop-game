@@ -15,6 +15,7 @@ export function createSession(skin, state = createGameState(skin)) {
       required.push(`items.${item.id}`, `items.short.${item.id}`, `categories.${item.categoryKey}`, `materials.${item.materialKey}`);
       if (!skin.presentation[item.id]?.glyph && !skin.presentation[item.id]?.imageUrl) throw new Error(`Missing item presentation: ${item.id}`);
     }
+    if (skin.campaign) for (const customer of skin.campaign.customers) required.push(customer.dialogueKey);
     for (const key of required) {
       if (!messages[key]) throw new Error(`Missing skin translation: ${locale}.${key}`);
     }

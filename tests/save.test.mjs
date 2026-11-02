@@ -67,3 +67,11 @@ test('slot assignments and archived gifts roundtrip; duplicate gifts are rejecte
   value.state.campaign.heroes[0].giftedEquipment.push(value.state.campaign.heroes[0].equipment.weapon);
   assert.throws(()=>validateSave(value,skin));
 });
+
+test('visitor speech and purchase results roundtrip; forged speech keys are rejected',()=>{
+  const game=createSession(skin);game.stocking.put('stock-001',0,0);game.campaign.openShop();
+  const value=makeSave(game.state);
+  assert.deepEqual(validateSave(value,skin),game.state);
+  value.state.campaign.customerVisits[0].dialogueKey='unrecognized';
+  assert.throws(()=>validateSave(value,skin));
+});

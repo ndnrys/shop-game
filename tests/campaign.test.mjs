@@ -106,3 +106,17 @@ test("equipment occupies independent slots and all gifts remain with the support
   const expected=successChance([{ability:12,equipment:hero.equipment}, {ability:10}, {ability:8}],skin.campaign,0);
   assert.equal(game.campaign.chance(),expected);
 });
+
+test("every visitor speaks even without buying; journal persists after the day ends",()=>{
+  const testSkin=structuredClone(skin);testSkin.campaign.purchaseChance=0;
+  const game=createSession(testSkin);game.stocking.put('stock-001',0,0);
+  const before=game.state.campaign.gold;
+  assert.equal(game.campaign.openShop().ok,true);
+  const c=game.state.campaign;
+  assert.equal(c.gold,before);assert.equal(c.customerVisits.length,5);
+  assert.ok(c.customerVisits.every(visit=>visit.purchase===null&&game.i18n.t(visit.dialogueKey)!==visit.dialogueKey));
+  assert.equal(c.journal.filter(entry=>entry.type==='visit').length,5);
+  const count=c.journal.length;assert.equal(game.campaign.openShop().ok,false);assert.equal(c.journal.length,count);
+  game.campaign.nextDay();assert.deepEqual(c.customerVisits,[]);
+  assert.equal(c.journal.filter(entry=>entry.type==='visit').length,5);
+});

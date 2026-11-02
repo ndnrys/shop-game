@@ -7,40 +7,14 @@ export default {
   contentVersion: 1,
   campaign,
   itemDefinitions,
-  presentation: {
-    steel_sword: { glyph: "⚔" }, reinforced_shield: { glyph: "◈" }, chain_armor: { glyph: "⛨" }, charm: { glyph: "✧" },
-  "iron_axe": {
-    "glyph": "🪓"
-  },
-  "iron_sword": {
-    "glyph": "⚔"
-  },
-  "potion": {
-    "glyph": "⚗"
-  },
-  "oak_shield": {
-    "glyph": "◈"
-  },
-  "crystal": {
-    "glyph": "✦"
-  },
-  "herb_bundle": {
-    "glyph": "❋"
-  },
-  "leather_armor": {
-    "glyph": "⬟"
-  },
-  "silver_ring": {
-    "glyph": "◯"
-  },
-  "bread": {
-    "glyph": "◒"
-  }
-},
+  stylesheet: new URL("../../../../css/skins/fantasy.css", import.meta.url).href,
+  presentation: Object.fromEntries(Object.keys(itemDefinitions).map(id => [id, {
+    imageUrl: new URL(`../../../../assets/skins/fantasy/items/${id}.svg`, import.meta.url).href,
+  }])),
   locales: { ja },
   initialState: {
     warehouse: { columns: 8, rows: 8, items: startingInventory },
     shop: { columns: 5, rows: 5, displayedItems: [] },
   },
-  theme: { "--green": "#526b4c", "--green-dark": "#3e563d", "--cream": "#f4efe3", "--paper": "#fffdf7", "--ink": "#2d352d" },
+  theme: { "--green": "#59694a", "--green-dark": "#374a35", "--cream": "#d9c49a", "--paper": "#ebd8ae", "--ink": "#3e3028", "--muted": "#746046", "--line": "#b79a6c", "--gold": "#a77c35" },
 };

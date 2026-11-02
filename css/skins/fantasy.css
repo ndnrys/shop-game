@@ -1,0 +1,99 @@
+/* Fantasy presentation only. Game rules, coordinates and saves do not read this file. */
+:root[data-skin="fantasy"] { font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif; background: #211e22; }
+[data-skin="fantasy"] body {
+  background: radial-gradient(ellipse at 92% 4%,#b47a3b35,transparent 40%), repeating-linear-gradient(90deg,#ffffff02 0 1px,transparent 1px 66px),#292326;
+  background-attachment: fixed;
+}
+[data-skin="fantasy"] .app-shell {
+  max-width: 1120px; padding: 0 36px; background: radial-gradient(ellipse at 98% 8%,#e7ac5960,transparent 38%),radial-gradient(ellipse at 0 75%,#8a58372a,transparent 60%),linear-gradient(90deg,#b9996b 0,#dbc49a 2%,#e4cfa5 50%,#d4b98b 98%,#b28b5d);
+  border-inline: 4px solid #503b31; box-shadow: 0 0 0 1px #1d1a20,0 12px 70px #0008;
+}
+[data-skin="fantasy"] .topbar { height: 88px; border-color: #9e7e54; gap: 12px; }
+[data-skin="fantasy"] .brand { display:flex; align-items:center; gap:10px; color:#503a2b; letter-spacing:.12em; font-family:"Yu Mincho",serif; }
+[data-skin="fantasy"] .brand::before { content:""; width:26px; height:36px; flex-shrink:0; background:url('../../assets/skins/fantasy/ui/candle.svg') center/contain no-repeat; image-rendering:pixelated; filter:drop-shadow(0 0 12px #f6b85d90); }
+[data-skin="fantasy"] .day-label span { color:#735a40; }
+[data-skin="fantasy"] #game-gold { color:#5d4327; font-size:14px; font-variant-numeric:tabular-nums; }
+[data-skin="fantasy"] .main-nav { gap:8px; height:56px; border-bottom:2px solid #9e7e54; align-items:center; }
+[data-skin="fantasy"] .main-nav a { min-height:42px; padding:10px 20px; color:#70573d; font-size:13px; border:1px solid transparent; }
+[data-skin="fantasy"] .main-nav a.is-active { color:#f4e0b7; background:#4c5a40; border-color:#37452f; box-shadow:inset 0 1px #80906a,2px 2px #a98a5c; }
+[data-skin="fantasy"] .main-nav a.is-active::after { display:none; }
+[data-skin="fantasy"] .main-nav a:hover { border-color:#a3865b; }
+[data-skin="fantasy"] h1,[data-skin="fantasy"] h2 { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; }
+[data-skin="fantasy"] h1 { color:#4a3529; font-size:30px; letter-spacing:.07em; }
+[data-skin="fantasy"] .eyebrow { color:#82623f; }
+[data-skin="fantasy"] .intro { color:#6f573d; line-height:1.8; }
+[data-skin="fantasy"] [data-screen="home"] .page-heading { margin-bottom:0; }
+[data-skin="fantasy"] [data-screen="home"] .page-heading::after { content:""; display:block; width:320px; max-width:48%; aspect-ratio:320/88; flex-shrink:0; background:url('../../assets/skins/fantasy/ui/shop-evening.svg') center/contain no-repeat; image-rendering:pixelated; box-shadow:3px 3px #9d7d55; border:3px solid #5b4234; }
+[data-skin="fantasy"] [data-screen="home"] .mvp-wallet { display:none; }
+[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel {
+  border:1px solid #b19265; border-radius:2px; background:radial-gradient(ellipse at 100% 0,#f6e6be80,transparent 70%),linear-gradient(110deg,#ddc39466,transparent 40%),#ead6ad;
+  box-shadow:inset 0 0 0 3px #efdeb955,2px 3px #94714725;
+}
+[data-skin="fantasy"] .mvp-card h2 { color:#57402f; }
+[data-skin="fantasy"] .mvp-card p,[data-skin="fantasy"] .mvp-card small,[data-skin="fantasy"] .selection-meta,[data-skin="fantasy"] .selection-empty,[data-skin="fantasy"] .help-card ul,[data-skin="fantasy"] .help-note,[data-skin="fantasy"] .panel-heading p,[data-skin="fantasy"] .board-footer,[data-skin="fantasy"] .capacity,[data-skin="fantasy"] .stock-info p,[data-skin="fantasy"] .stocking-status,[data-skin="fantasy"] .stocking-selection,[data-skin="fantasy"] .status-message { color:#705a40; }
+[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link,[data-skin="fantasy"] .secondary-button,[data-skin="fantasy"] .stock-action,[data-skin="fantasy"] .icon-button {
+  min-height:44px; border-radius:2px; background:#e6cea0; color:#4b3c2c; border:1px solid #9e7d4d; box-shadow:inset 0 1px #fff0c9,1px 2px #8b683a25;
+}
+[data-skin="fantasy"] .mvp-button:hover:enabled,[data-skin="fantasy"] .mvp-link:hover { background:#f0d9ac; border-color:#75582f; }
+[data-skin="fantasy"] button:disabled { opacity:.52; }
+[data-skin="fantasy"] [data-action="open"],[data-skin="fantasy"] [data-action="dispatch"],[data-skin="fantasy"] [data-action="depart"] { background:#4e6349; color:#f8e9c9; border-color:#354a34; box-shadow:inset 0 1px #809371,1px 2px #3d493c33; }
+[data-skin="fantasy"] [data-action="open"]:hover:enabled,[data-skin="fantasy"] [data-action="dispatch"]:hover:enabled,[data-skin="fantasy"] [data-action="depart"]:hover:enabled { background:#607754; }
+[data-skin="fantasy"] .mvp-stats div { border:1px solid #b79b70; border-radius:1px; background:#e9d5ab88; }
+[data-skin="fantasy"] .mvp-stats span { color:#745b40; }
+[data-skin="fantasy"] .mvp-stats strong { font-family:Georgia,"Yu Mincho",serif; color:#58432d; font-variant-numeric:tabular-nums; }
+[data-skin="fantasy"] .tutorial-card { border-left:4px solid #64744f; }
+[data-skin="fantasy"] .tutorial-card li { border-color:#c6aa7a; }
+[data-skin="fantasy"] .mvp-product,[data-skin="fantasy"] .visitor-list article,[data-skin="fantasy"] .quest-progress,[data-skin="fantasy"] .departure-quote { border-radius:2px; border-color:#c5a777; background:#d9bf903f; }
+[data-skin="fantasy"] .mvp-product-art { width:44px; height:44px; }
+[data-skin="fantasy"] .item-art { image-rendering:pixelated; }
+[data-skin="fantasy"] .mvp-product-art .item-art { padding:3px; }
+[data-skin="fantasy"] .campaign-view input[type="number"],[data-skin="fantasy"] .campaign-view select { background:#f3e3bf; border-color:#b09568; border-radius:1px; }
+[data-skin="fantasy"] [data-screen="support"] .mvp-grid h2 { display:flex; gap:12px; align-items:center; }
+[data-skin="fantasy"] [data-screen="support"] .mvp-grid h2::before { content:""; width:48px; height:48px; flex-shrink:0; border:2px solid #9b7b51; image-rendering:pixelated; background:center/contain no-repeat; }
+[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="lina"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/lina.svg'); }
+[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="bran"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/bran.svg'); }
+[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="noa"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/noa.svg'); }
+[data-skin="fantasy"] [data-screen="purchase"] .mvp-grid h2::before { content:""; display:block; width:54px; height:54px; margin-bottom:18px; image-rendering:pixelated; background:center/contain no-repeat; }
+[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-action="buy"][data-id="weapons"]) h2::before { background-image:url('../../assets/skins/fantasy/items/iron_sword.svg'); }
+[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-action="buy"][data-id="armor"]) h2::before { background-image:url('../../assets/skins/fantasy/items/oak_shield.svg'); }
+[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-action="buy"][data-id="tools"]) h2::before { background-image:url('../../assets/skins/fantasy/items/potion.svg'); }
+[data-skin="fantasy"] .mvp-parchment {
+  border:1px solid #a58554; border-radius:1px; background:radial-gradient(ellipse at 95% 5%,#ab774633,transparent 30%),radial-gradient(ellipse at 1% 80%,#9a633537,transparent 35%),linear-gradient(90deg,#c5a36c,#e7cd98 4%,#f0deb3 12%,#e8cf9c 92%,#b7925d);
+  box-shadow:inset 0 0 35px #98602c20,4px 6px #60442b25; line-height:2;
+}
+[data-skin="fantasy"] .mvp-parchment h2 { color:#59412c; }
+[data-skin="fantasy"] .mvp-parchment li { color:#5c452e; }
+[data-skin="fantasy"] .warehouse-board { background:#ad966e; border:3px solid #745739; border-radius:1px; box-shadow:0 0 0 1px #c9ad7a,inset 0 0 18px #513b272a; }
+[data-skin="fantasy"] .board-cell { border-color:#927b55; }
+[data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { border-radius:1px; border-color:#89916c; background:#c7cca6; }
+[data-skin="fantasy"] .warehouse-item.is-selected:not(.shaped-item),[data-skin="fantasy"] .shaped-item.is-selected .shape-cell { background:#edce8e; border-color:#976c2c; }
+[data-skin="fantasy"] .warehouse-item::after { color:#3f4c35; }
+[data-skin="fantasy"] .shape-cell .item-glyph:has(.item-art) { width:90%; height:90%; }
+[data-skin="fantasy"] .stock-card { border-radius:2px; border-color:#c0a270; background:#ead7b1; }
+[data-skin="fantasy"] .stock-card.is-selected { background:#f3daa7; border-color:#926f36; }
+[data-skin="fantasy"] .stock-glyph,[data-skin="fantasy"] .stocking-selected-glyph,[data-skin="fantasy"] .item-preview { background:#d5bf92; border-color:#b39665; border-radius:1px; }
+[data-skin="fantasy"] .stocking-selection { border-color:#c5a878; }
+[data-skin="fantasy"] hr { border:0; border-top:1px solid #bda071; margin:22px 0; }
+[data-skin="fantasy"] .site-footer { border-color:#ac8a59; color:#71583e; }
+[data-skin="fantasy"] .save-controls button,[data-skin="fantasy"] .save-controls label { border-color:#af9061; border-radius:2px; background:#e4cca0; min-height:40px; }
+[data-skin="fantasy"] :focus-visible { outline:3px solid #724c28; outline-offset:3px; }
+@media (max-width:700px) {
+  [data-skin="fantasy"] .app-shell { padding:0 15px; border-inline-width:2px; }
+  [data-skin="fantasy"] .topbar { height:76px; gap:7px; }
+  [data-skin="fantasy"] .brand { font-size:11px; gap:5px; letter-spacing:.03em; }
+  [data-skin="fantasy"] .brand::before { width:20px; height:30px; }
+  [data-skin="fantasy"] #game-gold { font-size:12px; }
+  [data-skin="fantasy"] .main-nav { gap:3px; height:54px; }
+  [data-skin="fantasy"] .main-nav a { padding:10px 11px; font-size:12px; }
+  [data-skin="fantasy"] h1 { font-size:26px; }
+  [data-skin="fantasy"] [data-screen="home"] .page-heading { flex-wrap:wrap; gap:18px; }
+  [data-skin="fantasy"] [data-screen="home"] .page-heading::after { width:100%; max-width:none; }
+  [data-skin="fantasy"] .details-column { grid-template-columns:1fr; }
+  [data-skin="fantasy"] .help-card { grid-row:auto; }
+  [data-skin="fantasy"] .help-key { display:inline-block; }
+  [data-skin="fantasy"] .stock-card { grid-template-rows:auto auto 44px; }
+  [data-skin="fantasy"] .stock-info h3 { font-size:11px; }
+  [data-skin="fantasy"] .stock-info p { font-size:10px; }
+  [data-skin="fantasy"] .stock-action { font-size:11px; }
+  [data-skin="fantasy"] .icon-button { min-width:44px; }
+}

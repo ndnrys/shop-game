@@ -15,6 +15,13 @@ try { loaded = await loadGame(skin); } catch { loadFailed = true; }
 const game = loaded ? createSession(skin, loaded) : createSession(skin);
 const { i18n } = game;
 for (const [key, value] of Object.entries(skin.theme)) document.documentElement.style.setProperty(key, value);
+document.documentElement.dataset.skin = skin.id;
+if (skin.stylesheet) {
+  const stylesheet = document.createElement('link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = skin.stylesheet;
+  document.head.append(stylesheet);
+}
 
 // Remove a registration and its import to omit a screen; other screens keep working.
 const screens = mountScreens(document, game, [

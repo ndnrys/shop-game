@@ -1,0 +1,104 @@
+.warehouse-board {
+  --cell-size: 1fr;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns, 8), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--grid-rows, 8), minmax(0, 1fr));
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #cfcdbf;
+  border-radius: 5px;
+  background-color: #eae7db;
+  touch-action: none;
+  user-select: none;
+}
+
+.board-cell { min-width: 0; min-height: 0; border-right: 1px solid #d5d3c7; border-bottom: 1px solid #d5d3c7; }
+
+.warehouse-item, .placement-preview {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3px;
+  overflow: hidden;
+  border: 1px solid #9aa182;
+  border-radius: 5px;
+  background: #dce0ce;
+  color: #46503d;
+  cursor: pointer;
+  touch-action: none;
+  transition: background-color .12s, border-color .12s, box-shadow .12s;
+}
+
+.warehouse-item::after {
+  position: absolute;
+  right: 5px;
+  bottom: 4px;
+  color: #65705d;
+  content: attr(data-short-name);
+  font-size: clamp(7px, 1.5vw, 10px);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.warehouse-item .item-glyph { z-index: 1; font-size: clamp(16px, 3vw, 27px); pointer-events: none; }
+.warehouse-item.is-selected { z-index: 2; border-color: #bb8739; background: #f1dfbd; box-shadow: 0 0 0 2px #d1a25777; }
+.warehouse-item.is-dragging { opacity: .23; }
+.warehouse-item:active { cursor: grabbing; }
+.placement-preview { z-index: 3; border: 2px dashed #6d8a5f; background: #a8c093aa; pointer-events: none; }
+.placement-preview.is-invalid { border-color: #ba6a62; background: #d9948caa; }
+.warehouse-board.is-dragging { cursor: grabbing; }
+
+@media (max-width: 700px) {
+  .warehouse-item, .placement-preview { margin: 2px; border-radius: 4px; }
+  .warehouse-item::after { right: 3px; bottom: 2px; font-size: 7px; }
+  .warehouse-item .item-glyph { font-size: clamp(14px, 5vw, 23px); }
+}
+
+/* The bounding box stays transparent and lets pointer input pass through holes. */
+.warehouse-item.shaped-item, .placement-preview.shaped-item {
+  display: grid;
+  align-items: stretch;
+  grid-template-columns: repeat(var(--shape-columns), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--shape-rows), minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+}
+.shaped-item::after { content: none; }
+.shape-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #9aa182;
+  border-radius: 3px;
+  background: #dce0ce;
+  pointer-events: auto;
+}
+.shaped-item.is-selected .shape-cell {
+  border-color: #bb8739;
+  background: #f1dfbd;
+  box-shadow: inset 0 0 0 2px #d1a25777;
+}
+.placement-preview.shaped-item .shape-cell {
+  border: 2px dashed #6d8a5f;
+  background: #a8c093aa;
+  pointer-events: none;
+}
+.placement-preview.shaped-item.is-invalid .shape-cell {
+  border-color: #ba6a62;
+  background: #d9948caa;
+}
+
+.item-art { display: block; max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.item-glyph:has(.item-art) { width: 75%; height: 75%; }

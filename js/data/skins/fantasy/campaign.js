@@ -22,6 +22,16 @@ export default {
   gearPower: { iron_sword: 20, iron_axe: 20, oak_shield: 16, leather_armor: 22, silver_ring: 12, steel_sword: 28, reinforced_shield: 24, chain_armor: 34, charm: 18 },
   chance: { base: .2, abilityRate: .008, gearRate: .002, fundsRate: .001, minimum: .1, maximum: .95 },
   quest: {
+    map: {
+      imageUrl: new URL("../../../../assets/skins/fantasy/ui/village-map.svg", import.meta.url).href,
+      titleKey: "mvp.map.title", descriptionKey: "mvp.map.description",
+      home: { x: 23, y: 65, labelKey: "mvp.map.village" },
+      points: [
+        { stage: "outskirts", x: 32, y: 52, labelKey: "mvp.map.outskirts" },
+        { stage: "camp", x: 51, y: 43, labelKey: "mvp.map.camp" },
+        { stage: "stronghold", x: 75, y: 31, labelKey: "mvp.map.stronghold" },
+      ],
+    },
     id: "village-leader", duration: 1, minimumFunds: 30, minimumEquipped: 1,
     reward: 20, bossReward: 250, progressSuccess: 9, progressSetback: 3,
     experienceSuccess: 10, experienceSetback: 6, levelExperience: 20, abilityPerLevel: 1,

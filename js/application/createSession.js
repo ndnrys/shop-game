@@ -16,6 +16,8 @@ export function createSession(skin, state = createGameState(skin)) {
       if (!skin.presentation[item.id]?.glyph && !skin.presentation[item.id]?.imageUrl) throw new Error(`Missing item presentation: ${item.id}`);
     }
     if (skin.campaign) for (const customer of skin.campaign.customers) required.push(customer.dialogueKey);
+    const map = skin.campaign?.quest?.map;
+    if (map) required.push(map.titleKey, map.descriptionKey, map.home.labelKey, ...map.points.map(point => point.labelKey), 'mvp.map.current', 'mvp.map.cleared', 'mvp.map.boss');
     for (const key of required) {
       if (!messages[key]) throw new Error(`Missing skin translation: ${locale}.${key}`);
     }

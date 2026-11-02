@@ -196,3 +196,19 @@
   [data-skin="fantasy"] .brand { font-size:9px; }
   [data-skin="fantasy"] .day-label span { font-size:8px; }
 }
+
+/* Tactical ledger: aged silver edges, compact equipment trays and a readable atlas. */
+[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel {
+  border-radius:5px; border-color:#a9b4a52b; background:linear-gradient(120deg,#7c87760b,transparent 65%),#202b2e; box-shadow:inset 0 1px #cad0b50a,0 8px 25px #050c1228;
+}
+[data-skin="fantasy"] .panel-heading h2,[data-skin="fantasy"] .mvp-card > h2 { border-bottom:1px solid #c7b88325; padding-bottom:13px; letter-spacing:.08em; }
+[data-skin="fantasy"] .main-nav a,[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link { border-radius:4px; }
+[data-skin="fantasy"] .hero-equipment li { color:#dddcc9; }
+[data-skin="fantasy"] .hero-equipment-art { border-color:#adb69838; background:linear-gradient(135deg,#444c40,#283530); box-shadow:inset 0 1px #d6d3ac12; border-radius:3px; }
+[data-skin="fantasy"] .hero-equipment li small { color:#9eac9d; }
+[data-skin="fantasy"] .quest-map { border-color:#baab7655; border-radius:3px; overflow:hidden; box-shadow:0 10px 30px #0003; }
+[data-skin="fantasy"] .quest-map figcaption { color:#decca1; background:linear-gradient(90deg,#57574040,transparent),#182327; border-bottom:1px solid #c7b88325; font-family:"Yu Mincho",serif; }
+[data-skin="fantasy"] .quest-map-node small { color:#e6bf7a; }
+[data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { background:linear-gradient(135deg,#65715a,#3f5147); border-color:#c3c7a23b; border-radius:3px; }
+[data-skin="fantasy"] .warehouse-item.is-selected:not(.shaped-item),[data-skin="fantasy"] .shaped-item.is-selected .shape-cell { background:linear-gradient(135deg,#8b8058,#5e6349); border-color:#dfc885; }
+[data-skin="fantasy"] .warehouse-item .item-glyph:has(.item-art) { width:90%; height:90%; }

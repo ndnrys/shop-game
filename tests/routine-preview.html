@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f4efe3">
+    <title data-i18n="app.title">Shop Game | 倉庫</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/warehouse.css">
+    <link rel="stylesheet" href="../css/campaign.css">
+    <script type="module" src="./routine-preview.js"></script>
+  <link rel="stylesheet" href="../css/skins/fantasy.css">
+</head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" data-i18n="app.brand" href="#home" aria-label="Shop Game ホーム" data-i18n-aria-label="app.homeLabel">SHOP GAME</a>
+        <div class="day-label"><span data-i18n="app.storeName">村のよろず屋</span><span id="game-date">1日目・朝</span></div>
+        <div class="gold-label" aria-label="所持金" data-i18n-aria-label="app.goldLabel"><span aria-hidden="true">◆</span> <span id="game-gold"></span></div>
+      </header>
+
+      <nav class="main-nav" aria-label="メインメニュー" data-i18n-aria-label="nav.label">
+        <a class="screen-link" href="#home" data-i18n="mvp.nav.home">経営</a>
+        <a class="screen-link" href="#journal" data-i18n="mvp.nav.journal">日誌</a>
+        <a class="screen-link" href="#warehouse" data-i18n="nav.warehouse">倉庫</a>
+        <a class="screen-link" href="#residents" data-i18n="routine.residents">住人</a>
+        <a class="screen-link" href="#adventurers" data-i18n="routine.adventurers">冒険者</a>
+        <a class="screen-link" href="#stocking" data-i18n="nav.stocking" data-preparation-link hidden>陳列</a>
+      </nav>
+
+      <section id="daily-routine" class="daily-routine" hidden></section>
+      <section data-screen="residents" class="campaign-view" hidden></section>
+      <section data-screen="adventurers" class="campaign-view" hidden></section>
+      <section data-screen="home" class="campaign-view" hidden></section>
+      <section data-screen="purchase" class="campaign-view" hidden></section>
+      <section data-screen="support" class="campaign-view" hidden></section>
+      <section data-screen="journal" class="campaign-view" hidden></section>
+      <section data-screen="warehouse" class="warehouse-view" aria-labelledby="page-title">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow" data-i18n="warehouse.eyebrow">BACKROOM · VILLAGE</p>
+            <h1 id="page-title" data-i18n="warehouse.title">倉庫</h1>
+            <p class="intro" data-i18n="warehouse.intro">商品を選んで整理しましょう。空き場所をタップして配置、長押ししてドラッグで移動できます。</p>
+          </div>
+          <div class="capacity"><span id="item-count">0</span> <span class="capacity-divider">/</span> 64 <span data-i18n="warehouse.capacityUnit">マス使用</span></div>
+        </div>
+
+        <div class="warehouse-columns">
+          <section class="board-panel" aria-label="倉庫の配置" data-i18n-aria-label="warehouse.boardLabel">
+            <div class="panel-heading">
+              <div><h2 data-i18n="warehouse.storage">保管スペース</h2><p data-i18n="warehouse.gridSize">8 × 8 マス</p></div>
+              <button class="icon-button" id="rotate-button" type="button" aria-label="選択中の商品を回転" title="選択中の商品を回転" data-i18n-aria-label="warehouse.rotate" data-i18n-title="warehouse.rotate">↻</button>
+            </div>
+            <div class="board-wrap">
+              <div id="warehouse-board" class="warehouse-board" role="grid" aria-label="倉庫 8 列 8 行" data-i18n-aria-label="warehouse.gridLabel"></div>
+            </div>
+            <div class="board-footer">
+              <span class="legend-dot"></span><span data-i18n="warehouse.stored">保管中</span>
+              <span class="legend-dot legend-selected"></span><span data-i18n="warehouse.selected">選択中</span>
+              <span class="legend-dot legend-invalid"></span><span data-i18n="warehouse.invalid">配置不可</span>
+            </div>
+          </section>
+
+          <aside class="details-column">
+            <section class="detail-card" aria-live="polite">
+              <p class="eyebrow" data-i18n="warehouse.selectedItem">SELECTED ITEM</p>
+              <div id="selection-content" class="selection-content"></div>
+            </section>
+            <section class="help-card">
+              <h2 data-i18n="warehouse.instructions">操作方法</h2>
+              <ul>
+                <li><span class="help-key" data-i18n="warehouse.tap">タップ</span><span data-i18n="warehouse.selectItem">商品を選択</span></li>
+                <li><span class="help-key" data-i18n="warehouse.tapAgain">もう一度タップ</span><span data-i18n="warehouse.rotate90">90°回転</span></li>
+                <li><span class="help-key" data-i18n="warehouse.holdDrag">長押し＋ドラッグ</span><span data-i18n="warehouse.move">移動</span></li>
+                <li><span class="help-key" data-i18n="warehouse.rotateButton">回転ボタン</span><span data-i18n="warehouse.rotateSelected">選択中の商品を回転</span></li>
+              </ul>
+              <p class="help-note" data-i18n="warehouse.failedPlacement">配置に失敗した商品は元の場所へ戻ります。</p>
+            </section>
+            <button id="undo-button" class="secondary-button" type="button" disabled data-i18n="warehouse.undo">↶　直前の配置を取り消す</button>
+            <p id="status-message" class="status-message" role="status" aria-live="polite" data-i18n="warehouse.statusInitial">商品をタップして選択してください。</p>
+          </aside>
+        </div>
+      </section>
+
+      <section data-screen="stocking" id="stocking-screen" class="stocking-view" aria-labelledby="stocking-title" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow" data-i18n="stocking.eyebrow">SHOP FLOOR · VILLAGE</p>
+            <h1 id="stocking-title" data-i18n="stocking.title">店舗の陳列</h1>
+            <p class="intro" data-i18n="stocking.intro">倉庫の商品から、今日お店に並べる品を選びましょう。</p>
+          </div>
+          <div class="capacity"><span id="displayed-count">0</span> <span data-i18n="stocking.displayedCountUnit">点を陳列中</span></div>
+        </div>
+        <div class="stocking-columns">
+          <section class="stock-list-panel" aria-labelledby="warehouse-stock-title">
+            <div class="panel-heading"><div><h2 id="warehouse-stock-title" data-i18n="stocking.warehouseItems">倉庫の商品</h2><p data-i18n="stocking.chooseItems">商品を選んで棚のマスをタップ</p></div></div>
+            <div id="available-stock" class="stock-list"></div>
+          </section>
+          <section class="shop-shelf-panel" aria-labelledby="shop-shelf-title">
+              <div class="panel-heading"><div><h2 id="shop-shelf-title" data-i18n="stocking.shopShelf">店舗の棚</h2><p data-i18n="stocking.shelfGridSize">5 × 5 マス</p></div></div>
+            <div class="shop-board-wrap">
+              <div id="shop-board" class="warehouse-board shop-board" role="grid" aria-label="店舗の棚 5 列 5 行" data-i18n-aria-label="stocking.shelfGridLabel"></div>
+            </div>
+            <p id="stocking-selection" class="stocking-selection" aria-live="polite" data-i18n="stocking.selectionEmpty">倉庫の商品を選び、棚の空きマスをタップしてください。</p>
+            <div class="shop-board-help">
+              <span data-i18n="stocking.tapPlace">空きマスをタップ：陳列</span>
+              <span data-i18n="stocking.tapItemRotate">陳列品を再タップ：回転</span>
+              <span data-i18n="stocking.holdDragMove">長押し＋ドラッグ：移動</span>
+            </div>
+            <button id="return-stock-button" class="secondary-button return-stock-button" type="button" disabled data-i18n="stocking.returnSelected">選択した商品を倉庫へ戻す</button>
+          </section>
+        </div>
+        <p id="stocking-status" class="stocking-status" role="status" aria-live="polite" data-i18n="stocking.statusInitial">倉庫から商品を陳列できます。</p>
+      </section>
+      <div class="save-controls" id="save-controls">
+        <span role="status" id="save-status" aria-live="polite"></span>
+        <button type="button" data-save="export" data-i18n="mvp.export"></button>
+        <label><span data-i18n="mvp.import"></span><input type="file" accept="application/json,.json" id="save-import" aria-label="セーブを読み込む" data-i18n-aria-label="mvp.import"></label>
+        <button type="button" data-save="reset" data-i18n="mvp.reset"></button>
+      </div>
+      <footer class="site-footer"><span data-i18n="app.brand">SHOP GAME</span> <span data-i18n="footer.tagline">— 小さな店から、世界を広げよう。</span></footer>
+    </main>
+  </body>
+</html>

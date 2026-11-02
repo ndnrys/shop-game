@@ -17,14 +17,15 @@ export function successChance(heroes, config, funds, progress = 0, kind = 'explo
 }
 
 export function planExpedition(campaign, config, kind) {
-  const funds = campaign.heroes.reduce((sum, hero) => sum + hero.funds, 0);
+  const heroes = campaign.heroes.filter(hero => (campaign.partyIds ?? campaign.heroes.map(entry => entry.id)).includes(hero.id));
+  const funds = heroes.reduce((sum, hero) => sum + hero.funds, 0);
   return {
-    kind, questId: config.quest.id, heroIds: campaign.heroes.map(hero => hero.id),
+    kind, questId: config.quest.id, heroIds: heroes.map(hero => hero.id),
     departedDay: campaign.day, returnDay: campaign.day + Math.max(1, config.quest.duration),
-    chance: successChance(campaign.heroes, config, funds, campaign.progress, kind),
+    chance: successChance(heroes, config, funds, campaign.progress, kind),
     roll: random(campaign), funds,
-    injuryRolls: campaign.heroes.map(() => random(campaign)),
-    recoveryRolls: campaign.heroes.map(() => random(campaign)),
+    injuryRolls: heroes.map(() => random(campaign)),
+    recoveryRolls: heroes.map(() => random(campaign)),
   };
 }
 
@@ -41,7 +42,8 @@ export function resolveExpedition(campaign, config) {
   if (boss && success) campaign.defeated = true;
   events.push({ type: boss ? (success ? 'bossSuccess' : 'bossFailure') : 'exploration', details: { questId: expedition.questId, amount: reward, gain: gained, progress: campaign.progress, success } });
   const injuryChance = boss ? config.quest.injuryBoss : success ? config.quest.injurySuccess : config.quest.injurySetback;
-  for (const [index, hero] of campaign.heroes.entries()) {
+  for (const [index, id] of expedition.heroIds.entries()) {
+    const hero = campaign.heroes.find(entry => entry.id === id);
     hero.experience += success ? config.quest.experienceSuccess : config.quest.experienceSetback;
     while (hero.experience >= config.quest.levelExperience) {
       hero.experience -= config.quest.levelExperience;

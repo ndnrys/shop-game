@@ -109,3 +109,15 @@
 .visitor-dialogue { flex:1; min-width:0; }
 .speech-bubble cite { display:block; font-style:normal; font-weight:600; }
 .visitor-scene:not(:has(.scene-actor)) .speech-bubble::before { display:none; }
+
+.daily-routine { margin:20px 0 0; padding:18px; border:1px solid var(--line); background:var(--paper); }
+.daily-routine h2 { font-size:14px; }
+.daily-routine ol { display:flex; flex-wrap:wrap; gap:8px; list-style:none; padding:0; margin:0 0 16px; }
+.daily-routine li { padding:6px 9px; font-size:12px; border:1px solid var(--line); color:var(--muted); }
+.daily-routine li[aria-current] { background:var(--green-dark); color:var(--paper); font-weight:bold; }
+.daily-routine .is-complete::before { content:'✓ '; }
+.daily-routine [role=status]:empty { display:none; }
+.party-settings input { width:20px; height:20px; vertical-align:middle; margin-right:8px; }
+.quest-map-node button { min-height:44px; padding:6px; font:inherit; color:inherit; border:1px solid currentColor; background:#354337; cursor:pointer; }
+.quest-map-node button[aria-pressed=true] { outline:3px solid #e4bd67; }
+@media(max-width:700px) { .daily-routine { padding:12px; } .daily-routine li { font-size:10px; padding:5px; } }

@@ -16,3 +16,10 @@ export function drawDelivery(campaign, definitions, merchant) {
     return { instanceId: `delivery-${campaign.nextItemId++}`, itemId: definition.id, purchaseCost: Math.floor(merchant.cost / merchant.count) + (index < merchant.cost % merchant.count ? 1 : 0), x: 0, y: 0, rotated: 0 };
   });
 }
+
+// Existing merchant terms are one lot; larger payments buy whole lots.
+export function deliveryQuote(merchant, amount) {
+  const lots = merchant ? amount / merchant.cost : 0;
+  const count = merchant ? lots * merchant.count : 0;
+  return { amount, count, valid: Number.isSafeInteger(amount) && amount > 0 && Number.isSafeInteger(lots) && lots > 0 && Number.isSafeInteger(count) && count <= 1000 };
+}

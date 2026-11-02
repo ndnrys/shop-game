@@ -5,6 +5,7 @@ export function createGameState(skin) {
     contentVersion: skin.contentVersion,
     ...structuredClone(skin.initialState),
     ...(skin.campaign ? { campaign: {
+      phase: "report", partyIds: skin.campaign.heroes.map(hero => hero.id),
       gold: skin.campaign.startingGold, day: 1, region: "village", seed: 20261102,
       nextItemId: 1, trade: null, expedition: null, defeated: false, progress: 0, departure: null,
       heroes: skin.campaign.heroes.map(hero => ({ ...hero, equipment: {}, giftedEquipment: [], funds: 0, level: 1, experience: 0, recoverUntil: 0 })),

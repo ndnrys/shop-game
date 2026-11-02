@@ -1,10 +1,13 @@
-import { buybackPrice, drawDelivery } from "../systems/gacha.js";
+import { buybackPrice, drawDelivery, deliveryQuote } from "../systems/gacha.js";
 import { sellToCustomers, dailyTotals } from "../systems/sales.js";
 import { successChance, departureQuote, planExpedition, resolveExpedition } from "../systems/expeditions.js";
 import { addJournal } from "../systems/journal.js";
 
 export function createCampaignActions(state, config, definitions, inventory, commit) {
   const c = state.campaign;
+  c.phase ??= c.opened ? "sales" : c.trade ? "purchase" : "report";
+  c.partyIds ??= c.heroes.map(hero => hero.id);
+  const party = () => c.heroes.filter(hero => c.partyIds.includes(hero.id));
   const fail = reason => ({ ok: false, reason: `mvp.error.${reason}` });
   const ready = () => c.region === "village" && !c.trade;
   const merchant = () => config.merchants.find(entry => entry.id === c.trade?.merchantId);
@@ -18,17 +21,41 @@ export function createCampaignActions(state, config, definitions, inventory, com
   return {
     config,
     quote: ids => departureQuote(c, config, ids),
-    chance: () => successChance(c.heroes, config, c.heroes.reduce((sum, hero) => sum + hero.funds, 0), c.progress, c.progress >= 100 ? "boss" : "explore"),
+    chance: () => successChance(party(), config, party().reduce((sum, hero) => sum + hero.funds, 0), c.progress, c.progress >= 100 ? "boss" : "explore"),
     buyback: itemId => merchant() ? buybackPrice(definitions[itemId], merchant()) : 0,
-    startTrade(id) {
+    deliveryQuote: (id, amount) => deliveryQuote(config.merchants.find(entry => entry.id === id), amount),
+    advancePhase() {
+      if (!ready()) return fail("trade");
+      const phases = ["report", "purchase", "warehouse", "stocking", "support", "opening", "sales", "end"];
+      const index = phases.indexOf(c.phase);
+      if (index < 0 || index >= phases.length - 1 || c.phase === "opening") return fail("phase");
+      c.phase = phases[index + 1];
+      return commit({ ok: true });
+    },
+    previousPhase() {
+      if (!ready() || c.opened) return fail("phase");
+      const phases = ["report", "purchase", "warehouse", "stocking", "support", "opening"];
+      const index = phases.indexOf(c.phase);
+      if (index <= 0) return fail("phase");
+      c.phase = phases[index - 1];
+      return commit({ ok: true });
+    },
+    setParty(ids) {
+      if (!ready() || c.expedition) return fail("away");
+      if (!Array.isArray(ids) || new Set(ids).size !== ids.length || ids.some(id => !c.heroes.some(hero => hero.id === id))) return fail("party");
+      c.partyIds = [...ids];
+      return commit({ ok: true });
+    },
+    startTrade(id, amount) {
       const seller = config.merchants.find(entry => entry.id === id);
       if (!ready() || !seller) return fail("trade");
-      if (c.gold < seller.cost) return fail("money");
-      c.gold -= seller.cost;
-      c.today.purchasing += seller.cost;
-      c.trade = { merchantId: id, incoming: drawDelivery(c, definitions, seller) };
+      const quote = deliveryQuote(seller, amount ?? seller.cost);
+      if (!quote.valid || c.gold < quote.amount) return fail("money");
+      c.gold -= quote.amount;
+      c.today.purchasing += quote.amount;
+      c.trade = { merchantId: id, incoming: drawDelivery(c, definitions, { ...seller, cost: quote.amount, count: quote.count }) };
       c.milestones.purchased = true;
-      addJournal(state, "purchase", { merchantId: id, amount: seller.cost, count: seller.count });
+      addJournal(state, "purchase", { merchantId: id, amount: quote.amount, count: quote.count });
       return commit({ ok: true });
     },
     keep(instanceId) {
@@ -59,9 +86,9 @@ export function createCampaignActions(state, config, definitions, inventory, com
     },
     openShop() {
       if (!ready() || c.opened) return fail("opened");
-      if (!state.shop.displayedItems.length) return fail("shelf");
       const { receipts, visits } = sellToCustomers(state, definitions, config);
       c.opened = true;
+      c.phase = "sales";
       if (receipts.length) c.milestones.sold = true;
       c.customerVisits = visits;
       for (const visit of visits) {
@@ -94,11 +121,12 @@ export function createCampaignActions(state, config, definitions, inventory, com
     dispatch(kind = c.progress >= 100 ? "boss" : "explore") {
       if (!ready() || c.expedition || c.defeated) return fail("away");
       if (!["explore", "boss"].includes(kind) || (kind === "boss") !== (c.progress >= 100)) return fail("bossLocked");
-      if (c.heroes.some(hero => hero.recoverUntil > c.day)) return fail("recovering");
-      const funds = c.heroes.reduce((sum, hero) => sum + hero.funds, 0);
-      if (funds < config.quest.minimumFunds || c.heroes.filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
+      if (!party().length) return fail("party");
+      if (party().some(hero => hero.recoverUntil > c.day)) return fail("recovering");
+      const funds = party().reduce((sum, hero) => sum + hero.funds, 0);
+      if (funds < config.quest.minimumFunds || party().filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
       c.expedition = planExpedition(c, config, kind);
-      for (const hero of c.heroes) hero.funds = 0;
+      for (const hero of party()) hero.funds = 0;
       addJournal(state, "dispatch", { questId: config.quest.id, kind, returnDay: c.expedition.returnDay, chance: Math.round(c.expedition.chance * 100) });
       return commit({ ok: true });
     },
@@ -106,6 +134,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
       if (!ready()) return fail("trade");
       addJournal(state, "summary", { ...c.today, ...dailyTotals(c.today) });
       c.day += 1;
+      c.phase = "report";
       c.opened = false;
       c.customerVisits = [];
       c.today = { sales: 0, cogs: 0, purchasing: 0, buyback: 0, support: 0, rewards: 0, aid: 0 };

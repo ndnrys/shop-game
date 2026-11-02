@@ -18,6 +18,9 @@ export function mountCampaign(root, game) {
   const heroName = id => t(`mvp.hero.${id}`);
   const companionIds = new Set();
   let selectedHeroId = c.heroes[0]?.id;
+  let destination = '';
+  let destinationDay = c.day;
+  const amounts = new Map();
   let message = '';
   let error = false;
   const button = (action, label, disabled = false, attrs = '') => `<button type="button" class="mvp-button" data-action="${action}" ${disabled ? 'disabled' : ''} ${attrs}>${label}</button>`;
@@ -36,7 +39,11 @@ export function mountCampaign(root, game) {
 
   function purchase() {
     if (c.region !== 'village') return `<p>${tr('mvp.completeHint')}</p>`;
-    if (!c.trade) return `<div class="mvp-grid">${config.merchants.map(merchant => `<article class="mvp-card merchant-card">${actor(merchant.id)}<h2>${tr(`mvp.merchant.${merchant.id}`)}</h2><p>${tr('mvp.merchantTerms', { cost: money(merchant.cost), count: merchant.count })}</p>${button('buy', tr('mvp.buy'), c.gold < merchant.cost, `data-id="${merchant.id}"`)}</article>`).join('')}</div>`;
+    if (!c.trade) return `<div class="mvp-grid">${config.merchants.map(merchant => {
+      const amount = amounts.get(merchant.id) ?? merchant.cost;
+      const quote = actions.deliveryQuote(merchant.id, amount);
+      return `<article class="mvp-card merchant-card">${actor(merchant.id)}<h2>${tr(`mvp.merchant.${merchant.id}`)}</h2><p>${tr('mvp.merchantTerms', { cost: money(merchant.cost), count: merchant.count })}</p><label>${tr('routine.payment')}<input type="number" data-merchant-amount="${merchant.id}" min="${merchant.cost}" max="${Math.min(c.gold, Math.floor(1000 / merchant.count) * merchant.cost)}" step="${merchant.cost}" value="${amount}" inputmode="numeric"></label><p data-quote="${merchant.id}" aria-live="polite">${tr(quote.valid ? 'routine.delivery' : 'routine.invalidAmount', { count: quote.count, amount: money(amount) })}</p>${button('buy', tr('mvp.buy'), c.gold < merchant.cost, `data-id="${merchant.id}"`)}</article>`;
+    }).join('')}</div><section class="mvp-card"><p>${tr('mvp.reliefHint')}</p>${button('relief', tr('mvp.relief', { amount: money(config.aidAmount) }), c.aidDay === c.day || c.gold >= Math.min(...config.merchants.map(m => m.cost)))}</section>`;
     return `<section class="mvp-card"><h2>${tr('mvp.tradeWith', { name: t(`mvp.merchant.${c.trade.merchantId}`) })}</h2><p>${tr('mvp.tradeHint')}</p>${link('warehouse', 'nav.warehouse')}<h3>${tr('mvp.incoming')}</h3><div class="mvp-products">${c.trade.incoming.map(item => product(item, 'incoming')).join('') || `<p>${tr('mvp.incomingEmpty')}</p>`}</div>${button('finishTrade', tr('mvp.finishTrade'), c.trade.incoming.length > 0)}</section><section class="mvp-card"><h2>${tr('mvp.oldStock')}</h2><p>${tr('mvp.oldStockHint')}</p><div class="mvp-products">${state.warehouse.items.map(item => product(item, 'warehouse')).join('') || tr('mvp.noStock')}</div></section>`;
   }
 
@@ -46,16 +53,18 @@ export function mountCampaign(root, game) {
     const current = questStage(c.progress, config).key;
     const marker = (point, home = false) => {
       const active = !home && point.stage === current;
+      const selectable = active && !c.defeated && !c.expedition && view === 'support';
       const status = c.defeated ? 'mvp.map.cleared' : c.progress >= 100 ? 'mvp.map.boss' : 'mvp.map.current';
-      return `<li class="quest-map-node ${home ? 'is-home' : ''} ${active ? 'is-current' : ''}" style="--map-x:${point.x}%;--map-y:${point.y}%" ${active ? 'aria-current="step"' : ''}><span class="quest-map-pin" aria-hidden="true"></span><span>${tr(point.labelKey)}${active ? `<small>${tr(status)}</small>` : ''}</span></li>`;
+      return `<li class="quest-map-node ${home ? 'is-home' : ''} ${active ? 'is-current' : ''}" style="--map-x:${point.x}%;--map-y:${point.y}%" ${active ? 'aria-current="step"' : ''}><span class="quest-map-pin" aria-hidden="true"></span><span>${selectable ? `<button type="button" data-destination="${current}" aria-pressed="${destination === current}">${tr(point.labelKey)}</button>` : tr(point.labelKey)}${active ? `<small>${tr(status)}</small>` : ''}</span></li>`;
     };
     return `<figure class="quest-map"><figcaption>${tr(map.titleKey)}</figcaption><div class="quest-map-art"><img src="${escape(map.imageUrl)}" alt="${tr(map.descriptionKey)}"><ol>${marker(map.home, true)}${map.points.map(point => marker(point)).join('')}</ol></div></figure>`;
   }
 
   function support() {
     const locked = Boolean(c.expedition || c.trade || c.region !== 'village');
+    const adventureTab = view === 'adventurers';
     const available = state.warehouse.items.filter(item => config.itemSlots[item.itemId]);
-    return `<section class="party-roster" aria-label="${tr('mvp.roster')}">${c.heroes.map(hero => `<button type="button" data-select-hero="${hero.id}" aria-pressed="${selectedHeroId === hero.id}">${actor(hero.id)}<span>${escape(heroName(hero.id))}<small>${tr('mvp.roster.status', { level: hero.level, status: t(hero.recoverUntil > c.day ? 'mvp.roster.injured' : 'mvp.roster.ready') })}</small></span></button>`).join('')}</section><div class="support-layout"><div class="mvp-grid hero-detail">${c.heroes.filter(hero => hero.id === selectedHeroId).map(hero => `<article class="mvp-card"><header class="hero-heading">${actor(hero.id)}<h2>${escape(heroName(hero.id))}</h2></header><p>${tr('mvp.heroGrowth', { level: hero.level, experience: hero.experience, required: config.quest.levelExperience, ability: hero.ability })}</p><p class="hero-health">${hero.recoverUntil > c.day ? tr('mvp.heroInjured', { days: hero.recoverUntil-c.day, date: date(hero.recoverUntil) }) : tr('mvp.heroHealthy')}</p><ul class="hero-equipment">${config.equipmentSlots.map(slot => `<li><span class="hero-equipment-art" aria-hidden="true">${hero.equipment[slot] ? itemArt(presentation[hero.equipment[slot].itemId]) : '<span class="equipment-empty">—</span>'}</span><span><small>${tr(`mvp.slot.${slot}`)}</small>${hero.equipment[slot] ? escape(itemName(hero.equipment[slot].itemId)) : tr('mvp.noEquipment')}</span></li>`).join('')}</ul><p>${tr('mvp.gearPower', { amount: equipmentPower(hero, config) })}</p><p>${tr('mvp.funds', { amount: money(hero.funds) })}</p><form data-hero="${hero.id}"><label>${tr('mvp.gearLabel')}<select name="gear" ${locked ? 'disabled' : ''}><option value="">${tr('mvp.noGearChoice')}</option>${available.map(item => `<option value="${item.instanceId}">${tr(`mvp.slot.${config.itemSlots[item.itemId]}`)}: ${escape(itemName(item.itemId))}</option>`).join('')}</select></label><label>${tr('mvp.fundsLabel')}<input name="funds" type="number" min="0" max="${c.gold}" step="1" value="0" inputmode="numeric" ${locked ? 'disabled' : ''}></label><button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('mvp.give')}</button></form><small>${tr('mvp.equippedHint')}</small></article>`).join('')}</div><section class="mvp-card quest-card"><h2>${tr('mvp.questName')}</h2>${questMap()}<div class="quest-progress"><strong>${tr('mvp.progress', { amount: c.progress })}</strong><progress max="100" value="${c.progress}" aria-label="${tr('mvp.progress', { amount: c.progress })}"></progress><p>${c.defeated ? tr('mvp.safe') : c.progress >= 100 ? tr('mvp.bossAppeared') : tr(`mvp.stage.${questStage(c.progress, config).key}`)}</p></div><p>${tr('mvp.questHint', { gain: config.quest.progressSuccess, setback: config.quest.progressSetback, funds: config.quest.minimumFunds })}</p><p>${tr('mvp.spentFunds')}</p>${c.defeated ? `<strong>${tr('mvp.safe')}</strong>` : c.expedition ? `<strong>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</strong>` : `<strong>${tr('mvp.chance', { amount: Math.round(actions.chance() * 100) })}</strong><p>${tr('mvp.duration', { days: config.quest.duration, date: date(c.day + config.quest.duration) })}</p>${c.heroes.some(hero => hero.recoverUntil > c.day) ? `<p>${tr('mvp.recoveryWait')}</p>` : ''}${button('dispatch', tr(c.progress >= 100 ? 'mvp.dispatchBoss' : 'mvp.dispatch'), locked || c.heroes.some(hero => hero.recoverUntil > c.day))}`}</section></div>`;
+    return `<section class="mvp-card party-settings"><h2>${tr('routine.party')}</h2><p>${tr('routine.partyHint')}</p><div class="companion-options">${c.heroes.map(hero => `<label><input type="checkbox" data-party="${hero.id}" ${c.partyIds.includes(hero.id) ? 'checked' : ''} ${locked ? 'disabled' : ''}>${escape(heroName(hero.id))}</label>`).join('')}</div></section><section class="party-roster" aria-label="${tr('mvp.roster')}">${c.heroes.map(hero => `<button type="button" data-select-hero="${hero.id}" aria-pressed="${selectedHeroId === hero.id}">${actor(hero.id)}<span>${escape(heroName(hero.id))}<small>${tr('mvp.roster.status', { level: hero.level, status: t(hero.recoverUntil > c.day ? 'mvp.roster.injured' : 'mvp.roster.ready') })}</small></span></button>`).join('')}</section><div class="support-layout"><div class="mvp-grid hero-detail">${c.heroes.filter(hero => hero.id === selectedHeroId).map(hero => `<article class="mvp-card"><header class="hero-heading">${actor(hero.id)}<h2>${escape(heroName(hero.id))}</h2></header><p>${tr('mvp.heroGrowth', { level: hero.level, experience: hero.experience, required: config.quest.levelExperience, ability: hero.ability })}</p><p class="hero-health">${hero.recoverUntil > c.day ? tr('mvp.heroInjured', { days: hero.recoverUntil-c.day, date: date(hero.recoverUntil) }) : tr('mvp.heroHealthy')}</p><ul class="hero-equipment">${config.equipmentSlots.map(slot => `<li><span class="hero-equipment-art" aria-hidden="true">${hero.equipment[slot] ? itemArt(presentation[hero.equipment[slot].itemId]) : '<span class="equipment-empty">—</span>'}</span><span><small>${tr(`mvp.slot.${slot}`)}</small>${hero.equipment[slot] ? escape(itemName(hero.equipment[slot].itemId)) : tr('mvp.noEquipment')}</span></li>`).join('')}</ul><p>${tr('mvp.gearPower', { amount: equipmentPower(hero, config) })}</p><p>${tr('mvp.funds', { amount: money(hero.funds) })}</p><form data-hero="${hero.id}"><label>${tr('mvp.gearLabel')}<select name="gear" ${locked ? 'disabled' : ''}><option value="">${tr('mvp.noGearChoice')}</option>${available.map(item => `<option value="${item.instanceId}">${tr(`mvp.slot.${config.itemSlots[item.itemId]}`)}: ${escape(itemName(item.itemId))}</option>`).join('')}</select></label><label>${tr('mvp.fundsLabel')}<input name="funds" type="number" min="0" max="${c.gold}" step="1" value="0" inputmode="numeric" ${locked ? 'disabled' : ''}></label><button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('mvp.give')}</button></form><small>${tr('mvp.equippedHint')}</small></article>`).join('')}</div><section class="mvp-card quest-card"><h2>${tr('mvp.questName')}</h2>${adventureTab ? '' : config.quest.map ? questMap() : button('selectDestination', tr('mvp.questName'), Boolean(c.expedition || c.defeated))}<div class="quest-progress"><strong>${tr('mvp.progress', { amount: c.progress })}</strong><progress max="100" value="${c.progress}" aria-label="${tr('mvp.progress', { amount: c.progress })}"></progress><p>${c.defeated ? tr('mvp.safe') : c.progress >= 100 ? tr('mvp.bossAppeared') : tr(`mvp.stage.${questStage(c.progress, config).key}`)}</p></div><p>${tr('mvp.questHint', { gain: config.quest.progressSuccess, setback: config.quest.progressSetback, funds: config.quest.minimumFunds })}</p><p>${tr('mvp.spentFunds')}</p>${c.defeated ? `<strong>${tr('mvp.safe')}</strong>` : c.expedition ? `<strong>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</strong>` : `<strong>${tr('mvp.chance', { amount: Math.round(actions.chance() * 100) })}</strong><p>${tr('mvp.duration', { days: config.quest.duration, date: date(c.day + config.quest.duration) })}</p>${c.heroes.some(hero => hero.recoverUntil > c.day) ? `<p>${tr('mvp.recoveryWait')}</p>` : ''}${adventureTab ? `<p>${tr('routine.departInSupport')}</p>` : `${button('dispatch', tr(c.progress >= 100 ? 'mvp.dispatchBoss' : 'mvp.dispatch'), locked || !destination || !c.partyIds.length || c.heroes.some(hero => c.partyIds.includes(hero.id) && hero.recoverUntil > c.day))}`}`}</section></div>`;
   }
 
   function log(entry) {
@@ -75,7 +84,7 @@ export function mountCampaign(root, game) {
 
   function journal() {
     const groups = new Map();
-    for (const entry of c.journal) {
+    for (const entry of c.journal.filter(entry => entry.type !== 'visit')) {
       if (!groups.has(entry.day)) groups.set(entry.day, []);
       groups.get(entry.day).push(entry);
     }
@@ -94,15 +103,27 @@ export function mountCampaign(root, game) {
 
   function home() {
     if (c.region !== 'village') return `<section class="mvp-card mvp-complete"><p class="eyebrow">${tr('mvp.done')}</p><h2>${tr('mvp.complete')}</h2><p>${tr('mvp.completeHint')}</p><h3>${tr('mvp.openingGold', { amount: money(c.departure.openingGold) })}</h3><p>${tr('mvp.companions', { names: c.departure.heroIds.map(heroName).join('・') || t('mvp.none') })}</p><p>${tr('mvp.newTalent')}</p>${link('journal', 'mvp.go.journal')}</section>`;
-    const totals = dailyTotals(c.today);
-    const stats = [['sales', c.today.sales], ['grossProfit', totals.grossProfit], ['cost', c.today.purchasing], ['buyback', c.today.buyback], ['supportCost', c.today.support], ['reward', c.today.rewards], ['aid', c.today.aid], ['net', totals.net]];
-    const steps = [ ['purchase', c.milestones.purchased], ['sale', c.milestones.sold], ['support', c.milestones.supported], ['progress', c.progress >= 100], ['quest', c.defeated], ['gold', c.gold >= config.targetGold] ];
-    const guide = c.heroes.some(hero => hero.recoverUntil > c.day) && !c.defeated ? 'recovering' : !c.milestones.purchased ? 'purchase' : !c.milestones.sold ? 'sale' : !c.milestones.supported ? 'support' : c.expedition ? 'away' : !c.defeated ? 'quest' : c.gold < config.targetGold ? 'gold' : 'ready';
-    return `<section class="mvp-card"><h2>${tr('mvp.business')}</h2><p>${tr('mvp.openHint')}</p>${c.trade ? `<p class="is-error">${tr('mvp.tradeBlocksOpening')}</p>${link('purchase', 'mvp.go.purchase')}` : !state.shop.displayedItems.length && !c.opened ? `<p>${tr('mvp.emptyShelfHint')}</p>${link('stocking', 'mvp.go.stocking')}` : ''}<div class="mvp-actions">${button('open', tr(c.opened ? 'mvp.closed' : 'mvp.open'), Boolean(c.opened || c.trade || !state.shop.displayedItems.length))}${button('nextDay', tr('mvp.nextDay'), Boolean(c.trade))}</div>${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}<hr><p>${tr('mvp.reliefHint')}</p>${button('relief', tr('mvp.relief', { amount: money(config.aidAmount) }), Boolean(c.trade || c.aidDay === c.day || c.gold >= Math.min(...config.merchants.map(m => m.cost))))}</section>${visitors()}<section class="mvp-card tutorial-card"><h2>${tr('mvp.tutorial')}</h2><p class="tutorial-guide">${tr(`mvp.guide.${guide}`)}</p><ol>${steps.map(([key, complete]) => `<li class="${complete ? 'is-complete' : ''}"><span>${tr(`mvp.step.${key}`, { amount: money(config.targetGold) })}</span><small>${tr(complete ? 'mvp.done' : 'mvp.pending')}</small></li>`).join('')}</ol><div class="mvp-actions">${link('purchase','mvp.go.purchase')}${link('stocking','mvp.go.stocking')}${link('support','mvp.go.support')}</div></section><div class="mvp-stats">${stats.map(([key, amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div>${c.defeated && c.gold >= config.targetGold ? departure() : ''}`;
+    const stats = () => {
+      const totals = dailyTotals(c.today);
+      return `<div class="mvp-stats">${[['sales',c.today.sales],['grossProfit',totals.grossProfit],['cost',c.today.purchasing],['buyback',c.today.buyback],['supportCost',c.today.support],['reward',c.today.rewards],['aid',c.today.aid],['net',totals.net]].map(([key,amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div>`;
+    };
+    if (c.phase === 'report') {
+      const entries = c.journal.filter(entry => (entry.day === c.day - 1 && entry.type === 'summary') || (entry.day === c.day && ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered'].includes(entry.type)));
+      return `<section class="mvp-card"><h2>${tr('routine.phase.report')}</h2>${entries.length ? `<ul>${entries.map(entry => `<li>${log(entry)}</li>`).join('')}</ul>` : `<p>${tr('routine.firstReport')}</p>`}</section>${c.defeated && c.gold >= config.targetGold ? departure() : ''}`;
+    }
+    if (c.phase === 'opening') return `<section class="mvp-card"><h2>${tr('routine.phase.opening')}</h2><p>${tr('routine.openReview', { count: state.shop.displayedItems.length })}</p>${!state.shop.displayedItems.length ? `<p>${tr('routine.emptyShop')}</p>` : ''}${button('open', tr('routine.open'), Boolean(c.trade || c.opened))}${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}</section>`;
+    if (c.phase === 'sales') return `${visitors()}<section class="mvp-card">${button('salesDone', tr('routine.salesDone'))}</section>`;
+    if (c.phase === 'end') return `${stats()}<section class="mvp-card"><h2>${tr('routine.phase.end')}</h2>${button('nextDay', tr('mvp.nextDay'))}</section>`;
+    return '';
+  }
+
+  function residents() {
+    return `<div class="mvp-grid">${(config.residents ?? []).map(resident => `<section class="mvp-card"><h2>${tr(resident.nameKey)}</h2><p>${tr(resident.descriptionKey)}</p><small>${tr('routine.comingSoon')}</small></section>`).join('')}</div>`;
   }
 
   function render() {
-    root.innerHTML = `<div class="page-heading"><div><p class="eyebrow">${escape(date(c.day))}</p><h1>${tr(`mvp.title.${view}`)}</h1><p class="intro">${tr(`mvp.subtitle.${view}`)}</p></div><strong class="mvp-wallet">${escape(money(c.gold))}</strong></div><p class="mvp-status ${error ? 'is-error' : ''}" role="status" aria-live="polite">${escape(message)}</p>${({ home, purchase, support, journal })[view]()}`;
+    if (destinationDay !== c.day) { destination = ''; destinationDay = c.day; }
+    root.innerHTML = `<div class="page-heading"><div><p class="eyebrow">${escape(date(c.day))}</p><h1>${tr(`mvp.title.${view}`)}</h1><p class="intro">${tr(`mvp.subtitle.${view}`)}</p></div><strong class="mvp-wallet">${escape(money(c.gold))}</strong></div><p class="mvp-status ${error ? 'is-error' : ''}" role="status" aria-live="polite">${escape(message)}</p>${({ home, purchase, support, journal, adventurers: support, residents })[view]()}`;
   }
   function announce(result) {
     error = !result.ok;
@@ -117,18 +138,36 @@ export function mountCampaign(root, game) {
     announce(actions.support(form.dataset.hero, fields.get('gear') || null, Number(fields.get('funds'))));
   }, { signal: events.signal });
   root.addEventListener('change', event => {
+    const partyId = event.target.dataset.party;
+    if (partyId) {
+      const ids = new Set(c.partyIds);
+      if (event.target.checked) ids.add(partyId); else ids.delete(partyId);
+      announce(actions.setParty([...ids]));
+      return;
+    }
     const id = event.target.dataset.companion;
     if (!id) return;
     if (event.target.checked) companionIds.add(id); else companionIds.delete(id);
     render();
   }, { signal: events.signal });
+  root.addEventListener('input', event => {
+    const id = event.target.dataset.merchantAmount;
+    if (!id) return;
+    const amount = Number(event.target.value);
+    amounts.set(id, amount);
+    const quote = actions.deliveryQuote(id, amount);
+    root.querySelector(`[data-quote="${id}"]`).textContent = t(quote.valid ? 'routine.delivery' : 'routine.invalidAmount', { count: quote.count, amount: money(amount) });
+  }, { signal: events.signal });
   root.addEventListener('click', event => {
+    if (event.target.closest('[data-action=selectDestination]')) { destination = questStage(c.progress, config).key; render(); return; }
+    const point = event.target.closest('[data-destination]');
+    if (point) { destination = point.dataset.destination; render(); return; }
     const selection = event.target.closest('[data-select-hero]');
     if (selection) { selectedHeroId = selection.dataset.selectHero; render(); root.querySelector(`[data-select-hero="${selectedHeroId}"]`)?.focus({ preventScroll: true }); return; }
     const target = event.target.closest('[data-action]');
     if (!target || target.disabled) return;
     const id = target.dataset.id;
-    const operations = { buy: () => actions.startTrade(id), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, dispatch: actions.dispatch, depart: () => actions.depart([...companionIds]) };
+    const operations = { buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.advancePhase, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch() : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
     announce(operations[target.dataset.action]());
   }, { signal: events.signal });
   render();

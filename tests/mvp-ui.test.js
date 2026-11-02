@@ -11,96 +11,85 @@ const skin={...fantasy,id:'test-mvp-ui'};
 const fixture=document.querySelector('#fixture');
 const template=new DOMParser().parseFromString(await(await fetch('../index.html')).text(),'text/html').querySelector('main');
 fixture.append(template.cloneNode(true));
-let game=createSession(skin); let app;
-const features=[...['home','purchase','support','journal'].map(id=>({id,mount:mountCampaign})),{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}];
+let game=createSession(skin), app;
+const features=[...['home','purchase','support','journal','adventurers','residents'].map(id=>({id,mount:mountCampaign})),{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}];
 function mount(){app=mountScreens(fixture,game,features);applyTranslations(fixture,game.i18n);}
 mount();
 let passed=0;
 function assert(value,message){if(!value)throw new Error(message);}
 function get(selector){const el=fixture.querySelector(selector);if(!el)throw new Error(selector);return el;}
+const visible='[data-screen]:not([hidden])';
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
-function action(name,extra=''){get(`[data-screen]:not([hidden]) [data-action="${name}"]${extra}`).click();}
-function give(id,gear,funds){get(`[data-select-hero="${id}"]`).click();const form=get(`form[data-hero="${id}"]`);form.elements.gear.value=gear;form.elements.funds.value=funds;form.requestSubmit();}
+function action(name,extra=''){get(`${visible} [data-action="${name}"]${extra}`).click();}
+function step(name='next'){get(`[data-routine="${name}"]`).click();}
+function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);form.elements.gear.value=gear;form.elements.funds.value=funds;form.requestSubmit();}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
-  await check('three supporters receive equipment and preparation money through forms',()=>{
-    page('support');
-    assert(get('[data-screen="support"]').querySelectorAll('[data-select-hero]').length===3,'three roster selectors');
-    assert(get('[data-screen="support"]').querySelectorAll('form[data-hero]').length===1,'one selected equipment panel');
-    const beforeSelection=JSON.stringify(game.state);get('[data-select-hero="bran"]').click();
-    assert(JSON.stringify(game.state)===beforeSelection,'selecting a supporter changes no saved state');
-    give('lina','stock-001',50);give('bran','stock-003',50);give('noa','stock-006',50);
-    assert(!get('[data-screen="support"]').querySelector('[data-action="returnGear"]'),'no gift return');
-    assert(get('[data-screen="support"]').textContent.includes('盾'),'slot labels');
-    assert(game.state.campaign.gold===250,'funds paid');
-    assert(game.state.campaign.heroes.every(h=>Object.keys(h.equipment).length>0&&h.funds===50),'all supporters prepared');
-    assert(get('[data-screen="support"]').textContent.includes(`${Math.round(game.campaign.chance()*100)}%`),'success preview');
+  await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
+    page('home');assert(game.state.campaign.phase==='report','start at report');
+    assert([...fixture.querySelectorAll('.main-nav a')].filter(a=>!a.hidden).length===5,'five visible tabs');
+    page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"], [data-destination]'),'no departure in tab');
+    const before=JSON.stringify(game.state);get(`${visible} [data-select-hero="bran"]`).click();assert(JSON.stringify(game.state)===before,'selection does not save');
+    for(const id of ['bran','noa']){const input=get(`${visible} [data-party="${id}"]`);input.checked=false;input.dispatchEvent(new Event('change',{bubbles:true}));}
+    give('lina','stock-001',30);assert(game.state.campaign.heroes[0].equipment.weapon.itemId==='iron_sword','gear transferred');
+    assert(game.state.campaign.partyIds.join()==='lina','single selected party');
+    page('home');assert(game.state.campaign.phase==='report','tab switching preserves step');step();
   });
-  await check('purchase/keep/buyback/finish controls and persistent pending trade',async()=>{
-    page('purchase');action('buy','[data-id="weapons"]');assert(game.state.campaign.trade.incoming.length===4,'draw');
-    action('sellBack','[data-source="warehouse"][data-id="stock-007"]');
-    const snapshot=makeSave(game.state);await saveGame(skin.id,snapshot);
-    const loaded=await loadGame(skin);assert(JSON.stringify(loaded)===JSON.stringify(game.state),'IndexedDB pending trade roundtrip');
-    app.destroy();game=createSession(skin,loaded);mount();page('purchase');
+  await check('merchant payment previews quantity; unresolved stock blocks stage and persists',async()=>{
+    const input=get('[data-merchant-amount="tools"]');input.value='240';input.dispatchEvent(new Event('input',{bubbles:true}));
+    assert(get('[data-quote="tools"]').textContent.includes('8品'),'eight-item quote');
+    action('buy','[data-id="tools"]');assert(game.state.campaign.trade.incoming.length===8,'paid delivery');
+    assert(get('[data-routine="next"]').disabled&&get('[data-routine="skip"]').disabled,'pending trade locks next and skip');
+    await saveGame(skin.id,makeSave(game.state));const loaded=await loadGame(skin);assert(JSON.stringify(loaded)===JSON.stringify(game.state),'IndexedDB roundtrip');
+    app.destroy();game=createSession(skin,loaded);mount();page('home');assert(!get('[data-screen="purchase"]').hidden,'resume purchase');
+    page('warehouse');assert(get('#daily-routine').hidden,'warehouse tab independent');page('home');
     while(game.state.campaign.trade.incoming.length){const item=game.state.campaign.trade.incoming[0];action('keep',`[data-id="${item.instanceId}"]`);if(game.state.campaign.trade.incoming.some(i=>i.instanceId===item.instanceId))action('sellBack',`[data-source="incoming"][data-id="${item.instanceId}"]`);}
-    action('finishTrade');assert(game.state.campaign.trade===null,'finished');
+    action('finishTrade');step();assert(game.state.campaign.phase==='warehouse','warehouse stage');
   });
-  await check('external customers buy displayed goods through dashboard',()=>{
-    // The existing stocking controller is independently regression-tested; fill its shelf using its public commands.
+  await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
+    assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
+    assert(!get('[data-screen="stocking"]').hidden,'stocking shown');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
-    page('home');const before=game.state.campaign.gold;action('open');
-    assert(get('.speech-bubble').querySelector('img,svg')===null,'no face inside dialogue');
-    assert(get('.visitor-scene').querySelector(':scope > .scene-actor .item-art'),'speaker is outside bubble');
-
-    assert(game.state.campaign.gold>before,'sales income');assert(game.state.campaign.milestones.sold,'outside customers');
+    assert(Number(get('#displayed-count').textContent)>0,'shelf rendered');step();
+  });
+  await check('support shares preparation; map selection enables departure only in support',()=>{
+    assert(game.state.campaign.phase==='support','support stage');
+    assert(get(`${visible} [data-party="lina"]`).checked&&!get(`${visible} [data-party="bran"]`).checked,'shared party');
+    assert(get('[data-action="dispatch"]').disabled,'destination required');
+    get('[data-destination="outskirts"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
+    action('dispatch');assert(game.state.campaign.expedition.heroIds.join()==='lina','selected party dispatched');
+    page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"]'),'still no dispatch in tab');
+    page('home');step();assert(game.state.campaign.phase==='opening','opening stage');
+  });
+  await check('opening, customer conversations, summary and next-day report form a complete day',()=>{
+    action('open');assert(game.state.campaign.phase==='sales','sales stage');
     assert(get('.visitor-list').children.length===5,'all visitors speak');
-    assert(get('.visitor-list').textContent.includes('今日は何が並んでいるんだい？'),'customer dialogue');
-    assert(get('[data-screen="home"]').querySelector('section [data-action="open"]'),'opening control');
+    assert(!get('.speech-bubble').querySelector('img,svg'),'face outside speech');
+    assert(get('.visitor-scene').querySelector(':scope > .scene-actor .item-art'),'separate actor');
+    action('salesDone');assert(game.state.campaign.phase==='end','day summary');assert(get('.mvp-stats'),'totals');
+    action('nextDay');assert(game.state.campaign.phase==='report'&&game.state.campaign.day===2,'next day');assert(game.state.campaign.expedition===null,'return resolved');
+    assert(get('[data-screen="home"]').textContent.includes('1日の記録'),'previous-day summary');
   });
-  await check('progress, growth, injury recovery and a separate boss lead to a safe village',async()=>{
-    page('support');action('dispatch');assert(game.state.campaign.expedition.heroIds.length===3,'one three-person party');
-    const pending=game.state.campaign.expedition;
-    await saveGame(skin.id,makeSave(game.state));app.destroy();game=createSession(skin,await loadGame(skin));mount();
-    assert(game.state.campaign.expedition.roll===pending.roll,'no reroll');
-    page('home');action('nextDay');
-    for(let tries=0;!game.state.campaign.defeated&&tries<100;tries++){
-      if(game.state.campaign.heroes.some(hero=>hero.recoverUntil>game.state.campaign.day)){
-        page('support');assert(get('.hero-health'),'injury status');
-        assert(get('[data-action="dispatch"]').disabled,'injury prevents dispatch');
-        page('home');action('nextDay');continue;
-      }
-      if(game.state.campaign.gold<30){action('relief');if(game.state.campaign.gold<30){action('nextDay');continue;}}
-      page('support');give('lina','',30);
-      const before=game.state.campaign.progress;
-      action('dispatch');assert(game.state.campaign.expedition,'new expedition');
-      assert(game.state.campaign.expedition.kind===(before>=100?'boss':'explore'),'boss unlocked only after 100%');
-      page('home');action('nextDay');
-    }
-    assert(game.state.campaign.defeated,'leader defeated');
+  await check('purchase and support can be skipped; empty shelves can finish a day',()=>{
+    step();step('skip');assert(game.state.campaign.phase==='warehouse','skip purchase');step();
+    for(const item of [...game.state.shop.displayedItems])game.stocking.return(item.instanceId);
+    step();step('skip');assert(game.state.campaign.phase==='opening','skip support');
+    // Empty-shelf behavior also has a logic test; current warehouse may be full on return.
+    action('open');action('salesDone');action('nextDay');assert(game.state.campaign.day===3,'day completed');
   });
-  await check('full economic loop reaches departure goal without editing balances',()=>{
-    const cost=game.campaign.config.merchants.find(merchant=>merchant.id==='tools').cost;
-    for(let days=0;game.state.campaign.gold<game.campaign.config.targetGold&&days<100;days++){
-      page('home');if(game.state.campaign.opened)action('nextDay');
-      if(game.state.campaign.gold<cost)action('relief');
-      if(game.state.campaign.gold>=cost){page('purchase');action('buy','[data-id="tools"]');while(game.state.campaign.trade.incoming.length){const item=game.state.campaign.trade.incoming[0];action('keep',`[data-id="${item.instanceId}"]`);if(game.state.campaign.trade.incoming.some(i=>i.instanceId===item.instanceId))action('sellBack',`[data-source="incoming"][data-id="${item.instanceId}"]`);}action('finishTrade');}
-      for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
-      page('home');if(game.state.shop.displayedItems.length)action('open');else action('nextDay');
-    }
-    assert(game.state.campaign.gold>=game.campaign.config.targetGold,'goal achievable');
-    assert(get('.departure-card'),'departure unlocked');
-    assert(game.state.campaign.heroes.some(hero=>hero.level>1),'characters grew');
-    get('[data-companion="lina"]').checked=true;get('[data-companion="lina"]').dispatchEvent(new Event('change',{bubbles:true}));
-    assert(get('.departure-quote').textContent.includes('250 G'),'quote');action('depart');
-    assert(game.state.campaign.departure.companions[0].equipment.weapon.itemId==='iron_sword','gear carried');
-    assert(get('.mvp-complete'),'completion');
+  await check('residents are extensible placeholders and journal excludes repeated visitor dialogue',()=>{
+    page('residents');assert(get('[data-screen="residents"]').textContent.includes('大工'),'carpenter');assert(get('[data-screen="residents"]').textContent.includes('教会'),'church');
+    assert(!get('[data-screen="residents"]').querySelector('button'),'no invented facility actions');
+    page('journal');assert(get('.mvp-parchment').textContent.includes('仕入れ'),'purchase log');assert(!get('.mvp-parchment').textContent.includes('今日は何が並んでいるんだい'),'concise log');
+    const state=parseSave(JSON.stringify(makeSave(game.state)),skin);assert(state.campaign.day===3,'JSON roundtrip');page('home');
   });
-  await check('completed state and structured journal reload correctly',async()=>{
-    page('journal');assert(get('.mvp-parchment').textContent.includes('1年 春1日'),'dated journal');
-    assert(get('.mvp-parchment').textContent.includes('村を出発'),'departure entry');
-    const parsed=parseSave(JSON.stringify(makeSave(game.state)),skin);await saveGame(skin.id,makeSave(parsed));
-    assert((await loadGame(skin)).campaign.region==='next-town','completed persistence');
-    page('home');
+  await check('legacy saves with both completed sales and pending trade can finish the trade',()=>{
+    app.destroy();game=createSession(skin);game.campaign.openShop();game.campaign.startTrade('tools');
+    const legacy=makeSave(game.state);legacy.version=3;delete legacy.state.campaign.phase;delete legacy.state.campaign.partyIds;
+    game=createSession(skin,parseSave(JSON.stringify(legacy),skin));mount();page('home');
+    assert(!get('[data-screen="purchase"]').hidden,'pending legacy trade remains accessible');
+    while(game.state.campaign.trade.incoming.length)action('sellBack',`[data-source="incoming"][data-id="${game.state.campaign.trade.incoming[0].instanceId}"]`);
+    action('finishTrade');assert(game.state.campaign.phase==='sales'&&!get('[data-screen="home"]').hidden,'returns to previous sales results');
   });
   document.querySelector('#result').textContent=`PASS ${passed}/${passed}`;
 }catch(error){document.querySelector('#result').textContent=`FAIL after ${passed}: ${error.message}`;console.error(error);}

@@ -21,13 +21,16 @@
 
       <nav class="main-nav" aria-label="メインメニュー" data-i18n-aria-label="nav.label">
         <a class="screen-link" href="#home" data-i18n="mvp.nav.home">経営</a>
-        <a class="screen-link" href="#purchase" data-i18n="mvp.nav.purchase">仕入れ</a>
-        <a class="screen-link is-active" href="#warehouse" aria-current="page" data-i18n="nav.warehouse">倉庫</a>
-        <a class="screen-link" href="#stocking" data-i18n="nav.stocking">陳列</a>
-        <a class="screen-link" href="#support" data-i18n="mvp.nav.support">支援</a>
         <a class="screen-link" href="#journal" data-i18n="mvp.nav.journal">日誌</a>
+        <a class="screen-link" href="#warehouse" data-i18n="nav.warehouse">倉庫</a>
+        <a class="screen-link" href="#residents" data-i18n="routine.residents">住人</a>
+        <a class="screen-link" href="#adventurers" data-i18n="routine.adventurers">冒険者</a>
+        <a class="screen-link" href="#stocking" data-i18n="nav.stocking" data-preparation-link hidden>陳列</a>
       </nav>
 
+      <section id="daily-routine" class="daily-routine" hidden></section>
+      <section data-screen="residents" class="campaign-view" hidden></section>
+      <section data-screen="adventurers" class="campaign-view" hidden></section>
       <section data-screen="home" class="campaign-view" hidden></section>
       <section data-screen="purchase" class="campaign-view" hidden></section>
       <section data-screen="support" class="campaign-view" hidden></section>

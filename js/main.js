@@ -25,7 +25,7 @@ if (skin.stylesheet) {
 
 // Remove a registration and its import to omit a screen; other screens keep working.
 const screens = mountScreens(document, game, [
-  ...(game.campaign ? ['home','purchase','support','journal'].map(id => ({ id, mount: mountCampaign })) : []),
+  ...(game.campaign ? ['home','purchase','support','journal','residents','adventurers'].map(id => ({ id, mount: mountCampaign })) : []),
   { id: "warehouse", mount: mountWarehouse },
   { id: "stocking", mount: mountStocking },
 ]);

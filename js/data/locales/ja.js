@@ -1,4 +1,14 @@
 export default {
+  "routine.today": "今日の流れ",
+  "routine.phase.report": "報告", "routine.phase.purchase": "仕入れ", "routine.phase.warehouse": "倉庫整理", "routine.phase.stocking": "陳列", "routine.phase.support": "支援", "routine.phase.opening": "開店準備", "routine.phase.sales": "営業", "routine.phase.end": "一日終了",
+  "routine.next.report": "報告を確認して仕入れへ", "routine.next.purchase": "仕入れを終えて倉庫整理へ", "routine.next.warehouse": "整理を終えて陳列へ", "routine.next.stocking": "陳列を終えて支援へ", "routine.next.support": "支援を終えて開店準備へ",
+  "routine.skip.purchase": "今日は仕入れない", "routine.skip.support": "今日は支援しない", "routine.back": "前の工程へ戻る",
+  "routine.residents": "住人", "routine.adventurers": "冒険者", "routine.party": "パーティ編成", "routine.partyHint": "出発する仲間にチェックを付けます。編成と支援内容は冒険者タブ・支援工程で共通です。", "routine.departInSupport": "目的地の選択と出発は、メイン画面の支援工程で行います。",
+  "routine.payment": "商人に渡す金額", "routine.delivery": "{amount}を渡して{count}品を仕入れる", "routine.invalidAmount": "1口の金額の倍数で指定してください（最大1000品）。",
+  "routine.firstReport": "今日のお店を始めましょう。翌日からは前日の収支や冒険者の帰還結果が届きます。",
+  "routine.openReview": "棚に{count}品を陳列中です。準備ができたら開店しましょう。", "routine.emptyShop": "棚が空のため、今日は販売なしで営業します。前の工程へ戻って陳列することもできます。", "routine.open": "今日のお店を開ける", "routine.salesDone": "営業を終えて収支を確認", "routine.comingSoon": "今後追加予定",
+  "mvp.error.phase": "現在の工程では操作できません。", "mvp.error.party": "出発する冒険者を選んでください。",
+
   "app.dayMorning": "1日目・朝",
   "app.goldLabel": "所持金",
   "nav.label": "メインメニュー",

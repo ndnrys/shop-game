@@ -1,3 +1,4 @@
+import { itemPrice } from "./pricing.js";
 import { random } from "./random.js";
 
 // External customers buy only shelf stock; supporters never generate shop revenue.
@@ -9,11 +10,11 @@ export function sellToCustomers(state, definitions, config) {
     visits.push(visit);
     const eligible = state.shop.displayedItems.filter(item => {
       const definition = definitions[item.itemId];
-      return customer.categories.includes(definition.categoryKey) && definition.price <= customer.budget;
+      return customer.categories.includes(definition.categoryKey) && itemPrice(definition, item, config.usedPriceRate) <= customer.budget;
     });
     if (!eligible.length || random(state.campaign) >= config.purchaseChance) continue;
     const item = eligible[Math.floor(random(state.campaign) * eligible.length)];
-    const amount = definitions[item.itemId].price;
+    const amount = itemPrice(definitions[item.itemId], item, config.usedPriceRate);
     state.shop.displayedItems.splice(state.shop.displayedItems.indexOf(item), 1);
     state.campaign.gold += amount;
     state.campaign.today.sales += amount;

@@ -1,4 +1,8 @@
 export default {
+  "item.usedName": "{name}（使用済み）",
+  "support.changeSlot": "{slot}を変更する", "support.chooseSlot": "渡す{slot}", "support.choose": "装備を選択してください", "support.remove": "装備を外して倉庫へ戻す", "support.recoverArchived": "以前の予備装備{count}品を倉庫へ戻す",
+  "mvp.error.returnFull": "旧装備を戻す倉庫の空きが足りません。装備と支度金は変更していません。倉庫を整理してください。",
+
   "routine.today": "今日の流れ",
   "routine.phase.report": "報告", "routine.phase.purchase": "仕入れ", "routine.phase.warehouse": "倉庫整理", "routine.phase.stocking": "陳列", "routine.phase.support": "支援", "routine.phase.opening": "開店準備", "routine.phase.sales": "営業", "routine.phase.end": "一日終了",
   "routine.next.report": "報告を確認して仕入れへ", "routine.next.purchase": "仕入れを終えて倉庫整理へ", "routine.next.warehouse": "整理を終えて陳列へ", "routine.next.stocking": "陳列を終えて支援へ", "routine.next.support": "支援を終えて開店準備へ",

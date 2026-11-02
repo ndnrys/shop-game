@@ -22,7 +22,7 @@ const visible='[data-screen]:not([hidden])';
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
 function action(name,extra=''){get(`${visible} [data-action="${name}"]${extra}`).click();}
 function step(name='next'){get(`[data-routine="${name}"]`).click();}
-function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);form.elements.gear.value=gear;form.elements.funds.value=funds;form.requestSubmit();}
+function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);if(gear){const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];const checkbox=form.querySelector(`[data-gear-toggle="${slot}"]`);checkbox.checked=true;checkbox.dispatchEvent(new Event('change',{bubbles:true}));form.elements[`gear_${slot}`].value=gear;}form.elements.funds.value=funds;form.requestSubmit();}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
@@ -34,6 +34,31 @@ try {
     give('lina','stock-001',30);assert(game.state.campaign.heroes[0].equipment.weapon.itemId==='iron_sword','gear transferred');
     assert(game.state.campaign.partyIds.join()==='lina','single selected party');
     page('home');assert(game.state.campaign.phase==='report','tab switching preserves step');step();
+  });
+  await check('per-slot checkboxes enable only their dropdowns, exchange and removal return discounted used gear',()=>{
+    page('adventurers');
+    const form=get(`${visible} form[data-hero="lina"]`);
+    assert(form.querySelectorAll('[data-gear-toggle]').length===4,'one checkbox per slot');
+    assert([...form.querySelectorAll('[data-gear-slot]')].every(select=>select.disabled),'dropdowns initially disabled');
+    const before=JSON.stringify(game.state);
+    for(const [slot,id] of [['weapon','stock-009'],['offhand','stock-003']]){
+      const checkbox=form.querySelector(`[data-gear-toggle="${slot}"]`);checkbox.checked=true;checkbox.dispatchEvent(new Event('change',{bubbles:true}));
+      assert(!form.elements[`gear_${slot}`].disabled,'checked dropdown enabled');form.elements[`gear_${slot}`].value=id;
+      assert([...form.elements[`gear_${slot}`].options].filter(option=>option.value&&option.value!=='return').every(option=>game.campaign.config.itemSlots[game.state.warehouse.items.find(item=>item.instanceId===option.value)?.itemId]===slot),'slot filters equipment');
+    }
+    // A value in an unchecked dropdown must never be submitted as a change.
+    form.elements.gear_body.value='stock-006';
+    assert(JSON.stringify(game.state)===before,'draft is temporary');form.elements.funds.value='10';form.requestSubmit();
+    const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon.instanceId==='stock-009'&&hero.equipment.offhand.instanceId==='stock-003','multiple slots committed');assert(!hero.equipment.body,'unchecked body ignored');
+    assert(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,'old sword returned used');
+    const nextForm=get(`${visible} form[data-hero="lina"]`);const remove=nextForm.querySelector('[data-gear-toggle="weapon"]');remove.checked=true;remove.dispatchEvent(new Event('change',{bubbles:true}));nextForm.elements.gear_weapon.value='return';nextForm.requestSubmit();
+    assert(!hero.equipment.weapon&&hero.equipment.offhand,'only checked slot removed');
+    const axe=game.state.warehouse.items.find(item=>item.instanceId==='stock-009');assert(axe.used&&game.price(axe)===50,'used axe half price');
+    give('lina','stock-001',0);
+    page('warehouse');get('#warehouse-board [data-instance-id="stock-009"]').click();assert(get('#selection-content').textContent.includes('使用済み')&&get('#selection-content').textContent.includes('50 G'),'warehouse condition and price');
+    // Same catalog ID in different conditions must form separate stock cards.
+    const newAxe={...axe,instanceId:'unused-axe',used:false};const pos=game.inventory.findOpenPosition(game.state.warehouse.items,newAxe,0,0,8,8);assert(pos,'room for new axe fixture');game.state.warehouse.items.push({...newAxe,...pos});
+    page('home');
   });
   await check('merchant payment previews quantity; unresolved stock blocks stage and persists',async()=>{
     const input=get('[data-merchant-amount="tools"]');input.value='240';input.dispatchEvent(new Event('input',{bubbles:true}));
@@ -48,7 +73,8 @@ try {
   });
   await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
     assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
-    assert(!get('[data-screen="stocking"]').hidden,'stocking shown');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
+    assert(!get('[data-screen="stocking"]').hidden,'stocking shown');
+    const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鉄の斧'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('50 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('100 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     assert(Number(get('#displayed-count').textContent)>0,'shelf rendered');step();
   });

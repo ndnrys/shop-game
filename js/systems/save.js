@@ -1,6 +1,6 @@
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +10,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -46,6 +46,7 @@ export function validateSave(value, skin) {
   let maximumDeliveryId = 0;
   function item(entry) {
     if (!entry || typeof entry.instanceId !== 'string' || !entry.instanceId || ids.has(entry.instanceId) || !skin.itemDefinitions[entry.itemId]) reject();
+    if (entry.used !== undefined && typeof entry.used !== 'boolean') reject();
     if (entry.purchaseCost !== undefined && !integer(entry.purchaseCost)) reject();
     if (!integer(entry.x) || !integer(entry.y) || ![false,true,0,1,2,3].includes(entry.rotated)) reject();
     ids.add(entry.instanceId);

@@ -1,8 +1,8 @@
 import { random } from "./random.js";
 
-export function buybackPrice(definition, merchant) {
+export function buybackPrice(definition, merchant, price = definition.price) {
   const rate = merchant.categoryKeys.includes(definition.categoryKey) ? merchant.specialtyBuyback : merchant.buyback;
-  return Math.floor(definition.price * rate);
+  return Math.floor(price * rate);
 }
 
 export function drawDelivery(campaign, definitions, merchant) {

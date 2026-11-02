@@ -6,6 +6,7 @@ export function mountWarehouse(root, game) {
   const { itemDefinitions, presentation } = game;
   const { canPlace, dimensions, itemCells } = game.inventory;
   const { itemName, itemShortName, t } = game.i18n;
+  const itemLabel = item => item.used ? t('item.usedName', { name: itemName(item.itemId) }) : itemName(item.itemId);
   const actions = game.warehouse;
   const ui = { selectedInstanceId: null };
   const events = new AbortController();
@@ -47,7 +48,7 @@ export function mountWarehouse(root, game) {
     }
     const definition = itemDefinitions[item.itemId];
     const { width, height } = dimensions(item);
-    selectionContent.innerHTML = `<div class="item-preview" aria-hidden="true">${itemArt(presentation[item.itemId])}</div><div><p class="selection-name">${itemName(item.itemId)}</p><p class="selection-meta">${t("warehouse.selectedMeta", { category: t(`categories.${definition.categoryKey}`), material: t(`materials.${definition.materialKey}`), width, height, price: t("money.amount", { amount: definition.price }) })}</p></div>`;
+    selectionContent.innerHTML = `<div class="item-preview" aria-hidden="true">${itemArt(presentation[item.itemId])}</div><div><p class="selection-name">${itemLabel(item)}</p><p class="selection-meta">${t("warehouse.selectedMeta", { category: t(`categories.${definition.categoryKey}`), material: t(`materials.${definition.materialKey}`), width, height, price: t("money.amount", { amount: game.price(item) }) })}</p></div>`;
   }
 
   function render(state) {
@@ -82,7 +83,7 @@ export function mountWarehouse(root, game) {
       element.style.gridRow = `${item.y + 1} / span ${height}`;
       element.setAttribute("role", "gridcell");
       element.setAttribute("aria-label", t("warehouse.itemLabel", {
-        name: itemName(item.itemId),
+        name: itemLabel(item),
         width,
         height,
         selected: ui.selectedInstanceId === item.instanceId ? t("warehouse.selectedSuffix") : "",
@@ -126,7 +127,7 @@ export function mountWarehouse(root, game) {
     preview.style.width = `${width / state.warehouse.columns * 100}%`;
     preview.style.height = `${height / state.warehouse.rows * 100}%`;
     preview.setAttribute("aria-hidden", "true");
-    preview.title = valid ? t("warehouse.previewPlace", { name: itemName(item.itemId) }) : t("warehouse.previewInvalid");
+    preview.title = valid ? t("warehouse.previewPlace", { name: itemLabel(item) }) : t("warehouse.previewInvalid");
     applyItemShape(preview, item, game, true);
     board.append(preview);
     drag.targetX = x;

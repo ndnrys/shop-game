@@ -94,17 +94,18 @@ test("purchase cost allocation and realized gross profit remain distinct from ca
   assert.equal(c.today.purchasing,testSkin.campaign.merchants.find(m=>m.id==='tools').cost);
 });
 
-test("equipment occupies independent slots and all gifts remain with the supporter",()=>{
+test("equipment occupies independent slots and replaced gear returns used to the warehouse",()=>{
   const game=setup();const c=game.state.campaign;const hero=c.heroes[0];
   for(const id of ['stock-001','stock-003','stock-006','stock-007'])assert.equal(game.campaign.support('lina',id,0).ok,true);
   assert.deepEqual(Object.keys(hero.equipment).sort(),['weapon','offhand','body','accessory'].sort());
   assert.equal(hero.equipment.weapon.itemId,'iron_sword');
   assert.equal(game.campaign.support('lina','stock-009',0).ok,true);
   assert.equal(hero.equipment.weapon.itemId,'iron_axe');
-  assert.equal(hero.giftedEquipment[0].itemId,'iron_sword');
+  assert.equal(hero.giftedEquipment.length,0);
+  assert.equal(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,true);
   assert.equal(game.campaign.returnEquipment,undefined);
   assert.equal(game.warehouse.undo().ok,false);
-  assert.equal(game.state.warehouse.items.some(item=>['stock-001','stock-003','stock-006','stock-007','stock-009'].includes(item.instanceId)),false);
+  assert.equal(game.state.warehouse.items.some(item=>['stock-003','stock-006','stock-007','stock-009'].includes(item.instanceId)),false);
   const expected=successChance([{ability:12,equipment:hero.equipment}, {ability:10}, {ability:8}],skin.campaign,0);
   assert.equal(game.campaign.chance(),expected);
 });

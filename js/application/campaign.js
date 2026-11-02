@@ -1,3 +1,5 @@
+import { exchangeEquipment } from "../systems/equipment.js";
+import { itemPrice } from "../systems/pricing.js";
 import { buybackPrice, drawDelivery, deliveryQuote } from "../systems/gacha.js";
 import { sellToCustomers, dailyTotals } from "../systems/sales.js";
 import { successChance, departureQuote, planExpedition, resolveExpedition } from "../systems/expeditions.js";
@@ -22,7 +24,10 @@ export function createCampaignActions(state, config, definitions, inventory, com
     config,
     quote: ids => departureQuote(c, config, ids),
     chance: () => successChance(party(), config, party().reduce((sum, hero) => sum + hero.funds, 0), c.progress, c.progress >= 100 ? "boss" : "explore"),
-    buyback: itemId => merchant() ? buybackPrice(definitions[itemId], merchant()) : 0,
+    buyback: value => {
+      const item = typeof value === 'string' ? { itemId: value } : value;
+      return merchant() ? buybackPrice(definitions[item.itemId], merchant(), itemPrice(definitions[item.itemId], item, config.usedPriceRate)) : 0;
+    },
     deliveryQuote: (id, amount) => deliveryQuote(config.merchants.find(entry => entry.id === id), amount),
     advancePhase() {
       if (!ready()) return fail("trade");
@@ -72,7 +77,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
       const items = source === "incoming" ? c.trade.incoming : state.warehouse.items;
       const item = items.find(item => item.instanceId === instanceId);
       if (!item) return fail("item");
-      const amount = buybackPrice(definitions[item.itemId], merchant());
+      const amount = buybackPrice(definitions[item.itemId], merchant(), itemPrice(definitions[item.itemId], item, config.usedPriceRate));
       items.splice(items.indexOf(item), 1);
       c.gold += amount;
       c.today.buyback += amount;
@@ -98,24 +103,40 @@ export function createCampaignActions(state, config, definitions, inventory, com
       if (!receipts.length) addJournal(state, "noSale");
       return commit({ ok: true });
     },
-    support(heroId, instanceId, amount = 0) {
+    support(heroId, selection, amount = 0) {
       const hero = c.heroes.find(hero => hero.id === heroId);
       if (!ready() || c.expedition || !hero) return fail("away");
       if (!Number.isSafeInteger(amount) || amount < 0 || amount > c.gold) return fail("money");
-      const item = instanceId ? state.warehouse.items.find(item => item.instanceId === instanceId) : null;
-      if (instanceId && (!item || !config.itemSlots[item.itemId])) return fail("equipment");
-      if (!item && !amount) return fail("emptySupport");
-      if (item) {
-        state.warehouse.items.splice(state.warehouse.items.indexOf(item), 1);
-        const slot = config.itemSlots[item.itemId];
-        if (hero.equipment[slot]) hero.giftedEquipment.push(hero.equipment[slot]);
-        hero.equipment[slot] = { ...item };
+      // Keep the single-item command for existing callers and simulations.
+      let changes = selection ?? {};
+      if (typeof selection === 'string') {
+        const item = state.warehouse.items.find(item => item.instanceId === selection);
+        if (!item || !config.itemSlots[item.itemId]) return fail("equipment");
+        changes = { [config.itemSlots[item.itemId]]: selection };
       }
+      const result = exchangeEquipment(state, hero, changes, config, inventory);
+      if (!result.ok) return result;
+      if (!result.incoming.length && !result.returned.length && !amount) return fail("emptySupport");
+      state.warehouse.items = result.items;
+      hero.equipment = result.equipment;
       c.gold -= amount;
       c.today.support += amount;
       hero.funds += amount;
       c.milestones.supported = true;
-      addJournal(state, "support", { heroId, itemId: item?.itemId ?? null, amount });
+      for (const item of result.returned) addJournal(state, "returnEquipment", { heroId, itemId: item.itemId });
+      for (const [index, item] of result.incoming.entries()) addJournal(state, "support", { heroId, itemId: item.itemId, amount: index === 0 ? amount : 0 });
+      if (!result.incoming.length && amount) addJournal(state, "support", { heroId, itemId: null, amount });
+      return commit({ ok: true });
+    },
+    recoverArchivedEquipment(heroId) {
+      const hero = c.heroes.find(hero => hero.id === heroId);
+      if (!ready() || c.expedition || !hero) return fail("away");
+      if (!hero.giftedEquipment.length) return fail("equipment");
+      const result = exchangeEquipment(state, hero, {}, config, inventory, true);
+      if (!result.ok) return result;
+      state.warehouse.items = result.items;
+      hero.giftedEquipment = [];
+      for (const item of result.returned) addJournal(state, "returnEquipment", { heroId, itemId: item.itemId });
       return commit({ ok: true });
     },
     dispatch(kind = c.progress >= 100 ? "boss" : "explore") {

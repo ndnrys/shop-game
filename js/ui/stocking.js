@@ -3,9 +3,10 @@ import { applyItemShape } from "./itemShape.js";
 
 export function mountStocking(root, game) {
   const state = game.state;
-  const { itemDefinitions, presentation } = game;
+  const { presentation } = game;
   const { canPlace, dimensions } = game.inventory;
   const { itemName, itemShortName, t } = game.i18n;
+  const itemLabel = item => item.used ? t('item.usedName', { name: itemName(item.itemId) }) : itemName(item.itemId);
   const actions = game.stocking;
   const ui = { selectedInstanceId: null, selectedStockInstanceId: null };
   const events = new AbortController();
@@ -36,7 +37,7 @@ export function mountStocking(root, game) {
   }
 
   function groupKey(item) {
-    return `${item.itemId}:${item.material ?? ""}:${item.rarity ?? ""}`;
+    return `${item.itemId}:${item.material ?? ""}:${item.rarity ?? ""}:${Boolean(item.used)}`;
   }
 
   function announce(key) {
@@ -60,15 +61,14 @@ export function mountStocking(root, game) {
 
     for (const group of groups) {
       const { item, quantity } = group;
-      const definition = itemDefinitions[item.itemId];
       const card = document.createElement("article");
       card.className = `stock-card${ui.selectedStockInstanceId === item.instanceId ? " is-selected" : ""}`;
-      card.innerHTML = `<div class="stock-glyph" aria-hidden="true">${itemArt(presentation[item.itemId])}</div><div class="stock-info"><h3>${itemName(item.itemId)}</h3><p>${t("money.amount", { amount: definition.price })}</p><p class="stock-quantity">${t("warehouse.itemCount", { quantity })}</p></div>`;
+      card.innerHTML = `<div class="stock-glyph" aria-hidden="true">${itemArt(presentation[item.itemId])}</div><div class="stock-info"><h3>${itemLabel(item)}</h3><p>${t("money.amount", { amount: game.price(item) })}</p><p class="stock-quantity">${t("warehouse.itemCount", { quantity })}</p></div>`;
       const button = document.createElement("button");
       button.type = "button";
       button.className = "stock-action add-stock";
       button.textContent = t("stocking.selectOne");
-      button.setAttribute("aria-label", t("stocking.selectItem", { name: itemName(item.itemId) }));
+      button.setAttribute("aria-label", t("stocking.selectItem", { name: itemLabel(item) }));
       button.setAttribute("aria-pressed", String(ui.selectedStockInstanceId === item.instanceId));
       button.dataset.instanceId = item.instanceId;
       card.append(button);
@@ -95,10 +95,9 @@ export function mountStocking(root, game) {
       return;
     }
 
-    const definition = itemDefinitions[item.itemId];
     const collection = selectedDisplay ? state.shop.displayedItems : state.warehouse.items;
     const quantity = groupItems(collection).find((group) => group.key === groupKey(item))?.quantity ?? 1;
-    selection.innerHTML = `<span class="stocking-selected-glyph" aria-hidden="true">${itemArt(presentation[item.itemId])}</span><span><strong>${itemName(item.itemId)}</strong><br><span>${t("money.amount", { amount: definition.price })} · ${t("warehouse.itemCount", { quantity })}</span></span>`;
+    selection.innerHTML = `<span class="stocking-selected-glyph" aria-hidden="true">${itemArt(presentation[item.itemId])}</span><span><strong>${itemLabel(item)}</strong><br><span>${t("money.amount", { amount: game.price(item) })} · ${t("warehouse.itemCount", { quantity })}</span></span>`;
   }
 
   function renderPreview(state) {
@@ -117,7 +116,7 @@ export function mountStocking(root, game) {
     preview.style.top = `${y / state.shop.rows * 100}%`;
     preview.style.width = `${width / state.shop.columns * 100}%`;
     preview.style.height = `${height / state.shop.rows * 100}%`;
-    preview.title = valid ? t("stocking.previewPlace", { name: itemName(item.itemId) }) : t("stocking.previewInvalid");
+    preview.title = valid ? t("stocking.previewPlace", { name: itemLabel(item) }) : t("stocking.previewInvalid");
     preview.setAttribute("aria-hidden", "true");
     applyItemShape(preview, item, game, true);
     board.append(preview);
@@ -153,7 +152,7 @@ export function mountStocking(root, game) {
       element.style.gridRow = `${item.y + 1} / span ${height}`;
       element.setAttribute("role", "gridcell");
       element.setAttribute("aria-label", t("warehouse.itemLabel", {
-        name: itemName(item.itemId), width, height,
+        name: itemLabel(item), width, height,
         selected: ui.selectedInstanceId === item.instanceId ? t("warehouse.selectedSuffix") : "",
       }));
       element.setAttribute("aria-pressed", String(ui.selectedInstanceId === item.instanceId));

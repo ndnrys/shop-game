@@ -38,7 +38,7 @@ export default {
   "mvp.noStock": "商品はありません。", "mvp.price": "販売価格 {amount}",
   "mvp.hero.lina": "リナ", "mvp.hero.bran": "ブラン", "mvp.hero.noa": "ノア", "mvp.ability": "能力 {amount}", "mvp.noEquipment": "装備なし", "mvp.gearPower": "装備性能 {amount}", "mvp.funds": "用意済みの支度金 {amount}",
   "mvp.slot.weapon": "武器", "mvp.slot.offhand": "盾", "mvp.slot.body": "胴防具", "mvp.slot.accessory": "装飾品",
-  "mvp.gearLabel": "渡す装備（倉庫から）", "mvp.noGearChoice": "装備は渡さない", "mvp.fundsLabel": "追加の支度金", "mvp.give": "支援を渡す", "mvp.returnGear": "装備を倉庫に戻す", "mvp.equippedHint": "装備は部位ごとです。一度渡した装備は返ってきません。同じ部位に渡すと装備を更新し、以前の品も冒険者が保管します。",
+  "mvp.gearLabel": "渡す装備（倉庫から）", "mvp.noGearChoice": "装備は渡さない", "mvp.fundsLabel": "追加の支度金", "mvp.give": "支援を渡す", "mvp.returnGear": "装備を倉庫に戻す", "mvp.equippedHint": "変更する部位にチェックを付け、右の一覧で装備を選びます。交換・取り外しした旧装備は使用済みとして倉庫へ戻り、販売価格は新品の{percent}%になります。チェックのない部位は変更しません。",
   "mvp.questName": "村近くの魔物討伐", "mvp.questHint": "編成した仲間で遠征を繰り返し、成果に応じて攻略率が{gain}%、苦戦した場合も{setback}%進みます。100%でボスが出現します。装備1人以上・支度金合計{funds}以上で派遣可能です。",
   "mvp.chance": "成功確率 {amount}%", "mvp.duration": "所要 {days}日・{date}に帰還", "mvp.dispatch": "選んだ仲間で攻略遠征へ", "mvp.away": "遠征中・{date}に帰還予定", "mvp.safe": "村の安全を確保しました", "mvp.spentFunds": "支度金は派遣時に消費します。装備は帰還後も残ります。",
   "mvp.departure": "次の街で店を開く", "mvp.departureHint": "育った仲間と旅立つか、資金を優先するか。同行者なしでも次の土地で人材が紹介される予定です。",

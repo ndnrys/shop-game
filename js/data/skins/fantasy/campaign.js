@@ -8,6 +8,7 @@ export default {
     { id: "carpenter", nameKey: "residents.carpenter.name", descriptionKey: "residents.carpenter.description" },
     { id: "church", nameKey: "residents.church.name", descriptionKey: "residents.church.description" },
   ],
+  usedPriceRate: .5,
   startingGold: 400, targetGold: 3500, nextTownBaseGold: 300, travelPerHero: 50,
   daysPerSeason: 5, aidAmount: 80,
   merchants: [

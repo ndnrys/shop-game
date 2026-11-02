@@ -1,3 +1,4 @@
+import { itemPrice } from "../systems/pricing.js";
 import { createCampaignActions } from "./campaign.js";
 import { createInventorySystem } from "../systems/inventory.js";
 import { createStoreSystem } from "../systems/stores.js";
@@ -52,6 +53,7 @@ export function createGame(state, skin, i18n) {
     itemDefinitions: skin.itemDefinitions,
     presentation: skin.presentation,
     inventory,
+    price: item => itemPrice(skin.itemDefinitions[item.itemId], item, skin.campaign?.usedPriceRate),
     i18n,
     campaign: skin.campaign ? createCampaignActions(state, skin.campaign, skin.itemDefinitions, inventory, result => {
       if (result.ok) warehouseUndo = null;

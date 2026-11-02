@@ -1,3 +1,4 @@
+import { dailyTotals } from "../systems/sales.js";
 import { calendarDate } from "../systems/calendar.js";
 import { itemArt } from "./itemArt.js";
 
@@ -45,7 +46,7 @@ export function mountCampaign(root, game) {
     if (details.merchantId) details.merchant = t(`mvp.merchant.${details.merchantId}`);
     if (details.customerId) details.customer = t(`mvp.customer.${details.customerId}`);
     if (details.returnDay) details.date = date(details.returnDay);
-    if (entry.type === 'summary') for (const key of ['sales','purchasing','buyback','support','rewards','aid','net']) details[key] = money(details[key]);
+    if (entry.type === 'summary') for (const key of ['sales','cogs','purchasing','buyback','support','rewards','aid','net']) details[key] = money(details[key] ?? 0);
     return tr(`mvp.log.${entry.type}`, details);
   }
 
@@ -65,7 +66,8 @@ export function mountCampaign(root, game) {
 
   function home() {
     if (c.region !== 'village') return `<section class="mvp-card mvp-complete"><p class="eyebrow">${tr('mvp.done')}</p><h2>${tr('mvp.complete')}</h2><p>${tr('mvp.completeHint')}</p><h3>${tr('mvp.openingGold', { amount: money(c.departure.openingGold) })}</h3><p>${tr('mvp.companions', { names: c.departure.heroIds.map(heroName).join('・') || t('mvp.none') })}</p><p>${tr('mvp.newTalent')}</p>${link('journal', 'mvp.go.journal')}</section>`;
-    const stats = [['sales', c.today.sales], ['cost', c.today.purchasing], ['buyback', c.today.buyback], ['supportCost', c.today.support], ['reward', c.today.rewards], ['aid', c.today.aid], ['net', c.today.sales + c.today.buyback + c.today.rewards + c.today.aid - c.today.purchasing - c.today.support]];
+    const totals = dailyTotals(c.today);
+    const stats = [['sales', c.today.sales], ['grossProfit', totals.grossProfit], ['cost', c.today.purchasing], ['buyback', c.today.buyback], ['supportCost', c.today.support], ['reward', c.today.rewards], ['aid', c.today.aid], ['net', totals.net]];
     const steps = [ ['purchase', c.milestones.purchased], ['sale', c.milestones.sold], ['support', c.milestones.supported], ['quest', c.defeated], ['gold', c.gold >= config.targetGold] ];
     const guide = !c.milestones.purchased ? 'purchase' : !c.milestones.sold ? 'sale' : !c.milestones.supported ? 'support' : c.expedition ? 'away' : !c.defeated ? 'quest' : c.gold < config.targetGold ? 'gold' : 'ready';
     return `<section class="mvp-card tutorial-card"><h2>${tr('mvp.tutorial')}</h2><p class="tutorial-guide">${tr(`mvp.guide.${guide}`)}</p><ol>${steps.map(([key, complete]) => `<li class="${complete ? 'is-complete' : ''}"><span>${tr(`mvp.step.${key}`, { amount: money(config.targetGold) })}</span><small>${tr(complete ? 'mvp.done' : 'mvp.pending')}</small></li>`).join('')}</ol><div class="mvp-actions">${link('purchase','mvp.go.purchase')}${link('stocking','mvp.go.stocking')}${link('support','mvp.go.support')}</div></section><div class="mvp-stats">${stats.map(([key, amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div><section class="mvp-card"><p>${tr('mvp.openHint')}</p><div class="mvp-actions">${button('open', tr(c.opened ? 'mvp.closed' : 'mvp.open'), Boolean(c.opened || c.trade))}${button('nextDay', tr('mvp.nextDay'), Boolean(c.trade))}</div>${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}<hr><p>${tr('mvp.reliefHint')}</p>${button('relief', tr('mvp.relief', { amount: money(config.aidAmount) }), Boolean(c.trade || c.aidDay === c.day || c.gold >= Math.min(...config.merchants.map(m => m.cost))))}</section>${c.defeated && c.gold >= config.targetGold ? departure() : ''}`;

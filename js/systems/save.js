@@ -9,13 +9,14 @@ export function makeSave(state) {
 
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
-  const s = value?.state;
+  const s = value?.state ? structuredClone(value.state) : null;
   if (value?.version !== SAVE_VERSION || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
   let maximumDeliveryId = 0;
   function item(entry) {
     if (!entry || typeof entry.instanceId !== 'string' || !entry.instanceId || ids.has(entry.instanceId) || !skin.itemDefinitions[entry.itemId]) reject();
+    if (entry.purchaseCost !== undefined && !integer(entry.purchaseCost)) reject();
     if (!integer(entry.x) || !integer(entry.y) || ![false,true,0,1,2,3].includes(entry.rotated)) reject();
     ids.add(entry.instanceId);
     if (/^delivery-\d+$/.test(entry.instanceId)) maximumDeliveryId = Math.max(maximumDeliveryId, Number(entry.instanceId.slice(9)));
@@ -32,7 +33,8 @@ export function validateSave(value, skin) {
   if (skin.campaign) {
     const c = s.campaign; const config = skin.campaign;
     if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
-    if (!c.today || ['sales','purchasing','buyback','support','rewards','aid'].some(key=>!integer(c.today[key]))) reject();
+    if (c.today && c.today.cogs === undefined) c.today.cogs = 0;
+    if (!c.today || ['cogs','sales','purchasing','buyback','support','rewards','aid'].some(key=>!integer(c.today[key]))) reject();
     if (!c.milestones || ['sold','supported','purchased'].some(key=>typeof c.milestones[key]!=='boolean')) reject();
     if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
     for (const hero of c.heroes) {
@@ -55,6 +57,13 @@ export function validateSave(value, skin) {
     const types = ['purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
     for (const entry of c.journal) {
       if (!integer(entry.day,1) || entry.day>c.day || !types.includes(entry.type) || !entry.details || typeof entry.details!=='object' || Array.isArray(entry.details)) reject();
+      const d=entry.details;
+      if (d.heroId && !config.heroes.some(hero=>hero.id===d.heroId)) reject();
+      if (d.itemId && !skin.itemDefinitions[d.itemId]) reject();
+      if (d.merchantId && !config.merchants.some(merchant=>merchant.id===d.merchantId)) reject();
+      if (d.customerId && !config.customers.some(customer=>customer.id===d.customerId)) reject();
+      for (const key of ['amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
+      if (d.net!==undefined && !Number.isSafeInteger(d.net)) reject();
     }
     if (c.region==='next-town') {
       const d=c.departure;

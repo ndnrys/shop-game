@@ -76,3 +76,18 @@ test("calendar rollover and relief once per low-money day", () => {
   assert.equal(game.campaign.relief().ok,true);
   assert.equal(c.journal.find(e=>e.type==='summary').details.net,80);
 });
+
+test("purchase cost allocation and realized gross profit remain distinct from cash flow",()=>{
+  const testSkin=structuredClone(skin);testSkin.campaign.purchaseChance=1;
+  const game=createSession(testSkin);game.campaign.startTrade('tools');const c=game.state.campaign;
+  assert.equal(c.trade.incoming.reduce((sum,item)=>sum+item.purchaseCost,0),150);
+  for(const item of [...c.trade.incoming])game.campaign.keep(item.instanceId);
+  game.campaign.finishTrade();
+  const purchased=game.state.warehouse.items.find(item=>item.purchaseCost>0);
+  assert.equal(game.stocking.put(purchased.instanceId,0,0).ok,true);
+  // Guaranteed purchase isolates cost accounting from the independent purchase roll.
+  game.campaign.openShop();
+  assert.ok(c.today.sales>0);
+  assert.equal(c.today.cogs,purchased.purchaseCost);
+  assert.equal(c.today.purchasing,150);
+});

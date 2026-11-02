@@ -14,7 +14,15 @@ export function sellToCustomers(state, definitions, config) {
     state.shop.displayedItems.splice(state.shop.displayedItems.indexOf(item), 1);
     state.campaign.gold += amount;
     state.campaign.today.sales += amount;
-    receipts.push({ customerId: customer.id, itemId: item.itemId, amount });
+    state.campaign.today.cogs += item.purchaseCost ?? 0;
+    receipts.push({ customerId: customer.id, itemId: item.itemId, amount, cost: item.purchaseCost ?? 0 });
   }
   return receipts;
+}
+
+export function dailyTotals(today) {
+  return {
+    grossProfit: today.sales - (today.cogs ?? 0),
+    net: today.sales + today.buyback + today.rewards + today.aid - today.purchasing - today.support,
+  };
 }

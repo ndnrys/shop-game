@@ -1,0 +1,102 @@
+import { createInventorySystem } from "./inventory.js";
+
+export const SAVE_VERSION = 1;
+const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
+
+export function makeSave(state) {
+  return { version: SAVE_VERSION, state: structuredClone(state) };
+}
+
+export function validateSave(value, skin) {
+  const reject = () => { throw new Error('Invalid save data'); };
+  const s = value?.state;
+  if (value?.version !== SAVE_VERSION || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  const inventory = createInventorySystem(skin.itemDefinitions);
+  const ids = new Set();
+  let maximumDeliveryId = 0;
+  function item(entry) {
+    if (!entry || typeof entry.instanceId !== 'string' || !entry.instanceId || ids.has(entry.instanceId) || !skin.itemDefinitions[entry.itemId]) reject();
+    if (!integer(entry.x) || !integer(entry.y) || ![false,true,0,1,2,3].includes(entry.rotated)) reject();
+    ids.add(entry.instanceId);
+    if (/^delivery-\d+$/.test(entry.instanceId)) maximumDeliveryId = Math.max(maximumDeliveryId, Number(entry.instanceId.slice(9)));
+  }
+  for (const [key, itemsKey] of [['warehouse','items'], ['shop','displayedItems']]) {
+    const grid = s[key];
+    const initial = skin.initialState[key];
+    if (!grid || grid.columns !== initial.columns || grid.rows !== initial.rows || !Array.isArray(grid[itemsKey]) || grid[itemsKey].length > 1000) reject();
+    for (const entry of grid[itemsKey]) {
+      item(entry);
+      if (!inventory.canPlace(grid[itemsKey], entry.itemId, entry.x, entry.y, entry.rotated, grid.columns, grid.rows, entry.instanceId)) reject();
+    }
+  }
+  if (skin.campaign) {
+    const c = s.campaign; const config = skin.campaign;
+    if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
+    if (!c.today || ['sales','purchasing','buyback','support','rewards','aid'].some(key=>!integer(c.today[key]))) reject();
+    if (!c.milestones || ['sold','supported','purchased'].some(key=>typeof c.milestones[key]!=='boolean')) reject();
+    if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
+    for (const hero of c.heroes) {
+      if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.funds)) reject();
+      if (hero.equipment) {
+        item(hero.equipment);
+        if (!config.gearCategories.includes(skin.itemDefinitions[hero.equipment.itemId].categoryKey)) reject();
+      }
+    }
+    if (c.trade !== null) {
+      if (!c.trade || !config.merchants.some(merchant=>merchant.id===c.trade.merchantId) || !Array.isArray(c.trade.incoming) || c.trade.incoming.length > 1000) reject();
+      c.trade.incoming.forEach(item);
+    }
+    if (c.nextItemId <= maximumDeliveryId) reject();
+    if (c.expedition !== null) {
+      const e = c.expedition;
+      if (!e || e.questId !== config.quest.id || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay > c.day || e.returnDay <= c.day || !Number.isFinite(e.chance) || e.chance<0 || e.chance>1 || !Number.isFinite(e.roll) || e.roll<0 || e.roll>=1 || !integer(e.funds) || !Array.isArray(e.heroIds) || e.heroIds.length !== c.heroes.length || new Set(e.heroIds).size !== c.heroes.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id))) reject();
+    }
+    if (!Array.isArray(c.journal) || c.journal.length>100000) reject();
+    const types = ['purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
+    for (const entry of c.journal) {
+      if (!integer(entry.day,1) || entry.day>c.day || !types.includes(entry.type) || !entry.details || typeof entry.details!=='object' || Array.isArray(entry.details)) reject();
+    }
+    if (c.region==='next-town') {
+      const d=c.departure;
+      if (!c.defeated || c.expedition || c.trade || !d || !Array.isArray(d.heroIds) || new Set(d.heroIds).size!==d.heroIds.length || d.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !integer(d.openingGold) || !integer(d.travel) || !integer(d.settlement) || !integer(d.villageGold,config.targetGold) || !integer(d.day,1) || !Array.isArray(d.companions) || d.companions.length!==d.heroIds.length || d.companions.some(hero=>!d.heroIds.includes(hero.id)) || d.openingGold!==config.nextTownBaseGold-d.travel || c.gold!==d.openingGold) reject();
+    } else if (c.departure !== null) reject();
+  }
+  return structuredClone(s);
+}
+
+export function parseSave(text, skin) {
+  if (typeof text !== 'string' || text.length>5000000) throw new Error('Save is too large');
+  return validateSave(JSON.parse(text), skin);
+}
+
+function openDatabase() {
+  return new Promise((resolve,reject)=>{
+    const request=indexedDB.open('shop-game',1);
+    request.onupgradeneeded=()=>{ if(!request.result.objectStoreNames.contains('saves')) request.result.createObjectStore('saves'); };
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>reject(request.error);
+    request.onblocked=()=>reject(new Error('Database blocked'));
+  });
+}
+export async function loadGame(skin) {
+  const db=await openDatabase();
+  try {
+    const data=await new Promise((resolve,reject)=>{
+      const request=db.transaction('saves','readonly').objectStore('saves').get(skin.id);
+      request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+    });
+    return data ? validateSave(data,skin) : null;
+  } finally { db.close(); }
+}
+export async function saveGame(skinId, snapshot) {
+  const db=await openDatabase();
+  try {
+    await new Promise((resolve,reject)=>{
+      const transaction=db.transaction('saves','readwrite');
+      transaction.objectStore('saves').put(snapshot,skinId);
+      transaction.oncomplete=()=>resolve();
+      transaction.onerror=()=>reject(transaction.error);
+      transaction.onabort=()=>reject(transaction.error ?? new Error('Save aborted'));
+    });
+  } finally { db.close(); }
+}

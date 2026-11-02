@@ -19,7 +19,11 @@ export function createGame(state, skin, i18n) {
     return result;
   }
 
+  const editable = () => state.campaign?.region !== "next-town";
+  const locked = () => ({ ok: false, reason: "mvp.error.departure" });
+
   function moveWarehouse(instanceId, x, y) {
+    if (!editable()) return locked();
     const { items, columns, rows } = state.warehouse;
     const previous = structuredClone(items);
     const result = moveItem(items, instanceId, x, y, columns, rows);
@@ -28,6 +32,7 @@ export function createGame(state, skin, i18n) {
   }
 
   function rotateWarehouse(instanceId) {
+    if (!editable()) return locked();
     const { items, columns, rows } = state.warehouse;
     const result = rotateItem(items, instanceId, columns, rows);
     if (result.ok) warehouseUndo = null;
@@ -35,6 +40,7 @@ export function createGame(state, skin, i18n) {
   }
 
   function transfer(operation, instanceId, ...position) {
+    if (!editable()) return locked();
     const result = operation(state, instanceId, ...position);
     // A warehouse snapshot must never resurrect inventory moved to the shelf.
     if (result.ok) warehouseUndo = null;
@@ -60,6 +66,7 @@ export function createGame(state, skin, i18n) {
       rotate: rotateWarehouse,
       canUndo: () => warehouseUndo !== null,
       undo() {
+        if (!editable()) return locked();
         if (!warehouseUndo) return { ok: false };
         state.warehouse.items = warehouseUndo;
         warehouseUndo = null;
@@ -70,10 +77,12 @@ export function createGame(state, skin, i18n) {
       put: (instanceId, x, y) => transfer(putOnDisplay, instanceId, x, y),
       return: (instanceId) => transfer(storeFromDisplay, instanceId),
       move(instanceId, x, y) {
+        if (!editable()) return locked();
         const { displayedItems, columns, rows } = state.shop;
         return commit(moveItem(displayedItems, instanceId, x, y, columns, rows));
       },
       rotate(instanceId) {
+        if (!editable()) return locked();
         const { displayedItems, columns, rows } = state.shop;
         return commit(rotateItem(displayedItems, instanceId, columns, rows));
       },

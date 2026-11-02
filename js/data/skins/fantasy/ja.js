@@ -1,4 +1,6 @@
+import mvp from "./mvp-ja.js";
 export default {
+  ...mvp,
   "app.title": "Shop Game | 倉庫",
   "app.homeLabel": "Shop Game ホーム",
   "app.storeName": "村のよろず屋",

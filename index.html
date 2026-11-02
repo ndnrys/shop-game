@@ -8,23 +8,30 @@
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/warehouse.css">
+    <link rel="stylesheet" href="css/campaign.css">
     <script type="module" src="js/main.js"></script>
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" data-i18n="app.brand" href="#home" aria-label="Shop Game ホーム" data-i18n-aria-label="app.homeLabel">SHOP GAME</a>
-        <div class="day-label"><span data-i18n="app.storeName">村のよろず屋</span><span data-i18n="app.dayMorning">1日目・朝</span></div>
-        <div class="gold-label" aria-label="所持金" data-i18n-aria-label="app.goldLabel"><span aria-hidden="true">◆</span> <span data-i18n="money.amount" data-i18n-params='{"amount":"1,200"}'>1,200 G</span></div>
+        <div class="day-label"><span data-i18n="app.storeName">村のよろず屋</span><span id="game-date">1日目・朝</span></div>
+        <div class="gold-label" aria-label="所持金" data-i18n-aria-label="app.goldLabel"><span aria-hidden="true">◆</span> <span id="game-gold"></span></div>
       </header>
 
       <nav class="main-nav" aria-label="メインメニュー" data-i18n-aria-label="nav.label">
-        <a href="#home" aria-disabled="true" data-i18n="nav.home">ホーム</a>
+        <a class="screen-link" href="#home" data-i18n="mvp.nav.home">経営</a>
+        <a class="screen-link" href="#purchase" data-i18n="mvp.nav.purchase">仕入れ</a>
         <a class="screen-link is-active" href="#warehouse" aria-current="page" data-i18n="nav.warehouse">倉庫</a>
         <a class="screen-link" href="#stocking" data-i18n="nav.stocking">陳列</a>
-        <a href="#management" aria-disabled="true" data-i18n="nav.management">経営</a>
+        <a class="screen-link" href="#support" data-i18n="mvp.nav.support">支援</a>
+        <a class="screen-link" href="#journal" data-i18n="mvp.nav.journal">日誌</a>
       </nav>
 
+      <section data-screen="home" class="campaign-view" hidden></section>
+      <section data-screen="purchase" class="campaign-view" hidden></section>
+      <section data-screen="support" class="campaign-view" hidden></section>
+      <section data-screen="journal" class="campaign-view" hidden></section>
       <section data-screen="warehouse" class="warehouse-view" aria-labelledby="page-title">
         <div class="page-heading">
           <div>
@@ -102,6 +109,12 @@
         </div>
         <p id="stocking-status" class="stocking-status" role="status" aria-live="polite" data-i18n="stocking.statusInitial">倉庫から商品を陳列できます。</p>
       </section>
+      <div class="save-controls" id="save-controls">
+        <span role="status" id="save-status" aria-live="polite"></span>
+        <button type="button" data-save="export" data-i18n="mvp.export"></button>
+        <label><span data-i18n="mvp.import"></span><input type="file" accept="application/json,.json" id="save-import" aria-label="セーブを読み込む" data-i18n-aria-label="mvp.import"></label>
+        <button type="button" data-save="reset" data-i18n="mvp.reset"></button>
+      </div>
       <footer class="site-footer"><span data-i18n="app.brand">SHOP GAME</span> <span data-i18n="footer.tagline">— 小さな店から、世界を広げよう。</span></footer>
     </main>
   </body>

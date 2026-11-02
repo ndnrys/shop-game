@@ -1,16 +1,20 @@
 import { makeSave, parseSave, saveGame } from "../systems/save.js";
 import { createGameState } from "../state/gameState.js";
 
-export function mountSaveControls(root, game, skin, loadFailed = false) {
+export function mountSaveControls(root, game, skin, loadFailed = false, notice = null) {
   const events = new AbortController();
   const status = root.querySelector('#save-status');
   const { t } = game.i18n;
   let queue=Promise.resolve();
   let revision=0;
   let savingAllowed=!loadFailed;
+  let messageKey;
   function message(key) {
+    messageKey = key;
     status.textContent=t(key);
-    status.classList.toggle('save-error',key.includes('failed')||key.includes('invalid')||key.includes('Error'));
+    const failed = key.includes('failed') || key.includes('invalid') || key.includes('Error');
+    status.classList.toggle('save-error', failed);
+    if (notice) notice.textContent = failed ? t(key) : '';
   }
   function save() {
     if(!savingAllowed) return;
@@ -46,5 +50,6 @@ export function mountSaveControls(root, game, skin, loadFailed = false) {
     } catch { message('mvp.importError');savingAllowed=!loadFailed; }
     finally { event.target.value=''; }
   },{signal:events.signal});
-  return { destroy(){unsubscribe();events.abort();} };
+  const unsubscribeLocale = game.i18n.onLocaleChange(() => { if (messageKey) message(messageKey); });
+  return { destroy(){unsubscribeLocale();unsubscribe();events.abort();} };
 }

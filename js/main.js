@@ -6,6 +6,7 @@ import { createSession } from "./application/createSession.js";
 import { mountWarehouse } from "./ui/warehouse.js";
 import { mountStocking } from "./ui/stocking.js";
 import { mountScreens } from "./ui/app.js";
+import { mountLocaleControls } from "./ui/localeControls.js";
 import { applyTranslations } from "./ui/i18n.js";
 import skin from "./data/skins/fantasy/index.js";
 
@@ -26,6 +27,7 @@ if (skin.stylesheet) {
 // Remove a registration and its import to omit a screen; other screens keep working.
 const screens = mountScreens(document, game, [
   ...(game.campaign ? ['home','purchase','support','journal','residents','adventurers'].map(id => ({ id, mount: mountCampaign })) : []),
+  { id: "settings", mount: () => ({ render() {}, destroy() {} }) },
   { id: "warehouse", mount: mountWarehouse },
   { id: "stocking", mount: mountStocking },
 ]);
@@ -35,11 +37,12 @@ function renderHeader() {
   if (!game.campaign) return;
   const value = calendarDate(game.state.campaign.day, game.campaign.config.daysPerSeason);
   document.querySelector('#game-date').textContent = i18n.t('mvp.date', { ...value, season: i18n.t(`mvp.season.${value.season}`) });
-  document.querySelector('#game-gold').textContent = i18n.t('money.amount', { amount: game.state.campaign.gold.toLocaleString('ja-JP') });
+  document.querySelector('#game-gold').textContent = i18n.t('money.amount', { amount: game.state.campaign.gold.toLocaleString(i18n.getLocale()) });
 }
 renderHeader();
 const unsubscribeHeader = game.subscribe(renderHeader);
-const saveControls = mountSaveControls(document.querySelector('#save-controls'), game, skin, loadFailed);
+const saveControls = mountSaveControls(document.querySelector('#save-controls'), game, skin, loadFailed, document.querySelector('#save-notice'));
+const localeControls = mountLocaleControls(document.querySelector('#locale-select'), game);
 const unsubscribeLocale = i18n.onLocaleChange(() => {
   applyTranslations(document, i18n);
   screens.render();
@@ -51,6 +54,7 @@ window.addEventListener("pagehide", (event) => {
   if (event.persisted) return;
   unsubscribeLocale();
   unsubscribeHeader();
+  localeControls.destroy();
   saveControls.destroy();
   screens.destroy();
 });

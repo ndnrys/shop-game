@@ -1,6 +1,6 @@
 /* Fantasy skin: an atlas beneath compact, silver-framed game windows. */
 :root[data-skin="fantasy"] { color-scheme:light; font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif; background:#b7ae8e; }
-[data-skin="fantasy"] body { color:#343d3d; background:linear-gradient(#b5aa8555,#b5aa8555),url('../../assets/skins/fantasy/ui/village-map.svg') center/cover fixed; }
+[data-skin="fantasy"] body { color:#343d3d; background:#0a1421; }
 [data-skin="fantasy"] .app-shell { max-width:1280px; padding:22px 36px; min-height:100vh; background:linear-gradient(90deg,#e7dfc255,#f0e8d260,#ddd4b955); }
 [data-skin="fantasy"] .topbar { height:66px; margin-bottom:12px; padding:0 22px; color:#ece5cd; border:1px solid #d5d2b8; outline:1px solid #515e5b; background:linear-gradient(100deg,#344b4e,#526564); box-shadow:inset 0 0 0 3px #263e4055,0 3px 9px #36463a33; }
 [data-skin="fantasy"] .brand { color:#ece3c8; font-family:Georgia,"Yu Mincho",serif; letter-spacing:.18em; font-size:15px; }

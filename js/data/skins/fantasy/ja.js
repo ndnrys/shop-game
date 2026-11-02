@@ -5,7 +5,7 @@ export default {
   "items.chain_armor": "鎖かたびら", "items.short.chain_armor": "鎖鎧",
   "items.charm": "守りのお守り", "items.short.charm": "守",
   ...mvp,
-  "app.title": "Shop Game | 倉庫",
+  "app.title": "Shop Game | 村のよろず屋",
   "app.homeLabel": "Shop Game ホーム",
   "app.storeName": "村のよろず屋",
   "warehouse.eyebrow": "BACKROOM · VILLAGE",

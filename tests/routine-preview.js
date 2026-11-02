@@ -1,4 +1,6 @@
 // Isolated UI preview: never reads or writes the player's save.
+import { calendarDate } from '../js/systems/calendar.js';
+import { mountLocaleControls } from '../js/ui/localeControls.js';
 import skin from '../js/data/skins/fantasy/index.js';
 import { createSession } from '../js/application/createSession.js';
 import { mountScreens } from '../js/ui/app.js';
@@ -9,9 +11,11 @@ import { applyTranslations } from '../js/ui/i18n.js';
 const game=createSession({...skin,id:'routine-preview'});
 for(const [key,value] of Object.entries(skin.theme))document.documentElement.style.setProperty(key,value);
 document.documentElement.dataset.skin='fantasy';
-const app=mountScreens(document,game,[...['home','purchase','support','journal','residents','adventurers'].map(id=>({id,mount:mountCampaign})),{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}]);
+const app=mountScreens(document,game,[...['home','purchase','support','journal','residents','adventurers'].map(id=>({id,mount:mountCampaign})),{id:'settings',mount:()=>({render(){},destroy(){}})},{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}]);
 applyTranslations(document,game.i18n);
-const header=()=>{document.querySelector('#game-date').textContent=game.i18n.t('mvp.date',{year:1,season:game.i18n.t('mvp.season.0'),day:game.state.campaign.day});document.querySelector('#game-gold').textContent=game.i18n.t('money.amount',{amount:game.state.campaign.gold});};
+const header=()=>{const value=calendarDate(game.state.campaign.day,game.campaign.config.daysPerSeason);document.querySelector('#game-date').textContent=game.i18n.t('mvp.date',{...value,season:game.i18n.t(`mvp.season.${value.season}`)});document.querySelector('#game-gold').textContent=game.i18n.t('money.amount',{amount:game.state.campaign.gold.toLocaleString(game.i18n.getLocale())});};
 header();const unsubscribe=game.subscribe(header);
+const localeControls=mountLocaleControls(document.querySelector('#locale-select'),game);
+const unsubscribeLocale=game.i18n.onLocaleChange(()=>{applyTranslations(document,game.i18n);app.render();header();});
 document.querySelector('#save-controls').hidden=true;
-window.addEventListener('pagehide',event=>{if(!event.persisted){app.destroy();unsubscribe();}});
+window.addEventListener('pagehide',event=>{if(!event.persisted){app.destroy();unsubscribe();localeControls.destroy();unsubscribeLocale();}});

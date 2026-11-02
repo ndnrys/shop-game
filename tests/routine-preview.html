@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/warehouse.css">
     <link rel="stylesheet" href="../css/campaign.css">
+    <link rel="stylesheet" href="../css/home.css">
     <script type="module" src="./routine-preview.js"></script>
   <link rel="stylesheet" href="../css/skins/fantasy.css">
 </head>
@@ -20,15 +21,18 @@
         <div class="gold-label" aria-label="所持金" data-i18n-aria-label="app.goldLabel"><span aria-hidden="true">◆</span> <span id="game-gold"></span></div>
       </header>
 
+      <p id="save-notice" class="save-notice" role="status" aria-live="polite"></p>
       <nav class="main-nav" aria-label="メインメニュー" data-i18n-aria-label="nav.label">
         <a class="screen-link" href="#home" data-i18n="mvp.nav.home">経営</a>
-        <a class="screen-link" href="#journal" data-i18n="mvp.nav.journal">日誌</a>
         <a class="screen-link" href="#warehouse" data-i18n="nav.warehouse">倉庫</a>
         <a class="screen-link" href="#residents" data-i18n="routine.residents">住人</a>
         <a class="screen-link" href="#adventurers" data-i18n="routine.adventurers">冒険者</a>
+        <a class="screen-link" href="#journal" data-i18n="mvp.nav.journal">日誌</a>
+        <a class="screen-link" href="#settings" data-i18n="home.settings">設定</a>
         <a class="screen-link" href="#stocking" data-i18n="nav.stocking" data-preparation-link hidden>陳列</a>
       </nav>
 
+      <div id="shop-interior" class="shop-interior" hidden aria-hidden="true"></div>
       <section id="daily-routine" class="daily-routine" hidden></section>
       <section data-screen="residents" class="campaign-view" hidden></section>
       <section data-screen="adventurers" class="campaign-view" hidden></section>
@@ -113,12 +117,20 @@
         </div>
         <p id="stocking-status" class="stocking-status" role="status" aria-live="polite" data-i18n="stocking.statusInitial">倉庫から商品を陳列できます。</p>
       </section>
+      <section data-screen="settings" class="settings-view" hidden>
+        <h1 data-i18n="home.settings">設定</h1>
+      <div class="home-tools">
+        <label class="locale-control"><span data-i18n="home.language">言語</span><select id="locale-select" aria-label="言語" data-i18n-aria-label="home.language"><option value="ja">日本語</option><option value="en">English</option></select></label>
+        <details class="save-menu"><summary data-i18n="home.saveData">セーブデータ</summary>
       <div class="save-controls" id="save-controls">
         <span role="status" id="save-status" aria-live="polite"></span>
         <button type="button" data-save="export" data-i18n="mvp.export"></button>
         <label><span data-i18n="mvp.import"></span><input type="file" accept="application/json,.json" id="save-import" aria-label="セーブを読み込む" data-i18n-aria-label="mvp.import"></label>
         <button type="button" data-save="reset" data-i18n="mvp.reset"></button>
       </div>
+      </details>
+      </div>
+      </section>
       <footer class="site-footer"><span data-i18n="app.brand">SHOP GAME</span> <span data-i18n="footer.tagline">— 小さな店から、世界を広げよう。</span></footer>
     </main>
   </body>

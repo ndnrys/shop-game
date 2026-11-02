@@ -10,7 +10,7 @@ export default {
   "mvp.map.village": "村のよろず屋", "mvp.map.outskirts": "周辺の森", "mvp.map.camp": "魔物の野営地", "mvp.map.stronghold": "奥地の拠点",
   "mvp.map.current": "探索中", "mvp.map.cleared": "安全を確保", "mvp.map.boss": "リーダー出現",
 
-  "mvp.nav.home": "メイン", "mvp.nav.purchase": "仕入れ", "mvp.nav.support": "支援", "mvp.nav.journal": "日誌",
+  "mvp.nav.home": "経営", "mvp.nav.purchase": "仕入れ", "mvp.nav.support": "支援", "mvp.nav.journal": "日誌",
   "mvp.title.home": "村のよろず屋", "mvp.title.purchase": "行商人との取引", "mvp.title.support": "冒険者への支援", "mvp.title.journal": "店主の日誌",
   "mvp.subtitle.home": "商売で稼ぎ、仲間を支え、村を安全に。次の街で開く店を目指しましょう。",
   "mvp.subtitle.purchase": "専門の品が70%、それ以外が30%。必要な品を残し、不要品は今の商人へ。",

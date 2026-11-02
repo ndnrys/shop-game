@@ -1,9 +1,10 @@
+import commonEn from "../data/locales/en.js";
 import commonJa from "../data/locales/ja.js";
 import { createI18n } from "../systems/i18n.js";
 import { createGameState } from "../state/gameState.js";
 import { createGame } from "./game.js";
 
-const commonLocales = { ja: commonJa };
+const commonLocales = { ja: commonJa, en: commonEn };
 
 // Only this composition layer knows how shared UI copy and skin data fit together.
 export function createSession(skin, state = createGameState(skin)) {

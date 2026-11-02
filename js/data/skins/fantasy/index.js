@@ -1,4 +1,5 @@
 import { itemDefinitions, startingInventory } from "./catalog.js";
+import en from "./en.js";
 import ja from "./ja.js";
 import campaign from "./campaign.js";
 import { itemArtwork } from "./artwork.js";
@@ -10,7 +11,7 @@ export default {
   itemDefinitions,
   stylesheet: new URL("../../../../css/skins/fantasy.css", import.meta.url).href,
   presentation: itemArtwork,
-  locales: { ja },
+  locales: { ja, en },
   initialState: {
     warehouse: { columns: 8, rows: 8, items: startingInventory },
     shop: { columns: 5, rows: 5, displayedItems: [] },

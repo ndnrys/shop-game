@@ -3,6 +3,9 @@ import { characterArtwork } from "./artwork.js";
 export default {
   presentation: {
     characters: characterArtwork,
+    home: {
+      background: new URL("../../../../assets/skins/fantasy/main-ui/interior-male.png", import.meta.url).href,
+    },
   },
   residents: [
     { id: "carpenter", nameKey: "residents.carpenter.name", descriptionKey: "residents.carpenter.description" },

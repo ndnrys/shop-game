@@ -27,6 +27,12 @@ async function check(name,fn){await fn();passed++;const li=document.createElemen
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
     page('home');assert(game.state.campaign.phase==='report','start at report');
+    assert(get('#daily-routine ol').children.length===7,'seven visual steps');
+    assert(!get('#daily-routine ol').textContent.includes('倉庫整理'),'warehouse excluded only from indicator');
+    const initial=JSON.stringify(game.state);
+    step('details');assert(get('.app-shell').classList.contains('home-details'),'primary opens existing controls');
+    assert(JSON.stringify(game.state)===initial,'opening details does not change saved state');
+
     assert([...fixture.querySelectorAll('.main-nav a')].filter(a=>!a.hidden).length===5,'five visible tabs');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"], [data-destination]'),'no departure in tab');
     const before=JSON.stringify(game.state);get(`${visible} [data-select-hero="bran"]`).click();assert(JSON.stringify(game.state)===before,'selection does not save');

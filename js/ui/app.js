@@ -2,6 +2,7 @@
 export function mountScreens(root, game, features) {
   const events = new AbortController();
   const screens = new Map();
+  let activeId;
   const links = [...root.querySelectorAll(".screen-link")];
   const panels = [...root.querySelectorAll("[data-screen]")];
 
@@ -11,12 +12,13 @@ export function mountScreens(root, game, features) {
   }
 
   function render() {
-    for (const { view } of screens.values()) view.render();
+    screens.get(activeId)?.view.render();
   }
 
   function showScreen(id) {
-    const activeId = screens.has(id) ? id : screens.keys().next().value;
+    activeId = screens.has(id) ? id : screens.keys().next().value;
     for (const panel of panels) panel.hidden = panel.dataset.screen !== activeId;
+    render();
     for (const link of links) {
       const linkId = link.hash.slice(1);
       const available = screens.has(linkId);

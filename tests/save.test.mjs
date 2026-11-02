@@ -39,7 +39,7 @@ test('invalid format/version and cross-skin saves are rejected',()=>{
 });
 test('departure snapshot and companion gear survive saving; village operations stop',()=>{
   const game=createSession(skin);const c=game.state.campaign;
-  game.campaign.support('lina','stock-001',30);game.campaign.dispatch();c.expedition.roll=0;game.campaign.nextDay();c.gold=1200;
+  c.progress=100;game.campaign.support('lina','stock-001',30);game.campaign.dispatch();c.expedition.roll=0;game.campaign.nextDay();c.gold=skin.campaign.targetGold;
   game.campaign.depart(['lina']);
   const resumed=createSession(skin,validateSave(makeSave(game.state),skin));
   assert.equal(resumed.state.campaign.departure.companions[0].equipment.weapon.itemId,'iron_sword');
@@ -54,7 +54,10 @@ test('legacy single-slot equipment migrates without losing gifts or changing pen
   const state=validateSave(legacy,skin);
   assert.equal(state.campaign.heroes[0].equipment.weapon.itemId,'iron_sword');
   assert.deepEqual(state.campaign.heroes[1].equipment,{});
-  assert.deepEqual(state.campaign.expedition,game.state.campaign.expedition);
+  assert.equal(state.campaign.expedition.roll,game.state.campaign.expedition.roll);
+  assert.equal(state.campaign.expedition.chance,game.state.campaign.expedition.chance);
+  assert.equal(state.campaign.expedition.kind,"explore");
+  assert.equal(state.campaign.progress,0);
 });
 
 test('slot assignments and archived gifts roundtrip; duplicate gifts are rejected',()=>{
@@ -74,4 +77,39 @@ test('visitor speech and purchase results roundtrip; forged speech keys are reje
   assert.deepEqual(validateSave(value,skin),game.state);
   value.state.campaign.customerVisits[0].dialogueKey='unrecognized';
   assert.throws(()=>validateSave(value,skin));
+});
+
+test('progress, levels, injuries and recovery dates survive restart',()=>{
+  const game=createSession(skin);game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
+  const c=game.state.campaign;c.expedition.roll=0;c.expedition.injuryRolls=[0,0,0];c.expedition.recoveryRolls=[.999,.999,.999];game.campaign.nextDay();
+  const state=validateSave(makeSave(game.state),skin);assert.deepEqual(state,game.state);
+  const resumed=createSession(skin,state);
+  assert.equal(resumed.campaign.dispatch().reason,'mvp.error.recovering');
+  assert.equal(state.progress,undefined);assert.equal(state.campaign.progress,skin.campaign.quest.progressSuccess);
+  assert.equal(state.campaign.heroes[0].recoverUntil,5);
+  const invalid=makeSave(game.state);invalid.state.campaign.progress=101;assert.throws(()=>validateSave(invalid,skin));
+  const invalidLevel=makeSave(game.state);invalidLevel.state.campaign.heroes[0].level=0;assert.throws(()=>validateSave(invalidLevel,skin));
+});
+
+test('version 2 pending missions migrate to exploration without rerolling or losing gear',()=>{
+  const game=createSession(skin);game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
+  const legacy=makeSave(game.state);legacy.version=2;
+  delete legacy.state.campaign.progress;
+  for(const hero of legacy.state.campaign.heroes){delete hero.level;delete hero.experience;delete hero.recoverUntil;}
+  delete legacy.state.campaign.expedition.kind;delete legacy.state.campaign.expedition.injuryRolls;delete legacy.state.campaign.expedition.recoveryRolls;
+  const state=validateSave(legacy,skin);
+  assert.equal(state.campaign.expedition.roll,game.state.campaign.expedition.roll);
+  assert.equal(state.campaign.expedition.kind,'explore');assert.equal(state.campaign.progress,0);
+  assert.equal(state.campaign.heroes[0].equipment.weapon.itemId,'iron_sword');
+});
+
+test('previously completed tutorials stay completed when the new target is raised',()=>{
+  const game=createSession(skin);const c=game.state.campaign;c.progress=100;c.defeated=true;c.gold=skin.campaign.targetGold;
+  game.campaign.depart(['lina']);
+  const old=makeSave(game.state);old.version=2;delete old.state.campaign.progress;
+  old.state.campaign.departure.villageGold=1200;old.state.campaign.departure.settlement=900;delete old.state.campaign.departure.targetGold;
+  for(const hero of [...old.state.campaign.heroes,...old.state.campaign.departure.companions]){delete hero.level;delete hero.experience;delete hero.recoverUntil;}
+  const state=validateSave(old,skin);
+  assert.equal(state.campaign.defeated,true);assert.equal(state.campaign.progress,100);assert.equal(state.campaign.region,'next-town');
+  assert.equal(state.campaign.departure.targetGold,1200);
 });

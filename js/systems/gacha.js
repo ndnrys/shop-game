@@ -6,7 +6,7 @@ export function buybackPrice(definition, merchant) {
 }
 
 export function drawDelivery(campaign, definitions, merchant) {
-  const all = Object.values(definitions);
+  const all = Object.values(definitions).filter(item => campaign.day >= (item.unlockDay ?? 1));
   const specialized = all.filter(item => merchant.categoryKeys.includes(item.categoryKey));
   const others = all.filter(item => !merchant.categoryKeys.includes(item.categoryKey));
   return Array.from({ length: merchant.count }, (_, index) => {

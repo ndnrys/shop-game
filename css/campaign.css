@@ -68,3 +68,8 @@
 .visitor-list strong { font-size: 13px; color: var(--green-dark); }
 .visitor-list blockquote { margin: 12px 0; font-size: 14px; line-height: 1.8; }
 @media(max-width:700px) { .visitor-list { grid-template-columns: 1fr; } }
+
+.quest-progress { padding: 16px; background: #f0eee3; border-radius: 8px; margin: 14px 0; }
+.quest-progress progress { width: 100%; height: 22px; margin: 12px 0; accent-color: var(--green); }
+.quest-progress p { margin-bottom: 0; }
+.hero-health { border-left: 3px solid #bda173; padding-left: 10px; }

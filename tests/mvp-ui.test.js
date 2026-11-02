@@ -49,28 +49,39 @@ try {
     assert(get('.visitor-list').textContent.includes('今日は何が並んでいるんだい？'),'customer dialogue');
     assert(get('[data-screen="home"]').querySelector('section [data-action="open"]'),'opening control');
   });
-  await check('dispatch, persisted return, and retry lead to a safe village',async()=>{
+  await check('progress, growth, injury recovery and a separate boss lead to a safe village',async()=>{
     page('support');action('dispatch');assert(game.state.campaign.expedition.heroIds.length===3,'one three-person party');
     const pending=game.state.campaign.expedition;
     await saveGame(skin.id,makeSave(game.state));app.destroy();game=createSession(skin,await loadGame(skin));mount();
     assert(game.state.campaign.expedition.roll===pending.roll,'no reroll');
     page('home');action('nextDay');
-    for(let tries=0;!game.state.campaign.defeated&&tries<20;tries++){
-      if(game.state.campaign.gold<30){action('relief');if(game.state.campaign.gold<30)action('nextDay');}
-      page('support');give('lina','',30);action('dispatch');page('home');action('nextDay');
+    for(let tries=0;!game.state.campaign.defeated&&tries<100;tries++){
+      if(game.state.campaign.heroes.some(hero=>hero.recoverUntil>game.state.campaign.day)){
+        page('support');assert(get('.hero-health'),'injury status');
+        assert(get('[data-action="dispatch"]').disabled,'injury prevents dispatch');
+        page('home');action('nextDay');continue;
+      }
+      if(game.state.campaign.gold<30){action('relief');if(game.state.campaign.gold<30){action('nextDay');continue;}}
+      page('support');give('lina','',30);
+      const before=game.state.campaign.progress;
+      action('dispatch');assert(game.state.campaign.expedition,'new expedition');
+      assert(game.state.campaign.expedition.kind===(before>=100?'boss':'explore'),'boss unlocked only after 100%');
+      page('home');action('nextDay');
     }
     assert(game.state.campaign.defeated,'leader defeated');
   });
   await check('full economic loop reaches departure goal without editing balances',()=>{
+    const cost=game.campaign.config.merchants.find(merchant=>merchant.id==='tools').cost;
     for(let days=0;game.state.campaign.gold<game.campaign.config.targetGold&&days<100;days++){
       page('home');if(game.state.campaign.opened)action('nextDay');
-      if(game.state.campaign.gold<150)action('relief');
-      if(game.state.campaign.gold>=150){page('purchase');action('buy','[data-id="tools"]');while(game.state.campaign.trade.incoming.length){const item=game.state.campaign.trade.incoming[0];action('keep',`[data-id="${item.instanceId}"]`);if(game.state.campaign.trade.incoming.some(i=>i.instanceId===item.instanceId))action('sellBack',`[data-source="incoming"][data-id="${item.instanceId}"]`);}action('finishTrade');}
+      if(game.state.campaign.gold<cost)action('relief');
+      if(game.state.campaign.gold>=cost){page('purchase');action('buy','[data-id="tools"]');while(game.state.campaign.trade.incoming.length){const item=game.state.campaign.trade.incoming[0];action('keep',`[data-id="${item.instanceId}"]`);if(game.state.campaign.trade.incoming.some(i=>i.instanceId===item.instanceId))action('sellBack',`[data-source="incoming"][data-id="${item.instanceId}"]`);}action('finishTrade');}
       for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
       page('home');if(game.state.shop.displayedItems.length)action('open');else action('nextDay');
     }
-    assert(game.state.campaign.gold>=1200,'goal achievable');
+    assert(game.state.campaign.gold>=game.campaign.config.targetGold,'goal achievable');
     assert(get('.departure-card'),'departure unlocked');
+    assert(game.state.campaign.heroes.some(hero=>hero.level>1),'characters grew');
     get('[data-companion="lina"]').checked=true;get('[data-companion="lina"]').dispatchEvent(new Event('change',{bubbles:true}));
     assert(get('.departure-quote').textContent.includes('250 G'),'quote');action('depart');
     assert(game.state.campaign.departure.companions[0].equipment.weapon.itemId==='iron_sword','gear carried');

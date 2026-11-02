@@ -114,6 +114,19 @@ try {
     assert(image && image.alt === '', 'decorative product image');
     assert(game.inventory.itemCells(game.state.warehouse.items[0]).length === 4, 'unchanged shape');
   });
+  await check("hidden screens render only when opened", () => {
+    app?.destroy();
+    fixture.replaceChildren(template.cloneNode(true));
+    game = createGame(createGameState());
+    const calls = { warehouse: 0, stocking: 0 };
+    app = mountScreens(fixture, game, Object.keys(calls).map(id => ({ id, mount: () => ({ render() { calls[id] += 1; }, destroy() {} }) })));
+    get('a[href="#warehouse"]').click();
+    const before = calls.stocking;
+    game.warehouse.move('stock-004', 7, 7);
+    assert(calls.stocking === before, 'hidden screen should not redraw after every operation');
+    get('a[href="#stocking"]').click();
+    assert(calls.stocking > before, 'opening a screen refreshes its data');
+  });
   for (const pointerType of ['mouse', 'touch']) {
     await check(`${pointerType} pointer drag: preview, commit, invalid drop and cancellation`, async () => {
       reset([features[0]]);

@@ -8,6 +8,7 @@ export default {
   campaign,
   itemDefinitions,
   presentation: {
+    steel_sword: { glyph: "⚔" }, reinforced_shield: { glyph: "◈" }, chain_armor: { glyph: "⛨" }, charm: { glyph: "✧" },
   "iron_axe": {
     "glyph": "🪓"
   },

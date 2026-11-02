@@ -1,6 +1,6 @@
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +10,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -24,6 +24,22 @@ export function validateSave(value, skin) {
     };
     if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateHero);
     if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateHero);
+  }
+  if (value.version < 3 && s.campaign) {
+    const c = s.campaign;
+    c.progress = c.defeated ? 100 : 0;
+    const migrateGrowth = hero => {
+      hero.level = 1;
+      hero.experience = 0;
+      hero.recoverUntil = 0;
+    };
+    if (Array.isArray(c.heroes)) c.heroes.forEach(migrateGrowth);
+    if (Array.isArray(c.departure?.companions)) c.departure.companions.forEach(migrateGrowth);
+    if (c.expedition) {
+      c.expedition.kind = "explore";
+      c.expedition.injuryRolls = c.heroes.map(() => .999999);
+      c.expedition.recoveryRolls = c.heroes.map(() => 0);
+    }
   }
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
@@ -47,6 +63,7 @@ export function validateSave(value, skin) {
   if (skin.campaign) {
     const c = s.campaign; const config = skin.campaign;
     if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
+    if (!integer(c.progress) || c.progress > 100 || (c.defeated && c.progress !== 100)) reject();
     if (c.customerVisits === undefined) c.customerVisits = [];
     if (!Array.isArray(c.customerVisits) || c.customerVisits.length > config.customers.length || new Set(c.customerVisits.map(visit=>visit.customerId)).size!==c.customerVisits.length) reject();
     for (const visit of c.customerVisits) {
@@ -60,7 +77,7 @@ export function validateSave(value, skin) {
     if (!c.milestones || ['sold','supported','purchased'].some(key=>typeof c.milestones[key]!=='boolean')) reject();
     if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
     for (const hero of c.heroes) {
-      if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.funds)) reject();
+      if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.funds) || !integer(hero.level,1) || !integer(hero.experience) || hero.experience >= config.quest.levelExperience || !integer(hero.recoverUntil) || hero.recoverUntil > c.day + config.quest.recoveryMax) reject();
       if (!hero.equipment || typeof hero.equipment !== 'object' || Array.isArray(hero.equipment) || !Array.isArray(hero.giftedEquipment) || hero.giftedEquipment.length > 10000) reject();
       for (const [slot, equipped] of Object.entries(hero.equipment)) {
         if (!config.equipmentSlots.includes(slot) || config.itemSlots[equipped?.itemId] !== slot) reject();
@@ -78,10 +95,10 @@ export function validateSave(value, skin) {
     if (c.nextItemId <= maximumDeliveryId) reject();
     if (c.expedition !== null) {
       const e = c.expedition;
-      if (!e || e.questId !== config.quest.id || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay > c.day || e.returnDay <= c.day || !Number.isFinite(e.chance) || e.chance<0 || e.chance>1 || !Number.isFinite(e.roll) || e.roll<0 || e.roll>=1 || !integer(e.funds) || !Array.isArray(e.heroIds) || e.heroIds.length !== c.heroes.length || new Set(e.heroIds).size !== c.heroes.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id))) reject();
+      if (!e || !['explore','boss'].includes(e.kind) || (e.kind==='boss') !== (c.progress===100) || !Array.isArray(e.injuryRolls) || !Array.isArray(e.recoveryRolls) || e.injuryRolls.length!==c.heroes.length || e.recoveryRolls.length!==c.heroes.length || [...e.injuryRolls,...e.recoveryRolls].some(roll=>!Number.isFinite(roll)||roll<0||roll>=1) || e.questId !== config.quest.id || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay > c.day || e.returnDay <= c.day || !Number.isFinite(e.chance) || e.chance<0 || e.chance>1 || !Number.isFinite(e.roll) || e.roll<0 || e.roll>=1 || !integer(e.funds) || !Array.isArray(e.heroIds) || e.heroIds.length !== c.heroes.length || new Set(e.heroIds).size !== c.heroes.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id))) reject();
     }
     if (!Array.isArray(c.journal) || c.journal.length>100000) reject();
-    const types = ['visit','purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
+    const types = ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered','visit','purchase','buyback','sale','noSale','support','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
     for (const entry of c.journal) {
       if (!integer(entry.day,1) || entry.day>c.day || !types.includes(entry.type) || !entry.details || typeof entry.details!=='object' || Array.isArray(entry.details)) reject();
       const d=entry.details;
@@ -89,13 +106,14 @@ export function validateSave(value, skin) {
       if (d.itemId && !skin.itemDefinitions[d.itemId]) reject();
       if (d.merchantId && !config.merchants.some(merchant=>merchant.id===d.merchantId)) reject();
       if (d.customerId && !config.customers.some(customer=>customer.id===d.customerId)) reject();
-      for (const key of ['amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
+      for (const key of ['gain','progress','days','level','ability','amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
       if (entry.type==='visit' && d.dialogueKey!==config.customers.find(customer=>customer.id===d.customerId)?.dialogueKey) reject();
       if (d.net!==undefined && !Number.isSafeInteger(d.net)) reject();
     }
     if (c.region==='next-town') {
       const d=c.departure;
-      if (!c.defeated || c.expedition || c.trade || !d || !Array.isArray(d.heroIds) || new Set(d.heroIds).size!==d.heroIds.length || d.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !integer(d.openingGold) || !integer(d.travel) || !integer(d.settlement) || !integer(d.villageGold,config.targetGold) || !integer(d.day,1) || !Array.isArray(d.companions) || d.companions.length!==d.heroIds.length || d.companions.some(hero=>!d.heroIds.includes(hero.id) || JSON.stringify(hero)!==JSON.stringify(c.heroes.find(current=>current.id===hero.id))) || d.openingGold!==config.nextTownBaseGold-d.travel || c.gold!==d.openingGold) reject();
+      if (d && d.targetGold === undefined) d.targetGold = Math.min(config.targetGold, d.villageGold);
+      if (!c.defeated || c.expedition || c.trade || !d || !Array.isArray(d.heroIds) || new Set(d.heroIds).size!==d.heroIds.length || d.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !integer(d.openingGold) || !integer(d.travel) || !integer(d.settlement) || !integer(d.targetGold,1) || !integer(d.villageGold,d.targetGold) || !integer(d.day,1) || !Array.isArray(d.companions) || d.companions.length!==d.heroIds.length || d.companions.some(hero=>!d.heroIds.includes(hero.id) || JSON.stringify(hero)!==JSON.stringify(c.heroes.find(current=>current.id===hero.id))) || d.openingGold!==config.nextTownBaseGold-d.travel || c.gold!==d.openingGold) reject();
     } else if (c.departure !== null) reject();
   }
   return structuredClone(s);

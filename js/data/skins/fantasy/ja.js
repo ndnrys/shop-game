@@ -1,5 +1,9 @@
 import mvp from "./mvp-ja.js";
 export default {
+  "items.steel_sword": "鋼の剣", "items.short.steel_sword": "鋼剣",
+  "items.reinforced_shield": "補強された盾", "items.short.reinforced_shield": "強盾",
+  "items.chain_armor": "鎖かたびら", "items.short.chain_armor": "鎖鎧",
+  "items.charm": "守りのお守り", "items.short.charm": "守",
   ...mvp,
   "app.title": "Shop Game | 倉庫",
   "app.homeLabel": "Shop Game ホーム",

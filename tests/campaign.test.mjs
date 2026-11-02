@@ -49,23 +49,25 @@ test("support transfers unique equipment and funds; expedition locks support", (
   const reconstructed=createSession(skin,JSON.parse(JSON.stringify(game.state)));
   assert.deepEqual(reconstructed.state.campaign.expedition,c.expedition);
   c.expedition.roll=0; game.campaign.nextDay();
-  assert.equal(c.day,2); assert.equal(c.defeated,true); assert.equal(c.expedition,null);
+  assert.equal(c.day,2); assert.equal(c.defeated,false); assert.equal(c.progress,skin.campaign.quest.progressSuccess); assert.equal(c.expedition,null);
 });
-test("failed mission returns everyone and can be retried; end-to-end departure", () => {
-  const game=setup(); const c=game.state.campaign;
-  game.campaign.support('lina','stock-001',30); game.campaign.dispatch(); c.expedition.roll=1;
-  game.campaign.nextDay(); assert.equal(c.defeated,false); assert.equal(c.expedition,null);
-  game.campaign.support('lina',null,30); game.campaign.dispatch(); c.expedition.roll=0;
-  game.campaign.nextDay(); assert.equal(c.defeated,true);
-  assert.equal(game.campaign.depart([]).ok,false);
-  c.gold=skin.campaign.targetGold;
-  assert.equal(game.campaign.quote([]).openingGold,300);
-  assert.equal(game.campaign.quote(['lina']).openingGold,250);
+test("boss setbacks retain progress, injuries require rest, then departure succeeds", () => {
+  const game=setup(); const c=game.state.campaign;c.progress=100;
+  game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
+  c.expedition.roll=.999;c.expedition.injuryRolls=[0,0,0];c.expedition.recoveryRolls=[0,0,0];
+  game.campaign.nextDay();assert.equal(c.defeated,false);assert.equal(c.progress,100);
+  assert.ok(c.heroes.every(hero=>hero.recoverUntil===3));
+  game.campaign.support('lina',null,30);
+  assert.equal(game.campaign.dispatch().reason,'mvp.error.recovering');
+  game.campaign.nextDay();assert.equal(game.campaign.dispatch().ok,true);
+  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];
+  game.campaign.nextDay();assert.equal(c.defeated,true);
+  assert.equal(game.campaign.depart([]).ok,false);c.gold=skin.campaign.targetGold;
+  assert.equal(game.campaign.quote([]).openingGold,300);assert.equal(game.campaign.quote(['lina']).openingGold,250);
   assert.equal(game.campaign.quote(['lina','lina']).valid,false);
   assert.equal(game.campaign.depart(['lina']).ok,true);
-  assert.equal(c.region,'next-town'); assert.equal(c.gold,250);
+  assert.equal(c.region,'next-town');assert.equal(c.gold,250);
   assert.equal(c.departure.companions[0].equipment.weapon.itemId,'iron_sword');
-  assert.equal(game.campaign.nextDay().ok,false);
 });
 test("calendar rollover and relief once per low-money day", () => {
   assert.deepEqual(calendarDate(6),{year:1,season:1,day:1});
@@ -80,7 +82,7 @@ test("calendar rollover and relief once per low-money day", () => {
 test("purchase cost allocation and realized gross profit remain distinct from cash flow",()=>{
   const testSkin=structuredClone(skin);testSkin.campaign.purchaseChance=1;
   const game=createSession(testSkin);game.campaign.startTrade('tools');const c=game.state.campaign;
-  assert.equal(c.trade.incoming.reduce((sum,item)=>sum+item.purchaseCost,0),150);
+  assert.equal(c.trade.incoming.reduce((sum,item)=>sum+item.purchaseCost,0),testSkin.campaign.merchants.find(m=>m.id==='tools').cost);
   for(const item of [...c.trade.incoming])game.campaign.keep(item.instanceId);
   game.campaign.finishTrade();
   const purchased=game.state.warehouse.items.find(item=>item.purchaseCost>0);
@@ -89,7 +91,7 @@ test("purchase cost allocation and realized gross profit remain distinct from ca
   game.campaign.openShop();
   assert.ok(c.today.sales>0);
   assert.equal(c.today.cogs,purchased.purchaseCost);
-  assert.equal(c.today.purchasing,150);
+  assert.equal(c.today.purchasing,testSkin.campaign.merchants.find(m=>m.id==='tools').cost);
 });
 
 test("equipment occupies independent slots and all gifts remain with the supporter",()=>{
@@ -119,4 +121,32 @@ test("every visitor speaks even without buying; journal persists after the day e
   const count=c.journal.length;assert.equal(game.campaign.openShop().ok,false);assert.equal(c.journal.length,count);
   game.campaign.nextDay();assert.deepEqual(c.customerVisits,[]);
   assert.equal(c.journal.filter(entry=>entry.type==='visit').length,5);
+});
+
+test("exploration adds progress without clearing; 100% unlocks a separate boss",()=>{
+  const game=setup();const c=game.state.campaign;
+  game.campaign.support('lina','stock-001',30);
+  assert.equal(game.campaign.dispatch('boss').ok,false);
+  assert.equal(game.campaign.dispatch('explore').ok,true);
+  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];
+  game.campaign.nextDay();assert.equal(c.progress,skin.campaign.quest.progressSuccess);assert.equal(c.defeated,false);
+  c.progress=99;game.campaign.support('lina',null,30);game.campaign.dispatch();
+  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
+  assert.equal(c.progress,100);assert.equal(c.defeated,false);assert.ok(c.heroes.every(hero=>hero.level===2));
+  game.campaign.support('lina',null,30);
+  assert.equal(game.campaign.dispatch('explore').ok,false);
+  assert.equal(game.campaign.dispatch('boss').ok,true);
+});
+
+test("setbacks still grant growth and progress, and health recovers on the exact day",()=>{
+  const game=setup();const c=game.state.campaign;
+  game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
+  c.expedition.roll=.999;c.expedition.injuryRolls=[0,.999,.999];c.expedition.recoveryRolls=[.999,0,0];
+  game.campaign.nextDay();assert.equal(c.progress,skin.campaign.quest.progressSetback);
+  assert.equal(c.heroes[0].experience,skin.campaign.quest.experienceSetback);
+  assert.equal(c.heroes[0].recoverUntil,5);
+  game.campaign.support('lina',null,30);
+  for(let i=0;i<3;i++){assert.equal(game.campaign.dispatch().reason,'mvp.error.recovering');game.campaign.nextDay();}
+  assert.equal(c.day,5);assert.equal(game.campaign.dispatch().ok,true);
+  assert.ok(c.journal.some(entry=>entry.type==='recovered'&&entry.details.heroId==='lina'));
 });

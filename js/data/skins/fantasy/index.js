@@ -16,5 +16,5 @@ export default {
     warehouse: { columns: 8, rows: 8, items: startingInventory },
     shop: { columns: 5, rows: 5, displayedItems: [] },
   },
-  theme: { "--green": "#59694a", "--green-dark": "#374a35", "--cream": "#d9c49a", "--paper": "#ebd8ae", "--ink": "#3e3028", "--muted": "#746046", "--line": "#b79a6c", "--gold": "#a77c35" },
+  theme: { "--green": "#a5b894", "--green-dark": "#d4c39b", "--cream": "#10191e", "--paper": "#18252b", "--ink": "#e4e5db", "--muted": "#9eafad", "--line": "#2c3d42", "--gold": "#d6b97e" },
 };

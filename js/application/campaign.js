@@ -73,11 +73,13 @@ export function createCampaignActions(state, config, definitions, inventory, com
       if (!ready() || c.expedition || !hero) return fail("away");
       if (!Number.isSafeInteger(amount) || amount < 0 || amount > c.gold) return fail("money");
       const item = instanceId ? state.warehouse.items.find(item => item.instanceId === instanceId) : null;
-      if (instanceId && (!item || hero.equipment || !config.gearCategories.includes(definitions[item.itemId].categoryKey))) return fail("equipment");
+      if (instanceId && (!item || !config.itemSlots[item.itemId])) return fail("equipment");
       if (!item && !amount) return fail("emptySupport");
       if (item) {
         state.warehouse.items.splice(state.warehouse.items.indexOf(item), 1);
-        hero.equipment = { ...item };
+        const slot = config.itemSlots[item.itemId];
+        if (hero.equipment[slot]) hero.giftedEquipment.push(hero.equipment[slot]);
+        hero.equipment[slot] = { ...item };
       }
       c.gold -= amount;
       c.today.support += amount;
@@ -86,20 +88,10 @@ export function createCampaignActions(state, config, definitions, inventory, com
       addJournal(state, "support", { heroId, itemId: item?.itemId ?? null, amount });
       return commit({ ok: true });
     },
-    returnEquipment(heroId) {
-      const hero = c.heroes.find(hero => hero.id === heroId);
-      if (!ready() || c.expedition || !hero?.equipment) return fail("away");
-      const position = storePosition(state.warehouse.items, hero.equipment);
-      if (!position) return fail("full");
-      state.warehouse.items.push({ ...hero.equipment, ...position });
-      addJournal(state, "returnEquipment", { heroId, itemId: hero.equipment.itemId });
-      hero.equipment = null;
-      return commit({ ok: true });
-    },
     dispatch() {
       if (!ready() || c.expedition || c.defeated) return fail("away");
       const funds = c.heroes.reduce((sum, hero) => sum + hero.funds, 0);
-      if (funds < config.quest.minimumFunds || c.heroes.filter(hero => hero.equipment).length < config.quest.minimumEquipped) return fail("preparation");
+      if (funds < config.quest.minimumFunds || c.heroes.filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
       const chance = successChance(c.heroes, config, funds);
       const duration = Math.max(1, config.quest.duration);
       c.expedition = { questId: config.quest.id, heroIds: c.heroes.map(hero => hero.id), departedDay: c.day, returnDay: c.day + duration, chance, roll: random(c), funds };

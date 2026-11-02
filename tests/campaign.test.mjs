@@ -64,7 +64,7 @@ test("failed mission returns everyone and can be retried; end-to-end departure",
   assert.equal(game.campaign.quote(['lina','lina']).valid,false);
   assert.equal(game.campaign.depart(['lina']).ok,true);
   assert.equal(c.region,'next-town'); assert.equal(c.gold,250);
-  assert.equal(c.departure.companions[0].equipment.itemId,'iron_sword');
+  assert.equal(c.departure.companions[0].equipment.weapon.itemId,'iron_sword');
   assert.equal(game.campaign.nextDay().ok,false);
 });
 test("calendar rollover and relief once per low-money day", () => {
@@ -90,4 +90,19 @@ test("purchase cost allocation and realized gross profit remain distinct from ca
   assert.ok(c.today.sales>0);
   assert.equal(c.today.cogs,purchased.purchaseCost);
   assert.equal(c.today.purchasing,150);
+});
+
+test("equipment occupies independent slots and all gifts remain with the supporter",()=>{
+  const game=setup();const c=game.state.campaign;const hero=c.heroes[0];
+  for(const id of ['stock-001','stock-003','stock-006','stock-007'])assert.equal(game.campaign.support('lina',id,0).ok,true);
+  assert.deepEqual(Object.keys(hero.equipment).sort(),['weapon','offhand','body','accessory'].sort());
+  assert.equal(hero.equipment.weapon.itemId,'iron_sword');
+  assert.equal(game.campaign.support('lina','stock-009',0).ok,true);
+  assert.equal(hero.equipment.weapon.itemId,'iron_axe');
+  assert.equal(hero.giftedEquipment[0].itemId,'iron_sword');
+  assert.equal(game.campaign.returnEquipment,undefined);
+  assert.equal(game.warehouse.undo().ok,false);
+  assert.equal(game.state.warehouse.items.some(item=>['stock-001','stock-003','stock-006','stock-007','stock-009'].includes(item.instanceId)),false);
+  const expected=successChance([{ability:12,equipment:hero.equipment}, {ability:10}, {ability:8}],skin.campaign,0);
+  assert.equal(game.campaign.chance(),expected);
 });

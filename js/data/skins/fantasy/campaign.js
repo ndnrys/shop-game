@@ -16,6 +16,8 @@ export default {
   ],
   purchaseChance: .9,
   heroes: [{ id: "lina", ability: 12 }, { id: "bran", ability: 10 }, { id: "noa", ability: 8 }],
+  equipmentSlots: ["weapon", "offhand", "body", "accessory"],
+  itemSlots: { iron_sword: "weapon", iron_axe: "weapon", oak_shield: "offhand", leather_armor: "body", silver_ring: "accessory" },
   gearCategories: ["weapon", "armor", "accessory"],
   gearPower: { iron_sword: 20, iron_axe: 20, oak_shield: 16, leather_armor: 22, silver_ring: 12 },
   chance: { base: .15, abilityRate: .01, gearRate: .005, fundsRate: .001, minimum: .1, maximum: .95 },

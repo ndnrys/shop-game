@@ -1,6 +1,6 @@
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +10,21 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (value?.version !== SAVE_VERSION || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  // Version 1 used one nullable equipment item. Preserve it in its configured slot.
+  if (value.version === 1 && s.campaign) {
+    const migrateHero = hero => {
+      if (!hero || typeof hero !== 'object') reject();
+      if (hero.equipment?.itemId) {
+        const slot = skin.campaign?.itemSlots[hero.equipment.itemId];
+        if (!slot) reject();
+        hero.equipment = { [slot]: hero.equipment };
+      } else if (hero.equipment === null) hero.equipment = {};
+      if (hero.giftedEquipment === undefined) hero.giftedEquipment = [];
+    };
+    if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateHero);
+    if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateHero);
+  }
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
   let maximumDeliveryId = 0;
@@ -39,9 +53,14 @@ export function validateSave(value, skin) {
     if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
     for (const hero of c.heroes) {
       if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.funds)) reject();
-      if (hero.equipment) {
-        item(hero.equipment);
-        if (!config.gearCategories.includes(skin.itemDefinitions[hero.equipment.itemId].categoryKey)) reject();
+      if (!hero.equipment || typeof hero.equipment !== 'object' || Array.isArray(hero.equipment) || !Array.isArray(hero.giftedEquipment) || hero.giftedEquipment.length > 10000) reject();
+      for (const [slot, equipped] of Object.entries(hero.equipment)) {
+        if (!config.equipmentSlots.includes(slot) || config.itemSlots[equipped?.itemId] !== slot) reject();
+        item(equipped);
+      }
+      for (const gift of hero.giftedEquipment) {
+        if (!config.itemSlots[gift?.itemId]) reject();
+        item(gift);
       }
     }
     if (c.trade !== null) {
@@ -67,7 +86,7 @@ export function validateSave(value, skin) {
     }
     if (c.region==='next-town') {
       const d=c.departure;
-      if (!c.defeated || c.expedition || c.trade || !d || !Array.isArray(d.heroIds) || new Set(d.heroIds).size!==d.heroIds.length || d.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !integer(d.openingGold) || !integer(d.travel) || !integer(d.settlement) || !integer(d.villageGold,config.targetGold) || !integer(d.day,1) || !Array.isArray(d.companions) || d.companions.length!==d.heroIds.length || d.companions.some(hero=>!d.heroIds.includes(hero.id)) || d.openingGold!==config.nextTownBaseGold-d.travel || c.gold!==d.openingGold) reject();
+      if (!c.defeated || c.expedition || c.trade || !d || !Array.isArray(d.heroIds) || new Set(d.heroIds).size!==d.heroIds.length || d.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !integer(d.openingGold) || !integer(d.travel) || !integer(d.settlement) || !integer(d.villageGold,config.targetGold) || !integer(d.day,1) || !Array.isArray(d.companions) || d.companions.length!==d.heroIds.length || d.companions.some(hero=>!d.heroIds.includes(hero.id) || JSON.stringify(hero)!==JSON.stringify(c.heroes.find(current=>current.id===hero.id))) || d.openingGold!==config.nextTownBaseGold-d.travel || c.gold!==d.openingGold) reject();
     } else if (c.departure !== null) reject();
   }
   return structuredClone(s);

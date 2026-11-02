@@ -26,7 +26,7 @@ try {
   await check('three supporters receive equipment and preparation money through forms',()=>{
     page('support');give('lina','stock-001',50);give('bran','stock-003',50);give('noa','stock-006',50);
     assert(game.state.campaign.gold===250,'funds paid');
-    assert(game.state.campaign.heroes.every(h=>h.equipment&&h.funds===50),'all supporters prepared');
+    assert(game.state.campaign.heroes.every(h=>Object.keys(h.equipment).length>0&&h.funds===50),'all supporters prepared');
     assert(get('[data-screen="support"]').textContent.includes(`${Math.round(game.campaign.chance()*100)}%`),'success preview');
   });
   await check('purchase/keep/buyback/finish controls and persistent pending trade',async()=>{
@@ -68,7 +68,7 @@ try {
     assert(get('.departure-card'),'departure unlocked');
     get('[data-companion="lina"]').checked=true;get('[data-companion="lina"]').dispatchEvent(new Event('change',{bubbles:true}));
     assert(get('.departure-quote').textContent.includes('250 G'),'quote');action('depart');
-    assert(game.state.campaign.departure.companions[0].equipment.itemId==='iron_sword','gear carried');
+    assert(game.state.campaign.departure.companions[0].equipment.weapon.itemId==='iron_sword','gear carried');
     assert(get('.mvp-complete'),'completion');
   });
   await check('completed state and structured journal reload correctly',async()=>{

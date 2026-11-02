@@ -1,4 +1,6 @@
 export default {
+  "mvp.roster.status": "Lv.{level} · {status}", "mvp.roster": "支援者の編成", "mvp.roster.ready": "派遣可能", "mvp.roster.injured": "療養中",
+
   "mvp.map.title": "村の周辺図", "mvp.map.description": "村から周辺の森、魔物の野営地、奥地の拠点へ続く探索路。攻略状況に合わせて現在地点が変わります。",
   "mvp.map.village": "村のよろず屋", "mvp.map.outskirts": "周辺の森", "mvp.map.camp": "魔物の野営地", "mvp.map.stronghold": "奥地の拠点",
   "mvp.map.current": "探索中", "mvp.map.cleared": "安全を確保", "mvp.map.boss": "リーダー出現",

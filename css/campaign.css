@@ -97,3 +97,15 @@
   .quest-map-node.is-current .quest-map-pin { width:10px; height:10px; }
   .quest-map { margin-inline:-10px; }
 }
+
+/* Structural defaults remain usable when another skin supplies different artwork. */
+.party-roster { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+.party-roster button { display:flex; align-items:center; gap:10px; min-height:44px; font:inherit; }
+.party-roster small { display:block; }
+.scene-actor { display:inline-block; width:54px; height:72px; }
+.scene-actor img { width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
+.hero-heading { display:flex; align-items:center; gap:15px; }
+.visitor-scene { display:flex; align-items:center; gap:15px; }
+.visitor-dialogue { flex:1; min-width:0; }
+.speech-bubble cite { display:block; font-style:normal; font-weight:600; }
+.visitor-scene:not(:has(.scene-actor)) .speech-bubble::before { display:none; }

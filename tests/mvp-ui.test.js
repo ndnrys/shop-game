@@ -20,13 +20,18 @@ function assert(value,message){if(!value)throw new Error(message);}
 function get(selector){const el=fixture.querySelector(selector);if(!el)throw new Error(selector);return el;}
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
 function action(name,extra=''){get(`[data-screen]:not([hidden]) [data-action="${name}"]${extra}`).click();}
-function give(id,gear,funds){const form=get(`form[data-hero="${id}"]`);form.elements.gear.value=gear;form.elements.funds.value=funds;form.requestSubmit();}
+function give(id,gear,funds){get(`[data-select-hero="${id}"]`).click();const form=get(`form[data-hero="${id}"]`);form.elements.gear.value=gear;form.elements.funds.value=funds;form.requestSubmit();}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
   await check('three supporters receive equipment and preparation money through forms',()=>{
-    page('support');give('lina','stock-001',50);give('bran','stock-003',50);give('noa','stock-006',50);
+    page('support');
+    assert(get('[data-screen="support"]').querySelectorAll('[data-select-hero]').length===3,'three roster selectors');
+    assert(get('[data-screen="support"]').querySelectorAll('form[data-hero]').length===1,'one selected equipment panel');
+    const beforeSelection=JSON.stringify(game.state);get('[data-select-hero="bran"]').click();
+    assert(JSON.stringify(game.state)===beforeSelection,'selecting a supporter changes no saved state');
+    give('lina','stock-001',50);give('bran','stock-003',50);give('noa','stock-006',50);
     assert(!get('[data-screen="support"]').querySelector('[data-action="returnGear"]'),'no gift return');
-    assert(get('[data-screen="support"]').textContent.includes('盾:'),'slot labels');
+    assert(get('[data-screen="support"]').textContent.includes('盾'),'slot labels');
     assert(game.state.campaign.gold===250,'funds paid');
     assert(game.state.campaign.heroes.every(h=>Object.keys(h.equipment).length>0&&h.funds===50),'all supporters prepared');
     assert(get('[data-screen="support"]').textContent.includes(`${Math.round(game.campaign.chance()*100)}%`),'success preview');
@@ -44,6 +49,9 @@ try {
     // The existing stocking controller is independently regression-tested; fill its shelf using its public commands.
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     page('home');const before=game.state.campaign.gold;action('open');
+    assert(get('.speech-bubble').querySelector('img,svg')===null,'no face inside dialogue');
+    assert(get('.visitor-scene').querySelector(':scope > .scene-actor .item-art'),'speaker is outside bubble');
+
     assert(game.state.campaign.gold>before,'sales income');assert(game.state.campaign.milestones.sold,'outside customers');
     assert(get('.visitor-list').children.length===5,'all visitors speak');
     assert(get('.visitor-list').textContent.includes('今日は何が並んでいるんだい？'),'customer dialogue');

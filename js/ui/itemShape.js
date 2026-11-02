@@ -9,13 +9,19 @@ export function applyItemShape(element, item, game, preview = false) {
   element.classList.add("shaped-item");
   element.style.setProperty("--shape-columns", width);
   element.style.setProperty("--shape-rows", height);
-  for (const [index, cell] of itemCells(item).entries()) {
+  for (const cell of itemCells(item)) {
     const part = document.createElement("span");
     part.className = "shape-cell";
     part.style.gridColumn = cell.x + 1;
     part.style.gridRow = cell.y + 1;
     part.setAttribute("aria-hidden", "true");
-    if (!preview && index === 0) part.append(...content);
     element.append(part);
+  }
+  if (!preview) {
+    const art = document.createElement('span');
+    art.className = 'shape-art';
+    art.setAttribute('aria-hidden', 'true');
+    art.append(...content);
+    element.append(art);
   }
 }

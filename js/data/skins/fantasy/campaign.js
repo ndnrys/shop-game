@@ -1,5 +1,9 @@
+import { characterArtwork } from "./artwork.js";
 // MVP仮設定。正式なバランスは docs/MVP-確認事項.md で確認する。
 export default {
+  presentation: {
+    characters: characterArtwork,
+  },
   startingGold: 400, targetGold: 3500, nextTownBaseGold: 300, travelPerHero: 50,
   daysPerSeason: 5, aidAmount: 80,
   merchants: [

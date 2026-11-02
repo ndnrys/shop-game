@@ -127,6 +127,20 @@ try {
     get('a[href="#stocking"]').click();
     assert(calls.stocking > before, 'opening a screen refreshes its data');
   });
+  await check('PNG artwork fits the complete footprint and follows item rotation', () => {
+    reset([features[0]]);
+    const axe = get('[data-instance-id="stock-009"]');
+    const overlay = axe.querySelector('.shape-art');
+    assert(overlay && overlay.querySelector('svg.item-art image'), 'shared PNG is rendered over the footprint');
+    assert(getComputedStyle(overlay).pointerEvents === 'none', 'art must not intercept holes');
+    assert(overlay.getBoundingClientRect().width > axe.querySelector('.shape-cell').getBoundingClientRect().width, 'art uses more than first occupied cell');
+    const initial = axe.querySelector('svg.item-art').getAttribute('viewBox').split(' ').map(Number);
+    assert(game.warehouse.rotate('stock-009').ok, 'rotation succeeds');
+    const rotated = get('[data-instance-id="stock-009"] svg.item-art');
+    const box = rotated.getAttribute('viewBox').split(' ').map(Number);
+    assert(box[2] === initial[3] && box[3] === initial[2], 'rotated image frame swaps dimensions');
+    assert(rotated.querySelector('g').getAttribute('transform').includes('rotate(90)'), 'image follows placement rotation');
+  });
   for (const pointerType of ['mouse', 'touch']) {
     await check(`${pointerType} pointer drag: preview, commit, invalid drop and cancellation`, async () => {
       reset([features[0]]);

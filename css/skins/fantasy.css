@@ -1,214 +1,191 @@
-/* All fantasy presentation stays here; rules, hit regions and saves are unchanged. */
-:root[data-skin="fantasy"] { color-scheme:dark; font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif; background:#10191e; }
-[data-skin="fantasy"] body { background:radial-gradient(ellipse at 85% 0,#54726718,transparent 55%),#10191e; color:#e4e5db; }
-[data-skin="fantasy"] .app-shell { max-width:1480px; padding:0 40px; display:grid; grid-template-columns:170px minmax(0,1fr); column-gap:40px; align-items:start; }
-[data-skin="fantasy"] .topbar { grid-column:1/-1; height:96px; gap:24px; border-bottom:1px solid #ffffff0c; }
-[data-skin="fantasy"] .brand { color:#e0c99b; font-family:"Yu Mincho",serif; font-size:15px; letter-spacing:.13em; display:flex; gap:12px; align-items:center; }
-[data-skin="fantasy"] .brand::before { content:""; width:28px; height:36px; background:url('../../assets/skins/fantasy/ui/candle.svg') center/contain no-repeat; image-rendering:pixelated; filter:drop-shadow(0 0 12px #e0aa6660); }
-[data-skin="fantasy"] .day-label { margin-left:auto; font-size:13px; gap:16px; }
-[data-skin="fantasy"] .day-label span { color:#abb6b2; font-size:12px; }
-[data-skin="fantasy"] .gold-label { display:flex; gap:9px; align-items:center; padding:11px 17px; border:1px solid #c7ad6f25; background:#c7ad6f08; border-radius:24px; }
-[data-skin="fantasy"] .gold-label span { color:#d8b776; }
-[data-skin="fantasy"] #game-gold { font-size:14px; font-weight:700; font-variant-numeric:tabular-nums; }
-[data-skin="fantasy"] .main-nav { position:sticky; top:28px; grid-column:1; grid-row:2; display:flex; flex-direction:column; gap:7px; height:auto; padding:34px 0; border:0; overflow:visible; }
-[data-skin="fantasy"] .main-nav a { min-height:50px; padding:14px 17px; gap:14px; border-radius:10px; color:#8c9d9d; font-size:13px; transition:background .15s,color .15s; }
-[data-skin="fantasy"] .main-nav a::before { content:""; width:20px; height:20px; flex-shrink:0; background:currentColor; mask:var(--nav-icon) center/contain no-repeat; }
-[data-skin="fantasy"] .main-nav a[href="#home"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-home.svg'); }
-[data-skin="fantasy"] .main-nav a[href="#purchase"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-purchase.svg'); }
-[data-skin="fantasy"] .main-nav a[href="#warehouse"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-warehouse.svg'); }
-[data-skin="fantasy"] .main-nav a[href="#stocking"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-stocking.svg'); }
-[data-skin="fantasy"] .main-nav a[href="#support"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-support.svg'); }
-[data-skin="fantasy"] .main-nav a[href="#journal"] { --nav-icon:url('../../assets/skins/fantasy/ui/nav-journal.svg'); }
-[data-skin="fantasy"] .main-nav a.is-active { color:#ead0a0; background:linear-gradient(90deg,#bfa47119,#bfa47108); box-shadow:inset 2px 0 #c3a66f; }
-[data-skin="fantasy"] .main-nav a.is-active::after { display:none; }
-[data-skin="fantasy"] .main-nav a:hover { background-color:#ffffff06; color:#eee5d1; }
-[data-skin="fantasy"] [data-screen] { grid-column:2; grid-row:2; min-width:0; padding:34px 0 48px; }
-[data-skin="fantasy"] .page-heading { position:relative; min-height:190px; padding:32px; margin:0 0 28px; border:1px solid #ffffff0c; border-radius:18px; overflow:hidden; align-items:center; isolation:isolate; background:#1b2a2e; }
-[data-skin="fantasy"] .page-heading::before { content:""; position:absolute; inset:0; z-index:-2; background:url('../../assets/skins/fantasy/ui/village-dusk.svg') right 57%/auto 135% no-repeat; image-rendering:pixelated; opacity:.85; }
-[data-skin="fantasy"] .page-heading::after { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,#17272cf5 0%,#17272cda 30%,#17272c45 67%,#17272c08); }
-[data-skin="fantasy"] .page-heading > div { max-width:64%; }
+/* Fantasy skin: an atlas beneath compact, silver-framed game windows. */
+:root[data-skin="fantasy"] { color-scheme:light; font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif; background:#b7ae8e; }
+[data-skin="fantasy"] body { color:#343d3d; background:linear-gradient(#b5aa8555,#b5aa8555),url('../../assets/skins/fantasy/ui/village-map.svg') center/cover fixed; }
+[data-skin="fantasy"] .app-shell { max-width:1280px; padding:22px 36px; min-height:100vh; background:linear-gradient(90deg,#e7dfc255,#f0e8d260,#ddd4b955); }
+[data-skin="fantasy"] .topbar { height:66px; margin-bottom:12px; padding:0 22px; color:#ece5cd; border:1px solid #d5d2b8; outline:1px solid #515e5b; background:linear-gradient(100deg,#344b4e,#526564); box-shadow:inset 0 0 0 3px #263e4055,0 3px 9px #36463a33; }
+[data-skin="fantasy"] .brand { color:#ece3c8; font-family:Georgia,"Yu Mincho",serif; letter-spacing:.18em; font-size:15px; }
+[data-skin="fantasy"] .brand::before { content:'◆'; font-size:12px; margin-right:13px; color:#c7b67f; }
+[data-skin="fantasy"] .day-label { margin-left:auto; margin-right:28px; gap:20px; }
+[data-skin="fantasy"] .day-label span { color:#e1dfcc; font-size:12px; }
+[data-skin="fantasy"] .gold-label { color:#f0e5bd; font-family:Georgia,serif; }
+[data-skin="fantasy"] .gold-label span { color:#e9d69e; }
+[data-skin="fantasy"] #game-gold { font-size:17px; font-weight:500; }
+[data-skin="fantasy"] .main-nav { height:auto; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; padding:3px; border:1px solid #606c65; background:#7f8980; box-shadow:0 2px 6px #47533b30; overflow:visible; }
+[data-skin="fantasy"] .main-nav a { display:flex; gap:10px; justify-content:center; min-height:44px; padding:10px 8px; font-size:13px; font-family:"Yu Mincho",serif; color:#343f40; border:1px solid #abb1a0; background:linear-gradient(#e1e0cb,#c3c7b5); box-shadow:inset 0 1px #f5eed7; }
+[data-skin="fantasy"] .main-nav a.is-active { color:#fff4d5; background:linear-gradient(#5d7371,#3b5658); border-color:#d3c796; text-shadow:0 1px #243c3e; }
+[data-skin="fantasy"] .main-nav a.is-active::after { content:'◆'; position:static; height:auto; background:none; font-size:8px; color:#e2c987; }
+[data-skin="fantasy"] .main-nav a:hover { filter:brightness(1.07); }
+[data-skin="fantasy"] [data-screen] { padding:20px 0 28px; min-width:0; }
+[data-skin="fantasy"] .page-heading { min-height:92px; padding:12px 4px 16px; margin-bottom:18px; align-items:center; gap:20px; border-bottom:1px solid #69766566; box-shadow:0 1px #f0e9d166; }
 [data-skin="fantasy"] h1,[data-skin="fantasy"] h2 { font-family:"Yu Mincho","Hiragino Mincho ProN",serif; }
-[data-skin="fantasy"] h1 { font-size:32px; color:#f0eadc; font-weight:600; letter-spacing:.08em; margin-bottom:12px; }
-[data-skin="fantasy"] .eyebrow { color:#c6ac7f; font-size:10px; letter-spacing:.18em; margin-bottom:13px; }
-[data-skin="fantasy"] .intro { color:#aebdbb; font-size:12px; line-height:1.9; max-width:420px; }
-[data-skin="fantasy"] .capacity,[data-skin="fantasy"] .mvp-wallet { position:absolute; top:24px; right:25px; color:#d8c59d; font-size:12px; background:#112127ab; padding:9px 12px; border:1px solid #dfc28e1c; border-radius:20px; backdrop-filter:blur(8px); }
-[data-skin="fantasy"] .capacity #item-count { color:#f0dbb2; }
-[data-skin="fantasy"] [data-screen="home"] .mvp-wallet { display:none; }
-[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel { border:1px solid #9baea315; border-radius:16px; background:linear-gradient(125deg,#ffffff05,transparent 55%),#18252b; box-shadow:0 8px 24px #060e1420; }
-/* A quiet surface with enough contrast for long sessions. */
-[data-skin="fantasy"] .mvp-card { padding:28px; margin-bottom:22px; }
-[data-skin="fantasy"] .mvp-card h2 { color:#ebe4d6; font-size:20px; font-weight:500; margin-bottom:16px; }
-[data-skin="fantasy"] .mvp-card h3 { color:#d7d9ce; }
-[data-skin="fantasy"] .mvp-card p,[data-skin="fantasy"] .mvp-card small,[data-skin="fantasy"] .selection-meta,[data-skin="fantasy"] .selection-empty,[data-skin="fantasy"] .help-card ul,[data-skin="fantasy"] .help-note,[data-skin="fantasy"] .panel-heading p,[data-skin="fantasy"] .board-footer,[data-skin="fantasy"] .stock-info p,[data-skin="fantasy"] .stocking-status,[data-skin="fantasy"] .stocking-selection,[data-skin="fantasy"] .status-message { color:#9eafad; }
-[data-skin="fantasy"] .mvp-card p { line-height:1.9; }
+[data-skin="fantasy"] h1 { font-size:30px; font-weight:600; letter-spacing:.1em; color:#344a49; text-shadow:0 1px #fff6d7aa; margin-bottom:7px; }
+[data-skin="fantasy"] .eyebrow { color:#665b3f; font-size:9px; letter-spacing:.16em; margin-bottom:6px; }
+[data-skin="fantasy"] .intro { color:#48564d; font-size:12px; line-height:1.8; }
+[data-skin="fantasy"] .capacity,[data-skin="fantasy"] .mvp-wallet { padding:10px 16px; border:1px solid #9c9f87; background:#e8e3c9bb; color:#4a574b; font-size:12px; white-space:nowrap; }
+[data-skin="fantasy"] .capacity #item-count { color:#34483f; }
+[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel { border:1px solid #ece9cf; outline:1px solid #68766d; border-radius:0; background:linear-gradient(115deg,#eeecda,#d4d9c8); box-shadow:inset 0 0 0 3px #b0b9a35c,3px 4px 0 #52614c22,0 6px 17px #364b3630; }
+[data-skin="fantasy"] .mvp-card { padding:20px; margin-bottom:20px; }
+[data-skin="fantasy"] .mvp-card > h2,[data-skin="fantasy"] .panel-heading,[data-skin="fantasy"] .help-card > h2 { margin:-20px -20px 18px; padding:12px 18px; color:#f2ead1; background:linear-gradient(90deg,#405b5d,#70817b); border-bottom:1px solid #a4aa90; box-shadow:inset 0 1px #cad2b555; font-size:15px; letter-spacing:.1em; font-weight:500; }
+[data-skin="fantasy"] .panel-heading { margin:-20px -20px 20px; display:flex; }
+[data-skin="fantasy"] .panel-heading h2 { font-family:"Yu Mincho",serif; color:#f2ead1; font-size:14px; font-weight:500; }
+[data-skin="fantasy"] .panel-heading p { color:#c4cebc; font-size:10px; margin:5px 0 0; }
+[data-skin="fantasy"] .mvp-card p,[data-skin="fantasy"] .mvp-card small,[data-skin="fantasy"] .selection-meta,[data-skin="fantasy"] .selection-empty,[data-skin="fantasy"] .help-card ul,[data-skin="fantasy"] .help-note,[data-skin="fantasy"] .stock-info p,[data-skin="fantasy"] .stocking-status,[data-skin="fantasy"] .stocking-selection,[data-skin="fantasy"] .status-message { color:#52614f; }
+[data-skin="fantasy"] .mvp-card p { font-size:12px; line-height:1.9; }
+[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link,[data-skin="fantasy"] .secondary-button,[data-skin="fantasy"] .stock-action,[data-skin="fantasy"] .icon-button { min-height:44px; padding:10px 15px; border:1px solid #798774; border-radius:0; background:linear-gradient(#f3eed8,#c9d0b9); color:#344d49; box-shadow:inset 1px 1px #fffbea,inset -1px -1px #a2ad95; font-size:12px; cursor:pointer; }
+[data-skin="fantasy"] .mvp-button:hover:enabled,[data-skin="fantasy"] .mvp-link:hover,[data-skin="fantasy"] .secondary-button:hover:enabled { background:linear-gradient(#fff6da,#d9d6b5); }
+[data-skin="fantasy"] button:disabled { opacity:.45; cursor:not-allowed; }
+[data-skin="fantasy"] [data-action="open"],[data-skin="fantasy"] [data-action="dispatch"],[data-skin="fantasy"] [data-action="depart"] { color:#f9efd2; background:linear-gradient(#647a71,#3a5b58); border-color:#3b5753; box-shadow:inset 1px 1px #aebba0,inset -1px -1px #284943; }
+[data-skin="fantasy"] [data-action="open"]:hover:enabled,[data-skin="fantasy"] [data-action="dispatch"]:hover:enabled,[data-skin="fantasy"] [data-action="depart"]:hover:enabled { background:#59756a; }
 [data-skin="fantasy"] .mvp-status:empty { display:none; }
-[data-skin="fantasy"] .mvp-status { color:#b9c9af; margin:12px 0; }
-[data-skin="fantasy"] .mvp-status.is-error,[data-skin="fantasy"] .save-error { color:#e7a78e; }
-[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link,[data-skin="fantasy"] .secondary-button,[data-skin="fantasy"] .stock-action,[data-skin="fantasy"] .icon-button { min-height:44px; border-radius:9px; background:#ffffff05; color:#ced9d1; border:1px solid #a6bcb128; box-shadow:none; font-size:12px; transition:background .15s,border-color .15s; }
-[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link { padding:12px 20px; }
-[data-skin="fantasy"] .mvp-button:hover:enabled,[data-skin="fantasy"] .mvp-link:hover,[data-skin="fantasy"] .secondary-button:hover:enabled,[data-skin="fantasy"] .stock-action:hover:enabled { background:#ffffff0c; border-color:#cbb98870; }
-[data-skin="fantasy"] button:disabled { opacity:.4; cursor:not-allowed; }
-[data-skin="fantasy"] [data-action="open"],[data-skin="fantasy"] [data-action="dispatch"],[data-skin="fantasy"] [data-action="depart"] { background:linear-gradient(110deg,#d6bd8e,#b99a65); color:#202b2b; font-weight:700; border-color:#d9c18c; box-shadow:0 4px 18px #c5a46b15; }
-[data-skin="fantasy"] [data-action="open"]:hover:enabled,[data-skin="fantasy"] [data-action="dispatch"]:hover:enabled,[data-skin="fantasy"] [data-action="depart"]:hover:enabled { background:#e1cba4; }
-[data-skin="fantasy"] .mvp-actions { gap:10px; }
-[data-skin="fantasy"] hr { border:0; border-top:1px solid #b5c4b711; margin:24px 0; }
-[data-skin="fantasy"] .mvp-stats { gap:12px; }
-[data-skin="fantasy"] .mvp-stats div { padding:22px; background:#18252b; border:1px solid #ffffff08; border-radius:12px; gap:16px; }
-[data-skin="fantasy"] .mvp-stats span { color:#97a9a6; font-size:11px; }
-[data-skin="fantasy"] .mvp-stats strong { font-family:Georgia,serif; font-size:25px; font-weight:400; color:#e6d3ac; font-variant-numeric:tabular-nums; }
-[data-skin="fantasy"] .tutorial-card { border-left:1px solid #c5af792f; }
-[data-skin="fantasy"] .tutorial-card li { padding:13px 0; border-color:#ffffff09; color:#b6c2b9; }
-[data-skin="fantasy"] .tutorial-card .is-complete { color:#9cba9b; }
-[data-skin="fantasy"] .tutorial-card li small { color:#81928f; }
-[data-skin="fantasy"] .mvp-product,[data-skin="fantasy"] .visitor-list article,[data-skin="fantasy"] .quest-progress,[data-skin="fantasy"] .departure-quote { border-radius:12px; border-color:#a0b3a51a; background:#111e2455; }
-[data-skin="fantasy"] .mvp-product { padding:18px; grid-template-columns:56px 1fr; gap:14px; }
-[data-skin="fantasy"] .mvp-product-art { width:56px; height:64px; padding:8px; border-radius:10px; background:radial-gradient(ellipse,#bbc99b15,transparent 72%); }
-[data-skin="fantasy"] .item-art { image-rendering:pixelated; filter:drop-shadow(0 3px 2px #0003); }
-[data-skin="fantasy"] .campaign-view label { color:#a6b7af; }
-[data-skin="fantasy"] .campaign-view input[type="number"],[data-skin="fantasy"] .campaign-view select { color:#e2e7dd; background:#111f25; border-color:#a1b7a927; border-radius:8px; padding:12px; }
-[data-skin="fantasy"] .hero-health { border-left:2px solid #b7b27a66; padding:7px 12px; background:#b7b27a06; font-size:12px; }
-[data-skin="fantasy"] [data-screen="support"] .mvp-grid h2 { display:flex; gap:14px; align-items:center; }
-[data-skin="fantasy"] [data-screen="support"] .mvp-grid h2::before { content:""; width:56px; height:56px; flex-shrink:0; border:1px solid #d2bc8c40; border-radius:12px; image-rendering:pixelated; background:center/contain no-repeat; box-shadow:0 4px 15px #0002; }
-[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="lina"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/lina.svg'); }
-[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="bran"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/bran.svg'); }
-[data-skin="fantasy"] [data-screen="support"] .mvp-card:has(form[data-hero="noa"]) h2::before { background-image:url('../../assets/skins/fantasy/ui/noa.svg'); }
-[data-skin="fantasy"] [data-screen="purchase"] .mvp-grid h2::before { content:""; display:block; width:64px; height:78px; margin:2px 0 24px; image-rendering:pixelated; background:center/contain no-repeat; filter:drop-shadow(0 5px 8px #0005); }
-[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-id="weapons"]) h2::before { background-image:url('../../assets/skins/fantasy/items/iron_sword.svg'); }
-[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-id="armor"]) h2::before { background-image:url('../../assets/skins/fantasy/items/oak_shield.svg'); }
-[data-skin="fantasy"] [data-screen="purchase"] .mvp-card:has([data-id="tools"]) h2::before { background-image:url('../../assets/skins/fantasy/items/potion.svg'); }
-[data-skin="fantasy"] .quest-progress { padding:22px; }
-[data-skin="fantasy"] .quest-progress progress { appearance:none; height:8px; border:0; border-radius:10px; overflow:hidden; background:#0c191f; accent-color:#c8b280; }
-[data-skin="fantasy"] progress::-webkit-progress-bar { background:#0c191f; }
-[data-skin="fantasy"] progress::-webkit-progress-value { background:linear-gradient(90deg,#7c9c85,#cdb483); border-radius:10px; }
-[data-skin="fantasy"] progress::-moz-progress-bar { background:#cdb483; }
-[data-skin="fantasy"] .mvp-parchment { padding:44px; border-radius:12px; border:1px solid #c0a573; background:radial-gradient(ellipse at 0 0,#92603722,transparent 40%),linear-gradient(105deg,#d3bb91,#e7d7b3 20%,#ddcba4 95%,#cab18a); box-shadow:0 20px 50px #0003; }
-[data-skin="fantasy"] .mvp-parchment h2 { color:#5b4834; letter-spacing:.06em; }
-[data-skin="fantasy"] .mvp-parchment li { color:#66513a; line-height:2.2; }
-[data-skin="fantasy"] .warehouse-columns { grid-template-columns:minmax(0,1fr) minmax(220px,.43fr); gap:22px; }
-[data-skin="fantasy"] .board-panel { padding:24px; background:radial-gradient(ellipse at 50% 0,#40594a18,transparent 70%),#18252b; }
-[data-skin="fantasy"] .panel-heading { margin-bottom:22px; }
-[data-skin="fantasy"] .panel-heading h2 { font-family:inherit; color:#d2dcd2; font-size:13px; font-weight:600; }
-[data-skin="fantasy"] .panel-heading p { margin-top:6px; font-size:10px; letter-spacing:.1em; }
-[data-skin="fantasy"] .board-wrap { max-width:560px; }
-[data-skin="fantasy"] .warehouse-board { background:linear-gradient(135deg,#101e24,#122127); border:1px solid #6e87743b; border-radius:10px; box-shadow:inset 0 2px 20px #0003,0 0 0 5px #0e191c35; }
-[data-skin="fantasy"] .board-cell { border-color:#a3b8a610; }
-[data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { border-radius:6px; border-color:#9fb19030; background:linear-gradient(135deg,#536652,#354b43); box-shadow:inset 0 1px #b8c8a512,0 3px 5px #0001; }
-[data-skin="fantasy"] .warehouse-item.is-selected:not(.shaped-item),[data-skin="fantasy"] .shaped-item.is-selected .shape-cell { background:linear-gradient(135deg,#857b55,#5b5e41); border-color:#d9bd7a; box-shadow:inset 0 0 0 1px #d9bd7a66,0 0 15px #b7a66520; }
-[data-skin="fantasy"] .warehouse-item::after { color:#e1e4ca; font-size:9px; font-weight:500; opacity:.8; }
-[data-skin="fantasy"] .warehouse-item .item-glyph:has(.item-art) { width:85%; height:85%; }
+[data-skin="fantasy"] .mvp-status { padding:10px; background:#efe8ca; color:#395c4b; border-left:3px solid #6f8b63; }
+[data-skin="fantasy"] .mvp-status.is-error,[data-skin="fantasy"] .save-error { color:#8c4539; }
+[data-skin="fantasy"] hr { border:0; border-top:1px solid #a7b198; box-shadow:0 1px #fff6dc; margin:20px 0; }
+[data-skin="fantasy"] .mvp-stats { gap:1px; padding:1px; background:#8c9982; border:3px double #e0e0c5; }
+[data-skin="fantasy"] .mvp-stats div { border:0; border-radius:0; padding:15px 20px; background:#e5e5d0; }
+[data-skin="fantasy"] .mvp-stats span { color:#63715b; font-size:11px; }
+[data-skin="fantasy"] .mvp-stats strong { color:#3d554d; font-family:Georgia,serif; font-size:23px; font-weight:400; }
+[data-skin="fantasy"] .tutorial-card li { border-color:#aeb99d; font-size:12px; }
+[data-skin="fantasy"] .tutorial-card .is-complete { color:#42724c; }
+[data-skin="fantasy"] .mvp-grid { gap:20px; }
+[data-skin="fantasy"] .mvp-product { border:1px solid #a4b193; border-radius:0; padding:13px; background:#ebebd8; grid-template-columns:52px 1fr; }
+[data-skin="fantasy"] .mvp-product-art { width:48px; height:54px; padding:7px; background:linear-gradient(#bcc5ac,#9cae93); border:1px solid #8b9b82; }
+[data-skin="fantasy"] .item-art,[data-skin="fantasy"] .scene-actor img { image-rendering:pixelated; filter:drop-shadow(0 2px 1px #26372a40); }
+[data-skin="fantasy"] .scene-actor { display:inline-grid; place-items:center; flex-shrink:0; width:72px; height:96px; vertical-align:middle; }
+[data-skin="fantasy"] .scene-actor img { display:block; width:100%; height:100%; object-fit:contain; }
+[data-skin="fantasy"] .merchant-card { position:relative; padding-left:110px; min-height:220px; }
+[data-skin="fantasy"] .merchant-card > .scene-actor { position:absolute; top:48px; left:22px; }
+[data-skin="fantasy"] .merchant-card > h2 { margin-left:-110px; }
+[data-skin="fantasy"] .party-roster { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px; padding:5px; margin-bottom:22px; background:#73836f; border:3px double #d9ddc4; box-shadow:2px 4px #475b3e33; }
+[data-skin="fantasy"] .party-roster button { display:flex; align-items:center; justify-content:center; gap:15px; min-height:120px; padding:12px; border:1px solid #b1bba1; background:linear-gradient(#e8e7d1,#bdcbb2); color:#3a5147; font-family:"Yu Mincho",serif; font-size:16px; }
+[data-skin="fantasy"] .party-roster button[aria-pressed="true"] { background:linear-gradient(#718d76,#48695c); color:#fff1cc; border-color:#f0d899; box-shadow:inset 0 0 0 2px #f0d89977; }
+[data-skin="fantasy"] .party-roster small { display:block; font:10px sans-serif; margin-top:8px; opacity:.8; }
+[data-skin="fantasy"] .party-roster .scene-actor { width:54px; height:72px; }
+[data-skin="fantasy"] .support-layout { display:grid; grid-template-columns:minmax(280px,.75fr) minmax(0,1.25fr); gap:22px; align-items:start; }
+[data-skin="fantasy"] .hero-detail { display:block; }
+[data-skin="fantasy"] .hero-heading { display:flex; align-items:center; gap:18px; background:linear-gradient(90deg,#85977b44,transparent); margin-bottom:16px; border-bottom:1px solid #b0b99e; }
+[data-skin="fantasy"] .hero-heading h2 { margin:0; font-size:24px; color:#395248; }
+[data-skin="fantasy"] .hero-equipment { gap:1px; border:1px solid #a5b196; }
+[data-skin="fantasy"] .hero-equipment li { padding:6px 10px; border-bottom:1px solid #b4bea4; background:#e6e8d1; color:#3d5147; }
+[data-skin="fantasy"] .hero-equipment li:last-child { border-bottom:0; }
+[data-skin="fantasy"] .hero-equipment-art { border:1px solid #90a183; background:linear-gradient(#bbc7ac,#93a88e); }
+[data-skin="fantasy"] .hero-equipment li small { margin:0 0 3px; color:#6c785e; }
+[data-skin="fantasy"] .hero-health { padding:8px 10px; border-left:3px solid #83996a; background:#bac6a733; }
+[data-skin="fantasy"] .campaign-view select,[data-skin="fantasy"] .campaign-view input[type="number"] { background:#f4f0da; border:1px solid #94a286; border-radius:0; color:#394c42; box-shadow:inset 1px 2px #778e6f22; }
+[data-skin="fantasy"] .quest-map { margin:0 -6px 18px; border:1px solid #7b8568; box-shadow:inset 0 0 0 2px #d6d7b8; }
+[data-skin="fantasy"] .quest-map figcaption { color:#eae2c0; background:#5b7065; font-family:"Yu Mincho",serif; padding:8px 13px; font-size:11px; }
+[data-skin="fantasy"] .quest-map-node small { color:#edd496; }
+[data-skin="fantasy"] .quest-progress { background:#b8c4a74a; border:1px solid #a3b092; border-radius:0; padding:15px; }
+[data-skin="fantasy"] progress { accent-color:#6b875d; }
+[data-skin="fantasy"] .visitor-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+[data-skin="fantasy"] .visitor-list .visitor-scene { position:relative; display:flex; gap:16px; align-items:center; min-height:155px; padding:18px 14px; border:1px solid #b6bea5; border-radius:0; background:linear-gradient(#b7c3a666,#95ac8e66); }
+[data-skin="fantasy"] .visitor-scene > .scene-actor { width:60px; height:80px; }
+[data-skin="fantasy"] .visitor-dialogue { flex:1; min-width:0; }
+[data-skin="fantasy"] .visitor-list .speech-bubble { position:relative; padding:12px 15px; margin:0; color:#3e493e; background:#f2eddb; border:1px solid #6e7d69; box-shadow:inset 0 0 0 2px #dedbc0,2px 3px #4a5e4633; font-size:12px; }
+[data-skin="fantasy"] .speech-bubble::before { content:''; position:absolute; left:-12px; top:50%; margin-top:-1px; width:13px; height:13px; background:#f2eddb; border-left:1px solid #6e7d69; border-bottom:1px solid #6e7d69; transform:skewY(-35deg); box-shadow:inset 2px -2px #dedbc0; }
+[data-skin="fantasy"] .speech-bubble cite { display:block; font-family:"Yu Mincho",serif; font-size:12px; font-style:normal; color:#5a7055; border-bottom:1px solid #b5c1a1; padding-bottom:5px; margin-bottom:6px; }
+[data-skin="fantasy"] .speech-bubble p { margin:0; color:#3e493e; line-height:1.9; font-size:12px; }
+[data-skin="fantasy"] .visitor-dialogue > small { font-size:10px; line-height:1.6; margin-top:10px; color:#53684e; }
+[data-skin="fantasy"] .warehouse-columns { grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr); gap:22px; }
+[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel { padding:20px; }
+[data-skin="fantasy"] .board-wrap { max-width:540px; }
+[data-skin="fantasy"] .warehouse-board { border:3px double #b3bda0; outline:1px solid #62795e; border-radius:0; background:linear-gradient(135deg,#aab89a,#8caa8c); box-shadow:inset 0 2px 12px #3c5c3a22; }
+[data-skin="fantasy"] .board-cell { border-color:#607f6344; box-shadow:inset 1px 1px #d5dfbe33; }
+[data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { border-radius:0; border:1px solid #6d8565; background:linear-gradient(135deg,#e5e6c7,#b4c7a0); box-shadow:inset 1px 1px #fbf3cc99,inset -1px -1px #7f9a6e55; }
+[data-skin="fantasy"] .warehouse-item.is-selected:not(.shaped-item),[data-skin="fantasy"] .shaped-item.is-selected .shape-cell { border-color:#9f8241; background:linear-gradient(#f5df9d,#ccbb7c); box-shadow:inset 0 0 0 2px #fff1b6aa; }
+[data-skin="fantasy"] .warehouse-item::after { color:#486044; font-size:9px; }
+[data-skin="fantasy"] .warehouse-item .item-glyph:has(.item-art) { width:84%; height:84%; }
 [data-skin="fantasy"] .shape-cell .item-glyph:has(.item-art) { width:90%; height:90%; }
-[data-skin="fantasy"] .placement-preview:not(.shaped-item),[data-skin="fantasy"] .placement-preview .shape-cell { background:#88b88b55; border-color:#a7d29b; }
-[data-skin="fantasy"] .placement-preview.is-invalid:not(.shaped-item),[data-skin="fantasy"] .placement-preview.is-invalid .shape-cell { background:#c57c7255; border-color:#dfa092; }
-[data-skin="fantasy"] .details-column { gap:16px; }
-[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card { padding:23px; }
-[data-skin="fantasy"] .detail-card { min-height:185px; }
-[data-skin="fantasy"] .item-preview { flex-basis:64px; width:64px; height:72px; border:1px solid #c8af7440; border-radius:12px; background:radial-gradient(ellipse,#bfa66c1c,transparent 80%),#111f25; padding:8px; }
-[data-skin="fantasy"] .selection-name { color:#e1dac6; font-size:14px; }
-[data-skin="fantasy"] .selection-content { align-items:center; }
+[data-skin="fantasy"] .placement-preview:not(.shaped-item),[data-skin="fantasy"] .placement-preview .shape-cell { background:#87ac6d88; border:2px dashed #416c3a; }
+[data-skin="fantasy"] .placement-preview.is-invalid:not(.shaped-item),[data-skin="fantasy"] .placement-preview.is-invalid .shape-cell { background:#bf806488; border-color:#a54335; }
+[data-skin="fantasy"] .board-footer { color:#52664e; margin-top:15px; }
+[data-skin="fantasy"] .details-column { gap:18px; }
+[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card { padding:20px; }
+[data-skin="fantasy"] .detail-card .eyebrow { padding-bottom:12px; margin-bottom:13px; border-bottom:1px solid #a4b395; color:#607753; }
+[data-skin="fantasy"] .item-preview { flex-basis:80px; width:80px; height:94px; padding:10px; background:linear-gradient(#c0ccab,#9bb38e); border:3px double #7b946d; border-radius:0; }
+[data-skin="fantasy"] .selection-name { color:#3d5748; font-family:"Yu Mincho",serif; font-size:17px; }
 [data-skin="fantasy"] .selection-meta { font-size:11px; }
-[data-skin="fantasy"] .help-card h2 { color:#c8d0c5; font-family:inherit; font-weight:500; }
-[data-skin="fantasy"] .help-card ul { gap:16px; font-size:11px; }
-[data-skin="fantasy"] .help-key { color:#c6d1c3; display:block; margin-bottom:4px; }
-[data-skin="fantasy"] .help-note { border-color:#ffffff0d; font-size:10px; line-height:1.8; }
-[data-skin="fantasy"] .legend-dot { background:#788b68; }
-[data-skin="fantasy"] .legend-selected { background:#c6aa6b; }
-[data-skin="fantasy"] .legend-invalid { background:#d28c7e; }
-[data-skin="fantasy"] .board-footer { margin-top:20px; font-size:10px; }
-[data-skin="fantasy"] .stock-card { border-radius:10px; border-color:#a8b6a51a; background:#132128; padding:12px; }
-[data-skin="fantasy"] .stock-card.is-selected { background:#b7a36b15; border-color:#bfa67088; }
-[data-skin="fantasy"] .stock-info h3 { color:#dce2d5; font-size:12px; }
+[data-skin="fantasy"] .help-card ul { font-size:11px; gap:12px; }
+[data-skin="fantasy"] .help-key { color:#3c5746; }
+[data-skin="fantasy"] .help-note { border-color:#a5b492; font-size:10px; }
+[data-skin="fantasy"] .icon-button { padding:5px; width:44px; height:44px; font-size:23px; }
+[data-skin="fantasy"] .stock-card { border:1px solid #9bad8c; border-radius:0; background:#e4e7cf; grid-template-rows:auto auto 44px; }
+[data-skin="fantasy"] .stock-card.is-selected { border-color:#a58c51; background:#e9dfb2; }
+[data-skin="fantasy"] .stock-glyph,[data-skin="fantasy"] .stocking-selected-glyph { background:#b8c9a5; border-radius:0; padding:3px; }
+[data-skin="fantasy"] .stock-info h3 { font-size:11px; color:#3d5745; }
 [data-skin="fantasy"] .stock-info p { font-size:10px; }
-[data-skin="fantasy"] .stock-info .stock-quantity { color:#99aaa1; }
-[data-skin="fantasy"] .stock-quantity strong { color:#e1d4ad; }
-[data-skin="fantasy"] .stock-glyph,[data-skin="fantasy"] .stocking-selected-glyph { background:#7a92651a; border-radius:7px; padding:3px; }
-[data-skin="fantasy"] .stocking-selection { border-color:#a6b79d20; border-radius:10px; padding:14px; }
-[data-skin="fantasy"] .stocking-selection strong { color:#dbe0d3; }
-[data-skin="fantasy"] .shop-board-help { color:#9aaba5; }
-[data-skin="fantasy"] .site-footer { grid-column:2; border-color:#ffffff0c; padding-top:18px; color:#748b89; }
-[data-skin="fantasy"] .save-controls { grid-column:2; padding:6px 0 18px; gap:10px; color:#839995; font-size:10px; }
-[data-skin="fantasy"] .save-controls button,[data-skin="fantasy"] .save-controls label { border:1px solid #a4b3a51c; border-radius:7px; background:transparent; color:#9eafa9; padding:10px 12px; min-height:40px; }
-[data-skin="fantasy"] :focus-visible { outline:2px solid #d6bd8e; outline-offset:4px; }
-@media(min-width:1100px) {
-  [data-skin="fantasy"] [data-screen="home"] { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:22px; }
+[data-skin="fantasy"] .stock-action { font-size:10px; padding:6px; }
+[data-skin="fantasy"] .stocking-selection { border-color:#9fb08f; border-radius:0; background:#e7e8ce; }
+[data-skin="fantasy"] .shop-board-help { color:#52674d; }
+[data-skin="fantasy"] .mvp-parchment { background:linear-gradient(100deg,#d3bd8d,#eee0ba 12%,#e3d3a5 92%,#baa471); border:3px double #8f855e; border-radius:0; box-shadow:3px 5px #52614033; }
+[data-skin="fantasy"] .mvp-parchment h2 { color:#655738; }
+[data-skin="fantasy"] .mvp-parchment li { color:#62553b; }
+[data-skin="fantasy"] .save-controls { color:#4e6046; padding:14px 0; font-size:10px; }
+[data-skin="fantasy"] .save-controls button,[data-skin="fantasy"] .save-controls label { border:1px solid #91a07f; border-radius:0; background:#e8e6cdaa; min-height:40px; padding:10px; color:#455b44; }
+[data-skin="fantasy"] .site-footer { color:#4d6348; border-color:#889978; font-size:9px; }
+[data-skin="fantasy"] :focus-visible { outline:3px solid #97712e; outline-offset:3px; }
+@media(min-width:1050px) {
+  [data-skin="fantasy"] [data-screen="home"] { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; }
   [data-skin="fantasy"] [data-screen="home"] > .page-heading,[data-skin="fantasy"] [data-screen="home"] > .mvp-status,[data-skin="fantasy"] [data-screen="home"] > .mvp-stats,[data-skin="fantasy"] [data-screen="home"] > .visitor-card,[data-skin="fantasy"] [data-screen="home"] > .departure-card,[data-skin="fantasy"] [data-screen="home"] > .mvp-complete { grid-column:1/-1; }
-  [data-skin="fantasy"] [data-screen="home"] > .page-heading,[data-skin="fantasy"] [data-screen="home"] > .mvp-card,[data-skin="fantasy"] [data-screen="home"] > .mvp-stats { margin:0; }
+  [data-skin="fantasy"] [data-screen="home"] > .mvp-card,[data-skin="fantasy"] [data-screen="home"] > .page-heading { margin-bottom:0; }
 }
-@media(max-width:1100px) {
-  [data-skin="fantasy"] .app-shell { padding:0 26px; grid-template-columns:130px minmax(0,1fr); column-gap:26px; }
-  [data-skin="fantasy"] .main-nav a { padding:14px 12px; gap:10px; }
-  [data-skin="fantasy"] .warehouse-columns { grid-template-columns:minmax(0,1fr); }
+@media(max-width:800px) {
+  [data-skin="fantasy"] .app-shell { padding:12px 18px; }
+  [data-skin="fantasy"] .warehouse-columns,[data-skin="fantasy"] .support-layout { grid-template-columns:minmax(0,1fr); }
+  [data-skin="fantasy"] .hero-detail { order:1; }
+  [data-skin="fantasy"] .quest-card { order:2; }
   [data-skin="fantasy"] .details-column { grid-template-columns:1fr 1fr; }
   [data-skin="fantasy"] .help-card { grid-column:2; grid-row:1/3; }
+  [data-skin="fantasy"] .visitor-list { grid-template-columns:1fr; }
   [data-skin="fantasy"] .mvp-grid { grid-template-columns:1fr; }
 }
-@media(max-width:700px) {
-  [data-skin="fantasy"] .app-shell { display:block; padding:0 20px 96px; }
-  [data-skin="fantasy"] .topbar { height:78px; gap:10px; flex-wrap:nowrap; }
-  [data-skin="fantasy"] .brand { font-size:10px; letter-spacing:.07em; gap:7px; }
-  [data-skin="fantasy"] .brand::before { width:20px; height:28px; }
-  [data-skin="fantasy"] .day-label { gap:4px; font-size:10px; }
-  [data-skin="fantasy"] .day-label span { font-size:9px; }
-  [data-skin="fantasy"] .gold-label { padding:8px 10px; gap:5px; }
-  [data-skin="fantasy"] #game-gold { font-size:11px; }
-  [data-skin="fantasy"] .main-nav { position:fixed; inset:auto 0 0; z-index:20; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0; height:auto; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid #b5c8b31c; background:#111f26f5; backdrop-filter:blur(18px); box-shadow:0 -8px 30px #08111660; }
-  [data-skin="fantasy"] .main-nav a { flex-direction:column; justify-content:center; gap:6px; padding:8px 2px; min-height:52px; border-radius:8px; font-size:10px; }
-  [data-skin="fantasy"] .main-nav a::before { width:20px; height:20px; }
-  [data-skin="fantasy"] .main-nav a.is-active { box-shadow:none; background:#c4ab7312; }
-  [data-skin="fantasy"] [data-screen] { padding:24px 0 30px; }
-  [data-skin="fantasy"] .page-heading { padding:26px 22px; min-height:210px; border-radius:14px; align-items:flex-end; margin-bottom:22px; }
-  [data-skin="fantasy"] .page-heading::before { background-size:auto 115%; background-position:75% center; opacity:.7; }
-  [data-skin="fantasy"] .page-heading::after { background:linear-gradient(0deg,#17272cf5 0%,#17272c99 55%,#17272c22); }
-  [data-skin="fantasy"] .page-heading > div { max-width:100%; }
-  [data-skin="fantasy"] h1 { font-size:27px; letter-spacing:.07em; }
-  [data-skin="fantasy"] .intro,[data-skin="fantasy"] .campaign-view .intro { max-width:none; font-size:11px; line-height:1.9; }
-  [data-skin="fantasy"] .eyebrow { font-size:9px; margin-bottom:10px; }
-  [data-skin="fantasy"] .capacity,[data-skin="fantasy"] .mvp-wallet { top:15px; right:15px; padding:6px 10px; font-size:10px; }
-  [data-skin="fantasy"] .mvp-card { padding:22px; border-radius:14px; }
-  [data-skin="fantasy"] .mvp-card h2 { font-size:18px; }
-  [data-skin="fantasy"] .mvp-card p { font-size:12px; }
-  [data-skin="fantasy"] .mvp-stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  [data-skin="fantasy"] .mvp-stats div { padding:18px; }
-  [data-skin="fantasy"] .mvp-stats strong { font-size:23px; }
-  [data-skin="fantasy"] .mvp-actions .mvp-button,[data-skin="fantasy"] .mvp-actions .mvp-link { flex:1 1 auto; }
-  [data-skin="fantasy"] .warehouse-columns,[data-skin="fantasy"] .stocking-columns { grid-template-columns:minmax(0,1fr); gap:16px; }
-  [data-skin="fantasy"] .board-panel { padding:18px 14px; }
-  [data-skin="fantasy"] .warehouse-board { border-radius:7px; }
-  [data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { border-radius:4px; }
+@media(max-width:550px) {
+  [data-skin="fantasy"] .app-shell { padding:9px 12px 20px; }
+  [data-skin="fantasy"] .topbar { min-height:70px; height:auto; padding:12px; gap:8px; flex-wrap:wrap; }
+  [data-skin="fantasy"] .brand { font-size:11px; letter-spacing:.1em; }
+  [data-skin="fantasy"] .brand::before { margin-right:5px; font-size:9px; }
+  [data-skin="fantasy"] .day-label { order:3; width:100%; flex-direction:row; align-items:center; justify-content:space-between; margin:0; gap:5px; }
+  [data-skin="fantasy"] .day-label span { font-size:10px; }
+  [data-skin="fantasy"] .gold-label { margin-left:auto; }
+  [data-skin="fantasy"] #game-gold { font-size:14px; }
+  [data-skin="fantasy"] .main-nav { position:sticky; top:0; z-index:15; }
+  [data-skin="fantasy"] .main-nav a { padding:9px 2px; min-height:44px; font-size:11px; gap:3px; }
+  [data-skin="fantasy"] .main-nav a.is-active::after { display:none; }
+  [data-skin="fantasy"] [data-screen] { padding-top:17px; }
+  [data-skin="fantasy"] .page-heading { gap:10px; padding-bottom:13px; margin-bottom:18px; align-items:flex-start; }
+  [data-skin="fantasy"] h1 { font-size:25px; }
+  [data-skin="fantasy"] .intro,[data-skin="fantasy"] .campaign-view .intro { font-size:11px; line-height:1.8; max-width:none; }
+  [data-skin="fantasy"] .capacity,[data-skin="fantasy"] .mvp-wallet { padding:7px 8px; font-size:10px; }
+  [data-skin="fantasy"] .capacity { margin-top:22px; }
+  [data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel,[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card { padding:16px; }
+  [data-skin="fantasy"] .mvp-card > h2,[data-skin="fantasy"] .panel-heading,[data-skin="fantasy"] .help-card > h2 { margin:-16px -16px 16px; padding:11px 13px; }
+  [data-skin="fantasy"] .warehouse-board { border-width:2px; }
   [data-skin="fantasy"] .warehouse-item::after { font-size:7px; }
-  [data-skin="fantasy"] .details-column { grid-template-columns:1fr; gap:12px; }
+  [data-skin="fantasy"] .details-column { grid-template-columns:1fr; }
   [data-skin="fantasy"] .help-card { grid-column:auto; grid-row:auto; }
-  [data-skin="fantasy"] .detail-card { min-height:160px; }
-  [data-skin="fantasy"] .help-card ul { grid-template-columns:1fr 1fr; gap:15px; }
-  [data-skin="fantasy"] .help-key { min-width:0; }
-  [data-skin="fantasy"] .secondary-button { font-size:11px; }
-  [data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel { padding:20px 14px; }
-  [data-skin="fantasy"] .stock-card { grid-template-rows:auto auto 44px; padding:10px; }
-  [data-skin="fantasy"] .stock-info h3 { font-size:11px; }
-  [data-skin="fantasy"] .stock-action { font-size:10px; padding:8px; }
-  [data-skin="fantasy"] .icon-button { min-width:44px; }
-  [data-skin="fantasy"] .mvp-parchment { padding:28px 22px; }
-  [data-skin="fantasy"] .mvp-parchment li { font-size:13px; }
-  [data-skin="fantasy"] .site-footer { padding-bottom:24px; font-size:8px; }
-  [data-skin="fantasy"] .save-controls { font-size:10px; }
-}
-@media(max-width:360px) {
-  [data-skin="fantasy"] .app-shell { padding-inline:14px; }
-  [data-skin="fantasy"] .brand { font-size:9px; }
-  [data-skin="fantasy"] .day-label span { font-size:8px; }
+  [data-skin="fantasy"] .help-card ul { grid-template-columns:1fr 1fr; gap:12px; }
+  [data-skin="fantasy"] .help-key { display:block; min-width:0; }
+  [data-skin="fantasy"] .party-roster { margin-bottom:18px; padding:3px; }
+  [data-skin="fantasy"] .party-roster button { flex-direction:column; gap:5px; min-height:125px; padding:8px 3px; font-size:13px; }
+  [data-skin="fantasy"] .party-roster small { margin-top:5px; font-size:8px; }
+  [data-skin="fantasy"] .party-roster .scene-actor { width:45px; height:60px; }
+  [data-skin="fantasy"] .merchant-card { padding-left:100px; }
+  [data-skin="fantasy"] .merchant-card > h2 { margin-left:-100px; }
+  [data-skin="fantasy"] .merchant-card > .scene-actor { left:15px; top:48px; }
+  [data-skin="fantasy"] .mvp-stats div { padding:13px; }
+  [data-skin="fantasy"] .mvp-stats strong { font-size:21px; }
+  [data-skin="fantasy"] .visitor-list .visitor-scene { gap:12px; padding:16px 10px; }
+  [data-skin="fantasy"] .visitor-scene > .scene-actor { width:45px; height:60px; }
+  [data-skin="fantasy"] .visitor-list .speech-bubble { padding:10px 12px; }
+  [data-skin="fantasy"] .speech-bubble p { font-size:11px; }
+  [data-skin="fantasy"] .mvp-parchment { padding:24px 20px; }
+  [data-skin="fantasy"] .stock-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 
-/* Tactical ledger: aged silver edges, compact equipment trays and a readable atlas. */
-[data-skin="fantasy"] .mvp-card,[data-skin="fantasy"] .board-panel,[data-skin="fantasy"] .detail-card,[data-skin="fantasy"] .help-card,[data-skin="fantasy"] .stock-list-panel,[data-skin="fantasy"] .shop-shelf-panel {
-  border-radius:5px; border-color:#a9b4a52b; background:linear-gradient(120deg,#7c87760b,transparent 65%),#202b2e; box-shadow:inset 0 1px #cad0b50a,0 8px 25px #050c1228;
-}
-[data-skin="fantasy"] .panel-heading h2,[data-skin="fantasy"] .mvp-card > h2 { border-bottom:1px solid #c7b88325; padding-bottom:13px; letter-spacing:.08em; }
-[data-skin="fantasy"] .main-nav a,[data-skin="fantasy"] .mvp-button,[data-skin="fantasy"] .mvp-link { border-radius:4px; }
-[data-skin="fantasy"] .hero-equipment li { color:#dddcc9; }
-[data-skin="fantasy"] .hero-equipment-art { border-color:#adb69838; background:linear-gradient(135deg,#444c40,#283530); box-shadow:inset 0 1px #d6d3ac12; border-radius:3px; }
-[data-skin="fantasy"] .hero-equipment li small { color:#9eac9d; }
-[data-skin="fantasy"] .quest-map { border-color:#baab7655; border-radius:3px; overflow:hidden; box-shadow:0 10px 30px #0003; }
-[data-skin="fantasy"] .quest-map figcaption { color:#decca1; background:linear-gradient(90deg,#57574040,transparent),#182327; border-bottom:1px solid #c7b88325; font-family:"Yu Mincho",serif; }
-[data-skin="fantasy"] .quest-map-node small { color:#e6bf7a; }
-[data-skin="fantasy"] .warehouse-item:not(.shaped-item),[data-skin="fantasy"] .shape-cell { background:linear-gradient(135deg,#65715a,#3f5147); border-color:#c3c7a23b; border-radius:3px; }
-[data-skin="fantasy"] .warehouse-item.is-selected:not(.shaped-item),[data-skin="fantasy"] .shaped-item.is-selected .shape-cell { background:linear-gradient(135deg,#8b8058,#5e6349); border-color:#dfc885; }
-[data-skin="fantasy"] .warehouse-item .item-glyph:has(.item-art) { width:90%; height:90%; }
+/* Full PNG artwork fits inside every frame with breathing room. */
+[data-skin="fantasy"] .warehouse-item .item-glyph:has(.item-art) { display:flex; align-items:center; justify-content:center; width:76%; height:76%; }
+[data-skin="fantasy"] .shape-art .item-glyph:has(.item-art) { width:100%; height:100%; }
+[data-skin="fantasy"] .scene-actor .item-art { display:block; width:100%; height:100%; }
+[data-skin="fantasy"] .item-art { image-rendering:auto; filter:none; }
+
+[data-skin="fantasy"] .hero-heading .scene-actor { width:100px; height:140px; }
+@media(max-width:550px) { [data-skin="fantasy"] .hero-heading .scene-actor { width:85px; height:120px; } }

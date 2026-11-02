@@ -90,7 +90,7 @@ export function mountWarehouse(root, game) {
       element.setAttribute("aria-pressed", String(ui.selectedInstanceId === item.instanceId));
       if (ui.selectedInstanceId === item.instanceId) element.classList.add("is-selected");
       if (drag?.instanceId === item.instanceId) element.classList.add("is-dragging");
-      element.innerHTML = `<span class="item-glyph" aria-hidden="true">${itemArt(presentation[item.itemId])}</span>`;
+      element.innerHTML = `<span class="item-glyph" aria-hidden="true">${itemArt(presentation[item.itemId], item.rotated)}</span>`;
       applyItemShape(element, item, game);
       board.append(element);
     }

@@ -38,7 +38,9 @@ try {
   await check('per-slot checkboxes enable only their dropdowns, exchange and removal return discounted used gear',()=>{
     page('adventurers');
     const form=get(`${visible} form[data-hero="lina"]`);
-    assert(form.querySelectorAll('[data-gear-toggle]').length===4,'one checkbox per slot');
+    assert(form.querySelectorAll('.hero-equipment [data-gear-toggle]').length===4,'controls inside current equipment list');
+    assert(form.querySelectorAll('.hero-equipment').length===1,'one combined equipment list');
+    assert(form.previousElementSibling.classList.contains('hero-health'),'equipment editor directly below health');
     assert([...form.querySelectorAll('[data-gear-slot]')].every(select=>select.disabled),'dropdowns initially disabled');
     const before=JSON.stringify(game.state);
     for(const [slot,id] of [['weapon','stock-009'],['offhand','stock-003']]){

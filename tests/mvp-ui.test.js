@@ -22,7 +22,7 @@ const visible='[data-screen]:not([hidden])';
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
 function action(name,extra=''){get(`${visible} [data-action="${name}"]${extra}`).click();}
 function step(name='next'){get(`[data-routine="${name}"]`).click();}
-function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);if(gear){const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];form.querySelector(`[data-equip-item="${gear}"]`).click();form.querySelector(`[data-equip-slot="${slot}"]`).click();}form.elements.funds.value=funds;form.requestSubmit();}
+function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);if(gear){const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];form.querySelector(`[data-equip-item="${gear}"]`).click();form.querySelector(`[data-equip-slot="${slot}"]`).click();}for(const increment of [1000,100,10])while(funds>=increment){form.querySelector(`[data-funds-add="${increment}"]`).click();funds-=increment;}form.requestSubmit();}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
@@ -52,7 +52,7 @@ try {
       form.querySelector(`[data-equip-item="${id}"]`).click();
       form.querySelector(`[data-equip-slot="${slot}"]`).click();
     }
-    assert(JSON.stringify(game.state)===before,'draft is temporary');form.elements.funds.value='10';form.requestSubmit();
+    assert(JSON.stringify(game.state)===before,'draft is temporary');form.querySelector('[data-funds-add="10"]').click();form.requestSubmit();
     const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon.instanceId==='stock-009'&&hero.equipment.offhand.instanceId==='stock-003','multiple slots committed');assert(!hero.equipment.body,'unchanged body preserved');
     assert(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,'old sword returned used');
     const nextForm=get(`${visible} form[data-hero="lina"]`);nextForm.querySelector('[data-equip-remove="weapon"]').click();nextForm.requestSubmit();

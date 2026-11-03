@@ -19,7 +19,14 @@ function reset(screen = 'adventurers') {
   root.setPointerCapture = () => {}; root.hasPointerCapture = () => false;
 }
 function choose(item, slot) { get(`[data-equip-item="${item}"]`).click(); get(`[data-equip-slot="${slot}"]`).click(); }
-function submit(funds = 0) { const form = get('form[data-hero]'); form.elements.funds.value = funds; form.requestSubmit(); }
+function setFunds(form, amount) {
+  const reset = form.querySelector('[data-funds-reset]'); if (!reset.disabled) reset.click();
+  for (const increment of [1000,100,10]) while (amount >= increment) {
+    const button = form.querySelector(`[data-funds-add="${increment}"]`); assert(!button.disabled,'funds button available'); button.click(); amount -= increment;
+  }
+  assert(amount === 0,'funds use multiples of ten');
+}
+function submit(funds = 0) { const form = get('form[data-hero]'); setFunds(form,funds); form.requestSubmit(); }
 function event(type, point, pointerType = 'mouse') {
   root.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 17, isPrimary: true, pointerType, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: point.x, clientY: point.y }));
 }
@@ -51,6 +58,25 @@ try {
     assert(Object.keys(hero.equipment).length === 4 && hero.funds === 30 && notices === 1, 'one atomic commit');
     assert(!root.querySelector('.gear-slot.is-pending'), 'draft cleared after commit');
     assert(JSON.stringify(validateSave(makeSave(game.state),skin)) === snapshot(), 'save round trip');
+  });
+  await check('funds buttons count repeated presses, preserve drafts, enforce budget and clear after confirmation', () => {
+    game.state.campaign.gold = 3000; view.render();
+    const before = snapshot(); const form = get('form[data-hero]');
+    assert(!form.querySelector('input[type=number]'),'no numeric funds input');
+    for (const value of [10,10,10,100,100,1000,1000]) get(`[data-funds-add="${value}"]`).click();
+    assert(form.elements.funds.value === '2230','each click adds its denomination');
+    assert(get('[data-funds-total]').textContent.includes('2230'),'visible running total');
+    choose('stock-001','weapon'); assert(form.elements.funds.value === '2230','equipment selection preserves funds');
+    assert(snapshot() === before,'funds draft does not save');
+    get('[data-select-hero="bran"]').click(); assert(get('form[data-hero]').elements.funds.value === '0','per-person draft');
+    get('[data-select-hero="lina"]').click(); assert(get('form[data-hero]').elements.funds.value === '2230','return retains amount');
+    get('form[data-hero]').requestSubmit();
+    assert(game.state.campaign.heroes[0].funds === 2230 && game.state.campaign.gold === 770,'funds committed once');
+    assert(get('form[data-hero]').elements.funds.value === '0','counter resets on success');
+    assert(get('[data-funds-add="1000"]').disabled,'over-budget increment disabled');
+    get('[data-funds-add="100"]').click(); get('[data-funds-reset]').click();
+    assert(get('form[data-hero]').elements.funds.value === '0','clear resets planned amount');
+    assert(game.state.campaign.gold === 770,'clear does not spend money');
   });
   await check('replacement and removal preserve used prices and untouched slots', () => {
     choose('stock-001','weapon'); choose('stock-003','offhand'); submit();
@@ -102,14 +128,16 @@ try {
     game.campaign.support('lina','stock-009',30); game.warehouse.move('stock-004',7,7);
     const items = game.state.warehouse.items;
     for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(game.inventory.canPlace(items,'crystal',x,y,0,8,8))items.push({instanceId:`fill-${x}-${y}`,itemId:'crystal',x,y,rotated:0});
-    view.render(); const before = snapshot(); choose('stock-001','weapon'); submit(25);
+    view.render(); const before = snapshot(); choose('stock-001','weapon'); submit(20);
     assert(snapshot() === before && game.warehouse.canUndo(),'entire state and undo unchanged');
     assert(root.querySelector('.gear-slot.is-pending'),'draft retained after rejection');
+    assert(get('form[data-hero]').elements.funds.value === '20','failed support preserves planned funds');
     assert(get('.mvp-status').classList.contains('is-error'),'error shown');
   });
   await check('locks and support screen share the editor; English copy and layout fit', () => {
     game.campaign.support('lina','stock-001',30); game.campaign.dispatch();
     assert([...root.querySelectorAll('[data-equipment-editor] button')].every(node => node.disabled),'away locked');
+    assert([...root.querySelectorAll('[data-funds-add], [data-funds-reset]')].every(node => node.disabled),'funds locked while away');
     reset('support'); assert(root.querySelectorAll('[data-equip-slot]').length === 4,'same support editor');
     game.i18n.setLocale('en'); view.render();
     assert(get('.gear-editor-hint').textContent.includes('Select warehouse equipment'),'English hint');

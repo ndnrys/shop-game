@@ -148,3 +148,9 @@
 .equipment-editor button:disabled { opacity:.45; cursor:default; }
 .gear-drag-preview { position:fixed; z-index:10000; max-width:180px; padding:10px; border:2px solid #36564b; background:#e5e7d0; color:#343d3d; pointer-events:none; font-size:13px; box-shadow:0 3px 10px #0003; }
 @media(min-width:1000px) { .gear-select { flex-direction:row; align-items:center; } }
+
+.support-funds { min-width:0; margin:12px 0; padding:12px; border:1px solid var(--line); }
+.support-funds legend { padding:0 4px; font-size:13px; }
+.funds-total { display:block; margin-bottom:10px; font-weight:bold; overflow-wrap:anywhere; }
+.funds-buttons { display:flex; flex-wrap:wrap; gap:8px; }
+.funds-buttons .mvp-button { flex:1 1 64px; padding:10px 8px; }

@@ -1,4 +1,8 @@
 export default {
+  "funds.add": "+{amount}",
+  "funds.total": "To add: {amount}",
+  "funds.reset": "Clear",
+
   "equipment.hint": "Select warehouse equipment, then tap its slot, or drag the ↕ handle onto a slot. Confirm support to apply your changes.",
   "equipment.slot": "{slot}: {item}",
   "equipment.removeSlot": "Prepare to remove {slot}",

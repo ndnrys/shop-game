@@ -1,4 +1,8 @@
 export default {
+  "funds.add": "+{amount}",
+  "funds.total": "追加予定：{amount}",
+  "funds.reset": "クリア",
+
   "equipment.hint": "倉庫の装備を選んで装備枠をタップするか、↕をつかんで枠へドラッグしてください。「支援を渡す」で変更を確定します。",
   "equipment.slot": "{slot}：{item}",
   "equipment.removeSlot": "{slot}を外す変更を準備",

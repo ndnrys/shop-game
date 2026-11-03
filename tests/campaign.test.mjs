@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import skin from "../js/data/skins/fantasy/index.js";
 import { createSession } from "../js/application/createSession.js";
 import { calendarDate } from "../js/systems/calendar.js";
-import { successChance } from "../js/systems/expeditions.js";
+
 
 const setup = () => createSession(skin);
 test("purchase pays once, unresolved incoming blocks next day, specialty buyback", () => {
@@ -40,33 +40,25 @@ test("external customers pay for shelf items and a day cannot be sold twice", ()
 test("support transfers unique equipment and funds; expedition locks support", () => {
   const game=setup(); const c=game.state.campaign;
   assert.equal(game.campaign.support('lina','stock-001',30).ok,true);
-  assert.equal(c.gold,370); assert.equal(c.heroes[0].funds,30);
-  const chance=game.campaign.chance();
-  assert.ok(chance>successChance(skin.campaign.heroes,skin.campaign,0));
+  assert.equal(c.gold,370); assert.equal(c.parties[0].funds,30);
+  assert.equal(game.campaign.attack(),9);
   assert.equal(game.campaign.dispatch().ok,true);
-  assert.equal(c.heroes[0].funds,0); assert.equal(c.expedition.heroIds.length,3);
+  assert.equal(c.parties[0].funds,30); assert.equal(c.expedition.heroIds.length,3);
   assert.equal(game.campaign.support('bran',null,10).ok,false);
   const reconstructed=createSession(skin,JSON.parse(JSON.stringify(game.state)));
   assert.deepEqual(reconstructed.state.campaign.expedition,c.expedition);
   c.expedition.roll=0; game.campaign.nextDay();
-  assert.equal(c.day,2); assert.equal(c.defeated,false); assert.equal(c.progress,skin.campaign.quest.progressSuccess); assert.equal(c.expedition,null);
+  assert.equal(c.day,2); assert.equal(c.defeated,false); assert.equal(c.dungeonProgress.forest,9); assert.equal(c.expedition,null);
 });
-test("boss setbacks retain progress, injuries require rest, then departure succeeds", () => {
-  const game=setup(); const c=game.state.campaign;c.progress=100;
-  game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
-  c.expedition.roll=.999;c.expedition.injuryRolls=[0,0,0];c.expedition.recoveryRolls=[0,0,0];
-  game.campaign.nextDay();assert.equal(c.defeated,false);assert.equal(c.progress,100);
-  assert.ok(c.heroes.every(hero=>hero.recoverUntil===3));
-  game.campaign.support('lina',null,30);
-  assert.equal(game.campaign.dispatch().reason,'mvp.error.recovering');
-  game.campaign.nextDay();assert.equal(game.campaign.dispatch().ok,true);
-  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];
-  game.campaign.nextDay();assert.equal(c.defeated,true);
+test("camp threshold clears the village without a separate boss and allows departure", () => {
+  const game=setup(),c=game.state.campaign;c.dungeonProgress={forest:60,camp:139};
+  game.campaign.support('lina','stock-001');assert.equal(game.campaign.dispatch('camp').ok,true);
+  c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
+  assert.equal(c.defeated,true);assert.equal(c.dungeonProgress.camp,140);
   assert.equal(game.campaign.depart([]).ok,false);c.gold=skin.campaign.targetGold;
   assert.equal(game.campaign.quote([]).openingGold,300);assert.equal(game.campaign.quote(['lina']).openingGold,250);
   assert.equal(game.campaign.quote(['lina','lina']).valid,false);
-  assert.equal(game.campaign.depart(['lina']).ok,true);
-  assert.equal(c.region,'next-town');assert.equal(c.gold,250);
+  assert.equal(game.campaign.depart(['lina']).ok,true);assert.equal(c.region,'next-town');
   assert.equal(c.departure.companions[0].equipment.weapon.itemId,'iron_sword');
 });
 test("calendar rollover and relief once per low-money day", () => {
@@ -95,19 +87,18 @@ test("purchase cost allocation and realized gross profit remain distinct from ca
 });
 
 test("equipment occupies independent slots and replaced gear returns used to the warehouse",()=>{
-  const game=setup();const c=game.state.campaign;const hero=c.heroes[0];
+  const game=setup();const c=game.state.campaign;const hero=c.heroes[0];game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';
   for(const id of ['stock-001','stock-003','stock-006','stock-007'])assert.equal(game.campaign.support('lina',id,0).ok,true);
   assert.deepEqual(Object.keys(hero.equipment).sort(),['weapon','offhand','body','accessory'].sort());
   assert.equal(hero.equipment.weapon.itemId,'iron_sword');
   assert.equal(game.campaign.support('lina','stock-009',0).ok,true);
-  assert.equal(hero.equipment.weapon.itemId,'iron_axe');
+  assert.equal(hero.equipment.weapon.itemId,'steel_sword');
   assert.equal(hero.giftedEquipment.length,0);
   assert.equal(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,true);
   assert.equal(game.campaign.returnEquipment,undefined);
   assert.equal(game.warehouse.undo().ok,false);
   assert.equal(game.state.warehouse.items.some(item=>['stock-003','stock-006','stock-007','stock-009'].includes(item.instanceId)),false);
-  const expected=successChance([{ability:12,equipment:hero.equipment}, {ability:10}, {ability:8}],skin.campaign,0);
-  assert.equal(game.campaign.chance(),expected);
+  assert.equal(game.campaign.attack(),9);
 });
 
 test("every visitor speaks even without buying; journal persists after the day ends",()=>{
@@ -124,27 +115,22 @@ test("every visitor speaks even without buying; journal persists after the day e
   assert.equal(c.journal.filter(entry=>entry.type==='visit').length,5);
 });
 
-test("exploration adds progress without clearing; 100% unlocks a separate boss",()=>{
-  const game=setup();const c=game.state.campaign;
-  game.campaign.support('lina','stock-001',30);
-  assert.equal(game.campaign.dispatch('boss').ok,false);
-  assert.equal(game.campaign.dispatch('explore').ok,true);
-  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];
-  game.campaign.nextDay();assert.equal(c.progress,skin.campaign.quest.progressSuccess);assert.equal(c.defeated,false);
-  c.progress=99;game.campaign.support('lina',null,30);game.campaign.dispatch();
-  c.expedition.roll=0;c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
-  assert.equal(c.progress,100);assert.equal(c.defeated,false);assert.ok(c.heroes.every(hero=>hero.level===2));
-  game.campaign.support('lina',null,30);
-  assert.equal(game.campaign.dispatch('explore').ok,false);
-  assert.equal(game.campaign.dispatch('boss').ok,true);
+test("forest threshold caps XP and unlocks the separate camp",()=>{
+  const game=setup(),c=game.state.campaign;game.campaign.support('lina','stock-001');
+  const before=structuredClone(game.state);assert.equal(game.campaign.dispatch('camp').ok,false);assert.deepEqual(game.state,before);
+  c.dungeonProgress.forest=58;assert.equal(game.campaign.dispatch('forest').ok,true);
+  c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
+  assert.deepEqual(c.dungeonProgress,{forest:60,camp:0});assert.equal(c.defeated,false);
+  assert.ok(c.heroes.every(hero=>hero.experience===2));
+  assert.equal(game.campaign.dispatch('forest').ok,false);assert.equal(game.campaign.dispatch('camp').ok,true);
 });
 
-test("setbacks still grant growth and progress, and health recovers on the exact day",()=>{
+test("each return grants deterministic growth and progress, and health recovers on the exact day",()=>{
   const game=setup();const c=game.state.campaign;
   game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
   c.expedition.roll=.999;c.expedition.injuryRolls=[0,.999,.999];c.expedition.recoveryRolls=[.999,0,0];
-  game.campaign.nextDay();assert.equal(c.progress,skin.campaign.quest.progressSetback);
-  assert.equal(c.heroes[0].experience,skin.campaign.quest.experienceSetback);
+  game.campaign.nextDay();assert.equal(c.dungeonProgress.forest,9);
+  assert.equal(c.heroes[0].experience,9);
   assert.equal(c.heroes[0].recoverUntil,5);
   game.campaign.support('lina',null,30);
   for(let i=0;i<3;i++){assert.equal(game.campaign.dispatch().reason,'mvp.error.recovering');game.campaign.nextDay();}

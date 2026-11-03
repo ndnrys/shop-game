@@ -22,7 +22,7 @@ const visible='[data-screen]:not([hidden])';
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
 function action(name,extra=''){get(`${visible} [data-action="${name}"]${extra}`).click();}
 function step(name='next'){get(`[data-routine="${name}"]`).click();}
-function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);if(gear){const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];const checkbox=form.querySelector(`[data-gear-toggle="${slot}"]`);checkbox.checked=true;checkbox.dispatchEvent(new Event('change',{bubbles:true}));form.elements[`gear_${slot}`].value=gear;}form.elements.funds.value=funds;form.requestSubmit();}
+function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();if(gear){const form=get(`${visible} form[data-hero="${id}"]`);const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];form.querySelector(`[data-equip-item="${gear}"]`).click();form.querySelector(`[data-equip-slot="${slot}"]`).click();form.requestSubmit();}if(funds){const form=get(`${visible} form[data-party-funds="party-1"]`);for(const increment of [1000,100,10])while(funds>=increment){form.querySelector(`[data-funds-add="${increment}"]`).click();funds-=increment;}form.requestSubmit();}}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
@@ -36,35 +36,30 @@ try {
     assert([...fixture.querySelectorAll('.main-nav a')].filter(a=>!a.hidden).length===5,'five visible tabs');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"], [data-destination]'),'no departure in tab');
     const before=JSON.stringify(game.state);get(`${visible} [data-select-hero="bran"]`).click();assert(JSON.stringify(game.state)===before,'selection does not save');
-    for(const id of ['bran','noa']){const input=get(`${visible} [data-party="${id}"]`);input.checked=false;input.dispatchEvent(new Event('change',{bubbles:true}));}
+    for(const index of [1,2])get(`${visible} [data-party-id="party-1"][data-party-remove="${index}"]`).click();
     give('lina','stock-001',30);assert(game.state.campaign.heroes[0].equipment.weapon.itemId==='iron_sword','gear transferred');
-    assert(game.state.campaign.partyIds.join()==='lina','single selected party');
+    assert(game.state.campaign.parties[0].members.filter(Boolean).join()==='lina','single selected party');
     page('home');assert(game.state.campaign.phase==='report','tab switching preserves step');step();
   });
-  await check('per-slot checkboxes enable only their dropdowns, exchange and removal return discounted used gear',()=>{
-    page('adventurers');
+  await check('tap equipment drafts commit several slots and removal returns discounted used gear',()=>{
+    game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';page('adventurers');
     const form=get(`${visible} form[data-hero="lina"]`);
-    assert(form.querySelectorAll('.hero-equipment [data-gear-toggle]').length===4,'controls inside current equipment list');
-    assert(form.querySelectorAll('.hero-equipment').length===1,'one combined equipment list');
-    assert(form.previousElementSibling.classList.contains('hero-health'),'equipment editor directly below health');
-    assert([...form.querySelectorAll('[data-gear-slot]')].every(select=>select.disabled),'dropdowns initially disabled');
+    assert(form.querySelectorAll('[data-equip-slot]').length===4,'four equipment slots');
+    assert(!form.querySelector('select'),'no equipment dropdown');
+    assert(form.previousElementSibling.classList.contains('hero-health'),'editor directly below health');
     const before=JSON.stringify(game.state);
     for(const [slot,id] of [['weapon','stock-009'],['offhand','stock-003']]){
-      const checkbox=form.querySelector(`[data-gear-toggle="${slot}"]`);checkbox.checked=true;checkbox.dispatchEvent(new Event('change',{bubbles:true}));
-      assert(!form.elements[`gear_${slot}`].disabled,'checked dropdown enabled');form.elements[`gear_${slot}`].value=id;
-      assert([...form.elements[`gear_${slot}`].options].filter(option=>option.value&&option.value!=='return').every(option=>game.campaign.config.itemSlots[game.state.warehouse.items.find(item=>item.instanceId===option.value)?.itemId]===slot),'slot filters equipment');
+      form.querySelector(`[data-equip-item="${id}"]`).click();
+      form.querySelector(`[data-equip-slot="${slot}"]`).click();
     }
-    // A value in an unchecked dropdown must never be submitted as a change.
-    form.elements.gear_body.value='stock-006';
-    assert(JSON.stringify(game.state)===before,'draft is temporary');form.elements.funds.value='10';form.requestSubmit();
-    const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon.instanceId==='stock-009'&&hero.equipment.offhand.instanceId==='stock-003','multiple slots committed');assert(!hero.equipment.body,'unchecked body ignored');
+    assert(JSON.stringify(game.state)===before,'draft is temporary');form.requestSubmit(); const partyForm=get(`${visible} form[data-party-funds="party-1"]`);partyForm.querySelector('[data-funds-add="10"]').click();partyForm.requestSubmit();
+    const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon.instanceId==='stock-009'&&hero.equipment.offhand.instanceId==='stock-003','multiple slots committed');assert(!hero.equipment.body,'unchanged body preserved');
     assert(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,'old sword returned used');
-    const nextForm=get(`${visible} form[data-hero="lina"]`);const remove=nextForm.querySelector('[data-gear-toggle="weapon"]');remove.checked=true;remove.dispatchEvent(new Event('change',{bubbles:true}));nextForm.elements.gear_weapon.value='return';nextForm.requestSubmit();
-    assert(!hero.equipment.weapon&&hero.equipment.offhand,'only checked slot removed');
-    const axe=game.state.warehouse.items.find(item=>item.instanceId==='stock-009');assert(axe.used&&game.price(axe)===50,'used axe half price');
+    const nextForm=get(`${visible} form[data-hero="lina"]`);nextForm.querySelector('[data-equip-remove="weapon"]').click();nextForm.requestSubmit();
+    assert(!hero.equipment.weapon&&hero.equipment.offhand,'only selected slot removed');
+    const axe=game.state.warehouse.items.find(item=>item.instanceId==='stock-009');assert(axe.used&&game.price(axe)===95,'used axe half price');
     give('lina','stock-001',0);
-    page('warehouse');get('#warehouse-board [data-instance-id="stock-009"]').click();assert(get('#selection-content').textContent.includes('使用済み')&&get('#selection-content').textContent.includes('50 G'),'warehouse condition and price');
-    // Same catalog ID in different conditions must form separate stock cards.
+    page('warehouse');get('#warehouse-board [data-instance-id="stock-009"]').click();assert(get('#selection-content').textContent.includes('使用済み')&&get('#selection-content').textContent.includes('95 G'),'warehouse condition and price');
     const newAxe={...axe,instanceId:'unused-axe',used:false};const pos=game.inventory.findOpenPosition(game.state.warehouse.items,newAxe,0,0,8,8);assert(pos,'room for new axe fixture');game.state.warehouse.items.push({...newAxe,...pos});
     page('home');
   });
@@ -83,15 +78,15 @@ try {
   await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
     assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
     assert(!get('[data-screen="stocking"]').hidden,'stocking shown');
-    const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鉄の斧'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('50 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('100 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
+    const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鋼の剣'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('95 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('190 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     assert(Number(get('#displayed-count').textContent)>0,'shelf rendered');step();
   });
   await check('support shares preparation; map selection enables departure only in support',()=>{
     assert(game.state.campaign.phase==='support','support stage');
-    assert(get(`${visible} [data-party="lina"]`).checked&&!get(`${visible} [data-party="bran"]`).checked,'shared party');
+    assert(get(`${visible} [data-party-id="party-1"][data-party-slot="0"]`).textContent.includes('リナ')&&!game.state.campaign.parties[0].members.includes('bran'),'shared party');
     assert(get('[data-action="dispatch"]').disabled,'destination required');
-    get('[data-destination="outskirts"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
+    get('[data-destination="forest"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
     action('dispatch');assert(game.state.campaign.expedition.heroIds.join()==='lina','selected party dispatched');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"]'),'still no dispatch in tab');
     page('home');step();assert(game.state.campaign.phase==='opening','opening stage');
@@ -106,6 +101,10 @@ try {
     assert(get('[data-screen="home"] .report-ledger'),'previous-day summary');
     const summary=game.state.campaign.journal.find(entry=>entry.type==='summary'&&entry.day===1);
     assert(get('.report-total strong').textContent.includes(String(summary.details.net)),'previous-day net from records');
+    action('reportTab','[data-id="returns"]');
+    const returned=game.state.campaign.journal.find(entry=>entry.type==='dungeonReturn'&&entry.day===2);
+    assert(returned&&get('.report-return').textContent.includes('森')&&get('.report-return').textContent.includes('進度＋'+returned.details.gain),'dungeon return in new business report');
+    action('reportTab','[data-id="accounts"]');
   });
   await check('purchase and support can be skipped; empty shelves can finish a day',()=>{
     step();step('skip');assert(game.state.campaign.phase==='warehouse','skip purchase');step();

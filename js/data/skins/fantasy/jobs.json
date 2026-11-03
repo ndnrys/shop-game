@@ -1,0 +1,38 @@
+{
+  "swordsman": {
+    "nameKey": "jobs.swordsman",
+    "allowedTypes": [
+      "one_handed_sword",
+      "two_handed_sword",
+      "heavy_armor",
+      "light_armor"
+    ],
+    "traitKey": "jobTraits.swordsman",
+    "statBonuses": {
+      "hp": 1
+    }
+  },
+  "warrior": {
+    "nameKey": "jobs.warrior",
+    "allowedTypes": [
+      "one_handed_axe",
+      "two_handed_axe",
+      "two_handed_sword",
+      "heavy_armor"
+    ],
+    "traitKey": "jobTraits.warrior",
+    "statBonuses": {
+      "defense": 1
+    }
+  },
+  "mage": {
+    "nameKey": "jobs.mage",
+    "allowedTypes": [
+      "staff",
+      "light_armor",
+      "cloth_armor"
+    ],
+    "traitKey": "jobTraits.mage",
+    "equippedAttributeBonus": 1
+  }
+}

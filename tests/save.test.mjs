@@ -39,7 +39,7 @@ test('invalid format/version and cross-skin saves are rejected',()=>{
 });
 test('departure snapshot and companion gear survive saving; village operations stop',()=>{
   const game=createSession(skin);const c=game.state.campaign;
-  c.progress=100;game.campaign.support('lina','stock-001',30);game.campaign.dispatch();c.expedition.roll=0;game.campaign.nextDay();c.gold=skin.campaign.targetGold;
+  c.dungeonProgress={forest:60,camp:139};game.campaign.support('lina','stock-001',30);game.campaign.dispatch();c.expedition.roll=0;game.campaign.nextDay();c.gold=skin.campaign.targetGold;
   game.campaign.depart(['lina']);
   const resumed=createSession(skin,validateSave(makeSave(game.state),skin));
   assert.equal(resumed.state.campaign.departure.companions[0].equipment.weapon.itemId,'iron_sword');
@@ -49,15 +49,15 @@ test('departure snapshot and companion gear survive saving; village operations s
 
 test('legacy single-slot equipment migrates without losing gifts or changing pending outcomes',()=>{
   const game=createSession(skin);game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
-  const legacy=makeSave(game.state);legacy.version=1;
+  const legacy=legacySave(game.state);legacy.version=1;
   for(const hero of legacy.state.campaign.heroes){hero.equipment=Object.values(hero.equipment)[0]??null;delete hero.giftedEquipment;}
   const state=validateSave(legacy,skin);
   assert.equal(state.campaign.heroes[0].equipment.weapon.itemId,'iron_sword');
   assert.deepEqual(state.campaign.heroes[1].equipment,{});
-  assert.equal(state.campaign.expedition.roll,game.state.campaign.expedition.roll);
-  assert.equal(state.campaign.expedition.chance,game.state.campaign.expedition.chance);
-  assert.equal(state.campaign.expedition.kind,"explore");
-  assert.equal(state.campaign.progress,0);
+  assert.equal(state.campaign.expedition.legacyOutcome.roll,.1);
+  assert.equal(state.campaign.expedition.legacyOutcome.chance,.8);
+  assert.equal(state.campaign.expedition.legacyOutcome.kind,"explore");
+  assert.deepEqual(state.campaign.dungeonProgress,{forest:0,camp:0});
 });
 
 test('slot assignments and archived gifts roundtrip; duplicate gifts are rejected',()=>{
@@ -85,31 +85,56 @@ test('progress, levels, injuries and recovery dates survive restart',()=>{
   const state=validateSave(makeSave(game.state),skin);assert.deepEqual(state,game.state);
   const resumed=createSession(skin,state);
   assert.equal(resumed.campaign.dispatch().reason,'mvp.error.recovering');
-  assert.equal(state.progress,undefined);assert.equal(state.campaign.progress,skin.campaign.quest.progressSuccess);
+  assert.equal(state.progress,undefined);assert.equal(state.campaign.dungeonProgress.forest,9);
   assert.equal(state.campaign.heroes[0].recoverUntil,5);
-  const invalid=makeSave(game.state);invalid.state.campaign.progress=101;assert.throws(()=>validateSave(invalid,skin));
+  const invalid=makeSave(game.state);invalid.state.campaign.dungeonProgress.forest=61;assert.throws(()=>validateSave(invalid,skin));
   const invalidLevel=makeSave(game.state);invalidLevel.state.campaign.heroes[0].level=0;assert.throws(()=>validateSave(invalidLevel,skin));
 });
 
 test('version 2 pending missions migrate to exploration without rerolling or losing gear',()=>{
   const game=createSession(skin);game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
-  const legacy=makeSave(game.state);legacy.version=2;
+  const legacy=legacySave(game.state);legacy.version=2;
   delete legacy.state.campaign.progress;
   for(const hero of legacy.state.campaign.heroes){delete hero.level;delete hero.experience;delete hero.recoverUntil;}
   delete legacy.state.campaign.expedition.kind;delete legacy.state.campaign.expedition.injuryRolls;delete legacy.state.campaign.expedition.recoveryRolls;
   const state=validateSave(legacy,skin);
-  assert.equal(state.campaign.expedition.roll,game.state.campaign.expedition.roll);
-  assert.equal(state.campaign.expedition.kind,'explore');assert.equal(state.campaign.progress,0);
+  assert.equal(state.campaign.expedition.legacyOutcome.roll,.1);
+  assert.equal(state.campaign.expedition.legacyOutcome.kind,'explore');assert.deepEqual(state.campaign.dungeonProgress,{forest:0,camp:0});
   assert.equal(state.campaign.heroes[0].equipment.weapon.itemId,'iron_sword');
 });
 
 test('previously completed tutorials stay completed when the new target is raised',()=>{
-  const game=createSession(skin);const c=game.state.campaign;c.progress=100;c.defeated=true;c.gold=skin.campaign.targetGold;
+  const game=createSession(skin);const c=game.state.campaign;c.dungeonProgress={forest:60,camp:140};c.defeated=true;c.gold=skin.campaign.targetGold;
   game.campaign.depart(['lina']);
-  const old=makeSave(game.state);old.version=2;delete old.state.campaign.progress;
+  const old=legacySave(game.state);old.version=2;delete old.state.campaign.progress;
   old.state.campaign.departure.villageGold=1200;old.state.campaign.departure.settlement=900;delete old.state.campaign.departure.targetGold;
   for(const hero of [...old.state.campaign.heroes,...old.state.campaign.departure.companions]){delete hero.level;delete hero.experience;delete hero.recoverUntil;}
   const state=validateSave(old,skin);
-  assert.equal(state.campaign.defeated,true);assert.equal(state.campaign.progress,100);assert.equal(state.campaign.region,'next-town');
+  assert.equal(state.campaign.defeated,true);assert.deepEqual(state.campaign.dungeonProgress,{forest:60,camp:140});assert.equal(state.campaign.region,'next-town');
   assert.equal(state.campaign.departure.targetGold,1200);
+});
+
+function legacySave(state) {
+  const saved=makeSave(state);saved.version=8;const c=saved.state.campaign;
+  c.progress=c.defeated?100:0;delete c.dungeonProgress;
+  if(c.expedition){const e=c.expedition;c.expedition={questId:skin.campaign.legacy.questId,kind:'explore',partyId:e.partyId,heroIds:e.heroIds,departedDay:e.departedDay,returnDay:e.returnDay,funds:e.funds,roll:.1,chance:.8,injuryRolls:e.injuryRolls,recoveryRolls:e.recoveryRolls};}
+  return saved;
+}
+
+test('procurement release version 6 migrates hero stats and preserves queued merchant stock',()=>{
+  const game=createSession(skin);
+  assert.equal(game.campaign.startProcurement([{merchantId:'weapons',lots:1},{merchantId:'tools',lots:1}]).ok,true);
+  const old=makeSave(game.state);old.version=6;const c=old.state.campaign;
+  c.progress=0;delete c.dungeonProgress;delete c.parties;c.partyIds=['lina','bran','noa'];
+  for(const hero of c.heroes){hero.funds=0;for(const key of ['hp','attack','defense','pendingGrowth','jobId'])delete hero[key];}
+  const resumed=createSession(skin,validateSave(old,skin));
+  assert.deepEqual(resumed.state.campaign.trade,c.trade);
+  assert.ok(resumed.state.campaign.heroes.every(hero=>hero.hp===3&&hero.attack===3&&hero.defense===3));
+  assert.deepEqual(validateSave(makeSave(resumed.state),skin),resumed.state);
+  for(const merchant of ['weapons','tools']){
+    assert.equal(resumed.state.campaign.trade.merchantId,merchant);
+    for(const item of [...resumed.state.campaign.trade.incoming])assert.equal(resumed.campaign.sellBack(item.instanceId,'incoming').ok,true);
+    assert.equal(resumed.campaign.finishTrade().ok,true);
+  }
+  assert.equal(resumed.state.campaign.trade,null);
 });

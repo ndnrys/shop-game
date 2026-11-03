@@ -1,17 +1,17 @@
 export const itemDefinitions = {
-  steel_sword: { id: "steel_sword", categoryKey: "weapon", width: 1, height: 3, price: 190, materialKey: "iron", rarity: "uncommon", unlockDay: 10 },
-  reinforced_shield: { id: "reinforced_shield", categoryKey: "armor", width: 2, height: 3, price: 160, materialKey: "oak", rarity: "uncommon", unlockDay: 10 },
-  chain_armor: { id: "chain_armor", categoryKey: "armor", width: 2, height: 3, price: 210, materialKey: "iron", rarity: "uncommon", unlockDay: 10 },
-  charm: { id: "charm", categoryKey: "accessory", width: 1, height: 1, price: 145, materialKey: "magicCrystal", rarity: "uncommon", unlockDay: 10 },
+  steel_sword: { id: "steel_sword", equipmentType: "one_handed_sword", categoryKey: "weapon", width: 1, height: 3, price: 190, materialKey: "iron", rarity: "uncommon", unlockDay: 10 },
+  reinforced_shield: { id: "reinforced_shield", equipmentType: "shield", categoryKey: "armor", width: 2, height: 3, price: 160, materialKey: "oak", rarity: "uncommon", unlockDay: 10 },
+  chain_armor: { id: "chain_armor", equipmentType: "heavy_armor", categoryKey: "armor", width: 2, height: 3, price: 210, materialKey: "iron", rarity: "uncommon", unlockDay: 10 },
+  charm: { id: "charm", equipmentType: "accessory", categoryKey: "accessory", width: 1, height: 1, price: 145, materialKey: "magicCrystal", rarity: "uncommon", unlockDay: 10 },
   // Prototype axe: the broad blade occupies the top row, the handle the left column.
-  iron_axe: { id: "iron_axe", categoryKey: "weapon", width: 2, height: 3, shape: [[1, 1], [1, 0], [1, 0]], price: 100, rarity: "common", materialKey: "iron" },
-  iron_sword: { id: "iron_sword", categoryKey: "weapon", width: 1, height: 3, price: 100, rarity: "common", materialKey: "iron" },
+  iron_axe: { id: "iron_axe", equipmentType: "one_handed_axe", categoryKey: "weapon", width: 2, height: 3, shape: [[1, 1], [1, 0], [1, 0]], price: 100, rarity: "common", materialKey: "iron" },
+  iron_sword: { id: "iron_sword", equipmentType: "one_handed_sword", categoryKey: "weapon", width: 1, height: 3, price: 100, rarity: "common", materialKey: "iron" },
   potion: { id: "potion", categoryKey: "medicine", width: 2, height: 2, price: 45, rarity: "common", materialKey: "herb" },
-  oak_shield: { id: "oak_shield", categoryKey: "armor", width: 2, height: 3, price: 80, rarity: "common", materialKey: "oak" },
+  oak_shield: { id: "oak_shield", equipmentType: "shield", categoryKey: "armor", width: 2, height: 3, price: 80, rarity: "common", materialKey: "oak" },
   crystal: { id: "crystal", categoryKey: "material", width: 1, height: 1, price: 130, rarity: "uncommon", materialKey: "magicCrystal" },
   herb_bundle: { id: "herb_bundle", categoryKey: "material", width: 2, height: 1, price: 20, rarity: "common", materialKey: "herb" },
-  leather_armor: { id: "leather_armor", categoryKey: "armor", width: 2, height: 3, price: 120, rarity: "common", materialKey: "leather" },
-  silver_ring: { id: "silver_ring", categoryKey: "accessory", width: 1, height: 1, price: 95, rarity: "uncommon", materialKey: "silver" },
+  leather_armor: { id: "leather_armor", equipmentType: "light_armor", categoryKey: "armor", width: 2, height: 3, price: 120, rarity: "common", materialKey: "leather" },
+  silver_ring: { id: "silver_ring", equipmentType: "accessory", categoryKey: "accessory", width: 1, height: 1, price: 95, rarity: "uncommon", materialKey: "silver" },
   bread: { id: "bread", categoryKey: "food", width: 2, height: 1, price: 15, rarity: "common", materialKey: "wheat" },
 };
 

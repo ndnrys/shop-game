@@ -9,6 +9,19 @@ import { mountWarehouse } from '../js/ui/warehouse.js';
 import { mountStocking } from '../js/ui/stocking.js';
 import { applyTranslations } from '../js/ui/i18n.js';
 const game=createSession({...skin,id:'routine-preview'});
+// Preview-only fixture: each companion has one unallocated level-up.
+if (new URLSearchParams(location.search).has('growth')) {
+  for (const hero of game.state.campaign.heroes) {
+    hero.level += 1;
+    hero.pendingGrowth = 1;
+  }
+}
+
+if(new URLSearchParams(location.search).has('dungeons')){
+  game.state.campaign.phase='support';
+  game.campaign.support('lina','stock-001');
+}
+
 for(const [key,value] of Object.entries(skin.theme))document.documentElement.style.setProperty(key,value);
 document.documentElement.dataset.skin='fantasy';
 const app=mountScreens(document,game,[...['home','purchase','support','journal','residents','adventurers'].map(id=>({id,mount:mountCampaign})),{id:'settings',mount:()=>({render(){},destroy(){}})},{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}]);

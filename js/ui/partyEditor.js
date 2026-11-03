@@ -9,7 +9,7 @@ export function mountPartyEditor(root, game, announce) {
   let scrollFrame = null;
   const win = root.ownerDocument.defaultView;
   const t = (key, values) => escape(i18n.t(key, values));
-  const name = id => i18n.t(`mvp.hero.${id}`);
+  const name = id => i18n.t(actions.config.characters.find(character => character.id === id)?.nameKey ?? `mvp.hero.${id}`);
   const busy = () => Boolean(state.campaign.expedition || state.campaign.trade || state.campaign.region !== 'village');
   const listen = (target, type, handler) => target.addEventListener(type, handler, { signal: events.signal });
   const art = id => {

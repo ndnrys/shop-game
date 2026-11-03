@@ -1,4 +1,15 @@
+import jobs from "./jobs.en.json" with { type: "json" };
+import characters from "./characters.en.json" with { type: "json" };
+import chapters from "./chapters.en.json" with { type: "json" };
 export default {
+  "dungeonDescriptions.camp": "Clear Captain Gad’s encampment and secure the village.",
+  "dungeonDescriptions.forest": "Clear the forest around the village.",
+  "equipmentTypes.mace": "Mace",
+  "equipmentTypes.spellbook": "Spellbook",
+  "equipmentTypes.arrow": "Arrows",
+  "equipmentTypes.bow": "Bow",
+  "equipmentTypes.spear": "Spear",
+  ...jobs, ...characters, ...chapters,
   "dungeons.forest": "Forest",
   "dungeons.camp": "Encampment",
 
@@ -29,12 +40,12 @@ export default {
   "items.iron_axe": "Iron axe", "items.short.iron_axe": "Axe", "items.iron_sword": "Iron sword", "items.short.iron_sword": "Sword", "items.potion": "Healing potion", "items.short.potion": "Potion", "items.oak_shield": "Oak shield", "items.short.oak_shield": "Shield", "items.crystal": "Magic crystal", "items.short.crystal": "Crystal", "items.herb_bundle": "Herb bundle", "items.short.herb_bundle": "Herbs", "items.leather_armor": "Leather armor", "items.short.leather_armor": "Armor", "items.silver_ring": "Silver ring", "items.short.silver_ring": "Ring", "items.bread": "Traveler's bread", "items.short.bread": "Bread", "items.steel_sword": "Steel sword", "items.short.steel_sword": "Steel", "items.reinforced_shield": "Reinforced shield", "items.short.reinforced_shield": "Shield+", "items.chain_armor": "Chainmail", "items.short.chain_armor": "Mail", "items.charm": "Protective charm", "items.short.charm": "Charm",
   "categories.weapon": "Weapon", "categories.medicine": "Medicine", "categories.armor": "Armor", "categories.material": "Material", "categories.accessory": "Accessory", "categories.food": "Food",
   "materials.iron": "Iron", "materials.herb": "Herbs", "materials.oak": "Oak", "materials.magicCrystal": "Magic crystal", "materials.leather": "Leather", "materials.silver": "Silver", "materials.wheat": "Wheat",
-  "mvp.title.adventurers": "Adventurers", "mvp.subtitle.adventurers": "Prepare your party, equipment and funds here. Depart during the daily Support step.", "mvp.title.residents": "Village residents", "mvp.subtitle.residents": "The people and facilities of the village.",
+  "mvp.title.adventurers": "Companions", "mvp.subtitle.adventurers": "Prepare your party, equipment and funds here. Depart during the daily Support step.", "mvp.title.residents": "Village residents", "mvp.subtitle.residents": "The people and facilities of the village.",
   "residents.carpenter.name": "Carpenter", "residents.carpenter.description": "Warehouse and shelf expansions are planned for a future update.", "residents.church.name": "Church", "residents.church.description": "Request revival for fallen adventurers.",
   "mvp.roster.status": "Lv.{level} · {status}", "mvp.roster": "Supported party", "mvp.roster.ready": "Ready", "mvp.roster.injured": "Recovering",
   "mvp.map.title": "Village surroundings", "mvp.map.description": "A map of the road from the village to the forest and monster encampment.", "mvp.map.village": "Village Shop", "mvp.map.outskirts": "Nearby woods", "mvp.map.camp": "Monster camp", "mvp.map.stronghold": "Deep stronghold", "mvp.map.current": "Exploring", "mvp.map.cleared": "Secured", "mvp.map.boss": "Leader found",
   "mvp.nav.home": "Shop", "mvp.nav.purchase": "Buy stock", "mvp.nav.support": "Support", "mvp.nav.journal": "Journal",
-  "mvp.title.home": "Village Shop", "mvp.title.purchase": "Merchant trade", "mvp.title.support": "Support adventurers", "mvp.title.journal": "Shopkeeper's journal",
+  "mvp.title.home": "Village Shop", "mvp.title.purchase": "Merchant trade", "mvp.title.support": "Support companions", "mvp.title.journal": "Shopkeeper's journal",
   "mvp.subtitle.home": "Trade, support your companions and make the village safe. Save for a shop in the next town.", "mvp.subtitle.purchase": "70% specialty items, 30% other items. Keep what you need and sell the rest back to this merchant.", "mvp.subtitle.support": "Equip and fund your three companions. Your selected party departs together on one expedition.", "mvp.subtitle.journal": "A dated record of your business and companions.",
   "mvp.date": "Year {year} · {season} {day}", "mvp.season.0": "Spring", "mvp.season.1": "Summer", "mvp.season.2": "Autumn", "mvp.season.3": "Winter",
   "mvp.nextDay": "End the day", "mvp.open": "Open and sell to customers", "mvp.closed": "Already opened today", "mvp.openHint": "Sell shelved items to visiting adventurers. You can open once per day.",

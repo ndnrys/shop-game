@@ -1,6 +1,8 @@
+import { chapterOverview } from './chapters.js';
+import { expeditionAttributeBonus } from './attributes.js';
 import { expeditionMembers, expeditionRisks, resolveHealth } from './health.js';
 import { random } from './random.js';
-import { advanceDungeon, allDungeonsCleared, partyAttack } from './dungeons.js';
+import { advanceDungeon, partyAttack } from './dungeons.js';
 
 export function equipmentPower(hero, config) {
   return Object.values(hero.equipment ?? {}).reduce((sum, item) => sum + (config.gearPower[item.itemId] ?? 0), 0);
@@ -14,6 +16,7 @@ export function planExpedition(campaign, config, definitions, dungeonId, partyId
     dungeonId, partyId, heroIds,
     departedDay: campaign.day, returnDay: campaign.day + dungeon.duration,
     attackPower: partyAttack(campaign, config, definitions, partyId), funds: party.funds,
+    experienceBonusPercent: expeditionAttributeBonus(campaign, config, definitions, dungeonId, partyId).percent,
     risks: expeditionRisks(campaign, config, definitions, dungeonId, partyId).members,
     severityRolls: heroIds.map(() => random(campaign)),
     injuryRolls: heroIds.map(() => random(campaign)),
@@ -42,12 +45,12 @@ export function resolveExpedition(campaign, config) {
   } else {
     const result = advanceDungeon(campaign, config, dungeon.id, expedition.attackPower);
     if (!result.ok) throw new Error('Pending expedition dungeon is unavailable');
-    experience = result.gain;
+    experience = Math.floor(result.gain * (100 + (expedition.experienceBonusPercent ?? 0)) / 100);
     injuryChance = config.quest.injuryChance;
     events.push({ type: 'dungeonReturn', details: { dungeonId: dungeon.id, partyId: expedition.partyId, gain: result.gain, progress: result.progress, required: dungeon.requiredProgress, experience } });
     if (result.cleared) events.push({ type: 'dungeonClear', details: { dungeonId: dungeon.id } });
   }
-  if (!campaign.defeated && allDungeonsCleared(campaign, config)) {
+  if (!campaign.defeated && chapterOverview(campaign, config).cleared) {
     campaign.defeated = true;
     events.push({ type: 'villageSecured', details: {} });
   }

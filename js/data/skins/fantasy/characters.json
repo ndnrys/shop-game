@@ -1,0 +1,609 @@
+[
+  {
+    "id": "kyle",
+    "nameKey": "characters.kyle.name",
+    "descriptionKey": null,
+    "joinChapter": 0,
+    "initialJobId": "adventurer",
+    "initialLevel": 1,
+    "initialStats": {
+      "hp": 3,
+      "attack": 4,
+      "defense": 2,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "gares",
+    "nameKey": "characters.gares.name",
+    "descriptionKey": null,
+    "joinChapter": 0,
+    "initialJobId": "warrior",
+    "initialLevel": 1,
+    "initialStats": {
+      "hp": 4,
+      "attack": 2,
+      "defense": 3,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "mira",
+    "nameKey": "characters.mira.name",
+    "descriptionKey": null,
+    "joinChapter": 0,
+    "initialJobId": "mage",
+    "initialLevel": 1,
+    "initialStats": {
+      "hp": 4,
+      "attack": 1,
+      "defense": 3,
+      "attributes": {
+        "fire": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "leon",
+    "nameKey": "characters.leon.name",
+    "descriptionKey": null,
+    "joinChapter": 1,
+    "initialJobId": "warrior",
+    "initialLevel": 3,
+    "initialStats": {
+      "hp": 5,
+      "attack": 4,
+      "defense": 6,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "sena",
+    "nameKey": "characters.sena.name",
+    "descriptionKey": null,
+    "joinChapter": 1,
+    "initialJobId": "adventurer",
+    "initialLevel": 3,
+    "initialStats": {
+      "hp": 4,
+      "attack": 5,
+      "defense": 5,
+      "attributes": {
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "elma",
+    "nameKey": "characters.elma.name",
+    "descriptionKey": null,
+    "joinChapter": 1,
+    "initialJobId": "mage",
+    "initialLevel": 3,
+    "initialStats": {
+      "hp": 5,
+      "attack": 3,
+      "defense": 5,
+      "attributes": {
+        "water": 1,
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "dario",
+    "nameKey": "characters.dario.name",
+    "descriptionKey": null,
+    "joinChapter": 2,
+    "initialJobId": "warrior",
+    "initialLevel": 5,
+    "initialStats": {
+      "hp": 7,
+      "attack": 5,
+      "defense": 9,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "finn",
+    "nameKey": "characters.finn.name",
+    "descriptionKey": null,
+    "joinChapter": 2,
+    "initialJobId": "adventurer",
+    "initialLevel": 5,
+    "initialStats": {
+      "hp": 5,
+      "attack": 9,
+      "defense": 6,
+      "attributes": {
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "roze",
+    "nameKey": "characters.roze.name",
+    "descriptionKey": null,
+    "joinChapter": 2,
+    "initialJobId": "mage",
+    "initialLevel": 5,
+    "initialStats": {
+      "hp": 8,
+      "attack": 3,
+      "defense": 8,
+      "attributes": {
+        "fire": 2
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "volk",
+    "nameKey": "characters.volk.name",
+    "descriptionKey": null,
+    "joinChapter": 3,
+    "initialJobId": "warrior",
+    "initialLevel": 7,
+    "initialStats": {
+      "hp": 10,
+      "attack": 9,
+      "defense": 8,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "nina",
+    "nameKey": "characters.nina.name",
+    "descriptionKey": null,
+    "joinChapter": 3,
+    "initialJobId": "adventurer",
+    "initialLevel": 7,
+    "initialStats": {
+      "hp": 7,
+      "attack": 11,
+      "defense": 8,
+      "attributes": {
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "toma",
+    "nameKey": "characters.toma.name",
+    "descriptionKey": null,
+    "joinChapter": 3,
+    "initialJobId": "mage",
+    "initialLevel": 7,
+    "initialStats": {
+      "hp": 9,
+      "attack": 5,
+      "defense": 11,
+      "attributes": {
+        "wind": 2
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "adele",
+    "nameKey": "characters.adele.name",
+    "descriptionKey": null,
+    "joinChapter": 4,
+    "initialJobId": "warrior",
+    "initialLevel": 9,
+    "initialStats": {
+      "hp": 11,
+      "attack": 10,
+      "defense": 12,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "raz",
+    "nameKey": "characters.raz.name",
+    "descriptionKey": null,
+    "joinChapter": 4,
+    "initialJobId": "adventurer",
+    "initialLevel": 9,
+    "initialStats": {
+      "hp": 9,
+      "attack": 14,
+      "defense": 9,
+      "attributes": {
+        "fire": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "iris",
+    "nameKey": "characters.iris.name",
+    "descriptionKey": null,
+    "joinChapter": 4,
+    "initialJobId": "mage",
+    "initialLevel": 9,
+    "initialStats": {
+      "hp": 13,
+      "attack": 6,
+      "defense": 12,
+      "attributes": {
+        "earth": 2
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "basto",
+    "nameKey": "characters.basto.name",
+    "descriptionKey": null,
+    "joinChapter": 5,
+    "initialJobId": "warrior",
+    "initialLevel": 11,
+    "initialStats": {
+      "hp": 14,
+      "attack": 14,
+      "defense": 11,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "sara",
+    "nameKey": "characters.sara.name",
+    "descriptionKey": null,
+    "joinChapter": 5,
+    "initialJobId": "adventurer",
+    "initialLevel": 11,
+    "initialStats": {
+      "hp": 11,
+      "attack": 16,
+      "defense": 11,
+      "attributes": {
+        "water": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "nadim",
+    "nameKey": "characters.nadim.name",
+    "descriptionKey": null,
+    "joinChapter": 5,
+    "initialJobId": "mage",
+    "initialLevel": 11,
+    "initialStats": {
+      "hp": 15,
+      "attack": 8,
+      "defense": 14,
+      "attributes": {
+        "water": 2
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "dina",
+    "nameKey": "characters.dina.name",
+    "descriptionKey": null,
+    "joinChapter": 6,
+    "initialJobId": "warrior",
+    "initialLevel": 13,
+    "initialStats": {
+      "hp": 15,
+      "attack": 14,
+      "defense": 15,
+      "attributes": {
+        "earth": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "ork",
+    "nameKey": "characters.ork.name",
+    "descriptionKey": null,
+    "joinChapter": 6,
+    "initialJobId": "adventurer",
+    "initialLevel": 13,
+    "initialStats": {
+      "hp": 18,
+      "attack": 13,
+      "defense": 13,
+      "attributes": {
+        "earth": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "luca",
+    "nameKey": "characters.luca.name",
+    "descriptionKey": null,
+    "joinChapter": 6,
+    "initialJobId": "mage",
+    "initialLevel": 13,
+    "initialStats": {
+      "hp": 16,
+      "attack": 10,
+      "defense": 17,
+      "attributes": {
+        "fire": 1,
+        "earth": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "zek",
+    "nameKey": "characters.zek.name",
+    "descriptionKey": null,
+    "joinChapter": 7,
+    "initialJobId": "warrior",
+    "initialLevel": 15,
+    "initialStats": {
+      "hp": 18,
+      "attack": 18,
+      "defense": 15,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "rize",
+    "nameKey": "characters.rize.name",
+    "descriptionKey": null,
+    "joinChapter": 7,
+    "initialJobId": "adventurer",
+    "initialLevel": 15,
+    "initialStats": {
+      "hp": 15,
+      "attack": 20,
+      "defense": 15,
+      "attributes": {
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "mel",
+    "nameKey": "characters.mel.name",
+    "descriptionKey": null,
+    "joinChapter": 7,
+    "initialJobId": "mage",
+    "initialLevel": 15,
+    "initialStats": {
+      "hp": 20,
+      "attack": 11,
+      "defense": 18,
+      "attributes": {
+        "water": 1,
+        "earth": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "oswald",
+    "nameKey": "characters.oswald.name",
+    "descriptionKey": null,
+    "joinChapter": 8,
+    "initialJobId": "heavy_knight",
+    "initialLevel": 17,
+    "initialStats": {
+      "hp": 22,
+      "attack": 14,
+      "defense": 21,
+      "attributes": {}
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "vera",
+    "nameKey": "characters.vera.name",
+    "descriptionKey": null,
+    "joinChapter": 8,
+    "initialJobId": "sniper",
+    "initialLevel": 17,
+    "initialStats": {
+      "hp": 17,
+      "attack": 23,
+      "defense": 16,
+      "attributes": {
+        "wind": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  },
+  {
+    "id": "hakim",
+    "nameKey": "characters.hakim.name",
+    "descriptionKey": null,
+    "joinChapter": 8,
+    "initialJobId": "archmage",
+    "initialLevel": 17,
+    "initialStats": {
+      "hp": 21,
+      "attack": 14,
+      "defense": 20,
+      "attributes": {
+        "fire": 1,
+        "water": 1
+      }
+    },
+    "initialEquipment": null,
+    "images": {
+      "normal": null,
+      "icon": null,
+      "resting": null,
+      "dead": null
+    }
+  }
+]

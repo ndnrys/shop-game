@@ -1,0 +1,575 @@
+{
+  "pending": {
+    "version": 11,
+    "state": {
+      "skinId": "fantasy",
+      "contentVersion": 1,
+      "warehouse": {
+        "columns": 8,
+        "rows": 8,
+        "items": [
+          {
+            "instanceId": "stock-002",
+            "itemId": "potion",
+            "x": 1,
+            "y": 0,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-004",
+            "itemId": "crystal",
+            "x": 6,
+            "y": 0,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-005",
+            "itemId": "herb_bundle",
+            "x": 0,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-006",
+            "itemId": "leather_armor",
+            "x": 2,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-007",
+            "itemId": "silver_ring",
+            "x": 4,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-008",
+            "itemId": "bread",
+            "x": 5,
+            "y": 3,
+            "rotated": false
+          }
+        ]
+      },
+      "shop": {
+        "columns": 5,
+        "rows": 5,
+        "displayedItems": [],
+        "fixtures": [
+          {
+            "id": "fixture-1",
+            "type": "normal",
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "campaign": {
+        "phase": "report",
+        "parties": [
+          {
+            "id": "party-1",
+            "members": [
+              "lina",
+              "bran",
+              "noa"
+            ],
+            "funds": 0
+          }
+        ],
+        "gold": 370,
+        "day": 1,
+        "region": "village",
+        "seed": 3070273981,
+        "nextItemId": 1,
+        "trade": null,
+        "expedition": {
+          "dungeonId": "forest",
+          "partyId": "party-1",
+          "heroIds": [
+            "lina",
+            "bran",
+            "noa"
+          ],
+          "departedDay": 1,
+          "returnDay": 2,
+          "attackPower": 12,
+          "funds": 30,
+          "risks": [
+            {
+              "heroId": "lina",
+              "incident": 0.10338461538461541,
+              "deathShare": 0.026666666666666665,
+              "severeShare": 0.10666666666666666,
+              "death": 0.0027569230769230774,
+              "severe": 0.01102769230769231,
+              "light": 0.08960000000000003,
+              "lightDays": 1,
+              "severeDays": 3
+            },
+            {
+              "heroId": "bran",
+              "incident": 0.14769230769230773,
+              "deathShare": 0.04,
+              "severeShare": 0.16,
+              "death": 0.005907692307692309,
+              "severe": 0.023630769230769236,
+              "light": 0.11815384615384618,
+              "lightDays": 2,
+              "severeDays": 4
+            },
+            {
+              "heroId": "noa",
+              "incident": 0.17230769230769236,
+              "deathShare": 0.04,
+              "severeShare": 0.16,
+              "death": 0.006892307692307694,
+              "severe": 0.027569230769230776,
+              "light": 0.13784615384615387,
+              "lightDays": 2,
+              "severeDays": 4
+            }
+          ],
+          "severityRolls": [
+            0.4753243599552661,
+            0.5163225121796131,
+            0.9656537433620542
+          ],
+          "injuryRolls": [
+            0.999,
+            0.999,
+            0.999
+          ],
+          "recoveryRolls": [
+            0.6204929396044463,
+            0.24636306380853057,
+            0.7148538671899587
+          ]
+        },
+        "defeated": false,
+        "dungeonProgress": {
+          "forest": 0,
+          "camp": 0
+        },
+        "departure": null,
+        "heroes": [
+          {
+            "id": "lina",
+            "jobId": "swordsman",
+            "level": 2,
+            "hp": 5,
+            "attack": 6,
+            "defense": 7,
+            "ability": 12,
+            "equipment": {
+              "weapon": {
+                "instanceId": "stock-001",
+                "itemId": "iron_sword",
+                "x": 0,
+                "y": 0,
+                "rotated": false,
+                "used": true
+              }
+            },
+            "giftedEquipment": [],
+            "pendingGrowth": 1,
+            "experience": 8,
+            "recoverUntil": 0,
+            "health": "healthy"
+          },
+          {
+            "id": "bran",
+            "jobId": "warrior",
+            "level": 1,
+            "hp": 3,
+            "attack": 3,
+            "defense": 3,
+            "ability": 10,
+            "equipment": {
+              "weapon": {
+                "instanceId": "stock-009",
+                "itemId": "iron_axe",
+                "x": 6,
+                "y": 4,
+                "rotated": false,
+                "used": true
+              },
+              "offhand": {
+                "instanceId": "stock-003",
+                "itemId": "oak_shield",
+                "x": 3,
+                "y": 0,
+                "rotated": false,
+                "used": true
+              }
+            },
+            "giftedEquipment": [],
+            "pendingGrowth": 0,
+            "experience": 0,
+            "recoverUntil": 0,
+            "health": "healthy"
+          },
+          {
+            "id": "noa",
+            "jobId": "mage",
+            "level": 1,
+            "hp": 3,
+            "attack": 3,
+            "defense": 3,
+            "ability": 8,
+            "equipment": {},
+            "giftedEquipment": [],
+            "pendingGrowth": 0,
+            "experience": 0,
+            "recoverUntil": 0,
+            "health": "healthy"
+          }
+        ],
+        "today": {
+          "sales": 0,
+          "cogs": 0,
+          "purchasing": 0,
+          "buyback": 0,
+          "support": 30,
+          "rewards": 0,
+          "aid": 0,
+          "revival": 0
+        },
+        "opened": false,
+        "customerVisits": [],
+        "aidDay": 0,
+        "journal": [
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "lina",
+              "itemId": "iron_sword",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "bran",
+              "itemId": "iron_axe",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "bran",
+              "itemId": "oak_shield",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "partySupport",
+            "details": {
+              "amount": 30,
+              "partyId": "party-1"
+            }
+          },
+          {
+            "day": 1,
+            "type": "dungeonDispatch",
+            "details": {
+              "dungeonId": "forest",
+              "partyId": "party-1",
+              "returnDay": 2,
+              "attackPower": 12
+            }
+          }
+        ],
+        "milestones": {
+          "purchased": false,
+          "sold": false,
+          "supported": true
+        }
+      }
+    }
+  },
+  "departure": {
+    "version": 11,
+    "state": {
+      "skinId": "fantasy",
+      "contentVersion": 1,
+      "warehouse": {
+        "columns": 8,
+        "rows": 8,
+        "items": [
+          {
+            "instanceId": "stock-002",
+            "itemId": "potion",
+            "x": 1,
+            "y": 0,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-004",
+            "itemId": "crystal",
+            "x": 6,
+            "y": 0,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-005",
+            "itemId": "herb_bundle",
+            "x": 0,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-006",
+            "itemId": "leather_armor",
+            "x": 2,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-007",
+            "itemId": "silver_ring",
+            "x": 4,
+            "y": 3,
+            "rotated": false
+          },
+          {
+            "instanceId": "stock-008",
+            "itemId": "bread",
+            "x": 5,
+            "y": 3,
+            "rotated": false
+          }
+        ]
+      },
+      "shop": {
+        "columns": 5,
+        "rows": 5,
+        "displayedItems": [],
+        "fixtures": [
+          {
+            "id": "fixture-1",
+            "type": "normal",
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "campaign": {
+        "phase": "report",
+        "parties": [
+          {
+            "id": "party-1",
+            "members": [
+              "lina",
+              "bran",
+              "noa"
+            ],
+            "funds": 0
+          }
+        ],
+        "gold": 250,
+        "day": 1,
+        "region": "next-town",
+        "seed": 3070273981,
+        "nextItemId": 1,
+        "trade": null,
+        "expedition": null,
+        "defeated": true,
+        "dungeonProgress": {
+          "forest": 60,
+          "camp": 140
+        },
+        "departure": {
+          "valid": true,
+          "travel": 50,
+          "openingGold": 250,
+          "settlement": 3200,
+          "targetGold": 3500,
+          "heroIds": [
+            "lina"
+          ],
+          "companions": [
+            {
+              "id": "lina",
+              "jobId": "swordsman",
+              "level": 2,
+              "hp": 5,
+              "attack": 6,
+              "defense": 7,
+              "ability": 12,
+              "equipment": {
+                "weapon": {
+                  "instanceId": "stock-001",
+                  "itemId": "iron_sword",
+                  "x": 0,
+                  "y": 0,
+                  "rotated": false,
+                  "used": true
+                }
+              },
+              "giftedEquipment": [],
+              "pendingGrowth": 1,
+              "experience": 8,
+              "recoverUntil": 0,
+              "health": "healthy"
+            }
+          ],
+          "villageGold": 3500,
+          "day": 1
+        },
+        "heroes": [
+          {
+            "id": "lina",
+            "jobId": "swordsman",
+            "level": 2,
+            "hp": 5,
+            "attack": 6,
+            "defense": 7,
+            "ability": 12,
+            "equipment": {
+              "weapon": {
+                "instanceId": "stock-001",
+                "itemId": "iron_sword",
+                "x": 0,
+                "y": 0,
+                "rotated": false,
+                "used": true
+              }
+            },
+            "giftedEquipment": [],
+            "pendingGrowth": 1,
+            "experience": 8,
+            "recoverUntil": 0,
+            "health": "healthy"
+          },
+          {
+            "id": "bran",
+            "jobId": "warrior",
+            "level": 1,
+            "hp": 3,
+            "attack": 3,
+            "defense": 3,
+            "ability": 10,
+            "equipment": {
+              "weapon": {
+                "instanceId": "stock-009",
+                "itemId": "iron_axe",
+                "x": 6,
+                "y": 4,
+                "rotated": false,
+                "used": true
+              },
+              "offhand": {
+                "instanceId": "stock-003",
+                "itemId": "oak_shield",
+                "x": 3,
+                "y": 0,
+                "rotated": false,
+                "used": true
+              }
+            },
+            "giftedEquipment": [],
+            "pendingGrowth": 0,
+            "experience": 0,
+            "recoverUntil": 0,
+            "health": "healthy"
+          },
+          {
+            "id": "noa",
+            "jobId": "mage",
+            "level": 1,
+            "hp": 3,
+            "attack": 3,
+            "defense": 3,
+            "ability": 8,
+            "equipment": {},
+            "giftedEquipment": [],
+            "pendingGrowth": 0,
+            "experience": 0,
+            "recoverUntil": 0,
+            "health": "healthy"
+          }
+        ],
+        "today": {
+          "sales": 0,
+          "cogs": 0,
+          "purchasing": 0,
+          "buyback": 0,
+          "support": 30,
+          "rewards": 0,
+          "aid": 0,
+          "revival": 0
+        },
+        "opened": false,
+        "customerVisits": [],
+        "aidDay": 0,
+        "journal": [
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "lina",
+              "itemId": "iron_sword",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "bran",
+              "itemId": "iron_axe",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "support",
+            "details": {
+              "heroId": "bran",
+              "itemId": "oak_shield",
+              "amount": 0
+            }
+          },
+          {
+            "day": 1,
+            "type": "partySupport",
+            "details": {
+              "amount": 30,
+              "partyId": "party-1"
+            }
+          },
+          {
+            "day": 1,
+            "type": "dungeonDispatch",
+            "details": {
+              "dungeonId": "forest",
+              "partyId": "party-1",
+              "returnDay": 2,
+              "attackPower": 12
+            }
+          },
+          {
+            "day": 1,
+            "type": "departure",
+            "details": {
+              "count": 1,
+              "amount": 250
+            }
+          }
+        ],
+        "milestones": {
+          "purchased": false,
+          "sold": false,
+          "supported": true
+        }
+      }
+    }
+  }
+}

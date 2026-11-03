@@ -14,6 +14,6 @@ export function effectiveHeroStats(hero, config, definitions) {
     hp: hero.hp + (bonuses.hp ?? 0),
     attack: hero.attack + (bonuses.attack ?? 0),
     defense: hero.defense + (bonuses.defense ?? 0),
-    attributes,
+    attributes: Object.fromEntries([...new Set([...Object.keys(attributes), ...Object.keys(hero.attributes ?? {})])].map(key => [key, (attributes[key] ?? 0) + (hero.attributes?.[key] ?? 0)])),
   };
 }

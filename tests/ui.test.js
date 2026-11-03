@@ -94,7 +94,7 @@ try {
   await check("different skin renders product icons, copy and prices through the same screens", () => {
     reset(features, petFixture());
     applyTranslations(fixture, game.i18n);
-    assert(get('.brand').textContent === 'PET SHOP', 'skin branding');
+    assert(get('.garesd').textContent === 'PET SHOP', 'skin garesding');
     assert(get('[data-i18n="app.storeName"]').textContent === 'ペットグッズショップ', 'skin store name');
     assert(get('#warehouse-board [data-instance-id="brush-1"]').textContent.includes('🪮'), 'skin glyph');
     get('a[href="#stocking"]').click();

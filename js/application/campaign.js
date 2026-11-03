@@ -1,3 +1,5 @@
+import { expeditionAttributeBonus } from '../systems/attributes.js';
+import { chapterOverview } from '../systems/chapters.js';
 import { expeditionMembers, expeditionRisks, canExpedition, reviveHero } from '../systems/health.js';
 import { dungeonStatus, nextDungeon, partyAttack } from "../systems/dungeons.js";
 import { effectiveHeroStats } from "../systems/heroStats.js";
@@ -59,6 +61,8 @@ export function createCampaignActions(state, config, definitions, inventory, com
   }
   return {
     config,
+    chapter: () => chapterOverview(c, config),
+    attributes: (dungeonId, partyId = c.parties[0].id) => expeditionAttributeBonus(c, config, definitions, dungeonId, partyId),
     members: (partyId = c.parties[0].id) => expeditionMembers(c, partyId),
     risks: (dungeonId, partyId = c.parties[0].id) => expeditionRisks(c, config, definitions, dungeonId, partyId),
     available: id => canExpedition(c.heroes.find(hero => hero.id === id), c.day),

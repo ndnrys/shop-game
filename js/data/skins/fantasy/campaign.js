@@ -1,16 +1,28 @@
 import dungeons from "./dungeons.json" with { type: "json" };
-import jobs from "./jobs.json" with { type: "json" };
+import contentJobs from "./jobs.json" with { type: "json" };
+import characters from "./characters.json" with { type: "json" };
+import chapterContent from "./chapters.json" with { type: "json" };
 import equipmentTypes from "./equipmentTypes.json" with { type: "json" };
 import { characterArtwork } from "./artwork.js";
+const jobs = Object.fromEntries(Object.entries(contentJobs).map(([id,job]) => [id, {
+  ...job, statBonuses: job.bonuses,
+  allowedTypes: contentJobs[job.baseJobId].allowedTypes,
+}]));
+const heroes = characters.filter(character => character.joinChapter === 0).map(character => ({
+  id: character.id, nameKey: character.nameKey, jobId: character.initialJobId,
+  level: character.initialLevel, ...character.initialStats, ability: 1,
+}));
 // MVP仮設定。正式なバランスは docs/MVP-確認事項.md で確認する。
 export default {
-  jobs, equipmentTypes, dungeons,
+  jobs, equipmentTypes, dungeons, characters, ...chapterContent,
+  legacyHeroIds: { lina: "kyle", bran: "gares", noa: "mira" },
+  legacyJobIds: { swordsman: "adventurer" },
   presentation: {
     procurement: {
       assets: new URL('../../../../assets/skins/fantasy/procurement-ui/', import.meta.url).href,
       rows: { weapons: { portrait: 'weapon_merchant_portrait.png', label: 'weapon_label.png' }, armor: { portrait: 'armor_merchant_portrait.png', icon: 'armor_icon.png' }, tools: { portrait: 'items_merchant_portrait.png', label: 'items_label.png' } },
     },
-    characters: characterArtwork,
+    characters: { ...characterArtwork, ...Object.fromEntries(characters.map(character => [character.id, { glyph: '◇' }])) },
     report: { icons: Object.fromEntries(["coin", "crates", "hammer", "handshake", "moneybag", "calendar", "clipboard", "rumor"].map(name => [name, new URL(`../../../../assets/skins/fantasy/report-ui/icon_${name}.svg`, import.meta.url).href])) },
     home: {
       background: new URL("../../../../assets/skins/fantasy/main-ui/interior-male.png", import.meta.url).href,
@@ -37,7 +49,7 @@ export default {
   ],
   purchaseChance: .9,
   partySize: 3, maximumParties: 3,
-  heroes: [{ id: "lina", jobId: "swordsman", level: 1, hp: 3, attack: 3, defense: 3, ability: 12 }, { id: "bran", jobId: "warrior", level: 1, hp: 3, attack: 3, defense: 3, ability: 10 }, { id: "noa", jobId: "mage", level: 1, hp: 3, attack: 3, defense: 3, ability: 8 }],
+  heroes,
   equipmentSlots: ["weapon", "offhand", "body", "accessory"],
   itemSlots: { steel_sword: "weapon", reinforced_shield: "offhand", chain_armor: "body", charm: "accessory", iron_sword: "weapon", iron_axe: "weapon", oak_shield: "offhand", leather_armor: "body", silver_ring: "accessory" },
   gearCategories: ["weapon", "armor", "accessory"],

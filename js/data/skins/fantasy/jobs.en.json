@@ -1,0 +1,23 @@
+{
+  "jobs.warrior": "Warrior",
+  "jobs.knight": "Knight",
+  "jobs.paladin": "Paladin",
+  "jobs.heavy_knight": "Heavy Knight",
+  "jobs.fighter": "Fighter",
+  "jobs.swordmaster": "Swordmaster",
+  "jobs.berserker": "Berserker",
+  "jobs.adventurer": "Adventurer",
+  "jobs.ranger": "Ranger",
+  "jobs.sniper": "Sniper",
+  "jobs.arcane_archer": "Arcane Archer",
+  "jobs.explorer": "Explorer",
+  "jobs.skirmisher": "Skirmisher",
+  "jobs.ruin_explorer": "Ruin Explorer",
+  "jobs.mage": "Mage",
+  "jobs.sorcerer": "Sorcerer",
+  "jobs.archmage": "Archmage",
+  "jobs.spellblade": "Spellblade",
+  "jobs.cleric": "Cleric",
+  "jobs.priest": "Priest",
+  "jobs.battle_priest": "Battle Priest"
+}

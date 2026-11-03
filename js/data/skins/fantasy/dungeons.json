@@ -10,7 +10,12 @@
       "y": 52
     },
     "danger": 3,
-    "fundingBase": 100
+    "fundingBase": 100,
+    "chapter": 0,
+    "descriptionKey": "dungeonDescriptions.forest",
+    "image": null,
+    "recommendedAttributes": {},
+    "attributeBonus": 0
   },
   {
     "id": "camp",
@@ -25,6 +30,11 @@
       "y": 43
     },
     "danger": 5,
-    "fundingBase": 300
+    "fundingBase": 300,
+    "chapter": 0,
+    "descriptionKey": "dungeonDescriptions.camp",
+    "image": null,
+    "recommendedAttributes": {},
+    "attributeBonus": 0
   }
 ]

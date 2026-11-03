@@ -5,7 +5,7 @@ import { createSession } from '../js/application/createSession.js';
 import { resolveHealth } from '../js/systems/health.js';
 import { makeSave, validateSave } from '../js/systems/save.js';
 import { dailyTotals } from '../js/systems/sales.js';
-const setup=()=>{const g=createSession(skin);g.campaign.support('lina','stock-001');g.campaign.support('bran','stock-009');return g;};
+const setup=()=>{const g=createSession(skin);g.campaign.support('kyle','stock-001');g.campaign.support('gares','stock-009');return g;};
 test('defense lowers incidents; HP reduces severe injury, death and recovery duration',()=>{
   const g=setup(),c=g.state.campaign,h=c.heroes[0];
   const risk=()=>g.campaign.risks('forest').members[0];const base=risk();h.defense+=10;
@@ -32,9 +32,9 @@ test('death preserves equipment, growth and slots; remaining members alone gain 
   const g=setup(),c=g.state.campaign,gear=structuredClone(c.heroes[0].equipment);
   g.campaign.dispatch();c.expedition.injuryRolls=[0,0,.999];c.expedition.severityRolls=[0,.1,.999];g.campaign.nextDay();
   assert.equal(c.heroes[0].health,'dead');assert.equal(c.heroes[1].health,'severe');assert.equal(c.heroes[2].health,'healthy');
-  assert.deepEqual(c.heroes[0].equipment,gear);assert.equal(c.heroes[0].experience,9);assert.deepEqual(c.parties[0].members,['lina','bran','noa']);
-  g.campaign.support('noa','stock-007');assert.equal(g.campaign.dispatch().ok,true);assert.deepEqual(c.expedition.heroIds,['noa']);assert.equal(c.expedition.attackPower,3);
-  c.expedition.injuryRolls=[.999];g.campaign.nextDay();assert.equal(c.heroes[0].experience,9);assert.equal(c.heroes[2].experience,12);
+  assert.deepEqual(c.heroes[0].equipment,gear);assert.equal(c.heroes[0].experience,7);assert.deepEqual(c.parties[0].members,['kyle','gares','mira']);
+  g.campaign.support('mira','stock-007');assert.equal(g.campaign.dispatch().ok,true);assert.deepEqual(c.expedition.heroIds,['mira']);assert.equal(c.expedition.attackPower,1);
+  c.expedition.injuryRolls=[.999];g.campaign.nextDay();assert.equal(c.heroes[0].experience,7);assert.equal(c.heroes[2].experience,8);
   assert.deepEqual(validateSave(makeSave(g.state),skin),g.state);
 });
 test('funds are consumed exactly once, survive pending saves, reset for next trip and failed dispatch keeps them',()=>{
@@ -46,17 +46,17 @@ test('funds are consumed exactly once, survive pending saves, reset for next tri
 });
 test('revival charges once, appears in cash accounting and recovers on the next day with gear intact',()=>{
   const g=setup(),c=g.state.campaign,h=c.heroes[0];h.health='dead';const gear=structuredClone(h.equipment),gold=c.gold;
-  assert.equal(g.campaign.revive('lina').ok,true);assert.equal(c.gold,gold-100);assert.equal(h.health,'reviving');assert.equal(h.recoverUntil,2);
-  assert.equal(dailyTotals(c.today).net,-100);assert.equal(g.campaign.revive('lina').ok,false);
+  assert.equal(g.campaign.revive('kyle').ok,true);assert.equal(c.gold,gold-100);assert.equal(h.health,'reviving');assert.equal(h.recoverUntil,2);
+  assert.equal(dailyTotals(c.today).net,-100);assert.equal(g.campaign.revive('kyle').ok,false);
   const resumed=createSession(skin,validateSave(makeSave(g.state),skin));resumed.campaign.nextDay();
   assert.equal(resumed.state.campaign.heroes[0].health,'healthy');assert.deepEqual(resumed.state.campaign.heroes[0].equipment,gear);
-  assert.ok(resumed.campaign.members().some(member=>member.id==='lina'));
+  assert.ok(resumed.campaign.members().some(member=>member.id==='kyle'));
 });
 test('all-dead party can earn aid and pay for revival; insufficient money does not mutate',()=>{
   const g=setup(),c=g.state.campaign;c.gold=0;c.heroes.forEach(h=>h.health='dead');
-  const before=structuredClone(g.state);assert.equal(g.campaign.revive('lina').ok,false);assert.deepEqual(g.state,before);
-  g.campaign.relief();g.campaign.nextDay();g.campaign.relief();assert.equal(c.gold,160);assert.equal(g.campaign.revive('lina').ok,true);
-  g.campaign.nextDay();assert.equal(g.campaign.dispatch().ok,true);assert.deepEqual(c.expedition.heroIds,['lina']);
+  const before=structuredClone(g.state);assert.equal(g.campaign.revive('kyle').ok,false);assert.deepEqual(g.state,before);
+  g.campaign.relief();g.campaign.nextDay();g.campaign.relief();assert.equal(c.gold,160);assert.equal(g.campaign.revive('kyle').ok,true);
+  g.campaign.nextDay();assert.equal(g.campaign.dispatch().ok,true);assert.deepEqual(c.expedition.heroIds,['kyle']);
 });
 test('save rejects unknown health, impossible timers, participant injection and forged risk snapshots',()=>{
   for(const mutate of [c=>c.heroes[0].health='unknown',c=>{c.heroes[0].health='dead';c.heroes[0].recoverUntil=3;},c=>{c.heroes[0].health='reviving';c.heroes[0].recoverUntil=0;},c=>c.expedition.risks[0].incident=1,c=>c.expedition.severityRolls[0]=1]){

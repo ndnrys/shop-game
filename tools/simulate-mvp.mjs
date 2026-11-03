@@ -1,4 +1,4 @@
-import { equipmentItemError } from "../js/systems/equipment.js";
+import { equipmentItemError, equipmentLoadoutError } from "../js/systems/equipment.js";
 import fs from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import skin from '../js/data/skins/fantasy/index.js';
@@ -19,7 +19,7 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
     for (const item of goods) {
       const slot = game.campaign.config.itemSlots[item.itemId];
       if (!slot) continue;
-      const hero = c.heroes.filter(hero => !equipmentItemError(hero, item.itemId, game.campaign.config, game.itemDefinitions)).sort((a,b)=>(game.campaign.config.gearPower[a.equipment[slot]?.itemId]??0)-(game.campaign.config.gearPower[b.equipment[slot]?.itemId]??0))[0];
+      const hero = c.heroes.filter(hero => !equipmentItemError(hero, item.itemId, game.campaign.config, game.itemDefinitions) && !equipmentLoadoutError(hero, { ...hero.equipment, [slot]: item }, game.campaign.config, game.itemDefinitions)).sort((a,b)=>(game.campaign.config.gearPower[a.equipment[slot]?.itemId]??0)-(game.campaign.config.gearPower[b.equipment[slot]?.itemId]??0))[0];
       if (!hero) continue;
       const old = game.campaign.config.gearPower[hero.equipment[slot]?.itemId]??0;
       const power = game.campaign.config.gearPower[item.itemId];
@@ -80,10 +80,9 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
     }
     if(c.defeated && dungeonsClearDay===null) dungeonsClearDay=c.day;
     if(c.gold>=game.campaign.config.targetGold && targetDay===null) targetDay=c.day;
-    if(c.defeated && c.gold>=game.campaign.config.targetGold) {
-      check(game.campaign.depart(['lina']),'depart');
+    if(c.defeated) {
       injuries=c.journal.filter(event=>['injury','wound'].includes(event.type)).length;
-      return {seed,policy,cleared:true,day:c.day,gold:c.departure.villageGold,dungeonProgress:{...c.dungeonProgress},expeditions,injuries,recoveryDays,relief,firstDungeonClearDay,dungeonsClearDay,targetDay,reloads,levels:c.heroes.map(hero=>hero.level),equipment:[...equipmentIds]};
+      return {seed,policy,cleared:true,day:c.day,gold:c.gold,dungeonProgress:{...c.dungeonProgress},expeditions,injuries,recoveryDays,relief,firstDungeonClearDay,dungeonsClearDay,targetDay,reloads,levels:c.heroes.map(hero=>hero.level),equipment:[...equipmentIds]};
     }
     if(c.day%5===0){game=createSession(skin,validateSave(makeSave(game.state),skin));c=game.state.campaign;reloads++;}
     check(game.campaign.nextDay(),'next day');
@@ -95,7 +94,7 @@ export function summarize(runs) {
   const cleared=runs.filter(run=>run.cleared);const days=cleared.map(run=>run.day).sort((a,b)=>a-b);
   const mean=values=>values.length?Number((values.reduce((sum,value)=>sum+value,0)/values.length).toFixed(2)):null;
   const percentile=p=>days.length?days[Math.floor((days.length-1)*p)]:null;
-  return {runs:runs.length,cleared:cleared.length,meanDay:mean(days),medianDay:percentile(.5),minDay:days[0]??null,maxDay:days.at(-1)??null,p10:percentile(.1),p90:percentile(.9),within25to35:days.filter(day=>day>=25&&day<=35).length,meanDungeonsClearDay:mean(cleared.map(run=>run.dungeonsClearDay)),meanFirstTargetDay:mean(cleared.map(run=>run.targetDay)),meanExpeditions:mean(cleared.map(run=>run.expeditions)),meanRecoveryDays:mean(cleared.map(run=>run.recoveryDays)),meanInjuries:mean(cleared.map(run=>run.injuries)),byPolicy:Object.fromEntries([...new Set(runs.map(run=>run.policy))].map(policy=>{const subset=runs.filter(run=>run.policy===policy);return [policy,{cleared:subset.filter(run=>run.cleared).length,runs:subset.length,meanDay:mean(subset.filter(run=>run.cleared).map(run=>run.day))}];}))};
+  return {runs:runs.length,cleared:cleared.length,meanDay:mean(days),medianDay:percentile(.5),minDay:days[0]??null,maxDay:days.at(-1)??null,p10:percentile(.1),p90:percentile(.9),within25to35:days.filter(day=>day>=25&&day<=35).length,meanDungeonsClearDay:mean(cleared.map(run=>run.dungeonsClearDay)),meanFirstTargetDay:mean(cleared.map(run=>run.targetDay).filter(day=>day!==null)),meanExpeditions:mean(cleared.map(run=>run.expeditions)),meanRecoveryDays:mean(cleared.map(run=>run.recoveryDays)),meanInjuries:mean(cleared.map(run=>run.injuries)),byPolicy:Object.fromEntries([...new Set(runs.map(run=>run.policy))].map(policy=>{const subset=runs.filter(run=>run.policy===policy);return [policy,{cleared:subset.filter(run=>run.cleared).length,runs:subset.length,meanDay:mean(subset.filter(run=>run.cleared).map(run=>run.day))}];}))};
 }
 
 if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {

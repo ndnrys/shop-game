@@ -43,7 +43,7 @@ test('old displayed instances migrate without warehouse space or ID changes; mal
 });
 test('empty shelves and unsold stock remain across days; shelf goods cannot support heroes',()=>{
  const game=createGame();game.stocking.put('stock-001',0,0);
- assert.equal(game.campaign.support('lina','stock-001').ok,false);
+ assert.equal(game.campaign.support('kyle','stock-001').ok,false);
  const before=structuredClone(game.state.shop);
  assert.equal(game.campaign.nextDay().ok,true);
  assert.deepEqual(game.state.shop,before);

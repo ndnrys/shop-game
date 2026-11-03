@@ -5,7 +5,7 @@ import { createSession } from '../js/application/createSession.js';
 import { advanceDungeon } from '../js/systems/dungeons.js';
 import { makeSave, validateSave } from '../js/systems/save.js';
 
-const setup=()=>{const game=createSession(skin);game.campaign.support('lina','stock-001');return game;};
+const setup=()=>{const game=createSession(skin);game.campaign.support('kyle','stock-001');return game;};
 test('200 required progress with 12 attack clears on the seventeenth return',()=>{
   const config={dungeons:[{id:'example',requiredProgress:200,requires:[]}]},c={dungeonProgress:{example:0}};
   for(let i=0;i<16;i++)assert.equal(advanceDungeon(c,config,'example',12).cleared,false);
@@ -14,20 +14,20 @@ test('200 required progress with 12 attack clears on the seventeenth return',()=
 });
 test('zero funds permit expedition, actual progress grants XP to each member, no reward or success roll',()=>{
   const game=setup(),c=game.state.campaign,gold=c.gold;
-  assert.equal(game.campaign.dispatch('forest').ok,true);assert.equal(c.expedition.attackPower,9);
+  assert.equal(game.campaign.dispatch('forest').ok,true);assert.equal(c.expedition.attackPower,7);
   assert.equal(c.expedition.roll,undefined);assert.equal(c.expedition.chance,undefined);
   c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
-  assert.equal(c.gold,gold);assert.equal(c.parties[0].funds,0);assert.equal(c.dungeonProgress.forest,9);
-  assert.ok(c.heroes.every(hero=>hero.experience===9));
+  assert.equal(c.gold,gold);assert.equal(c.parties[0].funds,0);assert.equal(c.dungeonProgress.forest,7);
+  assert.ok(c.heroes.every(hero=>hero.experience===7));
 });
 test('attack is snapshotted at dispatch and leveling grants pending individual choices',()=>{
   const game=setup(),c=game.state.campaign;c.heroes.forEach(h=>h.experience=18);
-  game.campaign.dispatch();assert.equal(c.expedition.attackPower,9);
+  game.campaign.dispatch();assert.equal(c.expedition.attackPower,7);
   // Growth choices are locked while away; the recorded departure power survives saving.
-  assert.equal(game.campaign.grow('lina','attack').ok,false);
-  assert.equal(validateSave(makeSave(game.state),skin).campaign.expedition.attackPower,9);
+  assert.equal(game.campaign.grow('kyle','attack').ok,false);
+  assert.equal(validateSave(makeSave(game.state),skin).campaign.expedition.attackPower,7);
   c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
-  assert.equal(c.dungeonProgress.forest,9);assert.ok(c.heroes.every(h=>h.level===2&&h.pendingGrowth===1&&h.experience===7));
+  assert.equal(c.dungeonProgress.forest,7);assert.ok(c.heroes.every(h=>h.level===2&&h.pendingGrowth===1&&h.experience===5));
 });
 test('save rejects locked progress, overflows, inconsistent completion and invalid attack snapshots',()=>{
   for(const change of [c=>c.dungeonProgress.camp=1,c=>c.dungeonProgress.forest=61,c=>c.dungeonProgress.extra=0,c=>c.defeated=true,c=>c.expedition.attackPower=0,c=>c.expedition.dungeonId='camp']){

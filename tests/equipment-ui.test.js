@@ -68,8 +68,8 @@ try {
     assert(get('[data-funds-total]').textContent.includes('2230'),'visible running total');
     choose('stock-001','weapon'); assert(form.elements.funds.value === '2230','equipment selection preserves funds');
     assert(snapshot() === before,'funds draft does not save');
-    get('[data-select-hero="bran"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','party funds independent of character');
-    get('[data-select-hero="lina"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','return retains amount');
+    get('[data-select-hero="gares"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','party funds independent of character');
+    get('[data-select-hero="kyle"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','return retains amount');
     get('form[data-party-funds]').requestSubmit();
     assert(game.state.campaign.parties[0].funds === 2230 && game.state.campaign.gold === 770,'funds committed once');
     assert(get('form[data-party-funds]').elements.funds.value === '0','counter resets on success');
@@ -96,7 +96,7 @@ try {
     await check(pointerType + ' character drag moves between parties; cancellation and outside drop do not change state', () => {
       get('[data-create-party]').click();
       function dragMember(end='pointerup',outside=false) {
-        const handle=get('[data-party-drag="lina"]');handle.scrollIntoView({block:'center'});const a=handle.getBoundingClientRect();
+        const handle=get('[data-party-drag="kyle"]');handle.scrollIntoView({block:'center'});const a=handle.getBoundingClientRect();
         handle.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:17,isPrimary:true,pointerType,button:0,clientX:a.x+a.width/2,clientY:a.y+a.height/2}));
         const target=get('[data-party-id="party-2"][data-party-slot="0"]');target.scrollIntoView({block:'center'});const b=target.getBoundingClientRect();
         const point=outside?{x:-20,y:-20}:{x:b.x+b.width/2,y:b.y+b.height/2};
@@ -106,30 +106,30 @@ try {
       const before=snapshot();dragMember('pointercancel');assert(snapshot()===before,'cancel unchanged');
       dragMember('pointerup',true);assert(snapshot()===before,'outside unchanged');dragMember();
       const parties=game.state.campaign.parties;
-      assert(parties[0].members[0]===null && parties[1].members[0]==='lina','member moved without duplication');
-      get('[data-party-pick="noa"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
-      assert(parties[1].members[0]==='noa' && !parties[0].members.includes('noa') && !parties.some(p=>p.members.includes('lina')),'replacement leaves displaced member waiting');
+      assert(parties[0].members[0]===null && parties[1].members[0]==='kyle','member moved without duplication');
+      get('[data-party-pick="mira"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
+      assert(parties[1].members[0]==='mira' && !parties[0].members.includes('mira') && !parties.some(p=>p.members.includes('kyle')),'replacement leaves displaced member waiting');
     });
   }
   await check('support dispatch uses the selected party and only its shared funds', () => {
     reset('support');game.state.campaign.phase='support';view.render();
-    get('[data-create-party]').click();get('[data-party-pick="lina"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
+    get('[data-create-party]').click();get('[data-party-pick="kyle"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
     choose('stock-001','weapon');submit();
     for(const [partyId,amount] of [['party-1',30],['party-2',60]]) { const form=get(`[data-party-funds="${partyId}"]`);setFunds(form,amount);form.requestSubmit(); }
     get('[data-expedition-party="party-2"]').click();get('[data-destination="forest"]').click();get('[data-action="dispatch"]').click();
     const c=game.state.campaign;
-    assert(c.expedition.partyId==='party-2' && c.expedition.heroIds.join()==='lina' && c.expedition.funds===60,'selected party dispatched');
+    assert(c.expedition.partyId==='party-2' && c.expedition.heroIds.join()==='kyle' && c.expedition.funds===60,'selected party dispatched');
     assert(c.parties[0].funds===30 && c.parties[1].funds===0,'other funds preserved');
     assert(get('[data-create-party]').disabled && [...root.querySelectorAll('[data-party-slot]')].every(node=>node.disabled),'editing locked while away');
   });
   await check('job labels, equipment types and disabled candidates follow the selected adventurer',()=>{
-    assert(get('.hero-job').textContent.includes('剣士'),'Lina job shown');
+    assert(get('.hero-job').textContent.includes('冒険者'),'Lina job shown');
     assert(get('[data-equip-item="stock-009"]').disabled && get('[data-equip-drag="stock-009"]').disabled,'swordsman cannot choose or drag axe');
     assert(get('[data-equip-item="stock-001"]').textContent.includes('片手剣'),'weapon type shown');
-    get('[data-select-hero="bran"]').click();assert(get('.hero-job').textContent.includes('戦士'),'Bran job shown');
-    assert(!get('[data-equip-item="stock-009"]').disabled && get('[data-equip-item="stock-001"]').disabled && get('[data-equip-item="stock-006"]').disabled,'warrior permissions');
-    get('[data-select-hero="noa"]').click();assert(get('.hero-job').textContent.includes('魔法使い'),'Noa job shown');
-    assert(get('[data-equip-item="stock-001"]').disabled && !get('[data-equip-item="stock-006"]').disabled && !get('[data-equip-item="stock-003"]').disabled,'mage light armor and shared shield');
+    get('[data-select-hero="gares"]').click();assert(get('.hero-job').textContent.includes('戦士'),'Bran job shown');
+    assert(!get('[data-equip-item="stock-009"]').disabled && !get('[data-equip-item="stock-001"]').disabled && !get('[data-equip-item="stock-006"]').disabled,'warrior permissions');
+    get('[data-select-hero="mira"]').click();assert(get('.hero-job').textContent.includes('魔法使い'),'Noa job shown');
+    assert(!get('[data-equip-item="stock-001"]').disabled && !get('[data-equip-item="stock-006"]').disabled && !get('[data-equip-item="stock-003"]').disabled,'mage light armor and shared shield');
   });
   await check('two-handed preview rejects shield conflict and accepts a prepared shield removal',()=>{
     const custom=structuredClone(skin);custom.itemDefinitions.iron_sword.equipmentType='two_handed_sword';reset('adventurers',custom);
@@ -142,13 +142,13 @@ try {
   });
   await check('job traits show fixed totals and mage applies one bonus per equipped attribute',()=>{
     assert(get('.hero-trait').textContent.includes('HP＋1'),'swordsman trait shown');
-    assert(root.textContent.includes('HP 4・攻撃 3・防御 3'),'fixed HP included once');
-    get('[data-select-hero="bran"]').click();assert(root.textContent.includes('HP 3・攻撃 3・防御 4'),'warrior defense included once');
+    assert(root.textContent.includes('HP 4・攻撃 4・防御 2'),'fixed HP included once');
+    get('[data-select-hero="gares"]').click();assert(root.textContent.includes('HP 4・攻撃 2・防御 4'),'warrior defense included once');
     const custom=structuredClone(skin);custom.itemDefinitions.leather_armor.attributes={fire:1};custom.itemDefinitions.silver_ring.attributes={fire:1};
-    reset('adventurers',custom);get('[data-select-hero="noa"]').click();
-    assert(get('.hero-attributes').textContent.includes('なし'),'no attribute without equipment');
-    choose('stock-006','body');submit();assert(get('.hero-attributes').textContent.includes('炎＋2'),'one piece plus trait');
-    choose('stock-007','accessory');submit();assert(get('.hero-attributes').textContent.includes('炎＋3'),'two pieces plus one trait');
+    reset('adventurers',custom);get('[data-select-hero="mira"]').click();
+    assert(get('.hero-attributes').textContent.includes('炎＋1'),'native attribute without equipment');
+    choose('stock-006','body');submit();assert(get('.hero-attributes').textContent.includes('炎＋3'),'one piece plus trait and native');
+    choose('stock-007','accessory');submit();assert(get('.hero-attributes').textContent.includes('炎＋4'),'two pieces plus one trait and native');
   });
   await check('replacement and removal preserve used prices and untouched slots', () => {
     game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';view.render();
@@ -192,14 +192,14 @@ try {
     assert(!root.querySelector('.gear-slot.is-pending') && snapshot() === before,'remove uncommitted gear cancels that draft');
     choose('stock-001','weapon'); get('[data-equip-reset]').click();
     assert(!root.querySelector('.gear-slot.is-pending') && snapshot() === before,'discard temporary');
-    choose('stock-001','weapon'); get('[data-select-hero="bran"]').click();
+    choose('stock-001','weapon'); get('[data-select-hero="gares"]').click();
     assert(!root.querySelector('.gear-slot.is-pending'),'hero switch resets');
     choose('stock-001','weapon'); game.stocking.put('stock-001',0,0);
     assert(!root.querySelector('.gear-slot.is-pending'),'external inventory change resets draft');
   });
   await check('full warehouse refuses entire support, preserves undo and leaves draft for correction', () => {
     const custom=structuredClone(skin);custom.itemDefinitions.iron_sword.equipmentType='two_handed_sword';reset('adventurers',custom);
-    get('[data-select-hero="bran"]').click();game.campaign.support('bran','stock-009',30); game.warehouse.move('stock-004',7,7);
+    get('[data-select-hero="gares"]').click();game.campaign.support('gares','stock-009',30); game.warehouse.move('stock-004',7,7);
     const items = game.state.warehouse.items;
     for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(game.inventory.canPlace(items,'crystal',x,y,0,8,8))items.push({instanceId:`fill-${x}-${y}`,itemId:'crystal',x,y,rotated:0});
     view.render(); const before = snapshot(); choose('stock-001','weapon'); setFunds(get('form[data-party-funds]'),20); get('form[data-hero]').requestSubmit();
@@ -210,7 +210,7 @@ try {
   });
   await check('dungeon selection caps progress and XP, unlocks camp and clears without a boss', () => {
     reset('support');const c=game.state.campaign;c.phase='support';
-    game.campaign.support('lina','stock-001');c.dungeonProgress.forest=58;view.render();
+    game.campaign.support('kyle','stock-001');c.dungeonProgress.forest=58;view.render();
     assert(get('.dungeon-card [data-destination="camp"]').disabled,'camp locked');
     get('.dungeon-card [data-destination="forest"]').click();
     assert(get('.dungeon-preview').textContent.includes('＋2'),'actual capped gain shown');
@@ -228,19 +228,19 @@ try {
   });
   await check('resting and dead companions keep slots while only available members depart; church revives', () => {
     reset('support');const c=game.state.campaign;c.phase='support';
-    game.campaign.support('noa','stock-007');c.heroes[0].health='light';c.heroes[0].recoverUntil=4;c.heroes[1].health='dead';view.render();
+    game.campaign.support('mira','stock-007');c.heroes[0].health='light';c.heroes[0].recoverUntil=4;c.heroes[1].health='dead';view.render();
     assert(get('[data-party-slot="0"]').textContent.includes('軽傷'),'rest displayed in party slot');
     assert(get('[data-party-slot="1"]').textContent.includes('死亡'),'death displayed in party slot');
     assert(root.querySelectorAll('.party-slot.is-unavailable').length===2,'unavailable slots marked');
-    assert(get('.dungeon-preview').textContent.includes('合計攻撃力 3'),'only available power');
+    assert(get('.dungeon-preview').textContent.includes('合計攻撃力 1'),'only available power');
     assert(get('.risk-preview').textContent.includes('参加 1人'),'actual participants');
     get('.dungeon-card [data-destination="forest"]').click();get('[data-action="dispatch"]').click();
-    assert(c.expedition.heroIds.join()==='noa'&&c.parties[0].members.join()==='lina,bran,noa','roster retained');
+    assert(c.expedition.heroIds.join()==='mira'&&c.parties[0].members.join()==='kyle,gares,mira','roster retained');
     c.expedition.injuryRolls=[.999];game.campaign.nextDay();
     view.destroy();unsubscribe();root.dataset.screen='residents';view=mountCampaign(root,game);unsubscribe=game.subscribe(view.render);
-    const gold=c.gold;get('[data-action="revive"][data-id="bran"]').click();
+    const gold=c.gold;get('[data-action="revive"][data-id="gares"]').click();
     assert(c.heroes[1].health==='reviving'&&c.gold===gold-100,'revival commits once');
-    assert(!root.querySelector('[data-action="revive"][data-id="bran"]'),'no repeat payment');
+    assert(!root.querySelector('[data-action="revive"][data-id="gares"]'),'no repeat payment');
     assert(root.textContent.includes('あと1日'),'revival remaining days');
     assert(JSON.stringify(validateSave(makeSave(game.state),skin))===snapshot(),'health save roundtrip');
     game.campaign.nextDay();assert(c.heroes[1].health==='healthy','next-day revival');
@@ -254,8 +254,20 @@ try {
     assert(get('[data-action="dispatch"]').disabled,'no available departure');
     assert(c.parties[0].members.filter(Boolean).length===3&&c.parties[0].funds===30,'slots and funds preserved');
   });
+  await check('chapter enemy shows zero to 100 percent and MVP clear needs no extra fight or gold', () => {
+    reset('support');const c=game.state.campaign;c.phase='support';c.gold=0;c.dungeonProgress={forest:60,camp:139};
+    game.campaign.support('kyle','stock-001');view.render();
+    assert(get('.chapter-overview').textContent.includes('襲撃隊長 ガド'),'enemy from chapter JSON');
+    assert(get('.chapter-overview').textContent.includes('99%'),'percentage from progress');
+    get('.dungeon-card [data-destination="camp"]').click();get('[data-action="dispatch"]').click();
+    c.expedition.injuryRolls.fill(.999);game.campaign.nextDay();
+    assert(get('.chapter-overview').textContent.includes('100%')&&get('.chapter-overview').textContent.includes('MVPクリア'),'enemy defeated at threshold');
+    assert(c.gold===0&&!root.querySelector('[data-destination="boss"]'),'no gold gate or extra boss');
+    game.i18n.setLocale('en');view.render();assert(get('.chapter-overview').textContent.includes('MVP complete'),'clear translated');
+    assert(document.documentElement.scrollWidth<=innerWidth,'chapter layout fits');
+  });
   await check('locks and support screen share the editor; English copy and layout fit', () => {
-    game.campaign.support('lina','stock-001',30); game.campaign.dispatch();
+    game.campaign.support('kyle','stock-001',30); game.campaign.dispatch();
     assert([...root.querySelectorAll('[data-equipment-editor] button')].every(node => node.disabled),'away locked');
     assert([...root.querySelectorAll('[data-funds-add], [data-funds-reset]')].every(node => node.disabled),'funds locked while away');
     reset('support'); assert(root.querySelectorAll('[data-equip-slot]').length === 4,'same support editor');

@@ -19,14 +19,18 @@ if (new URLSearchParams(location.search).has('growth')) {
 
 if(new URLSearchParams(location.search).has('dungeons')){
   game.state.campaign.phase='support';
-  game.campaign.support('lina','stock-001');
+  game.campaign.support('kyle','stock-001');
 }
 
 if(new URLSearchParams(location.search).has('health')){
   const c=game.state.campaign;c.phase='support';
-  game.campaign.support('noa','stock-007');
+  game.campaign.support('mira','stock-007');
   c.heroes[0].health='light';c.heroes[0].recoverUntil=c.day+2;
   c.heroes[1].health='dead';
+}
+
+if(new URLSearchParams(location.search).has('chapterClear')){
+  const c=game.state.campaign;c.phase='support';c.dungeonProgress={forest:60,camp:140};c.defeated=true;c.gold=0;
 }
 
 for(const [key,value] of Object.entries(skin.theme))document.documentElement.style.setProperty(key,value);

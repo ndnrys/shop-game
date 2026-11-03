@@ -28,14 +28,36 @@ export function createSession(skin, state = createGameState(skin)) {
       if (!Array.isArray(config.dungeons) || !config.dungeons.length) throw new Error('Missing dungeon definitions');
       for (const dungeon of config.dungeons) {
         required.push(dungeon.nameKey);
+        if (dungeon.descriptionKey) required.push(dungeon.descriptionKey);
+        if (!Number.isSafeInteger(dungeon.attributeBonus ?? 0) || (dungeon.attributeBonus ?? 0) < 0 || !dungeon.recommendedAttributes || Object.entries(dungeon.recommendedAttributes).some(([key,value]) => !Number.isSafeInteger(value) || value < 0 || !messages['attributes.'+key])) throw new Error('Invalid dungeon attributes');
         if (!Number.isSafeInteger(dungeon.danger) || dungeon.danger < 1 || !Number.isSafeInteger(dungeon.fundingBase) || dungeon.fundingBase < 1 || !dungeon.id || dungeonIds.has(dungeon.id) || !Number.isSafeInteger(dungeon.requiredProgress) || dungeon.requiredProgress < 1 || !Number.isSafeInteger(dungeon.duration) || dungeon.duration < 1 || !Array.isArray(dungeon.requires) || new Set(dungeon.requires).size !== dungeon.requires.length || dungeon.requires.some(id => !dungeonIds.has(id))) throw new Error('Invalid dungeon definitions');
         dungeonIds.add(dungeon.id);
       }
+      const chapterIds = new Set(config.chapters.map(chapter => chapter.id));
+      if (chapterIds.size !== config.chapters.length || !config.releaseProfiles[config.activeRelease]) throw new Error('Invalid release content');
+      for (const profile of Object.values(config.releaseProfiles)) if (!Array.isArray(profile) || profile.some(id => !chapterIds.has(id))) throw new Error('Invalid release chapters');
+      for (const chapter of config.chapters) {
+        required.push(chapter.nameKey,chapter.enemy.nameKey);
+        if (chapter.nextChapterId && !chapterIds.has(chapter.nextChapterId)) throw new Error('Invalid next chapter');
+        if (chapter.clearCondition.enemyId !== chapter.enemy.id || chapter.clearCondition.type !== 'defeatEnemy') throw new Error('Invalid chapter clear condition');
+      }
+      for (const id of config.releaseProfiles[config.activeRelease]) {
+        const chapter = config.chapters.find(entry => entry.id === id);
+        if (!Array.isArray(chapter.dungeonIds) || !chapter.dungeonIds.length || chapter.dungeonIds.some(dungeonId => !dungeonIds.has(dungeonId)) || !chapter.dungeonIds.includes(chapter.enemy.dungeonId)) throw new Error('Active chapter is not configured');
+      }
+      for (const character of config.characters) {
+        required.push(character.nameKey);
+        if (!config.chapters.some(chapter => chapter.number === character.joinChapter) || !config.jobs[character.initialJobId]) throw new Error('Invalid character content');
+        const stats = character.initialStats;
+        if (!Number.isSafeInteger(character.initialLevel) || character.initialLevel < 1 || ['hp','attack','defense'].some(key => !Number.isSafeInteger(stats[key]) || stats[key] < 1) || Object.entries(stats.attributes).some(([key,value]) => !Number.isSafeInteger(value) || value < 0 || !messages['attributes.'+key])) throw new Error('Invalid character stats');
+      }
       for (const hero of config.heroes) if (!Object.hasOwn(config.jobs, hero.jobId)) throw new Error(`Unknown initial job: ${hero.id}`);
       for (const job of Object.values(config.jobs)) {
-        required.push(job.nameKey, job.traitKey);
+        required.push(job.nameKey);
+        if (job.traitKey) required.push(job.traitKey);
         if (job.statBonuses !== undefined && (!job.statBonuses || typeof job.statBonuses !== 'object' || Array.isArray(job.statBonuses) || Object.entries(job.statBonuses).some(([key, value]) => !['hp','attack','defense'].includes(key) || !Number.isSafeInteger(value) || value < 0))) throw new Error('Invalid job stat bonuses');
-        if (job.equippedAttributeBonus !== undefined && (!Number.isSafeInteger(job.equippedAttributeBonus) || job.equippedAttributeBonus < 0)) throw new Error('Invalid job attribute bonus');
+        if (job.equippedAttributeBonus !== undefined && (!Number.isSafeInteger(job.equippedAttributeBonus) || job.equippedAttributeBonus < 0 || job.equippedAttributeBonus > 3)) throw new Error('Invalid job attribute bonus');
+        if (job.classChanges?.some(change => !config.jobs[change.jobId] || (change.requiredLevel !== null && (!Number.isSafeInteger(change.requiredLevel) || change.requiredLevel < 1)))) throw new Error('Invalid class change');
         if (!Array.isArray(job.allowedTypes) || job.allowedTypes.some(type => !config.equipmentTypes[type])) throw new Error('Invalid job equipment types');
       }
       for (const type of Object.values(config.equipmentTypes)) {

@@ -1,11 +1,14 @@
+import { chapterOverview } from './chapters.js';
+import { expeditionAttributeBonus } from './attributes.js';
+import { migrateCompanionContent } from './contentMigration.js';
 import { fixtureDefinitions, initializeShop } from "../data/shopFixtures.js";
 import { expeditionRisks } from './health.js';
-import { dungeonStatus, allDungeonsCleared } from "./dungeons.js";
+import { dungeonStatus } from "./dungeons.js";
 import { migrateLegacyDungeons, legacyExpeditionOutcome } from "./legacyDungeons.js";
 import { equipmentItemError, equipmentLoadoutError } from "./equipment.js";
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -15,7 +18,8 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (value.version < 12 && s.campaign) migrateCompanionContent(s, skin.campaign);
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -51,21 +55,22 @@ export function validateSave(value, skin) {
   if ((value.version < 6 || procurementV6) && s.campaign) {
     const migrateStats = hero => {
       const initial = skin.campaign.heroes.find(entry => entry.id === hero.id);
-      if (!initial || !integer(hero.level, initial.level ?? 1)) reject();
+      if (!initial || !integer(hero.level, 1)) reject();
       hero.hp = initial.hp;
       hero.attack = initial.attack;
       hero.defense = initial.defense;
-      hero.pendingGrowth = hero.level - (initial.level ?? 1);
+      hero.pendingGrowth = hero.level - hero.startingLevel;
     };
     if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateStats);
     if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateStats);
   }
-  if (value.version < 8 && s.campaign) {
+  if (value.version < 12 && s.campaign) {
     const config = skin.campaign;
     const migrateJob = hero => {
+      if (!hero.attributes || typeof hero.attributes !== 'object' || Array.isArray(hero.attributes) || Object.entries(hero.attributes).some(([key,value]) => Object.values(skin.locales).some(messages => !messages['attributes.'+key]) || !integer(value))) reject();
       const initial = config.heroes.find(entry => entry.id === hero.id);
       if (!initial || !hero.equipment || !Array.isArray(hero.giftedEquipment)) reject();
-      hero.jobId = initial.jobId;
+      if (value.version < 8) hero.jobId = initial.jobId;
       for (const [slot, item] of Object.entries(hero.equipment)) {
         if (!skin.itemDefinitions[item?.itemId]) reject();
         if (equipmentItemError(hero, item.itemId, config, skin.itemDefinitions)) {
@@ -110,7 +115,7 @@ export function validateSave(value, skin) {
   if (s.shop.displayedItems.some(i => !fixtureIds.has(i.shelfId))) reject();
   if (skin.campaign) {
     const c = s.campaign; const config = skin.campaign;
-    if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
+    if (!c || c.chapterId !== config.releaseProfiles.mvp[0] || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
     if (value.version < 4) {
       c.phase = c.opened ? 'sales' : c.trade ? 'purchase' : 'report';
       if (!c.parties) c.partyIds = config.heroes.map(hero => hero.id);
@@ -154,10 +159,11 @@ export function validateSave(value, skin) {
     }
     for (const hero of c.heroes) {
       if (!['healthy','light','severe','dead','reviving'].includes(hero.health) || (hero.health === 'dead' && hero.recoverUntil !== 0) || (hero.health === 'reviving' && (hero.recoverUntil <= c.day || hero.recoverUntil > c.day + config.danger.revivalDays)) || (['light','severe'].includes(hero.health) && hero.recoverUntil <= c.day)) reject();
+      if (!hero.attributes || typeof hero.attributes !== 'object' || Array.isArray(hero.attributes) || Object.entries(hero.attributes).some(([key,value]) => Object.values(skin.locales).some(messages => !messages['attributes.'+key]) || !integer(value))) reject();
       const initial = config.heroes.find(entry => entry.id === hero.id);
       if (Object.hasOwn(hero, 'funds') || !Object.hasOwn(config.jobs, hero.jobId)) reject();
       if (equipmentLoadoutError(hero, hero.equipment ?? {}, config, skin.itemDefinitions)) reject();
-      if (!initial || !integer(hero.hp, 1) || !integer(hero.attack, 1) || !integer(hero.defense, 1) || !integer(hero.pendingGrowth) || hero.pendingGrowth > hero.level - (initial.level ?? 1)) reject();
+      if (!initial || !integer(hero.hp, 1) || !integer(hero.attack, 1) || !integer(hero.defense, 1) || !integer(hero.pendingGrowth) || !integer(hero.startingLevel,1) || hero.startingLevel > hero.level || hero.pendingGrowth > hero.level - hero.startingLevel) reject();
       if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.level,1) || !integer(hero.experience) || hero.experience >= config.quest.levelExperience || !integer(hero.recoverUntil) || hero.recoverUntil > c.day + Math.max(config.quest.recoveryMax, config.danger.severeDays)) reject();
       if (!hero.equipment || typeof hero.equipment !== 'object' || Array.isArray(hero.equipment) || !Array.isArray(hero.giftedEquipment) || hero.giftedEquipment.length > 10000) reject();
       for (const [slot, equipped] of Object.entries(hero.equipment)) {
@@ -189,7 +195,7 @@ export function validateSave(value, skin) {
       const progress = c.dungeonProgress[dungeon.id];
       if (!integer(progress) || progress > dungeon.requiredProgress || (progress > 0 && !dungeonStatus(c, config, dungeon.id).unlocked)) reject();
     }
-    if (c.defeated !== allDungeonsCleared(c, config)) reject();
+    if (c.defeated !== chapterOverview(c, config).cleared) reject();
     if (c.expedition !== null) {
       const e = c.expedition;
       const status = e && dungeonStatus(c, config, e.dungeonId);
@@ -201,6 +207,7 @@ export function validateSave(value, skin) {
       } else {
         if (e.legacyRisk !== undefined || e.legacyOutcome !== undefined || !Array.isArray(e.risks) || !Array.isArray(e.severityRolls) || e.risks.length !== e.heroIds.length || e.severityRolls.length !== e.heroIds.length || e.severityRolls.some(roll => !Number.isFinite(roll) || roll < 0 || roll >= 1)) reject();
         const atDeparture = { ...c, day: e.departedDay, parties: c.parties.map(p => p.id === e.partyId ? { ...p, funds: e.funds } : p) };
+        if (e.experienceBonusPercent !== expeditionAttributeBonus(atDeparture, config, skin.itemDefinitions, e.dungeonId, e.partyId).percent) reject();
         const expected = expeditionRisks(atDeparture, config, skin.itemDefinitions, e.dungeonId, e.partyId).members;
         if (expected.length !== e.heroIds.length || expected.some((risk,i) => e.heroIds[i] !== risk.heroId || Object.keys(risk).some(key => risk[key] !== e.risks[i]?.[key]))) reject();
       }

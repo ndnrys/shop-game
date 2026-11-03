@@ -1,5 +1,16 @@
+import jobs from "./jobs.ja.json" with { type: "json" };
+import characters from "./characters.ja.json" with { type: "json" };
+import chapters from "./chapters.ja.json" with { type: "json" };
 import mvp from "./mvp-ja.js";
 export default {
+  "dungeonDescriptions.camp": "襲撃隊長ガドの野営地を攻略し、村の安全を確保する。",
+  "dungeonDescriptions.forest": "村の周囲の森を攻略する。",
+  "equipmentTypes.mace": "メイス",
+  "equipmentTypes.spellbook": "魔導書",
+  "equipmentTypes.arrow": "矢",
+  "equipmentTypes.bow": "弓",
+  "equipmentTypes.spear": "槍",
+  ...jobs, ...characters, ...chapters,
   "dungeons.forest": "森",
   "dungeons.camp": "野営地",
 
@@ -21,7 +32,7 @@ export default {
   "equipmentTypes.staff": "杖",
   "equipmentTypes.heavy_armor": "重装備",
   "equipmentTypes.light_armor": "軽装備",
-  "equipmentTypes.cloth_armor": "布装備",
+  "equipmentTypes.cloth_armor": "服",
   "equipmentTypes.shield": "盾",
   "equipmentTypes.accessory": "装飾品",
 

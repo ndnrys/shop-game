@@ -17,7 +17,7 @@ export function equipmentLoadoutError(hero, equipment, config, definitions) {
   const weapon = definitions[equipment.weapon?.itemId];
   const hands = config.equipmentTypes[weapon?.equipmentType]?.hands ?? weapon?.hands;
   if (weapon && ![1, 2].includes(hands)) return 'equipment.invalidType';
-  if (hands === 2 && equipment.offhand) return 'equipment.twoHandedShield';
+  if (hands === 2 && equipment.offhand && !config.equipmentTypes[weapon.equipmentType].allowedOffhandTypes?.includes(definitions[equipment.offhand.itemId].equipmentType)) return 'equipment.twoHandedShield';
   return null;
 }
 

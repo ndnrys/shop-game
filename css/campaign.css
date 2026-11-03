@@ -193,3 +193,8 @@
 .risk-preview ul { padding-left:20px; }
 .church article { border-top:1px solid var(--line); padding:12px 0; }
 .church h3 { color:var(--ink); }
+
+.chapter-overview progress { width:100%; }
+.chapter-overview h2 { color:var(--ink); }
+.chapter-enemy-art { display:grid; place-items:center; min-height:72px; border:1px dashed var(--line); color:var(--muted); margin:8px 0; }
+.mvp-clear { padding:12px; border:2px solid var(--green-dark); }

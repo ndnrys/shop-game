@@ -1,8 +1,8 @@
 export default {
-  "mvp.title.adventurers": "冒険者", "mvp.subtitle.adventurers": "編成・装備・支度金を事前に準備できます。出発は一日の支援工程で行います。",
+  "mvp.title.adventurers": "仲間", "mvp.subtitle.adventurers": "編成・装備・支度金を事前に準備できます。出発は一日の支援工程で行います。",
   "mvp.title.residents": "村の住人", "mvp.subtitle.residents": "村で暮らす人々と、街の施設。",
   "residents.carpenter.name": "大工", "residents.carpenter.description": "倉庫や店舗のマス目を増築する施設を追加予定です。",
-  "residents.church.name": "教会", "residents.church.description": "死亡した冒険者の蘇生を依頼できます。",
+  "residents.church.name": "教会", "residents.church.description": "死亡した仲間の蘇生を依頼できます。",
 
   "mvp.roster.status": "Lv.{level} · {status}", "mvp.roster": "支援者の編成", "mvp.roster.ready": "派遣可能", "mvp.roster.injured": "療養中",
 
@@ -11,7 +11,7 @@ export default {
   "mvp.map.current": "探索中", "mvp.map.cleared": "安全を確保", "mvp.map.boss": "リーダー出現",
 
   "mvp.nav.home": "経営", "mvp.nav.purchase": "仕入れ", "mvp.nav.support": "支援", "mvp.nav.journal": "日誌",
-  "mvp.title.home": "村のよろず屋", "mvp.title.purchase": "行商人との取引", "mvp.title.support": "冒険者への支援", "mvp.title.journal": "店主の日誌",
+  "mvp.title.home": "村のよろず屋", "mvp.title.purchase": "行商人との取引", "mvp.title.support": "仲間への支援", "mvp.title.journal": "店主の日誌",
   "mvp.subtitle.home": "商売で稼ぎ、仲間を支え、村を安全に。次の街で開く店を目指しましょう。",
   "mvp.subtitle.purchase": "専門の品が70%、それ以外が30%。必要な品を残し、不要品は今の商人へ。",
   "mvp.subtitle.support": "装備と支度金で3人を支援します。編成した仲間でひとつの依頼へ出発します。",

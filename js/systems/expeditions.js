@@ -16,11 +16,12 @@ export function successChance(heroes, config, funds, progress = 0, kind = 'explo
   return Math.min(rules.maximum, Math.max(rules.minimum, rules.base + ability * rules.abilityRate + gear * rules.gearRate + funds * rules.fundsRate - penalty));
 }
 
-export function planExpedition(campaign, config, kind) {
-  const heroes = campaign.heroes.filter(hero => (campaign.partyIds ?? campaign.heroes.map(entry => entry.id)).includes(hero.id));
-  const funds = heroes.reduce((sum, hero) => sum + hero.funds, 0);
+export function planExpedition(campaign, config, kind, partyId = campaign.parties[0].id) {
+  const party = campaign.parties.find(entry => entry.id === partyId);
+  const heroes = party.members.filter(Boolean).map(id => campaign.heroes.find(hero => hero.id === id));
+  const funds = party.funds;
   return {
-    kind, questId: config.quest.id, heroIds: heroes.map(hero => hero.id),
+    kind, partyId, questId: config.quest.id, heroIds: heroes.map(hero => hero.id),
     departedDay: campaign.day, returnDay: campaign.day + Math.max(1, config.quest.duration),
     chance: successChance(heroes, config, funds, campaign.progress, kind),
     roll: random(campaign), funds,

@@ -60,10 +60,10 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
       if(c.heroes.some(hero=>hero.recoverUntil>c.day)) recoveryDays++;
       else {
         const target=policy==='frugal'?30:policy==='generous'?90:60;
-        const funds=c.heroes.reduce((sum,hero)=>sum+hero.funds,0);
+        const funds=c.parties[0].funds;
         const amount=Math.max(0,target-funds);
         if(c.gold>=amount) {
-          if(amount)check(game.campaign.support(c.heroes[0].id,null,amount),'funds');
+          if(amount)check(game.campaign.fundParty(amount),'funds');
           if(c.progress===100 && bossDay===null) bossDay=c.day;
           check(game.campaign.dispatch(),'dispatch');expeditions++;
         }

@@ -1,3 +1,4 @@
+import { setPartyMembers, assignPartyMember, fundParty, createParty } from "../systems/party.js";
 import { growHero } from "../systems/growth.js";
 import { exchangeEquipment } from "../systems/equipment.js";
 import { itemPrice } from "../systems/pricing.js";
@@ -9,8 +10,8 @@ import { addJournal } from "../systems/journal.js";
 export function createCampaignActions(state, config, definitions, inventory, commit) {
   const c = state.campaign;
   c.phase ??= c.opened ? "sales" : c.trade ? "purchase" : "report";
-  c.partyIds ??= c.heroes.map(hero => hero.id);
-  const party = () => c.heroes.filter(hero => c.partyIds.includes(hero.id));
+  const partyData = id => c.parties.find(entry => entry.id === (id ?? c.parties[0].id));
+  const party = id => (partyData(id)?.members ?? []).filter(Boolean).map(heroId => c.heroes.find(hero => hero.id === heroId));
   const fail = reason => ({ ok: false, reason: `mvp.error.${reason}` });
   const ready = () => c.region === "village" && !c.trade;
   const merchant = () => config.merchants.find(entry => entry.id === c.trade?.merchantId);
@@ -24,7 +25,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
   return {
     config,
     quote: ids => departureQuote(c, config, ids),
-    chance: () => successChance(party(), config, party().reduce((sum, hero) => sum + hero.funds, 0), c.progress, c.progress >= 100 ? "boss" : "explore"),
+    chance: partyId => successChance(party(partyId), config, partyData(partyId)?.funds ?? 0, c.progress, c.progress >= 100 ? "boss" : "explore"),
     buyback: value => {
       const item = typeof value === 'string' ? { itemId: value } : value;
       return merchant() ? buybackPrice(definitions[item.itemId], merchant(), itemPrice(definitions[item.itemId], item, config.usedPriceRate)) : 0;
@@ -50,11 +51,23 @@ export function createCampaignActions(state, config, definitions, inventory, com
       if (!ready() || c.expedition) return fail("away");
       return commit(growHero(c, c.heroes.find(hero => hero.id === heroId), choice));
     },
-    setParty(ids) {
+    setParty(ids, partyId = c.parties[0].id) {
       if (!ready() || c.expedition) return fail("away");
-      if (!Array.isArray(ids) || new Set(ids).size !== ids.length || ids.some(id => !c.heroes.some(hero => hero.id === id))) return fail("party");
-      c.partyIds = [...ids];
-      return commit({ ok: true });
+      return commit(setPartyMembers(c, config, partyId, ids));
+    },
+    assignPartySlot(partyId, index, heroId) {
+      if (!ready() || c.expedition) return fail("away");
+      return commit(assignPartyMember(c, config, partyId, index, heroId));
+    },
+    createParty() {
+      if (!ready() || c.expedition) return fail("away");
+      return commit(createParty(c, config));
+    },
+    fundParty(amount, partyId = c.parties[0].id) {
+      if (!ready() || c.expedition) return fail("away");
+      const result = fundParty(c, partyId, amount);
+      if (result.ok) addJournal(state, "partySupport", { amount, partyId });
+      return commit(result);
     },
     startTrade(id, amount) {
       const seller = config.merchants.find(entry => entry.id === id);
@@ -111,7 +124,8 @@ export function createCampaignActions(state, config, definitions, inventory, com
     support(heroId, selection, amount = 0) {
       const hero = c.heroes.find(hero => hero.id === heroId);
       if (!ready() || c.expedition || !hero) return fail("away");
-      if (!Number.isSafeInteger(amount) || amount < 0 || amount > c.gold) return fail("money");
+      const recipient = c.parties.find(entry => entry.members.includes(heroId)) ?? c.parties[0];
+      if (!Number.isSafeInteger(amount) || amount < 0 || amount > c.gold || !Number.isSafeInteger(recipient.funds + amount)) return fail("money");
       // Keep the single-item command for existing callers and simulations.
       let changes = selection ?? {};
       if (typeof selection === 'string') {
@@ -126,11 +140,11 @@ export function createCampaignActions(state, config, definitions, inventory, com
       hero.equipment = result.equipment;
       c.gold -= amount;
       c.today.support += amount;
-      hero.funds += amount;
+      recipient.funds += amount;
       c.milestones.supported = true;
       for (const item of result.returned) addJournal(state, "returnEquipment", { heroId, itemId: item.itemId });
-      for (const [index, item] of result.incoming.entries()) addJournal(state, "support", { heroId, itemId: item.itemId, amount: index === 0 ? amount : 0 });
-      if (!result.incoming.length && amount) addJournal(state, "support", { heroId, itemId: null, amount });
+      for (const item of result.incoming) addJournal(state, "support", { heroId, itemId: item.itemId, amount: 0 });
+      if (amount) addJournal(state, "partySupport", { amount, partyId: recipient.id });
       return commit({ ok: true });
     },
     recoverArchivedEquipment(heroId) {
@@ -144,15 +158,15 @@ export function createCampaignActions(state, config, definitions, inventory, com
       for (const item of result.returned) addJournal(state, "returnEquipment", { heroId, itemId: item.itemId });
       return commit({ ok: true });
     },
-    dispatch(kind = c.progress >= 100 ? "boss" : "explore") {
+    dispatch(kind = c.progress >= 100 ? "boss" : "explore", partyId = c.parties[0].id) {
       if (!ready() || c.expedition || c.defeated) return fail("away");
       if (!["explore", "boss"].includes(kind) || (kind === "boss") !== (c.progress >= 100)) return fail("bossLocked");
-      if (!party().length) return fail("party");
-      if (party().some(hero => hero.recoverUntil > c.day)) return fail("recovering");
-      const funds = party().reduce((sum, hero) => sum + hero.funds, 0);
-      if (funds < config.quest.minimumFunds || party().filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
-      c.expedition = planExpedition(c, config, kind);
-      for (const hero of party()) hero.funds = 0;
+      if (!party(partyId).length) return fail("party");
+      if (party(partyId).some(hero => hero.recoverUntil > c.day)) return fail("recovering");
+      const funds = partyData(partyId).funds;
+      if (funds < config.quest.minimumFunds || party(partyId).filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
+      c.expedition = planExpedition(c, config, kind, partyId);
+      partyData(partyId).funds = 0;
       addJournal(state, "dispatch", { questId: config.quest.id, kind, returnDay: c.expedition.returnDay, chance: Math.round(c.expedition.chance * 100) });
       return commit({ ok: true });
     },

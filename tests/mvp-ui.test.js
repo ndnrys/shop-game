@@ -22,7 +22,7 @@ const visible='[data-screen]:not([hidden])';
 function page(name){get(`a.screen-link[href="#${name}"]`).click();}
 function action(name,extra=''){get(`${visible} [data-action="${name}"]${extra}`).click();}
 function step(name='next'){get(`[data-routine="${name}"]`).click();}
-function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();const form=get(`${visible} form[data-hero="${id}"]`);if(gear){const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];form.querySelector(`[data-equip-item="${gear}"]`).click();form.querySelector(`[data-equip-slot="${slot}"]`).click();}for(const increment of [1000,100,10])while(funds>=increment){form.querySelector(`[data-funds-add="${increment}"]`).click();funds-=increment;}form.requestSubmit();}
+function give(id,gear,funds){get(`${visible} [data-select-hero="${id}"]`).click();if(gear){const form=get(`${visible} form[data-hero="${id}"]`);const item=game.state.warehouse.items.find(item=>item.instanceId===gear);const slot=game.campaign.config.itemSlots[item.itemId];form.querySelector(`[data-equip-item="${gear}"]`).click();form.querySelector(`[data-equip-slot="${slot}"]`).click();form.requestSubmit();}if(funds){const form=get(`${visible} form[data-party-funds="party-1"]`);for(const increment of [1000,100,10])while(funds>=increment){form.querySelector(`[data-funds-add="${increment}"]`).click();funds-=increment;}form.requestSubmit();}}
 async function check(name,fn){await fn();passed++;const li=document.createElement('li');li.textContent=`PASS ${name}`;document.querySelector('#checks').append(li);}
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
@@ -36,9 +36,9 @@ try {
     assert([...fixture.querySelectorAll('.main-nav a')].filter(a=>!a.hidden).length===5,'five visible tabs');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"], [data-destination]'),'no departure in tab');
     const before=JSON.stringify(game.state);get(`${visible} [data-select-hero="bran"]`).click();assert(JSON.stringify(game.state)===before,'selection does not save');
-    for(const id of ['bran','noa']){const input=get(`${visible} [data-party="${id}"]`);input.checked=false;input.dispatchEvent(new Event('change',{bubbles:true}));}
+    for(const index of [1,2])get(`${visible} [data-party-id="party-1"][data-party-remove="${index}"]`).click();
     give('lina','stock-001',30);assert(game.state.campaign.heroes[0].equipment.weapon.itemId==='iron_sword','gear transferred');
-    assert(game.state.campaign.partyIds.join()==='lina','single selected party');
+    assert(game.state.campaign.parties[0].members.filter(Boolean).join()==='lina','single selected party');
     page('home');assert(game.state.campaign.phase==='report','tab switching preserves step');step();
   });
   await check('tap equipment drafts commit several slots and removal returns discounted used gear',()=>{
@@ -52,7 +52,7 @@ try {
       form.querySelector(`[data-equip-item="${id}"]`).click();
       form.querySelector(`[data-equip-slot="${slot}"]`).click();
     }
-    assert(JSON.stringify(game.state)===before,'draft is temporary');form.querySelector('[data-funds-add="10"]').click();form.requestSubmit();
+    assert(JSON.stringify(game.state)===before,'draft is temporary');form.requestSubmit(); const partyForm=get(`${visible} form[data-party-funds="party-1"]`);partyForm.querySelector('[data-funds-add="10"]').click();partyForm.requestSubmit();
     const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon.instanceId==='stock-009'&&hero.equipment.offhand.instanceId==='stock-003','multiple slots committed');assert(!hero.equipment.body,'unchanged body preserved');
     assert(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,'old sword returned used');
     const nextForm=get(`${visible} form[data-hero="lina"]`);nextForm.querySelector('[data-equip-remove="weapon"]').click();nextForm.requestSubmit();
@@ -83,7 +83,7 @@ try {
   });
   await check('support shares preparation; map selection enables departure only in support',()=>{
     assert(game.state.campaign.phase==='support','support stage');
-    assert(get(`${visible} [data-party="lina"]`).checked&&!get(`${visible} [data-party="bran"]`).checked,'shared party');
+    assert(get(`${visible} [data-party-id="party-1"][data-party-slot="0"]`).textContent.includes('リナ')&&!game.state.campaign.parties[0].members.includes('bran'),'shared party');
     assert(get('[data-action="dispatch"]').disabled,'destination required');
     get('[data-destination="outskirts"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
     action('dispatch');assert(game.state.campaign.expedition.heroIds.join()==='lina','selected party dispatched');

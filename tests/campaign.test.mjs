@@ -40,11 +40,11 @@ test("external customers pay for shelf items and a day cannot be sold twice", ()
 test("support transfers unique equipment and funds; expedition locks support", () => {
   const game=setup(); const c=game.state.campaign;
   assert.equal(game.campaign.support('lina','stock-001',30).ok,true);
-  assert.equal(c.gold,370); assert.equal(c.heroes[0].funds,30);
+  assert.equal(c.gold,370); assert.equal(c.parties[0].funds,30);
   const chance=game.campaign.chance();
   assert.ok(chance>successChance(skin.campaign.heroes,skin.campaign,0));
   assert.equal(game.campaign.dispatch().ok,true);
-  assert.equal(c.heroes[0].funds,0); assert.equal(c.expedition.heroIds.length,3);
+  assert.equal(c.parties[0].funds,0); assert.equal(c.expedition.heroIds.length,3);
   assert.equal(game.campaign.support('bran',null,10).ok,false);
   const reconstructed=createSession(skin,JSON.parse(JSON.stringify(game.state)));
   assert.deepEqual(reconstructed.state.campaign.expedition,c.expedition);

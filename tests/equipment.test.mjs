@@ -8,7 +8,7 @@ const setup=()=>createSession(skin);
 test('several equipment slots and funds commit together; replacement returns used gear, removal preserves other slots',()=>{
   const game=setup(), c=game.state.campaign, hero=c.heroes[0];let commits=0;game.subscribe(()=>commits++);
   assert.equal(game.campaign.support('lina',{weapon:'stock-001',offhand:'stock-003'},30).ok,true);
-  assert.equal(commits,1);assert.equal(hero.funds,30);assert.equal(c.gold,370);
+  assert.equal(commits,1);assert.equal(c.parties[0].funds,30);assert.equal(c.gold,370);
   assert.equal(game.campaign.support('lina',{weapon:'stock-009'},10).ok,true);
   assert.equal(hero.equipment.weapon.instanceId,'stock-009');assert.equal(hero.equipment.offhand.instanceId,'stock-003');
   const sword=game.state.warehouse.items.find(item=>item.instanceId==='stock-001');assert.equal(sword.used,true);assert.equal(game.price(sword),50);

@@ -26,7 +26,7 @@ function setFunds(form, amount) {
   }
   assert(amount === 0,'funds use multiples of ten');
 }
-function submit(funds = 0) { const form = get('form[data-hero]'); setFunds(form,funds); form.requestSubmit(); }
+function submit(funds = 0) { get('form[data-hero]').requestSubmit(); if (funds) { const form = get('form[data-party-funds]'); setFunds(form,funds); form.requestSubmit(); } }
 function event(type, point, pointerType = 'mouse') {
   root.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 17, isPrimary: true, pointerType, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: point.x, clientY: point.y }));
 }
@@ -46,7 +46,7 @@ async function check(name, fn) {
   const row = document.createElement('li'); row.textContent = 'PASS ' + name; document.querySelector('#checks').append(row);
 }
 try {
-  await check('four slots, no dropdown; tap choices are temporary and commit with funds', () => {
+  await check('four slots, no dropdown; tap equipment choices and party funds are confirmed separately', () => {
     assert(root.querySelectorAll('[data-equip-slot]').length === 4, 'four slots');
     assert(!root.querySelector('select'), 'no dropdown');
     const before = snapshot(); let notices = 0; const stop = game.subscribe(() => notices++);
@@ -55,28 +55,72 @@ try {
     assert(root.querySelectorAll('.gear-slot.is-pending').length === 4, 'four pending slots');
     submit(30); stop();
     const hero = game.state.campaign.heroes[0];
-    assert(Object.keys(hero.equipment).length === 4 && hero.funds === 30 && notices === 1, 'one atomic commit');
+    assert(Object.keys(hero.equipment).length === 4 && game.state.campaign.parties[0].funds === 30 && notices === 2, 'separate equipment and party commits');
     assert(!root.querySelector('.gear-slot.is-pending'), 'draft cleared after commit');
     assert(JSON.stringify(validateSave(makeSave(game.state),skin)) === snapshot(), 'save round trip');
   });
   await check('funds buttons count repeated presses, preserve drafts, enforce budget and clear after confirmation', () => {
     game.state.campaign.gold = 3000; view.render();
-    const before = snapshot(); const form = get('form[data-hero]');
+    const before = snapshot(); const form = get('form[data-party-funds]');
     assert(!form.querySelector('input[type=number]'),'no numeric funds input');
     for (const value of [10,10,10,100,100,1000,1000]) get(`[data-funds-add="${value}"]`).click();
     assert(form.elements.funds.value === '2230','each click adds its denomination');
     assert(get('[data-funds-total]').textContent.includes('2230'),'visible running total');
     choose('stock-001','weapon'); assert(form.elements.funds.value === '2230','equipment selection preserves funds');
     assert(snapshot() === before,'funds draft does not save');
-    get('[data-select-hero="bran"]').click(); assert(get('form[data-hero]').elements.funds.value === '0','per-person draft');
-    get('[data-select-hero="lina"]').click(); assert(get('form[data-hero]').elements.funds.value === '2230','return retains amount');
-    get('form[data-hero]').requestSubmit();
-    assert(game.state.campaign.heroes[0].funds === 2230 && game.state.campaign.gold === 770,'funds committed once');
-    assert(get('form[data-hero]').elements.funds.value === '0','counter resets on success');
+    get('[data-select-hero="bran"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','party funds independent of character');
+    get('[data-select-hero="lina"]').click(); assert(get('form[data-party-funds]').elements.funds.value === '2230','return retains amount');
+    get('form[data-party-funds]').requestSubmit();
+    assert(game.state.campaign.parties[0].funds === 2230 && game.state.campaign.gold === 770,'funds committed once');
+    assert(get('form[data-party-funds]').elements.funds.value === '0','counter resets on success');
     assert(get('[data-funds-add="1000"]').disabled,'over-budget increment disabled');
     get('[data-funds-add="100"]').click(); get('[data-funds-reset]').click();
-    assert(get('form[data-hero]').elements.funds.value === '0','clear resets planned amount');
+    assert(get('form[data-party-funds]').elements.funds.value === '0','clear resets planned amount');
     assert(game.state.campaign.gold === 770,'clear does not spend money');
+  });
+  await check('plus adds up to three party frames and keeps their funds separate', () => {
+    assert(root.querySelectorAll('.party-frame').length === 1,'one initial party');
+    get('[data-create-party]').click(); get('[data-create-party]').click();
+    assert(root.querySelectorAll('.party-frame').length === 3 && get('[data-create-party]').disabled,'three-party limit');
+    assert(document.documentElement.scrollWidth <= innerWidth,'three parties fit Japanese layout');
+    game.i18n.setLocale('en');view.render();assert(document.documentElement.scrollWidth <= innerWidth,'three parties fit English layout');
+    game.i18n.setLocale('ja');view.render();
+    for(const [partyId,amount] of [['party-1',30],['party-2',100]]) {
+      const form=get(`[data-party-funds="${partyId}"]`);setFunds(form,amount);form.requestSubmit();
+    }
+    assert(game.state.campaign.parties.map(p=>p.funds).join() === '30,100,0','separate confirmed funds');
+    assert(!root.querySelector('form[data-hero] [data-funds-add]'),'no personal funds controls');
+    assert(JSON.stringify(validateSave(makeSave(game.state),skin)) === snapshot(),'multiple parties save round trip');
+  });
+  for(const pointerType of ['mouse','touch']) {
+    await check(pointerType + ' character drag moves between parties; cancellation and outside drop do not change state', () => {
+      get('[data-create-party]').click();
+      function dragMember(end='pointerup',outside=false) {
+        const handle=get('[data-party-drag="lina"]');handle.scrollIntoView({block:'center'});const a=handle.getBoundingClientRect();
+        handle.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:17,isPrimary:true,pointerType,button:0,clientX:a.x+a.width/2,clientY:a.y+a.height/2}));
+        const target=get('[data-party-id="party-2"][data-party-slot="0"]');target.scrollIntoView({block:'center'});const b=target.getBoundingClientRect();
+        const point=outside?{x:-20,y:-20}:{x:b.x+b.width/2,y:b.y+b.height/2};
+        event('pointermove',point,pointerType);assert(document.querySelector('.party-drag-preview'),'character drag preview');
+        event(end,point,pointerType);assert(!document.querySelector('.party-drag-preview'),'character preview cleaned');
+      }
+      const before=snapshot();dragMember('pointercancel');assert(snapshot()===before,'cancel unchanged');
+      dragMember('pointerup',true);assert(snapshot()===before,'outside unchanged');dragMember();
+      const parties=game.state.campaign.parties;
+      assert(parties[0].members[0]===null && parties[1].members[0]==='lina','member moved without duplication');
+      get('[data-party-pick="noa"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
+      assert(parties[1].members[0]==='noa' && !parties[0].members.includes('noa') && !parties.some(p=>p.members.includes('lina')),'replacement leaves displaced member waiting');
+    });
+  }
+  await check('support dispatch uses the selected party and only its shared funds', () => {
+    reset('support');game.state.campaign.phase='support';view.render();
+    get('[data-create-party]').click();get('[data-party-pick="lina"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
+    choose('stock-001','weapon');submit();
+    for(const [partyId,amount] of [['party-1',30],['party-2',60]]) { const form=get(`[data-party-funds="${partyId}"]`);setFunds(form,amount);form.requestSubmit(); }
+    get('[data-expedition-party="party-2"]').click();get('[data-destination="outskirts"]').click();get('[data-action="dispatch"]').click();
+    const c=game.state.campaign;
+    assert(c.expedition.partyId==='party-2' && c.expedition.heroIds.join()==='lina' && c.expedition.funds===60,'selected party dispatched');
+    assert(c.parties[0].funds===30 && c.parties[1].funds===0,'other funds preserved');
+    assert(get('[data-create-party]').disabled && [...root.querySelectorAll('[data-party-slot]')].every(node=>node.disabled),'editing locked while away');
   });
   await check('replacement and removal preserve used prices and untouched slots', () => {
     choose('stock-001','weapon'); choose('stock-003','offhand'); submit();
@@ -128,10 +172,10 @@ try {
     game.campaign.support('lina','stock-009',30); game.warehouse.move('stock-004',7,7);
     const items = game.state.warehouse.items;
     for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(game.inventory.canPlace(items,'crystal',x,y,0,8,8))items.push({instanceId:`fill-${x}-${y}`,itemId:'crystal',x,y,rotated:0});
-    view.render(); const before = snapshot(); choose('stock-001','weapon'); submit(20);
+    view.render(); const before = snapshot(); choose('stock-001','weapon'); setFunds(get('form[data-party-funds]'),20); get('form[data-hero]').requestSubmit();
     assert(snapshot() === before && game.warehouse.canUndo(),'entire state and undo unchanged');
     assert(root.querySelector('.gear-slot.is-pending'),'draft retained after rejection');
-    assert(get('form[data-hero]').elements.funds.value === '20','failed support preserves planned funds');
+    assert(get('form[data-party-funds]').elements.funds.value === '20','failed support preserves planned funds');
     assert(get('.mvp-status').classList.contains('is-error'),'error shown');
   });
   await check('locks and support screen share the editor; English copy and layout fit', () => {

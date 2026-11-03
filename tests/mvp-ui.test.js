@@ -27,7 +27,7 @@ async function check(name,fn){await fn();passed++;const li=document.createElemen
 try {
   await check('five tabs; adventurer preparation shares party, gear and funds without departure controls',()=>{
     page('home');assert(game.state.campaign.phase==='report','start at report');
-    assert(get('#daily-routine ol').children.length===7,'seven visual steps');
+    assert(get('#daily-routine ol').children.length===6,'six visual steps');
     assert(!get('#daily-routine ol').textContent.includes('倉庫整理'),'warehouse excluded only from indicator');
     const initial=JSON.stringify(game.state);
     step('details');assert(get('.app-shell').classList.contains('home-details'),'primary opens existing controls');
@@ -68,12 +68,12 @@ try {
     get('[data-procurement-change="1"][data-id="tools"]').click();
     assert(get('.procurement-summary').textContent.includes('240'), 'payment preview');
     action('procurementConfirm');assert(game.state.campaign.trade.incoming.length===8,'paid delivery');
-    assert(get('[data-routine="next"]').disabled&&get('[data-routine="skip"]').disabled,'pending trade locks next and skip');
+    assert(get('[data-routine="next"]').disabled && !fixture.querySelector('[data-routine="skip"]'),'pending receiving locks next');
     await saveGame(skin.id,makeSave(game.state));const loaded=await loadGame(skin);assert(JSON.stringify(loaded)===JSON.stringify(game.state),'IndexedDB roundtrip');
     app.destroy();game=createSession(skin,loaded);mount();page('home');assert(!get('[data-screen="purchase"]').hidden,'resume purchase');
     page('warehouse');assert(get('#daily-routine').hidden,'warehouse tab independent');page('home');
     while(game.state.campaign.trade.incoming.length){const item=game.state.campaign.trade.incoming[0];action('keep',`[data-id="${item.instanceId}"]`);if(game.state.campaign.trade.incoming.some(i=>i.instanceId===item.instanceId))action('sellBack',`[data-source="incoming"][data-id="${item.instanceId}"]`);}
-    action('finishTrade');step();assert(game.state.campaign.phase==='warehouse','warehouse stage');
+    action('finishTrade');assert(game.state.campaign.phase==='warehouse','warehouse stage');
   });
   await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
     assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
@@ -90,15 +90,14 @@ try {
     get('[data-destination="forest"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
     action('dispatch');assert(game.state.campaign.expedition.heroIds.join()==='kyle','selected party dispatched');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"]'),'still no dispatch in tab');
-    page('home');step();assert(game.state.campaign.phase==='opening','opening stage');
+    page('home');assert(game.state.campaign.phase==='support','support opens directly');
   });
   await check('opening, customer conversations, summary and next-day report form a complete day',()=>{
-    action('open');assert(game.state.campaign.phase==='sales','sales stage');
+    step('open');assert(game.state.campaign.phase==='sales','sales stage');
     assert(get('.visitor-list').children.length===5,'all visitors speak');
     assert(!get('.speech-bubble').querySelector('img,svg'),'face outside speech');
     assert(get('.visitor-scene').querySelector(':scope > .scene-actor .item-art'),'separate actor');
-    action('salesDone');assert(game.state.campaign.phase==='end','day summary');assert(get('.mvp-stats'),'totals');
-    action('nextDay');assert(game.state.campaign.phase==='report'&&game.state.campaign.day===2,'next day');assert(game.state.campaign.expedition===null,'return resolved');
+    action('salesDone');assert(game.state.campaign.phase==='report'&&game.state.campaign.day===2,'next day');assert(game.state.campaign.expedition===null,'return resolved');
     assert(get('[data-screen="home"] .report-ledger'),'previous-day summary');
     const summary=game.state.campaign.journal.find(entry=>entry.type==='summary'&&entry.day===1);
     assert(get('.report-total strong').textContent.includes(String(summary.details.net)),'previous-day net from records');
@@ -110,9 +109,9 @@ try {
   await check('purchase and support can be skipped; empty shelves can finish a day',()=>{
     step();step('skip');assert(game.state.campaign.phase==='warehouse','skip purchase');step();
     for(const item of [...game.state.shop.displayedItems])game.stocking.return(item.instanceId);
-    step();step('skip');assert(game.state.campaign.phase==='opening','skip support');
+    step();step('open');assert(game.state.campaign.phase==='sales','support opens directly');
     // Empty-shelf behavior also has a logic test; current warehouse may be full on return.
-    action('open');action('salesDone');action('nextDay');assert(game.state.campaign.day===3,'day completed');
+    action('salesDone');assert(game.state.campaign.day===3,'day completed');
   });
   await check('residents are extensible placeholders and journal excludes repeated visitor dialogue',()=>{
     page('residents');assert(get('[data-screen="residents"]').textContent.includes('大工'),'carpenter');assert(get('[data-screen="residents"]').textContent.includes('教会'),'church');

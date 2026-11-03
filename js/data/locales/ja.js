@@ -192,7 +192,7 @@ export default {
   "routine.residents": "住人", "routine.adventurers": "仲間", "routine.party": "パーティ編成", "routine.partyHint": "出発する仲間にチェックを付けます。編成と支援内容は仲間タブ・支援工程で共通です。", "routine.departInSupport": "目的地の選択と出発は、メイン画面の支援工程で行います。",
   "routine.payment": "商人に渡す金額", "routine.delivery": "{amount}を渡して{count}品を仕入れる", "routine.invalidAmount": "1口の金額の倍数で指定してください（最大1000品）。",
   "routine.firstReport": "今日のお店を始めましょう。翌日からは前日の収支や仲間の帰還結果が届きます。",
-  "routine.openReview": "棚に{count}品を陳列中です。準備ができたら開店しましょう。", "routine.emptyShop": "棚が空のため、今日は販売なしで営業します。前の工程へ戻って陳列することもできます。", "routine.open": "今日のお店を開ける", "routine.salesDone": "営業を終えて収支を確認", "routine.comingSoon": "今後追加予定",
+  "routine.openReview": "棚に{count}品を陳列中です。準備ができたら開店しましょう。", "routine.emptyShop": "棚が空のため、今日は販売なしで営業します。前の工程へ戻って陳列することもできます。", "routine.open": "今日のお店を開ける", "routine.salesDone": "翌日へ", "routine.comingSoon": "今後追加予定",
   "mvp.error.phase": "現在の工程では操作できません。", "mvp.error.party": "出発する仲間を選んでください。",
 
   "app.dayMorning": "1日目・朝",

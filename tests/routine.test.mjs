@@ -14,11 +14,10 @@ test('daily stages, trade blocking, empty-shelf opening, and next-day report per
   for (const item of [...c.trade.incoming]) a.sellBack(item.instanceId, 'incoming');
   a.finishTrade(); a.advancePhase(); assert.equal(c.phase, 'warehouse');
   a.advancePhase(); a.advancePhase(); assert.equal(c.phase, 'support');
-  a.advancePhase(); assert.equal(c.phase, 'opening');
   assert.equal(a.advancePhase().ok, false);
   assert.equal(a.openShop().ok, true); assert.equal(c.phase, 'sales');
   const saleState = JSON.stringify(game.state); assert.equal(a.openShop().ok, false); assert.equal(JSON.stringify(game.state), saleState);
-  a.advancePhase(); assert.equal(c.phase, 'end');
+  assert.equal(a.advancePhase().ok, false); assert.equal(c.phase, 'sales');
   assert.equal(a.previousPhase().ok, false);
   assert.deepEqual(validateSave(makeSave(game.state), skin), game.state);
   a.nextDay(); assert.equal(c.phase, 'report'); assert.equal(c.day, 2); assert.ok(notifications > 0);
@@ -54,9 +53,29 @@ test('party funds are shared while only selected members contribute power, grow 
 test('version 3 saves migrate their stage and party without changing pending trade or expedition', () => {
   const game=createSession(skin);game.campaign.startTrade('tools');
   const old=makeSave(game.state);old.version=3;delete old.state.campaign.phase;delete old.state.campaign.parties; for(const hero of old.state.campaign.heroes) hero.funds=0;
-  const state=validateSave(old,skin);assert.equal(state.campaign.phase,'purchase');assert.deepEqual(state.campaign.trade,game.state.campaign.trade);
+  const state=validateSave(old,skin);assert.equal(state.campaign.phase,'warehouse');assert.deepEqual(state.campaign.trade,game.state.campaign.trade);
   assert.deepEqual(state.campaign.parties[0].members,['kyle','gares','mira']);
   for(const mutate of [s=>s.campaign.phase='unknown',s=>s.campaign.parties[0].members=['unknown',null,null],s=>s.campaign.phase='sales']){
     const invalid=makeSave(game.state);mutate(invalid.state);assert.throws(()=>validateSave(invalid,skin));
   }
+});
+
+ test('legacy opening and end saves resume without duplicate sales or lost day totals', () => {
+ for (const [oldPhase, phase] of [['opening','support'],['end','sales']]) {
+  const g=createSession(skin);if(oldPhase==='end')g.campaign.openShop();
+  const save=makeSave(g.state);save.version=12;save.state.campaign.phase=oldPhase;
+  const restored=validateSave(save,skin);assert.equal(restored.campaign.phase,phase);
+  assert.deepEqual(restored.campaign.today,g.state.campaign.today);
+  assert.deepEqual(restored.campaign.customerVisits,g.state.campaign.customerVisits);
+  assert.deepEqual(validateSave(makeSave(restored),skin),restored);
+ }
+});
+ test('procurement draws once then receives goods in warehouse before stocking',()=>{
+ const g=createSession(skin),a=g.campaign,c=g.state.campaign;
+ a.advancePhase();assert.ok(a.startProcurement([{merchantId:'weapons',lots:1}]).ok);
+ assert.equal(c.phase,'warehouse');const seed=c.seed;
+ assert.equal(a.advancePhase().ok,false);
+ for(const item of [...c.trade.incoming])a.sellBack(item.instanceId,'incoming');
+ a.finishTrade();assert.equal(c.phase,'warehouse');assert.equal(c.seed,seed);
+ a.advancePhase();assert.equal(c.phase,'stocking');
 });

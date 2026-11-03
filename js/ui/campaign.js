@@ -2,7 +2,6 @@ import { characterArt } from './characterArt.js';
 import { mountPartyEditor } from "./partyEditor.js";
 import { mountEquipmentEditor } from "./equipmentEditor.js";
 import { growthChoices } from "../systems/growth.js";
-import { dailyTotals } from "../systems/sales.js";
 import { calendarDate } from "../systems/calendar.js";
 import { itemArt } from "./itemArt.js";
 
@@ -198,14 +197,8 @@ export function mountCampaign(root, game) {
 
   function home() {
     if (c.region !== 'village') return `<section class="mvp-card mvp-complete"><p class="eyebrow">${tr('mvp.done')}</p><h2>${tr('mvp.complete')}</h2><p>${tr('mvp.completeHint')}</p><h3>${tr('mvp.openingGold', { amount: money(c.departure.openingGold) })}</h3><p>${tr('mvp.companions', { names: c.departure.heroIds.map(heroName).join('・') || t('mvp.none') })}</p><p>${tr('mvp.newTalent')}</p>${link('journal', 'mvp.go.journal')}</section>`;
-    const stats = () => {
-      const totals = dailyTotals(c.today);
-      return `<div class="mvp-stats">${[['sales',c.today.sales],['grossProfit',totals.grossProfit],['cost',c.today.purchasing],['buyback',c.today.buyback],['supportCost',c.today.support],['health.revivalCost',c.today.revival],['reward',c.today.rewards],['aid',c.today.aid],['net',totals.net]].map(([key,amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div>`;
-    };
     if (c.phase === 'report') return report();
-    if (c.phase === 'opening') return `<section class="mvp-card"><h2>${tr('routine.phase.opening')}</h2><p>${tr('routine.openReview', { count: state.shop.displayedItems.length })}</p>${!state.shop.displayedItems.length ? `<p>${tr('routine.emptyShop')}</p>` : ''}${button('open', tr('routine.open'), Boolean(c.trade || c.opened))}${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}</section>`;
     if (c.phase === 'sales') return `${visitors()}<section class="mvp-card">${button('salesDone', tr('routine.salesDone'))}</section>`;
-    if (c.phase === 'end') return `${stats()}<section class="mvp-card"><h2>${tr('routine.phase.end')}</h2>${button('nextDay', tr('mvp.nextDay'))}</section>`;
     return '';
   }
 
@@ -311,7 +304,7 @@ export function mountCampaign(root, game) {
       return;
     }
     const id = target.dataset.id;
-    const operations = { revive: () => actions.revive(id), grow: () => actions.grow(id, target.dataset.choice), recoverArchived: () => actions.recoverArchivedEquipment(id), buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.advancePhase, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch(destination, selectedPartyId) : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
+    const operations = { revive: () => actions.revive(id), grow: () => actions.grow(id, target.dataset.choice), recoverArchived: () => actions.recoverArchivedEquipment(id), buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.nextDay, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch(destination, selectedPartyId) : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
     announce(operations[target.dataset.action]());
   }, { signal: events.signal });
   render();

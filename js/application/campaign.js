@@ -57,6 +57,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
     c.today.purchasing += quote.amount;
     c.trade = { ...trades[0], pending: trades.slice(1) };
     c.milestones.purchased = true;
+    c.phase = "warehouse";
     return commit({ ok: true });
   }
   return {
@@ -89,15 +90,15 @@ export function createCampaignActions(state, config, definitions, inventory, com
     deliveryQuote: (id, amount) => deliveryQuote(config.merchants.find(entry => entry.id === id), amount),
     advancePhase() {
       if (!ready()) return fail("trade");
-      const phases = ["report", "purchase", "warehouse", "stocking", "support", "opening", "sales", "end"];
+      const phases = ["report", "purchase", "warehouse", "stocking", "support"];
       const index = phases.indexOf(c.phase);
-      if (index < 0 || index >= phases.length - 1 || c.phase === "opening") return fail("phase");
+      if (index < 0 || index >= phases.length - 1) return fail("phase");
       c.phase = phases[index + 1];
       return commit({ ok: true });
     },
     previousPhase() {
       if (!ready() || c.opened) return fail("phase");
-      const phases = ["report", "purchase", "warehouse", "stocking", "support", "opening"];
+      const phases = ["report", "purchase", "warehouse", "stocking", "support"];
       const index = phases.indexOf(c.phase);
       if (index <= 0) return fail("phase");
       c.phase = phases[index - 1];

@@ -190,7 +190,7 @@ export default {
   "routine.residents": "Residents", "routine.adventurers": "Companions", "routine.party": "Party members", "routine.partyHint": "Select the adventurers who will depart. Party and support are shared with the Adventurers menu.", "routine.departInSupport": "Choose a destination and depart during the main screen's Support step.",
   "routine.payment": "Payment to merchant", "routine.delivery": "Pay {amount} for {count} items", "routine.invalidAmount": "Enter a multiple of the lot price (up to 1,000 items).",
   "routine.firstReport": "Let's open your shop. From tomorrow, reports will include accounts and returning adventurers.",
-  "routine.openReview": "You have {count} items on the shelves. Open when you are ready.", "routine.emptyShop": "The shelves are empty, so there will be no sales today. You can go back and stock them.", "routine.open": "Open today's shop", "routine.salesDone": "Finish sales and review accounts", "routine.comingSoon": "Planned for a future update",
+  "routine.openReview": "You have {count} items on the shelves. Open when you are ready.", "routine.emptyShop": "The shelves are empty, so there will be no sales today. You can go back and stock them.", "routine.open": "Open today's shop", "routine.salesDone": "Continue to the next morning", "routine.comingSoon": "Planned for a future update",
   "mvp.error.phase": "This action is not available in the current step.", "mvp.error.party": "Select the adventurers who will depart.",
   "app.dayMorning": "Day 1 · Morning", "app.goldLabel": "Gold",
   "nav.label": "Main menu", "nav.home": "Home", "nav.warehouse": "Warehouse", "nav.stocking": "Shelves", "nav.management": "Shop",

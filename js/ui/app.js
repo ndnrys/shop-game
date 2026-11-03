@@ -16,7 +16,7 @@ export function mountScreens(root, game, features) {
   }
 
   const routine = root.querySelector('#daily-routine');
-  const phases = ['report','purchase','warehouse','stocking','support','opening','sales','end'];
+  const phases = ['report','purchase','warehouse','stocking','support','sales'];
   const stageScreens = { purchase: 'purchase', warehouse: 'warehouse', stocking: 'stocking', support: 'support' };
 
   function render() {
@@ -25,7 +25,7 @@ export function mountScreens(root, game, features) {
     const visibleId = inRoutine ? (c.trade ? 'purchase' : stageScreens[c.phase] ?? 'home') : activeId;
     const actualId = screens.has(visibleId) ? visibleId : activeId;
     if (lastPhase !== c?.phase) {
-      detailsOpen = lastPhase === 'report' && c?.phase === 'purchase';
+      detailsOpen = (lastPhase === 'report' && c?.phase === 'purchase') || Boolean(c?.trade);
       lastPhase = c?.phase;
     }
     root.querySelector('.app-shell')?.classList.toggle('home-dashboard', Boolean(inRoutine));
@@ -52,11 +52,11 @@ export function mountScreens(root, game, features) {
         const t = game.i18n.t;
         const date = calendarDate(c.day, game.campaign.config.daysPerSeason);
         const dateLabel = t('mvp.date', { ...date, season: t(`mvp.season.${date.season}`) });
-        const visiblePhases = phases.filter(phase => phase !== 'warehouse');
+        const visiblePhases = phases;
         const displayPhase = c.phase;
-        const icons = { report: '✎', purchase: '⚖', warehouse: '▣', stocking: '▤', support: '⚔', opening: '⚑', sales: '♜', end: '☷' };
-        const label = phase => t(['opening','end'].includes(phase) ? `home.step.${phase}` : `routine.phase.${phase}`);
-        routine.innerHTML = `<header class="home-panel-heading"><h2>${t('home.today')}</h2><span class="home-date">${dateLabel}</span></header><div class="home-phase-card"><span class="home-phase-icon" aria-hidden="true">${icons[c.phase]}</span><div><h3>${t(['report','opening','end'].includes(c.phase) ? `home.phase.${c.phase}` : `routine.phase.${c.phase}`)}</h3><p>${t(`home.description.${c.phase}`)}</p></div></div><button type="button" class="home-primary" data-routine="details" aria-expanded="${detailsOpen}">${t(detailsOpen ? 'home.close' : `home.action.${c.phase}`)}<span aria-hidden="true">›</span></button><ol>${visiblePhases.map(phase => `<li aria-label="${label(phase)}" class="${phases.indexOf(phase) < index ? 'is-complete' : ''}" ${phase === displayPhase ? 'aria-current="step"' : ''}><span aria-hidden="true">◆</span></li>`).join('')}</ol><p class="home-current-step">${label(displayPhase)}</p><div class="mvp-actions" ${detailsOpen ? '' : 'hidden'}>${index > 0 && index < 6 ? `<button type="button" class="mvp-button" data-routine="back" ${c.trade ? 'disabled' : ''}>${t('routine.back')}</button>` : ''}${index < 5 ? `<button type="button" class="mvp-button" data-routine="next" ${c.trade ? 'disabled' : ''}>${t(`routine.next.${c.phase}`)}</button>` : ''}${['purchase','support'].includes(c.phase) ? `<button type="button" class="mvp-button" data-routine="skip" ${c.trade ? 'disabled' : ''}>${t(`routine.skip.${c.phase}`)}</button>` : ''}</div><p role="status" data-routine-status></p>`;
+        const icons = { report: '✎', purchase: '⚖', warehouse: '▣', stocking: '▤', support: '⚔', sales: '♜' };
+        const label = phase => t(`routine.phase.${phase}`);
+        routine.innerHTML = `<header class="home-panel-heading"><h2>${t('home.today')}</h2><span class="home-date">${dateLabel}</span></header><div class="home-phase-card"><span class="home-phase-icon" aria-hidden="true">${icons[c.phase]}</span><div><h3>${t(c.phase === 'report' ? `home.phase.${c.phase}` : `routine.phase.${c.phase}`)}</h3><p>${t(`home.description.${c.phase}`)}</p></div></div><button type="button" class="home-primary" data-routine="details" aria-expanded="${detailsOpen}">${t(detailsOpen ? 'home.close' : `home.action.${c.phase}`)}<span aria-hidden="true">›</span></button><ol>${visiblePhases.map(phase => `<li aria-label="${label(phase)}" class="${phases.indexOf(phase) < index ? 'is-complete' : ''}" ${phase === displayPhase ? 'aria-current="step"' : ''}><span aria-hidden="true">◆</span></li>`).join('')}</ol><p class="home-current-step">${label(displayPhase)}</p><div class="mvp-actions" ${detailsOpen ? '' : 'hidden'}>${index > 0 && index < 5 ? `<button type="button" class="mvp-button" data-routine="back" ${c.trade ? 'disabled' : ''}>${t('routine.back')}</button>` : ''}${index < 4 ? `<button type="button" class="mvp-button" data-routine="next" ${c.trade ? 'disabled' : ''}>${t(`routine.next.${c.phase}`)}</button>` : ''}${c.phase === 'support' ? `<button type="button" class="mvp-button" data-routine="open" ${c.trade ? 'disabled' : ''}>${t('routine.open')}</button>` : ''}${c.phase === 'purchase' ? `<button type="button" class="mvp-button" data-routine="skip" ${c.trade ? 'disabled' : ''}>${t(`routine.skip.${c.phase}`)}</button>` : ''}</div><p role="status" data-routine-status></p>`;
       }
     }
     for (const link of links) {
@@ -79,7 +79,7 @@ export function mountScreens(root, game, features) {
     const button = event.target.closest('[data-routine]');
     if (!button || button.disabled) return;
     if (button.dataset.routine === 'details') { detailsOpen = !detailsOpen; render(); return; }
-    const result = button.dataset.routine === 'back' ? game.campaign.previousPhase() : game.campaign.advancePhase();
+    const result = button.dataset.routine === 'back' ? game.campaign.previousPhase() : button.dataset.routine === 'open' ? game.campaign.openShop() : game.campaign.advancePhase();
     if (!result.ok) routine.querySelector('[data-routine-status]').textContent = game.i18n.t(result.reason);
   }, { signal: events.signal });
 

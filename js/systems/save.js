@@ -8,7 +8,7 @@ import { migrateLegacyDungeons, legacyExpeditionOutcome } from "./legacyDungeons
 import { equipmentItemError, equipmentLoadoutError } from "./equipment.js";
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 13;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -18,8 +18,13 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   if (value.version < 12 && s.campaign) migrateCompanionContent(s, skin.campaign);
+  if (value.version < 13 && s.campaign) {
+    if (s.campaign.phase === 'opening') s.campaign.phase = 'support';
+    if (s.campaign.phase === 'end') s.campaign.phase = 'sales';
+    if (s.campaign.trade && s.campaign.phase === 'purchase') s.campaign.phase = 'warehouse';
+  }
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -117,10 +122,10 @@ export function validateSave(value, skin) {
     const c = s.campaign; const config = skin.campaign;
     if (!c || c.chapterId !== config.releaseProfiles.mvp[0] || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();
     if (value.version < 4) {
-      c.phase = c.opened ? 'sales' : c.trade ? 'purchase' : 'report';
+      c.phase = c.opened ? 'sales' : c.trade ? 'warehouse' : 'report';
       if (!c.parties) c.partyIds = config.heroes.map(hero => hero.id);
     }
-    if (!['report','purchase','warehouse','stocking','support','opening','sales','end'].includes(c.phase)) reject();
+    if (!['report','purchase','warehouse','stocking','support','sales'].includes(c.phase)) reject();
     if (value.version < 7) {
       if (!c.parties) {
         if (!Array.isArray(c.heroes) || c.heroes.some(hero => !integer(hero.funds))) reject();
@@ -139,7 +144,7 @@ export function validateSave(value, skin) {
       members.push(...party.members.filter(id => id !== null));
     }
     if (new Set(members).size !== members.length || members.some(id => !config.heroes.some(hero => hero.id === id))) reject();
-    if ((c.opened && !['sales','end'].includes(c.phase)) || (!c.opened && ['sales','end'].includes(c.phase))) reject();
+    if ((c.opened && !['sales'].includes(c.phase)) || (!c.opened && ['sales'].includes(c.phase))) reject();
 
     if (c.customerVisits === undefined) c.customerVisits = [];
     if (!Array.isArray(c.customerVisits) || c.customerVisits.length > config.customers.length || new Set(c.customerVisits.map(visit=>visit.customerId)).size!==c.customerVisits.length) reject();

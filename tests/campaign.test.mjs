@@ -95,12 +95,12 @@ test("purchase cost allocation and realized gross profit remain distinct from ca
 });
 
 test("equipment occupies independent slots and replaced gear returns used to the warehouse",()=>{
-  const game=setup();const c=game.state.campaign;const hero=c.heroes[0];
+  const game=setup();const c=game.state.campaign;const hero=c.heroes[0];game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';
   for(const id of ['stock-001','stock-003','stock-006','stock-007'])assert.equal(game.campaign.support('lina',id,0).ok,true);
   assert.deepEqual(Object.keys(hero.equipment).sort(),['weapon','offhand','body','accessory'].sort());
   assert.equal(hero.equipment.weapon.itemId,'iron_sword');
   assert.equal(game.campaign.support('lina','stock-009',0).ok,true);
-  assert.equal(hero.equipment.weapon.itemId,'iron_axe');
+  assert.equal(hero.equipment.weapon.itemId,'steel_sword');
   assert.equal(hero.giftedEquipment.length,0);
   assert.equal(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,true);
   assert.equal(game.campaign.returnEquipment,undefined);

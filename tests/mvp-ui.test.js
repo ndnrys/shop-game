@@ -42,7 +42,7 @@ try {
     page('home');assert(game.state.campaign.phase==='report','tab switching preserves step');step();
   });
   await check('tap equipment drafts commit several slots and removal returns discounted used gear',()=>{
-    page('adventurers');
+    game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';page('adventurers');
     const form=get(`${visible} form[data-hero="lina"]`);
     assert(form.querySelectorAll('[data-equip-slot]').length===4,'four equipment slots');
     assert(!form.querySelector('select'),'no equipment dropdown');
@@ -57,9 +57,9 @@ try {
     assert(game.state.warehouse.items.find(item=>item.instanceId==='stock-001').used,'old sword returned used');
     const nextForm=get(`${visible} form[data-hero="lina"]`);nextForm.querySelector('[data-equip-remove="weapon"]').click();nextForm.requestSubmit();
     assert(!hero.equipment.weapon&&hero.equipment.offhand,'only selected slot removed');
-    const axe=game.state.warehouse.items.find(item=>item.instanceId==='stock-009');assert(axe.used&&game.price(axe)===50,'used axe half price');
+    const axe=game.state.warehouse.items.find(item=>item.instanceId==='stock-009');assert(axe.used&&game.price(axe)===95,'used axe half price');
     give('lina','stock-001',0);
-    page('warehouse');get('#warehouse-board [data-instance-id="stock-009"]').click();assert(get('#selection-content').textContent.includes('使用済み')&&get('#selection-content').textContent.includes('50 G'),'warehouse condition and price');
+    page('warehouse');get('#warehouse-board [data-instance-id="stock-009"]').click();assert(get('#selection-content').textContent.includes('使用済み')&&get('#selection-content').textContent.includes('95 G'),'warehouse condition and price');
     const newAxe={...axe,instanceId:'unused-axe',used:false};const pos=game.inventory.findOpenPosition(game.state.warehouse.items,newAxe,0,0,8,8);assert(pos,'room for new axe fixture');game.state.warehouse.items.push({...newAxe,...pos});
     page('home');
   });
@@ -77,7 +77,7 @@ try {
   await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
     assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
     assert(!get('[data-screen="stocking"]').hidden,'stocking shown');
-    const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鉄の斧'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('50 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('100 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
+    const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鋼の剣'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('95 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('190 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     assert(Number(get('#displayed-count').textContent)>0,'shelf rendered');step();
   });

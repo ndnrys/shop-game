@@ -1,0 +1,14 @@
+{
+  "swordsman": {
+    "nameKey": "jobs.swordsman",
+    "allowedTypes": ["one_handed_sword", "two_handed_sword", "heavy_armor", "light_armor"]
+  },
+  "warrior": {
+    "nameKey": "jobs.warrior",
+    "allowedTypes": ["one_handed_axe", "two_handed_axe", "two_handed_sword", "heavy_armor"]
+  },
+  "mage": {
+    "nameKey": "jobs.mage",
+    "allowedTypes": ["staff", "light_armor", "cloth_armor"]
+  }
+}

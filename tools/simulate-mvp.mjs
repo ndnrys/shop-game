@@ -1,3 +1,4 @@
+import { equipmentItemError } from "../js/systems/equipment.js";
 import fs from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import skin from '../js/data/skins/fantasy/index.js';
@@ -18,7 +19,8 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
     for (const item of goods) {
       const slot = game.campaign.config.itemSlots[item.itemId];
       if (!slot) continue;
-      const hero = [...c.heroes].sort((a,b)=>(game.campaign.config.gearPower[a.equipment[slot]?.itemId]??0)-(game.campaign.config.gearPower[b.equipment[slot]?.itemId]??0))[0];
+      const hero = c.heroes.filter(hero => !equipmentItemError(hero, item.itemId, game.campaign.config, game.itemDefinitions)).sort((a,b)=>(game.campaign.config.gearPower[a.equipment[slot]?.itemId]??0)-(game.campaign.config.gearPower[b.equipment[slot]?.itemId]??0))[0];
+      if (!hero) continue;
       const old = game.campaign.config.gearPower[hero.equipment[slot]?.itemId]??0;
       const power = game.campaign.config.gearPower[item.itemId];
       // Equip vacant slots; buy upgrades only when the improvement is meaningful.

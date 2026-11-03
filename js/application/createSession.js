@@ -16,6 +16,23 @@ export function createSession(skin, state = createGameState(skin)) {
       required.push(`items.${item.id}`, `items.short.${item.id}`, `categories.${item.categoryKey}`, `materials.${item.materialKey}`);
       if (!skin.presentation[item.id]?.glyph && !skin.presentation[item.id]?.imageUrl) throw new Error(`Missing item presentation: ${item.id}`);
     }
+    if (skin.campaign) {
+      const config = skin.campaign;
+      for (const hero of config.heroes) if (!Object.hasOwn(config.jobs, hero.jobId)) throw new Error(`Unknown initial job: ${hero.id}`);
+      for (const job of Object.values(config.jobs)) {
+        required.push(job.nameKey);
+        if (!Array.isArray(job.allowedTypes) || job.allowedTypes.some(type => !config.equipmentTypes[type])) throw new Error('Invalid job equipment types');
+      }
+      for (const type of Object.values(config.equipmentTypes)) {
+        required.push(type.nameKey);
+        if (!config.equipmentSlots.includes(type.slot)) throw new Error('Invalid equipment type slot');
+      }
+      for (const [id, slot] of Object.entries(config.itemSlots)) {
+        const item = skin.itemDefinitions[id];
+        const type = config.equipmentTypes[item?.equipmentType];
+        if (!type || type.slot !== slot || (slot === 'weapon' && (![1, 2].includes(type.hands ?? item.hands) || (type.hands !== null && item.hands !== undefined && item.hands !== type.hands)))) throw new Error(`Invalid equipment type: ${id}`);
+      }
+    }
     if (skin.campaign) for (const customer of skin.campaign.customers) required.push(customer.dialogueKey);
     for (const resident of skin.campaign?.residents ?? []) required.push(resident.nameKey, resident.descriptionKey);
     const map = skin.campaign?.quest?.map;

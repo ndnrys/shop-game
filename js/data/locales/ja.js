@@ -1,4 +1,9 @@
 export default {
+  "equipment.job": "職業：{job}",
+  "equipment.jobDenied": "この職業では装備できません。",
+  "equipment.invalidType": "装備の種別設定が無効です。",
+  "equipment.twoHandedShield": "両手武器と盾は同時に装備できません。盾を外す変更を先に準備してください。",
+
   "party.title": "パーティ編成・支度金",
   "party.hint": "冒険者の↕を枠へドラッグするか、冒険者を選んで枠をタップします。同じパーティ内は入れ替え、別パーティへの移動では元の枠から外れます。",
   "party.name": "パーティ{number}",

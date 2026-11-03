@@ -1,5 +1,19 @@
 import mvp from "./mvp-ja.js";
 export default {
+  "jobs.swordsman": "剣士",
+  "jobs.warrior": "戦士",
+  "jobs.mage": "魔法使い",
+  "equipmentTypes.one_handed_sword": "片手剣",
+  "equipmentTypes.two_handed_sword": "両手剣",
+  "equipmentTypes.one_handed_axe": "片手斧",
+  "equipmentTypes.two_handed_axe": "両手斧",
+  "equipmentTypes.staff": "杖",
+  "equipmentTypes.heavy_armor": "重装備",
+  "equipmentTypes.light_armor": "軽装備",
+  "equipmentTypes.cloth_armor": "布装備",
+  "equipmentTypes.shield": "盾",
+  "equipmentTypes.accessory": "装飾品",
+
   "items.steel_sword": "鋼の剣", "items.short.steel_sword": "鋼剣",
   "items.reinforced_shield": "補強された盾", "items.short.reinforced_shield": "強盾",
   "items.chain_armor": "鎖かたびら", "items.short.chain_armor": "鎖鎧",

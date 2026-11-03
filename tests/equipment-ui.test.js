@@ -9,9 +9,9 @@ let game, view, root, unsubscribe, passed = 0;
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const get = selector => { const node = root.querySelector(selector); assert(node, selector); return node; };
 const snapshot = () => JSON.stringify(game.state);
-function reset(screen = 'adventurers') {
+function reset(screen = 'adventurers', testSkin = skin) {
   view?.destroy(); unsubscribe?.();
-  game = createSession(skin);
+  game = createSession(testSkin);
   root = document.createElement('section'); root.dataset.screen = screen; root.className = 'campaign-view';
   fixture.replaceChildren(root);
   view = mountCampaign(root, game); unsubscribe = game.subscribe(view.render);
@@ -122,7 +122,26 @@ try {
     assert(c.parties[0].funds===30 && c.parties[1].funds===0,'other funds preserved');
     assert(get('[data-create-party]').disabled && [...root.querySelectorAll('[data-party-slot]')].every(node=>node.disabled),'editing locked while away');
   });
+  await check('job labels, equipment types and disabled candidates follow the selected adventurer',()=>{
+    assert(get('.hero-job').textContent.includes('剣士'),'Lina job shown');
+    assert(get('[data-equip-item="stock-009"]').disabled && get('[data-equip-drag="stock-009"]').disabled,'swordsman cannot choose or drag axe');
+    assert(get('[data-equip-item="stock-001"]').textContent.includes('片手剣'),'weapon type shown');
+    get('[data-select-hero="bran"]').click();assert(get('.hero-job').textContent.includes('戦士'),'Bran job shown');
+    assert(!get('[data-equip-item="stock-009"]').disabled && get('[data-equip-item="stock-001"]').disabled && get('[data-equip-item="stock-006"]').disabled,'warrior permissions');
+    get('[data-select-hero="noa"]').click();assert(get('.hero-job').textContent.includes('魔法使い'),'Noa job shown');
+    assert(get('[data-equip-item="stock-001"]').disabled && !get('[data-equip-item="stock-006"]').disabled && !get('[data-equip-item="stock-003"]').disabled,'mage light armor and shared shield');
+  });
+  await check('two-handed preview rejects shield conflict and accepts a prepared shield removal',()=>{
+    const custom=structuredClone(skin);custom.itemDefinitions.iron_sword.equipmentType='two_handed_sword';reset('adventurers',custom);
+    choose('stock-003','offhand');submit();const before=snapshot();choose('stock-001','weapon');
+    assert(get('.gear-selection').textContent.includes('両手武器') && !root.querySelector('.gear-slot.is-pending'),'conflict explained before commit');
+    assert(snapshot()===before,'invalid preview does not change game');
+    get('[data-equip-remove="offhand"]').click();choose('stock-001','weapon');submit();
+    const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon && !hero.equipment.offhand,'weapon replaces prepared shield');
+    const after=snapshot();choose('stock-003','offhand');assert(snapshot()===after && get('.gear-selection').textContent.includes('両手武器'),'shield rejected against equipped two-handed weapon');
+  });
   await check('replacement and removal preserve used prices and untouched slots', () => {
+    game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';view.render();
     choose('stock-001','weapon'); choose('stock-003','offhand'); submit();
     choose('stock-009','weapon'); submit();
     const sword = game.state.warehouse.items.find(item => item.instanceId === 'stock-001');
@@ -169,7 +188,8 @@ try {
     assert(!root.querySelector('.gear-slot.is-pending'),'external inventory change resets draft');
   });
   await check('full warehouse refuses entire support, preserves undo and leaves draft for correction', () => {
-    game.campaign.support('lina','stock-009',30); game.warehouse.move('stock-004',7,7);
+    const custom=structuredClone(skin);custom.itemDefinitions.iron_sword.equipmentType='two_handed_sword';reset('adventurers',custom);
+    get('[data-select-hero="bran"]').click();game.campaign.support('bran','stock-009',30); game.warehouse.move('stock-004',7,7);
     const items = game.state.warehouse.items;
     for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(game.inventory.canPlace(items,'crystal',x,y,0,8,8))items.push({instanceId:`fill-${x}-${y}`,itemId:'crystal',x,y,rotated:0});
     view.render(); const before = snapshot(); choose('stock-001','weapon'); setFunds(get('form[data-party-funds]'),20); get('form[data-hero]').requestSubmit();

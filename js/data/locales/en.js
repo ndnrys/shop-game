@@ -1,4 +1,9 @@
 export default {
+  "equipment.job": "Job: {job}",
+  "equipment.jobDenied": "This job cannot equip this type.",
+  "equipment.invalidType": "The equipment type is invalid.",
+  "equipment.twoHandedShield": "A two-handed weapon cannot be equipped with a shield. Prepare to remove the shield first.",
+
   "party.title": "Parties and expedition funds",
   "party.hint": "Drag an adventurer’s ↕ handle to a slot, or select an adventurer and tap a slot. Members swap within a party. Moving to another party removes the original assignment.",
   "party.name": "Party {number}",

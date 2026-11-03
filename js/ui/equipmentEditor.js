@@ -1,3 +1,4 @@
+import { equipmentItemError, equipmentLoadoutError } from "../systems/equipment.js";
 import { itemArt } from './itemArt.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -47,7 +48,9 @@ export function mountEquipmentEditor(root, game) {
       return `<li class="gear-slot ${changed ? 'is-pending' : ''}"><button type="button" class="gear-slot-target" data-equip-slot="${slot}" aria-label="${t('equipment.slot', { slot: i18n.t('mvp.slot.' + slot), item: name })}" ${busy() ? 'disabled' : ''}><span class="hero-equipment-art" aria-hidden="true">${item ? itemArt(presentation[item.itemId]) : '—'}</span><span><small>${t('mvp.slot.' + slot)}</small><strong>${escape(name)}</strong>${changed ? `<small class="gear-pending">${t('equipment.pending')}</small>` : ''}</span></button><button type="button" class="gear-remove" data-equip-remove="${slot}" aria-label="${t('equipment.removeSlot', { slot: i18n.t('mvp.slot.' + slot) })}" ${busy() || !item ? 'disabled' : ''}>${t('equipment.remove')}</button></li>`;
     }).join('')}</ul><div class="gear-selection" role="status" aria-live="polite">${escape(message || (selected && find(selected) ? i18n.t('equipment.selected', { item: label(find(selected)), slot: i18n.t('mvp.slot.' + config.itemSlots[find(selected).itemId]) }) : i18n.t('equipment.selectHint')))}</div><h3>${t('equipment.candidates')}</h3><div class="gear-candidates">${available().map(item => {
       const assigned = Object.values(draft).includes(item.instanceId);
-      return `<div class="gear-candidate ${selected === item.instanceId ? 'is-selected' : ''} ${assigned ? 'is-assigned' : ''}"><button type="button" class="gear-select" data-equip-item="${escape(item.instanceId)}" aria-pressed="${selected === item.instanceId}" ${busy() ? 'disabled' : ''}><span class="hero-equipment-art" aria-hidden="true">${itemArt(presentation[item.itemId])}</span><span><strong>${escape(label(item))}</strong><small>${t('mvp.slot.' + config.itemSlots[item.itemId])} · ${escape(i18n.t('money.amount', { amount: game.price(item) }))}</small>${assigned ? `<small>${t('equipment.pending')}</small>` : ''}</span></button><button type="button" class="gear-drag-handle" data-equip-drag="${escape(item.instanceId)}" aria-label="${t('equipment.drag', { item: label(item) })}" ${busy() ? 'disabled' : ''}><span aria-hidden="true">↕</span></button></div>`;
+      const reason = equipmentItemError(person, item.itemId, config, game.itemDefinitions);
+      const type = config.equipmentTypes[game.itemDefinitions[item.itemId].equipmentType];
+      return `<div class="gear-candidate ${selected === item.instanceId ? 'is-selected' : ''} ${assigned ? 'is-assigned' : ''}"><button type="button" class="gear-select" data-equip-item="${escape(item.instanceId)}" aria-pressed="${selected === item.instanceId}" ${busy() || reason ? 'disabled' : ''}><span class="hero-equipment-art" aria-hidden="true">${itemArt(presentation[item.itemId])}</span><span><strong>${escape(label(item))}</strong><small>${t(type.nameKey)} · ${escape(i18n.t('money.amount', { amount: game.price(item) }))}</small>${assigned ? `<small>${t('equipment.pending')}</small>` : ''}${reason ? `<small class="gear-restriction">${t(reason)}</small>` : ''}</span></button><button type="button" class="gear-drag-handle" data-equip-drag="${escape(item.instanceId)}" aria-label="${t('equipment.drag', { item: label(item) })}" ${busy() || reason ? 'disabled' : ''}><span aria-hidden="true">↕</span></button></div>`;
     }).join('') || `<p>${t('equipment.empty')}</p>`}</div><button type="button" class="mvp-button gear-reset" data-equip-reset ${busy() || (!selected && !Object.keys(draft).length) ? 'disabled' : ''}>${t('equipment.reset')}</button>`;
   }
 
@@ -57,7 +60,7 @@ export function mountEquipmentEditor(root, game) {
   }
 
   function select(id) {
-    if (busy() || !find(id)) return;
+    if (busy() || !find(id) || equipmentItemError(hero(), find(id).itemId, config, game.itemDefinitions)) return;
     selected = selected === id ? null : id;
     message = '';
     refresh();
@@ -69,9 +72,13 @@ export function mountEquipmentEditor(root, game) {
     if (!item || config.itemSlots[item.itemId] !== slot) {
       message = i18n.t('equipment.wrongSlot');
     } else {
-      draft[slot] = id;
-      selected = null;
-      message = i18n.t('equipment.staged');
+      const planned = { ...hero().equipment };
+      for (const [key, value] of Object.entries({ ...draft, [slot]: id })) {
+        if (value === null) delete planned[key]; else planned[key] = find(value);
+      }
+      const reason = equipmentLoadoutError(hero(), planned, config, game.itemDefinitions);
+      if (reason) message = i18n.t(reason);
+      else { draft[slot] = id; selected = null; message = i18n.t('equipment.staged'); }
     }
     refresh();
   }

@@ -1,4 +1,18 @@
 export default {
+  "jobs.swordsman": "Swordsman",
+  "jobs.warrior": "Warrior",
+  "jobs.mage": "Mage",
+  "equipmentTypes.one_handed_sword": "One-handed sword",
+  "equipmentTypes.two_handed_sword": "Two-handed sword",
+  "equipmentTypes.one_handed_axe": "One-handed axe",
+  "equipmentTypes.two_handed_axe": "Two-handed axe",
+  "equipmentTypes.staff": "Staff",
+  "equipmentTypes.heavy_armor": "Heavy armor",
+  "equipmentTypes.light_armor": "Light armor",
+  "equipmentTypes.cloth_armor": "Cloth armor",
+  "equipmentTypes.shield": "Shield",
+  "equipmentTypes.accessory": "Accessory",
+
   "app.title": "Shop Game | Village Shop", "app.homeLabel": "Shop Game home", "app.storeName": "Village Shop", "app.brand": "SHOP GAME",
   "warehouse.eyebrow": "BACKROOM · VILLAGE", "stocking.eyebrow": "SHOP FLOOR · VILLAGE", "money.amount": "{amount} G", "warehouse.selectedMeta": "{category} · {material}<br>{width} × {height} cells · {price}",
   "items.iron_axe": "Iron axe", "items.short.iron_axe": "Axe", "items.iron_sword": "Iron sword", "items.short.iron_sword": "Sword", "items.potion": "Healing potion", "items.short.potion": "Potion", "items.oak_shield": "Oak shield", "items.short.oak_shield": "Shield", "items.crystal": "Magic crystal", "items.short.crystal": "Crystal", "items.herb_bundle": "Herb bundle", "items.short.herb_bundle": "Herbs", "items.leather_armor": "Leather armor", "items.short.leather_armor": "Armor", "items.silver_ring": "Silver ring", "items.short.silver_ring": "Ring", "items.bread": "Traveler's bread", "items.short.bread": "Bread", "items.steel_sword": "Steel sword", "items.short.steel_sword": "Steel", "items.reinforced_shield": "Reinforced shield", "items.short.reinforced_shield": "Shield+", "items.chain_armor": "Chainmail", "items.short.chain_armor": "Mail", "items.charm": "Protective charm", "items.short.charm": "Charm",

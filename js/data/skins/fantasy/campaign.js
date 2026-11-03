@@ -1,6 +1,9 @@
+import jobs from "./jobs.json" with { type: "json" };
+import equipmentTypes from "./equipmentTypes.json" with { type: "json" };
 import { characterArtwork } from "./artwork.js";
 // MVP仮設定。正式なバランスは docs/MVP-確認事項.md で確認する。
 export default {
+  jobs, equipmentTypes,
   presentation: {
     characters: characterArtwork,
     home: {
@@ -28,7 +31,7 @@ export default {
   ],
   purchaseChance: .9,
   partySize: 3, maximumParties: 3,
-  heroes: [{ id: "lina", level: 1, hp: 3, attack: 3, defense: 3, ability: 12 }, { id: "bran", level: 1, hp: 3, attack: 3, defense: 3, ability: 10 }, { id: "noa", level: 1, hp: 3, attack: 3, defense: 3, ability: 8 }],
+  heroes: [{ id: "lina", jobId: "swordsman", level: 1, hp: 3, attack: 3, defense: 3, ability: 12 }, { id: "bran", jobId: "warrior", level: 1, hp: 3, attack: 3, defense: 3, ability: 10 }, { id: "noa", jobId: "mage", level: 1, hp: 3, attack: 3, defense: 3, ability: 8 }],
   equipmentSlots: ["weapon", "offhand", "body", "accessory"],
   itemSlots: { steel_sword: "weapon", reinforced_shield: "offhand", chain_armor: "body", charm: "accessory", iron_sword: "weapon", iron_axe: "weapon", oak_shield: "offhand", leather_armor: "body", silver_ring: "accessory" },
   gearCategories: ["weapon", "armor", "accessory"],

@@ -1,6 +1,7 @@
+import { equipmentItemError, equipmentLoadoutError } from "./equipment.js";
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +11,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, 5, 6, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, 6, 7, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -52,6 +53,25 @@ export function validateSave(value, skin) {
     };
     if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateStats);
     if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateStats);
+  }
+  if (value.version < 8 && s.campaign) {
+    const config = skin.campaign;
+    const migrateJob = hero => {
+      const initial = config.heroes.find(entry => entry.id === hero.id);
+      if (!initial || !hero.equipment || !Array.isArray(hero.giftedEquipment)) reject();
+      hero.jobId = initial.jobId;
+      for (const [slot, item] of Object.entries(hero.equipment)) {
+        if (!skin.itemDefinitions[item?.itemId]) reject();
+        if (equipmentItemError(hero, item.itemId, config, skin.itemDefinitions)) {
+          hero.giftedEquipment.push(item); delete hero.equipment[slot];
+        }
+      }
+      if (equipmentLoadoutError(hero, hero.equipment, config, skin.itemDefinitions) === 'equipment.twoHandedShield') {
+        hero.giftedEquipment.push(hero.equipment.offhand); delete hero.equipment.offhand;
+      }
+    };
+    if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateJob);
+    if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateJob);
   }
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
@@ -115,7 +135,8 @@ export function validateSave(value, skin) {
     if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
     for (const hero of c.heroes) {
       const initial = config.heroes.find(entry => entry.id === hero.id);
-      if (Object.hasOwn(hero, 'funds')) reject();
+      if (Object.hasOwn(hero, 'funds') || !Object.hasOwn(config.jobs, hero.jobId)) reject();
+      if (equipmentLoadoutError(hero, hero.equipment ?? {}, config, skin.itemDefinitions)) reject();
       if (!initial || !integer(hero.hp, 1) || !integer(hero.attack, 1) || !integer(hero.defense, 1) || !integer(hero.pendingGrowth) || hero.pendingGrowth > hero.level - (initial.level ?? 1)) reject();
       if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.level,1) || !integer(hero.experience) || hero.experience >= config.quest.levelExperience || !integer(hero.recoverUntil) || hero.recoverUntil > c.day + config.quest.recoveryMax) reject();
       if (!hero.equipment || typeof hero.equipment !== 'object' || Array.isArray(hero.equipment) || !Array.isArray(hero.giftedEquipment) || hero.giftedEquipment.length > 10000) reject();

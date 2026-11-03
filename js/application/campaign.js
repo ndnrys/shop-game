@@ -133,7 +133,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
         if (!item || !config.itemSlots[item.itemId]) return fail("equipment");
         changes = { [config.itemSlots[item.itemId]]: selection };
       }
-      const result = exchangeEquipment(state, hero, changes, config, inventory);
+      const result = exchangeEquipment(state, hero, changes, config, inventory, definitions);
       if (!result.ok) return result;
       if (!result.incoming.length && !result.returned.length && !amount) return fail("emptySupport");
       state.warehouse.items = result.items;
@@ -151,7 +151,7 @@ export function createCampaignActions(state, config, definitions, inventory, com
       const hero = c.heroes.find(hero => hero.id === heroId);
       if (!ready() || c.expedition || !hero) return fail("away");
       if (!hero.giftedEquipment.length) return fail("equipment");
-      const result = exchangeEquipment(state, hero, {}, config, inventory, true);
+      const result = exchangeEquipment(state, hero, {}, config, inventory, definitions, true);
       if (!result.ok) return result;
       state.warehouse.items = result.items;
       hero.giftedEquipment = [];

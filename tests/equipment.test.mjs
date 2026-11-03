@@ -6,7 +6,7 @@ import { makeSave, validateSave } from '../js/systems/save.js';
 
 const setup=()=>createSession(skin);
 test('several equipment slots and funds commit together; replacement returns used gear, removal preserves other slots',()=>{
-  const game=setup(), c=game.state.campaign, hero=c.heroes[0];let commits=0;game.subscribe(()=>commits++);
+  const game=setup(), c=game.state.campaign, hero=c.heroes[0];game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';let commits=0;game.subscribe(()=>commits++);
   assert.equal(game.campaign.support('lina',{weapon:'stock-001',offhand:'stock-003'},30).ok,true);
   assert.equal(commits,1);assert.equal(c.parties[0].funds,30);assert.equal(c.gold,370);
   assert.equal(game.campaign.support('lina',{weapon:'stock-009'},10).ok,true);
@@ -23,14 +23,15 @@ test('wrong slot, duplicate gear, bad IDs and invalid funds preserve the entire 
   }
 });
 test('failed warehouse return cannot discard gear, charge money, notify, or destroy undo',()=>{
-  const game=setup();game.campaign.support('lina','stock-009',30);
+  const custom=structuredClone(skin);custom.itemDefinitions.iron_sword.equipmentType='two_handed_sword';
+  const game=createSession(custom);game.campaign.support('bran','stock-009',30);
   assert.equal(game.warehouse.move('stock-004',7,7).ok,true);
   assert.equal(game.warehouse.canUndo(),true);
   // Fill every remaining cell with one-cell inventory instances.
   const items=game.state.warehouse.items;
   for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(game.inventory.canPlace(items,'crystal',x,y,0,8,8))items.push({instanceId:`fill-${x}-${y}`,itemId:'crystal',x,y,rotated:0});
   let notifications=0;game.subscribe(()=>notifications++);
-  const before=JSON.stringify(game.state);assert.equal(game.campaign.support('lina',{weapon:'stock-001'},25).reason,'mvp.error.returnFull');
+  const before=JSON.stringify(game.state);assert.equal(game.campaign.support('bran',{weapon:'stock-001'},25).reason,'mvp.error.returnFull');
   assert.equal(JSON.stringify(game.state),before);assert.equal(notifications,0);assert.equal(game.warehouse.canUndo(),true);
 });
 test('used price applies to customer budgets, sales, merchant buyback and original cost accounting',()=>{
@@ -47,7 +48,7 @@ test('used price applies to customer budgets, sales, merchant buyback and origin
 });
 test('used status survives repeated exchanges and saving; invalid flags are rejected and v4 saves load',()=>{
   const game=setup();game.campaign.support('lina','stock-001');game.campaign.support('lina',{weapon:null});
-  game.campaign.support('bran','stock-001');game.campaign.support('bran',{weapon:null});
+  game.campaign.support('lina','stock-001');game.campaign.support('lina',{weapon:null});
   const sword=game.state.warehouse.items.find(item=>item.instanceId==='stock-001');assert.equal(game.price(sword),50);
   assert.equal(game.price({itemId:'silver_ring',used:true}),47);
   const saved=makeSave(game.state);assert.deepEqual(validateSave(saved,skin),game.state);

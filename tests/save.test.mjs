@@ -11,7 +11,7 @@ test('roundtrip preserves incoming stock, RNG and remaining funds',()=>{
   const resumed=createSession(skin,state);assert.equal(resumed.campaign.startTrade('armor').ok,false);
   for(const item of [...state.campaign.trade.incoming])resumed.campaign.sellBack(item.instanceId,'incoming');
   resumed.campaign.finishTrade();resumed.campaign.startTrade('armor');
-  assert.equal(validateSave(makeSave(state),skin).campaign.trade.incoming.length,4);
+  assert.equal(validateSave(makeSave(state),skin).campaign.trade.incoming.length,1);
 });
 test('saved missions retain their result across restart',()=>{
   const game=createSession(skin);game.campaign.support('kyle','stock-001',30);game.campaign.dispatch();

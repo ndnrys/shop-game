@@ -9,7 +9,7 @@ const setup = () => createSession(skin);
 test("purchase pays once, unresolved incoming blocks next day, specialty buyback", () => {
   const game = setup(); const c = game.state.campaign;
   assert.equal(game.campaign.startTrade('weapons').ok, true);
-  assert.equal(c.gold, 250); assert.equal(c.trade.incoming.length, 4);
+  assert.equal(c.gold, 250); assert.equal(c.trade.incoming.length, 1);
   assert.equal(game.campaign.startTrade('armor').ok, false);
   assert.equal(game.campaign.nextDay().ok, false);
   assert.equal(game.campaign.buyback('iron_sword'), 15);

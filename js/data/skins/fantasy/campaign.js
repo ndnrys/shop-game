@@ -29,7 +29,7 @@ export default {
   presentation: {
     procurement: {
       assets: new URL('../../../../assets/skins/fantasy/procurement-ui/', import.meta.url).href,
-      rows: { weapons: { portrait: 'weapon_merchant_portrait.png', label: 'weapon_label.png' }, armor: { portrait: 'armor_merchant_portrait.png', icon: 'armor_icon.png' }, tools: { portrait: 'items_merchant_portrait.png', label: 'items_label.png' } },
+      rows: { weapons: { portrait: 'weapon_merchant_portrait.png', icon: 'swords_icon.png', tone: 'red' }, armor: { portrait: 'armor_merchant_portrait.png', icon: 'armor-helmet-reference.png', crop: 'armor', tone: 'blue' }, tools: { portrait: 'items_merchant_portrait.png', icon: 'potion_icon.png', tone: 'green' } },
     },
     characters: { ...characterArtwork, ...companionArtwork },
     report: { icons: Object.fromEntries(["coin", "crates", "hammer", "handshake", "moneybag", "calendar", "clipboard", "rumor"].map(name => [name, new URL(`../../../../assets/skins/fantasy/report-ui/icon_${name}.svg`, import.meta.url).href])) },
@@ -45,9 +45,9 @@ export default {
   startingGold: 400, targetGold: 3500, nextTownBaseGold: 300, travelPerHero: 50,
   daysPerSeason: 5, aidAmount: 80,
   merchants: [
-    { id: "weapons", categoryKeys: ["weapon"], cost: 150, count: 4, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
-    { id: "armor", categoryKeys: ["armor"], cost: 150, count: 4, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
-    { id: "tools", categoryKeys: ["medicine", "material", "food", "accessory"], cost: 120, count: 4, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
+    { id: "weapons", categoryKeys: ["weapon"], cost: 150, count: 1, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
+    { id: "armor", categoryKeys: ["armor"], cost: 150, count: 1, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
+    { id: "tools", categoryKeys: ["medicine", "material", "food", "accessory"], cost: 120, count: 1, specialtyChance: .7, buyback: .1, specialtyBuyback: .15 },
   ],
   customers: [
     { id: "traveler", dialogueKey: "mvp.line.traveler", categories: ["food", "medicine"], budget: 170 },

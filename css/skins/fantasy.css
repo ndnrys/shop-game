@@ -331,3 +331,11 @@
  .procurement-actions { margin-top:6px; }
  .procurement-skip { margin-top:4px; }
 }
+
+/* Separate icons preserve their proportions; banners share one vertical center. */
+.procurement-row:not(.procurement-villager) h2.procurement-label-icon { top:calc((var(--procurement-row-height) - 16px) / 2); transform:translateY(-50%); height:36px; padding:0 4px; }
+.procurement-label-red { background:linear-gradient(#b93813,#741906) !important; }
+.procurement-label-green { background:linear-gradient(#578d09,#214900) !important; }
+.procurement-icon { display:block; flex:0 0 26%; aspect-ratio:1; max-height:90%; overflow:hidden; }
+.procurement-label-icon .procurement-icon img { display:block; width:100%; height:100%; object-fit:contain; }
+.procurement-label-icon .procurement-icon-armor img { object-fit:cover; object-position:9% center; }

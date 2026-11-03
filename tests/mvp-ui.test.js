@@ -67,7 +67,7 @@ try {
     get('[data-procurement-change="1"][data-id="tools"]').click();
     get('[data-procurement-change="1"][data-id="tools"]').click();
     assert(get('.procurement-summary').textContent.includes('240'), 'payment preview');
-    action('procurementConfirm');assert(game.state.campaign.trade.incoming.length===8,'paid delivery');
+    action('procurementConfirm');assert(game.state.campaign.trade.incoming.length===2,'paid delivery');
     assert(get('[data-routine="next"]').disabled && !fixture.querySelector('[data-routine="skip"]'),'pending receiving locks next');
     await saveGame(skin.id,makeSave(game.state));const loaded=await loadGame(skin);assert(JSON.stringify(loaded)===JSON.stringify(game.state),'IndexedDB roundtrip');
     app.destroy();game=createSession(skin,loaded);mount();page('home');assert(!get('[data-screen="purchase"]').hidden,'resume purchase');

@@ -12,6 +12,15 @@ const heroes = characters.filter(character => character.joinChapter === 0).map(c
   id: character.id, nameKey: character.nameKey, jobId: character.initialJobId,
   level: character.initialLevel, ...character.initialStats, ability: 1,
 }));
+// Supplied sheets contain four 700 × 724 poses, left to right.
+const characterPoses = { normal: 0, icon: 0, battle: 1, resting: 2, dead: 3 };
+const companionArtwork = Object.fromEntries(characters.map(character => {
+  const poses = Object.fromEntries(Object.entries(characterPoses).map(([pose, column]) => [pose, {
+    imageUrl: new URL(`../../../../assets/skins/fantasy/characters/${character.images[pose]}`, import.meta.url).href,
+    imageRegion: { x: column * 700, y: 0, width: 700, height: 724, atlasWidth: 2800, atlasHeight: 724 },
+  }]));
+  return [character.id, { ...poses.normal, poses }];
+}));
 // MVP仮設定。正式なバランスは docs/MVP-確認事項.md で確認する。
 export default {
   jobs, equipmentTypes, dungeons, characters, ...chapterContent,
@@ -22,7 +31,7 @@ export default {
       assets: new URL('../../../../assets/skins/fantasy/procurement-ui/', import.meta.url).href,
       rows: { weapons: { portrait: 'weapon_merchant_portrait.png', label: 'weapon_label.png' }, armor: { portrait: 'armor_merchant_portrait.png', icon: 'armor_icon.png' }, tools: { portrait: 'items_merchant_portrait.png', label: 'items_label.png' } },
     },
-    characters: { ...characterArtwork, ...Object.fromEntries(characters.map(character => [character.id, { glyph: '◇' }])) },
+    characters: { ...characterArtwork, ...companionArtwork },
     report: { icons: Object.fromEntries(["coin", "crates", "hammer", "handshake", "moneybag", "calendar", "clipboard", "rumor"].map(name => [name, new URL(`../../../../assets/skins/fantasy/report-ui/icon_${name}.svg`, import.meta.url).href])) },
     home: {
       background: new URL("../../../../assets/skins/fantasy/main-ui/interior-male.png", import.meta.url).href,

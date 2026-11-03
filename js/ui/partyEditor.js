@@ -1,4 +1,5 @@
 import { itemArt } from './itemArt.js';
+import { characterArt } from './characterArt.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
@@ -13,7 +14,7 @@ export function mountPartyEditor(root, game, announce) {
   const busy = () => Boolean(state.campaign.expedition || state.campaign.trade || state.campaign.region !== 'village');
   const listen = (target, type, handler) => target.addEventListener(type, handler, { signal: events.signal });
   const art = id => {
-    const value = actions.config.presentation?.characters?.[id];
+    const value = characterArt(actions.config.presentation?.characters?.[id], id, state.campaign);
     return value ? itemArt(typeof value === 'string' ? { imageUrl: value } : value) : '';
   };
 

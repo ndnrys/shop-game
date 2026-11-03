@@ -14,10 +14,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "kyle.png",
+      "icon": "kyle.png",
+      "battle": "kyle.png",
+      "resting": "kyle.png",
+      "dead": "kyle.png"
     }
   },
   {
@@ -35,10 +36,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "gareth.png",
+      "icon": "gareth.png",
+      "battle": "gareth.png",
+      "resting": "gareth.png",
+      "dead": "gareth.png"
     }
   },
   {
@@ -58,10 +60,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "mira.png",
+      "icon": "mira.png",
+      "battle": "mira.png",
+      "resting": "mira.png",
+      "dead": "mira.png"
     }
   },
   {
@@ -79,10 +82,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "leon.png",
+      "icon": "leon.png",
+      "battle": "leon.png",
+      "resting": "leon.png",
+      "dead": "leon.png"
     }
   },
   {
@@ -102,10 +106,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "sena.png",
+      "icon": "sena.png",
+      "battle": "sena.png",
+      "resting": "sena.png",
+      "dead": "sena.png"
     }
   },
   {
@@ -126,10 +131,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "elma.png",
+      "icon": "elma.png",
+      "battle": "elma.png",
+      "resting": "elma.png",
+      "dead": "elma.png"
     }
   },
   {
@@ -147,10 +153,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "dario.png",
+      "icon": "dario.png",
+      "battle": "dario.png",
+      "resting": "dario.png",
+      "dead": "dario.png"
     }
   },
   {
@@ -170,10 +177,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "finn.png",
+      "icon": "finn.png",
+      "battle": "finn.png",
+      "resting": "finn.png",
+      "dead": "finn.png"
     }
   },
   {
@@ -193,10 +201,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "rose.png",
+      "icon": "rose.png",
+      "battle": "rose.png",
+      "resting": "rose.png",
+      "dead": "rose.png"
     }
   },
   {
@@ -214,10 +223,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "volk.png",
+      "icon": "volk.png",
+      "battle": "volk.png",
+      "resting": "volk.png",
+      "dead": "volk.png"
     }
   },
   {
@@ -237,10 +247,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "nina.png",
+      "icon": "nina.png",
+      "battle": "nina.png",
+      "resting": "nina.png",
+      "dead": "nina.png"
     }
   },
   {
@@ -260,10 +271,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "toma.png",
+      "icon": "toma.png",
+      "battle": "toma.png",
+      "resting": "toma.png",
+      "dead": "toma.png"
     }
   },
   {
@@ -281,10 +293,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "adel.png",
+      "icon": "adel.png",
+      "battle": "adel.png",
+      "resting": "adel.png",
+      "dead": "adel.png"
     }
   },
   {
@@ -304,10 +317,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "raz.png",
+      "icon": "raz.png",
+      "battle": "raz.png",
+      "resting": "raz.png",
+      "dead": "raz.png"
     }
   },
   {
@@ -327,10 +341,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "iris.png",
+      "icon": "iris.png",
+      "battle": "iris.png",
+      "resting": "iris.png",
+      "dead": "iris.png"
     }
   },
   {
@@ -348,10 +363,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "bast.png",
+      "icon": "bast.png",
+      "battle": "bast.png",
+      "resting": "bast.png",
+      "dead": "bast.png"
     }
   },
   {
@@ -371,10 +387,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "sara.png",
+      "icon": "sara.png",
+      "battle": "sara.png",
+      "resting": "sara.png",
+      "dead": "sara.png"
     }
   },
   {
@@ -394,10 +411,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "nadim.png",
+      "icon": "nadim.png",
+      "battle": "nadim.png",
+      "resting": "nadim.png",
+      "dead": "nadim.png"
     }
   },
   {
@@ -417,10 +435,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "dina.png",
+      "icon": "dina.png",
+      "battle": "dina.png",
+      "resting": "dina.png",
+      "dead": "dina.png"
     }
   },
   {
@@ -440,10 +459,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "ork.png",
+      "icon": "ork.png",
+      "battle": "ork.png",
+      "resting": "ork.png",
+      "dead": "ork.png"
     }
   },
   {
@@ -464,10 +484,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "luca.png",
+      "icon": "luca.png",
+      "battle": "luca.png",
+      "resting": "luca.png",
+      "dead": "luca.png"
     }
   },
   {
@@ -485,10 +506,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "zek.png",
+      "icon": "zek.png",
+      "battle": "zek.png",
+      "resting": "zek.png",
+      "dead": "zek.png"
     }
   },
   {
@@ -508,10 +530,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "lize.png",
+      "icon": "lize.png",
+      "battle": "lize.png",
+      "resting": "lize.png",
+      "dead": "lize.png"
     }
   },
   {
@@ -532,10 +555,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "mel.png",
+      "icon": "mel.png",
+      "battle": "mel.png",
+      "resting": "mel.png",
+      "dead": "mel.png"
     }
   },
   {
@@ -553,10 +577,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "oswald.png",
+      "icon": "oswald.png",
+      "battle": "oswald.png",
+      "resting": "oswald.png",
+      "dead": "oswald.png"
     }
   },
   {
@@ -576,10 +601,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "vera.png",
+      "icon": "vera.png",
+      "battle": "vera.png",
+      "resting": "vera.png",
+      "dead": "vera.png"
     }
   },
   {
@@ -600,10 +626,11 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": null,
-      "icon": null,
-      "resting": null,
-      "dead": null
+      "normal": "hakim.png",
+      "icon": "hakim.png",
+      "battle": "hakim.png",
+      "resting": "hakim.png",
+      "dead": "hakim.png"
     }
   }
 ]

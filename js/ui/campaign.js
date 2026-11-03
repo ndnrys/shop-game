@@ -1,3 +1,4 @@
+import { characterArt } from './characterArt.js';
 import { mountPartyEditor } from "./partyEditor.js";
 import { mountEquipmentEditor } from "./equipmentEditor.js";
 import { growthChoices } from "../systems/growth.js";
@@ -38,7 +39,7 @@ export function mountCampaign(root, game) {
   const link = (id, key) => `<a class="mvp-link" href="#${id}">${tr(key)}</a>`;
 
   function actor(id, className = '') {
-    const artwork = config.presentation?.characters?.[id];
+    const artwork = characterArt(config.presentation?.characters?.[id], id, c);
     if (!artwork) return '';
     return `<span class="scene-actor ${className}" aria-hidden="true">${itemArt(typeof artwork === 'string' ? { imageUrl: artwork } : artwork)}</span>`;
   }

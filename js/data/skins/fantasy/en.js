@@ -1,4 +1,12 @@
 export default {
+  "jobTraits.swordsman": "HP +1 (fixed)",
+  "jobTraits.warrior": "Defense +1 (fixed)",
+  "jobTraits.mage": "+1 to each equipped attribute (once per attribute)",
+  "attributes.fire": "Fire",
+  "attributes.water": "Water",
+  "attributes.wind": "Wind",
+  "attributes.earth": "Earth",
+
   "jobs.swordsman": "Swordsman",
   "jobs.warrior": "Warrior",
   "jobs.mage": "Mage",

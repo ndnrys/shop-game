@@ -13,6 +13,10 @@ export function createSession(skin, state = createGameState(skin)) {
     if (!commonLocales[locale]) throw new Error(`Missing shared locale: ${locale}`);
     const required = ["app.title", "app.homeLabel", "app.brand", "app.storeName", "warehouse.eyebrow", "stocking.eyebrow", "money.amount", "warehouse.selectedMeta"];
     for (const item of Object.values(skin.itemDefinitions)) {
+      if (item.attributes !== undefined) {
+        if (!item.attributes || typeof item.attributes !== 'object' || Array.isArray(item.attributes) || Object.values(item.attributes).some(value => !Number.isSafeInteger(value) || value < 0)) throw new Error(`Invalid item attributes: ${item.id}`);
+        required.push(...Object.keys(item.attributes).map(key => `attributes.${key}`));
+      }
       required.push(`items.${item.id}`, `items.short.${item.id}`, `categories.${item.categoryKey}`, `materials.${item.materialKey}`);
       if (!skin.presentation[item.id]?.glyph && !skin.presentation[item.id]?.imageUrl) throw new Error(`Missing item presentation: ${item.id}`);
     }
@@ -20,7 +24,9 @@ export function createSession(skin, state = createGameState(skin)) {
       const config = skin.campaign;
       for (const hero of config.heroes) if (!Object.hasOwn(config.jobs, hero.jobId)) throw new Error(`Unknown initial job: ${hero.id}`);
       for (const job of Object.values(config.jobs)) {
-        required.push(job.nameKey);
+        required.push(job.nameKey, job.traitKey);
+        if (job.statBonuses !== undefined && (!job.statBonuses || typeof job.statBonuses !== 'object' || Array.isArray(job.statBonuses) || Object.entries(job.statBonuses).some(([key, value]) => !['hp','attack','defense'].includes(key) || !Number.isSafeInteger(value) || value < 0))) throw new Error('Invalid job stat bonuses');
+        if (job.equippedAttributeBonus !== undefined && (!Number.isSafeInteger(job.equippedAttributeBonus) || job.equippedAttributeBonus < 0)) throw new Error('Invalid job attribute bonus');
         if (!Array.isArray(job.allowedTypes) || job.allowedTypes.some(type => !config.equipmentTypes[type])) throw new Error('Invalid job equipment types');
       }
       for (const type of Object.values(config.equipmentTypes)) {

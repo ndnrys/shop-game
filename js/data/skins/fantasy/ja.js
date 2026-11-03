@@ -1,5 +1,13 @@
 import mvp from "./mvp-ja.js";
 export default {
+  "jobTraits.swordsman": "HP＋1（固定）",
+  "jobTraits.warrior": "防御＋1（固定）",
+  "jobTraits.mage": "装備中の各属性に＋1（同じ属性は1回のみ）",
+  "attributes.fire": "炎",
+  "attributes.water": "水",
+  "attributes.wind": "風",
+  "attributes.earth": "土",
+
   "jobs.swordsman": "剣士",
   "jobs.warrior": "戦士",
   "jobs.mage": "魔法使い",

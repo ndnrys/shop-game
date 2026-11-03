@@ -1,4 +1,10 @@
 export default {
+  "job.trait": "Job trait: {trait}",
+  "job.attributes": "Equipped attributes: {values}",
+  "job.noAttributes": "Equipped attributes: none",
+  "job.attributeValue": "{attribute} +{amount}",
+  "job.attributeSeparator": ", ",
+
   "equipment.job": "Job: {job}",
   "equipment.jobDenied": "This job cannot equip this type.",
   "equipment.invalidType": "The equipment type is invalid.",

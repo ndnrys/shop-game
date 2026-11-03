@@ -1,3 +1,4 @@
+import { effectiveHeroStats } from "../systems/heroStats.js";
 import { setPartyMembers, assignPartyMember, fundParty, createParty } from "../systems/party.js";
 import { growHero } from "../systems/growth.js";
 import { exchangeEquipment } from "../systems/equipment.js";
@@ -24,6 +25,10 @@ export function createCampaignActions(state, config, definitions, inventory, com
   }
   return {
     config,
+    heroStats: id => {
+      const hero = c.heroes.find(entry => entry.id === id);
+      return hero ? effectiveHeroStats(hero, config, definitions) : null;
+    },
     quote: ids => departureQuote(c, config, ids),
     chance: partyId => successChance(party(partyId), config, partyData(partyId)?.funds ?? 0, c.progress, c.progress >= 100 ? "boss" : "explore"),
     buyback: value => {

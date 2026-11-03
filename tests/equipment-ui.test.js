@@ -140,6 +140,16 @@ try {
     const hero=game.state.campaign.heroes[0];assert(hero.equipment.weapon && !hero.equipment.offhand,'weapon replaces prepared shield');
     const after=snapshot();choose('stock-003','offhand');assert(snapshot()===after && get('.gear-selection').textContent.includes('両手武器'),'shield rejected against equipped two-handed weapon');
   });
+  await check('job traits show fixed totals and mage applies one bonus per equipped attribute',()=>{
+    assert(get('.hero-trait').textContent.includes('HP＋1'),'swordsman trait shown');
+    assert(root.textContent.includes('HP 4・攻撃 3・防御 3'),'fixed HP included once');
+    get('[data-select-hero="bran"]').click();assert(root.textContent.includes('HP 3・攻撃 3・防御 4'),'warrior defense included once');
+    const custom=structuredClone(skin);custom.itemDefinitions.leather_armor.attributes={fire:1};custom.itemDefinitions.silver_ring.attributes={fire:1};
+    reset('adventurers',custom);get('[data-select-hero="noa"]').click();
+    assert(get('.hero-attributes').textContent.includes('なし'),'no attribute without equipment');
+    choose('stock-006','body');submit();assert(get('.hero-attributes').textContent.includes('炎＋2'),'one piece plus trait');
+    choose('stock-007','accessory');submit();assert(get('.hero-attributes').textContent.includes('炎＋3'),'two pieces plus one trait');
+  });
   await check('replacement and removal preserve used prices and untouched slots', () => {
     game.state.warehouse.items.find(item=>item.instanceId==='stock-009').itemId='steel_sword';view.render();
     choose('stock-001','weapon'); choose('stock-003','offhand'); submit();

@@ -1,4 +1,10 @@
 export default {
+  "job.trait": "職業特性：{trait}",
+  "job.attributes": "装備属性：{values}",
+  "job.noAttributes": "装備属性：なし",
+  "job.attributeValue": "{attribute}＋{amount}",
+  "job.attributeSeparator": "・",
+
   "equipment.job": "職業：{job}",
   "equipment.jobDenied": "この職業では装備できません。",
   "equipment.invalidType": "装備の種別設定が無効です。",

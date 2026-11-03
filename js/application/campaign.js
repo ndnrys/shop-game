@@ -20,8 +20,42 @@ export function createCampaignActions(state, config, definitions, inventory, com
     }
     return null;
   }
+  function procurementQuote(selections) {
+    if (!Array.isArray(selections) || !selections.length || selections.length > config.merchants.length) return { valid: false, amount: 0, count: 0, lots: 0 };
+    const ids = new Set();
+    let amount = 0, count = 0, lots = 0;
+    for (const selection of selections) {
+      const seller = config.merchants.find(entry => entry.id === selection?.merchantId);
+      if (!seller || ids.has(seller.id) || !Number.isSafeInteger(selection.lots) || selection.lots <= 0) return { valid: false, amount: 0, count: 0, lots: 0 };
+      ids.add(seller.id);
+      const quote = deliveryQuote(seller, seller.cost * selection.lots);
+      if (!quote.valid) return { valid: false, amount: 0, count: 0, lots: 0 };
+      amount += quote.amount; count += quote.count; lots += selection.lots;
+    }
+    return { valid: Number.isSafeInteger(amount) && count <= 1000, amount, count, lots };
+  }
+  function startProcurement(selections) {
+    if (!ready()) return fail('trade');
+    const quote = procurementQuote(selections);
+    if (!quote.valid || c.gold < quote.amount) return fail('money');
+    const trades = selections.map(selection => {
+      const seller = config.merchants.find(entry => entry.id === selection.merchantId);
+      const amount = seller.cost * selection.lots;
+      const count = seller.count * selection.lots;
+      const incoming = drawDelivery(c, definitions, { ...seller, cost: amount, count });
+      addJournal(state, 'purchase', { merchantId: seller.id, amount, count });
+      return { merchantId: seller.id, incoming };
+    });
+    c.gold -= quote.amount;
+    c.today.purchasing += quote.amount;
+    c.trade = { ...trades[0], pending: trades.slice(1) };
+    c.milestones.purchased = true;
+    return commit({ ok: true });
+  }
   return {
     config,
+    procurementQuote,
+    startProcurement,
     quote: ids => departureQuote(c, config, ids),
     chance: () => successChance(party(), config, party().reduce((sum, hero) => sum + hero.funds, 0), c.progress, c.progress >= 100 ? "boss" : "explore"),
     buyback: value => {
@@ -86,7 +120,8 @@ export function createCampaignActions(state, config, definitions, inventory, com
     },
     finishTrade() {
       if (!c.trade || c.trade.incoming.length) return fail("incoming");
-      c.trade = null;
+      const [next, ...pending] = c.trade.pending ?? [];
+      c.trade = next ? { ...next, pending } : null;
       return commit({ ok: true });
     },
     openShop() {

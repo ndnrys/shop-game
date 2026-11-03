@@ -1,6 +1,6 @@
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +10,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -97,8 +97,16 @@ export function validateSave(value, skin) {
       }
     }
     if (c.trade !== null) {
-      if (!c.trade || !config.merchants.some(merchant=>merchant.id===c.trade.merchantId) || !Array.isArray(c.trade.incoming) || c.trade.incoming.length > 1000) reject();
-      c.trade.incoming.forEach(item);
+      if (!c.trade || (c.trade.pending !== undefined && !Array.isArray(c.trade.pending))) reject();
+      const trades = [c.trade, ...(c.trade.pending ?? [])];
+      if (trades.length > config.merchants.length || new Set(trades.map(trade => trade?.merchantId)).size !== trades.length) reject();
+      let incomingCount = 0;
+      for (const trade of trades) {
+        if (!trade || !config.merchants.some(merchant => merchant.id === trade.merchantId) || !Array.isArray(trade.incoming)) reject();
+        incomingCount += trade.incoming.length;
+        trade.incoming.forEach(item);
+      }
+      if (incomingCount > 1000) reject();
     }
     if (c.nextItemId <= maximumDeliveryId) reject();
     if (c.expedition !== null) {

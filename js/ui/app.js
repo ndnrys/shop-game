@@ -24,9 +24,17 @@ export function mountScreens(root, game, features) {
     const inRoutine = activeId === 'home' && c?.region === 'village';
     const visibleId = inRoutine ? (c.trade ? 'purchase' : stageScreens[c.phase] ?? 'home') : activeId;
     const actualId = screens.has(visibleId) ? visibleId : activeId;
-    if (lastPhase !== c?.phase) { detailsOpen = false; lastPhase = c?.phase; }
+    if (lastPhase !== c?.phase) {
+      detailsOpen = lastPhase === 'report' && c?.phase === 'purchase';
+      lastPhase = c?.phase;
+    }
     root.querySelector('.app-shell')?.classList.toggle('home-dashboard', Boolean(inRoutine));
     root.querySelector('.app-shell')?.classList.toggle('home-details', Boolean(inRoutine && detailsOpen));
+    root.querySelector('.app-shell')?.classList.toggle('home-report', Boolean(inRoutine && detailsOpen && c.phase === 'report'));
+    const inProcurement = Boolean(inRoutine && detailsOpen && c.phase === 'purchase' && !c.trade);
+    root.querySelector('.app-shell')?.classList.toggle('home-procurement', inProcurement);
+    const storeLabel = root.querySelector('.topbar .day-label > span:first-child');
+    if (storeLabel) storeLabel.textContent = game.i18n.t('app.storeName');
     const interior = root.querySelector('#shop-interior');
     if (interior) {
       interior.hidden = !inRoutine;
@@ -48,7 +56,7 @@ export function mountScreens(root, game, features) {
         const displayPhase = c.phase;
         const icons = { report: '✎', purchase: '⚖', warehouse: '▣', stocking: '▤', support: '⚔', opening: '⚑', sales: '♜', end: '☷' };
         const label = phase => t(['opening','end'].includes(phase) ? `home.step.${phase}` : `routine.phase.${phase}`);
-        routine.innerHTML = `<header class="home-panel-heading"><h2>${t('home.today')}</h2><span class="home-date">${dateLabel}</span></header><div class="home-phase-card"><span class="home-phase-icon" aria-hidden="true">${icons[c.phase]}</span><div><h3>${t(['report','opening','end'].includes(c.phase) ? `home.phase.${c.phase}` : `routine.phase.${c.phase}`)}</h3><p>${t(`home.description.${c.phase}`)}</p></div></div><button type="button" class="home-primary" data-routine="details" aria-expanded="${detailsOpen}">${t(detailsOpen ? 'home.close' : `home.action.${c.phase}`)}<span aria-hidden="true">›</span></button><ol>${visiblePhases.map(phase => `<li class="${phases.indexOf(phase) < index ? 'is-complete' : ''}" ${phase === displayPhase ? 'aria-current="step"' : ''}><span aria-hidden="true">◆</span>${label(phase)}</li>`).join('')}</ol><div class="mvp-actions" ${detailsOpen ? '' : 'hidden'}>${index > 0 && index < 6 ? `<button type="button" class="mvp-button" data-routine="back" ${c.trade ? 'disabled' : ''}>${t('routine.back')}</button>` : ''}${index < 5 ? `<button type="button" class="mvp-button" data-routine="next" ${c.trade ? 'disabled' : ''}>${t(`routine.next.${c.phase}`)}</button>` : ''}${['purchase','support'].includes(c.phase) ? `<button type="button" class="mvp-button" data-routine="skip" ${c.trade ? 'disabled' : ''}>${t(`routine.skip.${c.phase}`)}</button>` : ''}</div><p role="status" data-routine-status></p>`;
+        routine.innerHTML = `<header class="home-panel-heading"><h2>${t('home.today')}</h2><span class="home-date">${dateLabel}</span></header><div class="home-phase-card"><span class="home-phase-icon" aria-hidden="true">${icons[c.phase]}</span><div><h3>${t(['report','opening','end'].includes(c.phase) ? `home.phase.${c.phase}` : `routine.phase.${c.phase}`)}</h3><p>${t(`home.description.${c.phase}`)}</p></div></div><button type="button" class="home-primary" data-routine="details" aria-expanded="${detailsOpen}">${t(detailsOpen ? 'home.close' : `home.action.${c.phase}`)}<span aria-hidden="true">›</span></button><ol>${visiblePhases.map(phase => `<li aria-label="${label(phase)}" class="${phases.indexOf(phase) < index ? 'is-complete' : ''}" ${phase === displayPhase ? 'aria-current="step"' : ''}><span aria-hidden="true">◆</span></li>`).join('')}</ol><p class="home-current-step">${label(displayPhase)}</p><div class="mvp-actions" ${detailsOpen ? '' : 'hidden'}>${index > 0 && index < 6 ? `<button type="button" class="mvp-button" data-routine="back" ${c.trade ? 'disabled' : ''}>${t('routine.back')}</button>` : ''}${index < 5 ? `<button type="button" class="mvp-button" data-routine="next" ${c.trade ? 'disabled' : ''}>${t(`routine.next.${c.phase}`)}</button>` : ''}${['purchase','support'].includes(c.phase) ? `<button type="button" class="mvp-button" data-routine="skip" ${c.trade ? 'disabled' : ''}>${t(`routine.skip.${c.phase}`)}</button>` : ''}</div><p role="status" data-routine-status></p>`;
       }
     }
     for (const link of links) {

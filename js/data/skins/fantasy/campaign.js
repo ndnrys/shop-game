@@ -2,7 +2,12 @@ import { characterArtwork } from "./artwork.js";
 // MVP仮設定。正式なバランスは docs/MVP-確認事項.md で確認する。
 export default {
   presentation: {
+    procurement: {
+      assets: new URL('../../../../assets/skins/fantasy/procurement-ui/', import.meta.url).href,
+      rows: { weapons: { portrait: 'weapon_merchant_portrait.png', label: 'weapon_label.png' }, armor: { portrait: 'armor_merchant_portrait.png', icon: 'armor_icon.png' }, tools: { portrait: 'items_merchant_portrait.png', label: 'items_label.png' } },
+    },
     characters: characterArtwork,
+    report: { icons: Object.fromEntries(["coin", "crates", "hammer", "handshake", "moneybag", "calendar", "clipboard", "rumor"].map(name => [name, new URL(`../../../../assets/skins/fantasy/report-ui/icon_${name}.svg`, import.meta.url).href])) },
     home: {
       background: new URL("../../../../assets/skins/fantasy/main-ui/interior-male.png", import.meta.url).href,
     },

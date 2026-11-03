@@ -22,8 +22,11 @@ export function mountCampaign(root, game) {
   let destination = '';
   let destinationDay = c.day;
   const amounts = new Map();
+  const procurementLots = new Map();
   let message = '';
   let error = false;
+  let reportPage = 'accounts';
+  let reportDay = c.day;
   const button = (action, label, disabled = false, attrs = '') => `<button type="button" class="mvp-button" data-action="${action}" ${disabled ? 'disabled' : ''} ${attrs}>${label}</button>`;
   const link = (id, key) => `<a class="mvp-link" href="#${id}">${tr(key)}</a>`;
 
@@ -37,14 +40,28 @@ export function mountCampaign(root, game) {
     return `<article class="mvp-product"><div class="mvp-product-art" aria-hidden="true">${itemArt(presentation[item.itemId])}</div><div><strong>${escape(itemLabel(item))}</strong><p>${tr('mvp.price', { amount: money(game.price(item)) })}</p></div><div class="mvp-actions">${source === 'incoming' ? button('keep', tr('mvp.keep'), false, `data-id="${item.instanceId}"`) : ''}${button('sellBack', tr('mvp.sellBack', { amount: money(actions.buyback(item)) }), false, `data-id="${item.instanceId}" data-source="${source}"`)}</div></article>`;
   }
 
+  const procurementSelections = () => config.merchants.map(merchant => ({ merchantId: merchant.id, lots: procurementLots.get(merchant.id) ?? 0 })).filter(selection => selection.lots > 0);
+  function procurement() {
+    const art = config.presentation?.procurement;
+    const quote = actions.procurementQuote(procurementSelections());
+    const affordable = quote.valid && quote.amount <= c.gold;
+    const control = (merchant, name) => {
+      const lots = procurementLots.get(merchant.id) ?? 0;
+      const more = procurementSelections().filter(selection => selection.merchantId !== merchant.id).concat({ merchantId: merchant.id, lots: lots + 1 });
+      const next = actions.procurementQuote(more);
+      return `<div class="procurement-counter"><button type="button" data-procurement-change="-1" data-id="${escape(merchant.id)}" aria-label="${tr('procurement.minus', { name })}" ${lots === 0 ? 'disabled' : ''}>−</button><output aria-label="${escape(name)}">${lots}</output><button type="button" data-procurement-change="1" data-id="${escape(merchant.id)}" aria-label="${tr('procurement.plus', { name })}" ${!next.valid || next.amount > c.gold ? 'disabled' : ''}>+</button></div>`;
+    };
+    return `<div class="procurement-selection"><div class="procurement-merchants">${config.merchants.map(merchant => {
+      const name = t('mvp.merchant.' + merchant.id);
+      const rowArt = art?.rows?.[merchant.id];
+      return `<section class="procurement-row">${rowArt ? `<img class="procurement-portrait" src="${escape(art.assets + rowArt.portrait)}" alt="">` : ''}<h2 class="${rowArt?.icon ? 'procurement-label-icon' : ''}" ${rowArt?.label ? `style="background-image:url('${escape(art.assets + rowArt.label)}')"` : ''}>${rowArt?.icon ? `<img src="${escape(art.assets + rowArt.icon)}" alt="">` : ''}${escape(name)}</h2>${control(merchant, name)}<small>${tr('procurement.terms', { amount: money(merchant.cost), count: merchant.count })}</small></section>`;
+    }).join('')}<section class="procurement-row procurement-villager">${art ? `<img class="procurement-villager-art" src="${escape(art.assets + 'villager_portrait.png')}" alt="">` : ''}<h2>${tr('procurement.villager')}</h2><button type="button" class="procurement-video" disabled>${tr('procurement.video')}</button><small>${tr('procurement.videoPending')}</small></section></div><section class="procurement-summary" aria-live="polite"><p><span>${tr('procurement.totalLots')}</span><strong>${tr('procurement.lots', { count: quote.lots })}</strong></p><p><span>${tr('procurement.totalCost')}</span><strong>${escape(money(quote.amount.toLocaleString(i18n.getLocale())))}</strong></p></section><div class="procurement-actions"><button type="button" data-action="procurementBack">${tr('procurement.back')}</button><button type="button" data-action="procurementConfirm" ${!affordable ? 'disabled' : ''}>${tr('procurement.confirm')}</button></div><button type="button" class="procurement-skip" data-action="procurementSkip">${tr('procurement.skip')}</button>${c.gold < Math.min(...config.merchants.map(merchant => merchant.cost)) ? button('relief', tr('mvp.relief', { amount: money(config.aidAmount) }), c.aidDay === c.day) : ''}<p class="procurement-message ${error ? 'is-error' : ''}" role="status">${escape(message)}</p></div>`;
+  }
+
   function purchase() {
     if (c.region !== 'village') return `<p>${tr('mvp.completeHint')}</p>`;
-    if (!c.trade) return `<div class="mvp-grid">${config.merchants.map(merchant => {
-      const amount = amounts.get(merchant.id) ?? merchant.cost;
-      const quote = actions.deliveryQuote(merchant.id, amount);
-      return `<article class="mvp-card merchant-card">${actor(merchant.id)}<h2>${tr(`mvp.merchant.${merchant.id}`)}</h2><p>${tr('mvp.merchantTerms', { cost: money(merchant.cost), count: merchant.count })}</p><label>${tr('routine.payment')}<input type="number" data-merchant-amount="${merchant.id}" min="${merchant.cost}" max="${Math.min(c.gold, Math.floor(1000 / merchant.count) * merchant.cost)}" step="${merchant.cost}" value="${amount}" inputmode="numeric"></label><p data-quote="${merchant.id}" aria-live="polite">${tr(quote.valid ? 'routine.delivery' : 'routine.invalidAmount', { count: quote.count, amount: money(amount) })}</p>${button('buy', tr('mvp.buy'), c.gold < merchant.cost, `data-id="${merchant.id}"`)}</article>`;
-    }).join('')}</div><section class="mvp-card"><p>${tr('mvp.reliefHint')}</p>${button('relief', tr('mvp.relief', { amount: money(config.aidAmount) }), c.aidDay === c.day || c.gold >= Math.min(...config.merchants.map(m => m.cost)))}</section>`;
-    return `<section class="mvp-card"><h2>${tr('mvp.tradeWith', { name: t(`mvp.merchant.${c.trade.merchantId}`) })}</h2><p>${tr('mvp.tradeHint')}</p>${link('warehouse', 'nav.warehouse')}<h3>${tr('mvp.incoming')}</h3><div class="mvp-products">${c.trade.incoming.map(item => product(item, 'incoming')).join('') || `<p>${tr('mvp.incomingEmpty')}</p>`}</div>${button('finishTrade', tr('mvp.finishTrade'), c.trade.incoming.length > 0)}</section><section class="mvp-card"><h2>${tr('mvp.oldStock')}</h2><p>${tr('mvp.oldStockHint')}</p><div class="mvp-products">${state.warehouse.items.map(item => product(item, 'warehouse')).join('') || tr('mvp.noStock')}</div></section>`;
+    if (!c.trade) return procurement();
+    return `<section class="mvp-card"><h2>${tr('mvp.tradeWith', { name: t(`mvp.merchant.${c.trade.merchantId}`) })}</h2><p>${tr('mvp.tradeHint')}</p>${c.trade.pending?.length ? `<p>${tr('procurement.remaining', { count: c.trade.pending.length })}</p>` : ''}${link('warehouse', 'nav.warehouse')}<h3>${tr('mvp.incoming')}</h3><div class="mvp-products">${c.trade.incoming.map(item => product(item, 'incoming')).join('') || `<p>${tr('mvp.incomingEmpty')}</p>`}</div>${button('finishTrade', tr('mvp.finishTrade'), c.trade.incoming.length > 0)}</section><section class="mvp-card"><h2>${tr('mvp.oldStock')}</h2><p>${tr('mvp.oldStockHint')}</p><div class="mvp-products">${state.warehouse.items.map(item => product(item, 'warehouse')).join('') || tr('mvp.noStock')}</div></section>`;
   }
 
   function questMap() {
@@ -108,16 +125,24 @@ export function mountCampaign(root, game) {
     return `<section class="mvp-card visitor-card"><h2>${tr('mvp.visitors')}</h2><div class="visitor-list">${c.customerVisits.map(visit => `<article class="visitor-scene">${actor(visit.customerId)}<div class="visitor-dialogue"><blockquote class="speech-bubble"><cite>${tr(`mvp.customer.${visit.customerId}`)}</cite><p>${escape(t(visit.dialogueKey))}</p></blockquote><small>${visit.purchase ? tr('mvp.visitPurchased', { item: itemName(visit.purchase.itemId), amount: money(visit.purchase.amount) }) : tr('mvp.visitBrowsing')}</small></div></article>`).join('')}</div>${link('journal', 'mvp.go.journal')}</section>`;
   }
 
+  function report() {
+    if (reportDay !== c.day) { reportPage = 'accounts'; reportDay = c.day; }
+    const icons = config.presentation?.report?.icons;
+    const icon = name => icons?.[name] ? `<img src="${escape(icons[name])}" alt="">` : '';
+    const summary = c.journal.find(entry => entry.day === c.day - 1 && entry.type === 'summary');
+    const totals = summary?.details ?? {};
+    const row = (key, amount, art, total = false) => `<div class="report-row ${total ? 'report-total' : ''}">${icon(art)}<span>${tr('report.' + key)}</span><strong class="${amount < 0 ? 'is-negative' : total && amount > 0 ? 'is-positive' : ''}">${escape(money((amount > 0 && total ? '+' : '') + (amount || 0).toLocaleString(i18n.getLocale())))}</strong></div>`;
+    const returns = c.journal.filter(entry => entry.day === c.day && ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered'].includes(entry.type));
+    return `<article class="business-report"><h1 class="report-heading">${icon('clipboard')}<span>${tr('report.title')}</span></h1><div class="report-paper"><div class="report-date">${icon('calendar')}<strong>${escape(date(c.day))}</strong><small>${tr('report.previous')}</small></div>${reportPage === 'accounts' ? `${!summary ? `<p class="report-empty">${tr('report.first')}</p>` : ''}<section class="report-ledger" aria-label="${tr('report.accounts')}">${row('sales', totals.sales ?? 0, 'coin')}${row('purchasing', -(totals.purchasing ?? 0), 'crates')}<div class="report-row">${icon('hammer')}<span>${tr('report.residents')}</span><small>${tr('report.unrecorded')}</small></div>${row('support', -(totals.support ?? 0), 'handshake')}${['buyback','rewards','aid'].filter(key => totals[key]).map(key => row(key, totals[key], 'coin')).join('')}${row('net', totals.net ?? 0, 'moneybag', true)}</section><section class="report-rumors"><h2>${icon('rumor')}<span>${tr('report.rumors')}</span></h2><p>${tr('report.noRumors')}</p></section>` : `<section class="report-return"><h2>${tr('report.returns')}</h2>${returns.length ? `<ul>${returns.map(entry => `<li>${log(entry)}</li>`).join('')}</ul>` : `<p>${tr('report.noReturns')}</p>`}${c.defeated && c.gold >= config.targetGold ? departure() : ''}</section>`}<button type="button" class="report-next" data-action="reportNext">${tr(reportPage === 'accounts' ? 'report.next' : 'report.start')}<span aria-hidden="true">›</span></button></div><nav class="report-progress" aria-label="${tr('report.title')}">${['accounts','returns'].map(page => `<button type="button" data-action="reportTab" data-id="${page}" ${reportPage === page ? 'aria-current="step"' : ''}><span aria-hidden="true"></span>${tr('report.' + page)}</button>`).join('')}</nav></article>`;
+  }
+
   function home() {
     if (c.region !== 'village') return `<section class="mvp-card mvp-complete"><p class="eyebrow">${tr('mvp.done')}</p><h2>${tr('mvp.complete')}</h2><p>${tr('mvp.completeHint')}</p><h3>${tr('mvp.openingGold', { amount: money(c.departure.openingGold) })}</h3><p>${tr('mvp.companions', { names: c.departure.heroIds.map(heroName).join('・') || t('mvp.none') })}</p><p>${tr('mvp.newTalent')}</p>${link('journal', 'mvp.go.journal')}</section>`;
     const stats = () => {
       const totals = dailyTotals(c.today);
       return `<div class="mvp-stats">${[['sales',c.today.sales],['grossProfit',totals.grossProfit],['cost',c.today.purchasing],['buyback',c.today.buyback],['supportCost',c.today.support],['reward',c.today.rewards],['aid',c.today.aid],['net',totals.net]].map(([key,amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div>`;
     };
-    if (c.phase === 'report') {
-      const entries = c.journal.filter(entry => (entry.day === c.day - 1 && entry.type === 'summary') || (entry.day === c.day && ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered'].includes(entry.type)));
-      return `<section class="mvp-card"><h2>${tr('routine.phase.report')}</h2>${entries.length ? `<ul>${entries.map(entry => `<li>${log(entry)}</li>`).join('')}</ul>` : `<p>${tr('routine.firstReport')}</p>`}</section>${c.defeated && c.gold >= config.targetGold ? departure() : ''}`;
-    }
+    if (c.phase === 'report') return report();
     if (c.phase === 'opening') return `<section class="mvp-card"><h2>${tr('routine.phase.opening')}</h2><p>${tr('routine.openReview', { count: state.shop.displayedItems.length })}</p>${!state.shop.displayedItems.length ? `<p>${tr('routine.emptyShop')}</p>` : ''}${button('open', tr('routine.open'), Boolean(c.trade || c.opened))}${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}</section>`;
     if (c.phase === 'sales') return `${visitors()}<section class="mvp-card">${button('salesDone', tr('routine.salesDone'))}</section>`;
     if (c.phase === 'end') return `${stats()}<section class="mvp-card"><h2>${tr('routine.phase.end')}</h2>${button('nextDay', tr('mvp.nextDay'))}</section>`;
@@ -130,11 +155,13 @@ export function mountCampaign(root, game) {
 
   function render() {
     if (destinationDay !== c.day) { destination = ''; destinationDay = c.day; }
+    if (view === 'purchase' && !c.trade && c.region === 'village') { root.innerHTML = procurement(); return; }
+    if (view === 'home' && c.phase === 'report' && c.region === 'village') { root.innerHTML = report(); return; }
     root.innerHTML = `<div class="page-heading"><div><p class="eyebrow">${escape(date(c.day))}</p><h1>${tr(`mvp.title.${view}`)}</h1><p class="intro">${tr(`mvp.subtitle.${view}`)}</p></div><strong class="mvp-wallet">${escape(money(c.gold))}</strong></div><p class="mvp-status ${error ? 'is-error' : ''}" role="status" aria-live="polite">${escape(message)}</p>${({ home, purchase, support, journal, adventurers: support, residents })[view]()}`;
   }
   function announce(result) {
     error = !result.ok;
-    message = t(result.ok ? 'mvp.ok' : result.reason);
+    message = result.ok ? '' : t(result.reason);
     render();
   }
   root.addEventListener('submit', event => {
@@ -182,6 +209,15 @@ export function mountCampaign(root, game) {
     root.querySelector(`[data-quote="${id}"]`).textContent = t(quote.valid ? 'routine.delivery' : 'routine.invalidAmount', { count: quote.count, amount: money(amount) });
   }, { signal: events.signal });
   root.addEventListener('click', event => {
+    const quantity = event.target.closest('[data-procurement-change]');
+    if (quantity && !quantity.disabled) {
+      const id = quantity.dataset.id;
+      const previous = procurementLots.get(id) ?? 0;
+      procurementLots.set(id, Math.max(0, previous + Number(quantity.dataset.procurementChange)));
+      render();
+      root.querySelector(`[data-procurement-change="${quantity.dataset.procurementChange}"][data-id="${id}"]`)?.focus({ preventScroll: true });
+      return;
+    }
     if (event.target.closest('[data-action=selectDestination]')) { destination = questStage(c.progress, config).key; render(); return; }
     const point = event.target.closest('[data-destination]');
     if (point) { destination = point.dataset.destination; render(); return; }
@@ -189,6 +225,23 @@ export function mountCampaign(root, game) {
     if (selection) { selectedHeroId = selection.dataset.selectHero; render(); root.querySelector(`[data-select-hero="${selectedHeroId}"]`)?.focus({ preventScroll: true }); return; }
     const target = event.target.closest('[data-action]');
     if (!target || target.disabled) return;
+    if (target.dataset.action === 'procurementSkip') {
+      const result = actions.advancePhase();
+      if (result.ok) procurementLots.clear();
+      announce(result); return;
+    }
+    if (target.dataset.action === 'procurementBack') { announce(actions.previousPhase()); return; }
+    if (target.dataset.action === 'procurementConfirm') {
+      const result = actions.startProcurement(procurementSelections());
+      if (result.ok) procurementLots.clear();
+      announce(result); return;
+    }
+    if (target.dataset.action === 'reportTab') { reportPage = target.dataset.id; render(); return; }
+    if (target.dataset.action === 'reportNext') {
+      if (reportPage === 'accounts') { reportPage = 'returns'; render(); }
+      else announce(actions.advancePhase());
+      return;
+    }
     const id = target.dataset.id;
     const operations = { recoverArchived: () => actions.recoverArchivedEquipment(id), buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.advancePhase, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch() : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
     announce(operations[target.dataset.action]());

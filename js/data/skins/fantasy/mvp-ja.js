@@ -30,7 +30,7 @@ export default {
   "mvp.guide.gold": "村は安全になりました。商売を続け、次の店の購入資金を貯めましょう。",
   "mvp.guide.ready": "討伐と資金の目標を達成しました。村で経営を続けるか、同行者を選んで出発できます。",
   "mvp.go.purchase": "仕入れへ", "mvp.go.stocking": "陳列へ", "mvp.go.support": "支援へ", "mvp.go.journal": "日誌へ",
-  "mvp.merchant.weapons": "武器商人", "mvp.merchant.armor": "防具商人", "mvp.merchant.tools": "道具商人",
+  "mvp.merchant.weapons": "武器商人", "mvp.merchant.armor": "防具商人", "mvp.merchant.tools": "道具商",
   "mvp.merchantTerms": "1口{cost}で{count}品。専門品70%。引き取り：専門品15%／その他10%（端数切り捨て）",
   "mvp.buy": "この商人から仕入れる", "mvp.tradeWith": "{name}と取引中", "mvp.incoming": "入荷置き場", "mvp.incomingEmpty": "入荷品の行き先が決まりました。",
   "mvp.keep": "倉庫へ収納", "mvp.sellBack": "{amount}で渡す", "mvp.finishTrade": "取引を終える", "mvp.tradeHint": "収納は空き場所へ自動配置します。倉庫画面で整理・回転してから戻れます。すべての入荷品を収納か引き取りに振り分けてください。",

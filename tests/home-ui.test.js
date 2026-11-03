@@ -3,7 +3,7 @@ const result = document.querySelector('#result');
 let passed = 0;
 function assert(value, message) { if (!value) throw new Error(message); }
 try {
-  for (const [width, height] of [[390,844], [320,568], [1280,900]]) {
+  for (const [width, height] of [[390,844], [320,568], [360,640], [430,932], [1280,900]]) {
     const frame = document.createElement('iframe');
     frame.style.cssText = `width:${width}px;height:${height}px;border:0;display:block`;
     const loaded = new Promise(resolve => frame.addEventListener('load', resolve, {once:true}));
@@ -18,6 +18,11 @@ try {
     assert(doc.documentElement.scrollWidth <= width, `${width}: no horizontal overflow`);
     assert(doc.documentElement.scrollHeight <= height, `${width}: main fits viewport`);
     const links=[...doc.querySelectorAll('.main-nav a')].filter(a=>frame.contentWindow.getComputedStyle(a).display!=='none');
+    const nav = doc.querySelector('.main-nav');
+    const shell = doc.querySelector('.app-shell');
+    const bottomPadding = parseFloat(frame.contentWindow.getComputedStyle(shell).paddingBottom);
+    assert(Math.abs(nav.getBoundingClientRect().bottom + bottomPadding - height) < 1, `${width}: menu anchored to viewport bottom`);
+    assert(links.every(link => Math.abs(link.getBoundingClientRect().bottom - nav.getBoundingClientRect().bottom) < 1), `${width}: menu buttons bottom aligned`);
     assert(links.length === (width >= 434 ? 6 : 5), `${width}: responsive menus`);
     assert(links.map(a=>a.hash).join(',') === '#home,#warehouse,#residents,#adventurers,#journal'+(width >= 434 ? ',#settings' : ''), `${width}: menu order`);
     assert(doc.querySelector('#shop-interior').style.backgroundImage.includes('interior-male'), `${width}: independent background`);
@@ -45,9 +50,26 @@ try {
     primary.dispatchEvent(new win.PointerEvent('pointerdown',{bubbles:true,pointerType:'touch',pointerId:1}));
     primary.dispatchEvent(new win.PointerEvent('pointerup',{bubbles:true,pointerType:'touch',pointerId:1}));
     primary.click();
-    assert(doc.querySelector('.home-details'), `${width}: touch-equivalent detail action`);
-    doc.querySelector('[data-routine="next"]').click();
-    assert(doc.querySelector('.home-phase-card h3').textContent === '仕入れ', `${width}: advances existing phase`);
+    assert(doc.querySelector('.home-report'), `${width}: report opens dedicated layout`);
+    assert(doc.querySelector('.report-heading').textContent.includes('営業報告'), `${width}: report title`);
+    assert(doc.querySelector('.report-row strong').textContent === '0 G', `${width}: no invented first-day sales`);
+    assert(frame.contentWindow.getComputedStyle(nav).display === 'grid', `${width}: report retains bottom menu`);
+    assert(frame.contentWindow.getComputedStyle(doc.querySelector('.screen-link[href="#settings"]')).display !== 'none', `${width}: report language settings accessible`);
+    assert(doc.documentElement.scrollWidth <= width, `${width}: report no horizontal overflow`);
+    select.value = 'en'; select.dispatchEvent(new win.Event('change', {bubbles:true}));
+    assert(doc.querySelector('.report-heading').textContent.includes('Business report'), `${width}: report translated`);
+    assert(doc.querySelector('.report-next').textContent.includes('Next'), `${width}: green button translated`);
+    assert(doc.documentElement.scrollWidth <= width, `${width}: English report no horizontal overflow`);
+    select.value = 'ja'; select.dispatchEvent(new win.Event('change', {bubbles:true}));
+    doc.querySelector('[data-action="reportNext"]').click();
+    assert(doc.querySelector('.report-return'), `${width}: return report page`);
+    doc.querySelector('[data-action="reportNext"]').click();
+    assert(!doc.querySelector('.home-report'), `${width}: closes report`);
+    assert(doc.querySelector('.home-phase-card h3').textContent === '仕入れ', `${width}: report advances to purchase`);
+    assert(doc.querySelector('.home-details'), `${width}: report opens purchase directly`);
+    assert(!doc.querySelector('[data-screen="purchase"]').hidden, `${width}: purchase screen visible`);
+    assert(doc.querySelector('[data-screen="purchase"] [data-action="procurementConfirm"]'), `${width}: merchant purchase controls available`);
+    doc.querySelector('.home-primary').click();
     assert(doc.documentElement.scrollHeight <= height, `${width}: next phase fits viewport`);
     passed++;
     const item = document.createElement('li');

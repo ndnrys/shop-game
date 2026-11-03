@@ -69,9 +69,10 @@ try {
     page('home');
   });
   await check('merchant payment previews quantity; unresolved stock blocks stage and persists',async()=>{
-    const input=get('[data-merchant-amount="tools"]');input.value='240';input.dispatchEvent(new Event('input',{bubbles:true}));
-    assert(get('[data-quote="tools"]').textContent.includes('8品'),'eight-item quote');
-    action('buy','[data-id="tools"]');assert(game.state.campaign.trade.incoming.length===8,'paid delivery');
+    get('[data-procurement-change="1"][data-id="tools"]').click();
+    get('[data-procurement-change="1"][data-id="tools"]').click();
+    assert(get('.procurement-summary').textContent.includes('240'), 'payment preview');
+    action('procurementConfirm');assert(game.state.campaign.trade.incoming.length===8,'paid delivery');
     assert(get('[data-routine="next"]').disabled&&get('[data-routine="skip"]').disabled,'pending trade locks next and skip');
     await saveGame(skin.id,makeSave(game.state));const loaded=await loadGame(skin);assert(JSON.stringify(loaded)===JSON.stringify(game.state),'IndexedDB roundtrip');
     app.destroy();game=createSession(skin,loaded);mount();page('home');assert(!get('[data-screen="purchase"]').hidden,'resume purchase');
@@ -102,7 +103,9 @@ try {
     assert(get('.visitor-scene').querySelector(':scope > .scene-actor .item-art'),'separate actor');
     action('salesDone');assert(game.state.campaign.phase==='end','day summary');assert(get('.mvp-stats'),'totals');
     action('nextDay');assert(game.state.campaign.phase==='report'&&game.state.campaign.day===2,'next day');assert(game.state.campaign.expedition===null,'return resolved');
-    assert(get('[data-screen="home"]').textContent.includes('1日の記録'),'previous-day summary');
+    assert(get('[data-screen="home"] .report-ledger'),'previous-day summary');
+    const summary=game.state.campaign.journal.find(entry=>entry.type==='summary'&&entry.day===1);
+    assert(get('.report-total strong').textContent.includes(String(summary.details.net)),'previous-day net from records');
   });
   await check('purchase and support can be skipped; empty shelves can finish a day',()=>{
     step();step('skip');assert(game.state.campaign.phase==='warehouse','skip purchase');step();

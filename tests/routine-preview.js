@@ -19,3 +19,8 @@ const localeControls=mountLocaleControls(document.querySelector('#locale-select'
 const unsubscribeLocale=game.i18n.onLocaleChange(()=>{applyTranslations(document,game.i18n);app.render();header();});
 document.querySelector('#save-controls').hidden=true;
 window.addEventListener('pagehide',event=>{if(!event.persisted){app.destroy();unsubscribe();localeControls.destroy();unsubscribeLocale();}});
+
+// Optional report preview uses the same isolated session and production action.
+if (new URLSearchParams(location.search).has('report')) document.querySelector('[data-routine="details"]')?.click();
+
+if (new URLSearchParams(location.search).has('procurement')) { game.campaign.advancePhase(); }

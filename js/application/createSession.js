@@ -22,6 +22,13 @@ export function createSession(skin, state = createGameState(skin)) {
     }
     if (skin.campaign) {
       const config = skin.campaign;
+      const dungeonIds = new Set();
+      if (!Array.isArray(config.dungeons) || !config.dungeons.length) throw new Error('Missing dungeon definitions');
+      for (const dungeon of config.dungeons) {
+        required.push(dungeon.nameKey);
+        if (!dungeon.id || dungeonIds.has(dungeon.id) || !Number.isSafeInteger(dungeon.requiredProgress) || dungeon.requiredProgress < 1 || !Number.isSafeInteger(dungeon.duration) || dungeon.duration < 1 || !Array.isArray(dungeon.requires) || new Set(dungeon.requires).size !== dungeon.requires.length || dungeon.requires.some(id => !dungeonIds.has(id))) throw new Error('Invalid dungeon definitions');
+        dungeonIds.add(dungeon.id);
+      }
       for (const hero of config.heroes) if (!Object.hasOwn(config.jobs, hero.jobId)) throw new Error(`Unknown initial job: ${hero.id}`);
       for (const job of Object.values(config.jobs)) {
         required.push(job.nameKey, job.traitKey);
@@ -42,7 +49,7 @@ export function createSession(skin, state = createGameState(skin)) {
     if (skin.campaign) for (const customer of skin.campaign.customers) required.push(customer.dialogueKey);
     for (const resident of skin.campaign?.residents ?? []) required.push(resident.nameKey, resident.descriptionKey);
     const map = skin.campaign?.quest?.map;
-    if (map) required.push(map.titleKey, map.descriptionKey, map.home.labelKey, ...map.points.map(point => point.labelKey), 'mvp.map.current', 'mvp.map.cleared', 'mvp.map.boss');
+    if (map) required.push(map.titleKey, map.descriptionKey, map.home.labelKey, 'mvp.map.current', 'mvp.map.cleared');
     for (const key of required) {
       if (!messages[key]) throw new Error(`Missing skin translation: ${locale}.${key}`);
     }

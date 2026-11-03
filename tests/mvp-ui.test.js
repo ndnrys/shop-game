@@ -85,7 +85,7 @@ try {
     assert(game.state.campaign.phase==='support','support stage');
     assert(get(`${visible} [data-party-id="party-1"][data-party-slot="0"]`).textContent.includes('リナ')&&!game.state.campaign.parties[0].members.includes('bran'),'shared party');
     assert(get('[data-action="dispatch"]').disabled,'destination required');
-    get('[data-destination="outskirts"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
+    get('[data-destination="forest"]').click();assert(!get('[data-action="dispatch"]').disabled,'map enables departure');
     action('dispatch');assert(game.state.campaign.expedition.heroIds.join()==='lina','selected party dispatched');
     page('adventurers');assert(!get('[data-screen="adventurers"]').querySelector('[data-action="dispatch"]'),'still no dispatch in tab');
     page('home');step();assert(game.state.campaign.phase==='opening','opening stage');

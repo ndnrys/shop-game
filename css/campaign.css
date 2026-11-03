@@ -178,3 +178,11 @@
 .party-add { margin:12px 0; }
 .party-settings button:disabled { opacity:.45; cursor:default; }
 @media(min-width:1000px) { .party-frames { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+
+.dungeon-list { display:grid; gap:12px; margin:16px 0; }
+.dungeon-card { min-width:0; padding:12px; border:1px solid var(--line); }
+.quest-card h2, .dungeon-card h3 { color:var(--ink); }
+.dungeon-card h3 { margin:0 0 8px; }
+.dungeon-card progress { width:100%; }
+.dungeon-card [aria-pressed=true] { outline:3px solid var(--green-dark); outline-offset:-3px; }
+.dungeon-card .mvp-button { max-width:100%; overflow-wrap:anywhere; }

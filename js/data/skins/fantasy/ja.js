@@ -1,5 +1,8 @@
 import mvp from "./mvp-ja.js";
 export default {
+  "dungeons.forest": "森",
+  "dungeons.camp": "野営地",
+
   "jobTraits.swordsman": "HP＋1（固定）",
   "jobTraits.warrior": "防御＋1（固定）",
   "jobTraits.mage": "装備中の各属性に＋1（同じ属性は1回のみ）",

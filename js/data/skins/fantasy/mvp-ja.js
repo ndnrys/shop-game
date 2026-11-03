@@ -6,7 +6,7 @@ export default {
 
   "mvp.roster.status": "Lv.{level} · {status}", "mvp.roster": "支援者の編成", "mvp.roster.ready": "派遣可能", "mvp.roster.injured": "療養中",
 
-  "mvp.map.title": "村の周辺図", "mvp.map.description": "村から周辺の森、魔物の野営地、奥地の拠点へ続く探索路。攻略状況に合わせて現在地点が変わります。",
+  "mvp.map.title": "村の周辺図", "mvp.map.description": "村から森と魔物の野営地へ続く道を描いた地図。",
   "mvp.map.village": "村のよろず屋", "mvp.map.outskirts": "周辺の森", "mvp.map.camp": "魔物の野営地", "mvp.map.stronghold": "奥地の拠点",
   "mvp.map.current": "探索中", "mvp.map.cleared": "安全を確保", "mvp.map.boss": "リーダー出現",
 
@@ -21,11 +21,11 @@ export default {
   "mvp.grossProfit": "販売粗利（売上−売れた品の仕入原価）",
   "mvp.sales": "今日の売上", "mvp.cost": "仕入れ費用", "mvp.buyback": "引取額", "mvp.supportCost": "支度金", "mvp.net": "今日の現金収支", "mvp.gold": "所持金", "mvp.reward": "討伐報酬", "mvp.aid": "手伝い収入",
   "mvp.relief": "村の手伝いで立て直す（{amount}）", "mvp.reliefHint": "仕入れ資金が足りないとき、1日1回だけ村の手伝いができます。",
-  "mvp.tutorial": "村で学ぶこと", "mvp.step.purchase": "商人から仕入れる", "mvp.step.sale": "外部の冒険者へ販売する", "mvp.step.support": "仲間に装備や支度金を渡す", "mvp.step.quest": "魔物リーダーを討伐する", "mvp.step.gold": "次の街の開業資金 {amount} を貯める",
+  "mvp.tutorial": "村で学ぶこと", "mvp.step.purchase": "商人から仕入れる", "mvp.step.sale": "外部の冒険者へ販売する", "mvp.step.support": "仲間に装備や支度金を渡す", "mvp.step.quest": "森と野営地を攻略する", "mvp.step.gold": "次の街の開業資金 {amount} を貯める",
   "mvp.done": "達成", "mvp.pending": "これから", "mvp.guide.purchase": "まずは仕入れへ。残す商品を選び、取引を完了しましょう。",
   "mvp.guide.sale": "倉庫から陳列へ商品を移し、経営画面で店を開きましょう。",
   "mvp.guide.support": "売る商品とは別に、仲間に渡す装備と支度金を準備しましょう。",
-  "mvp.guide.quest": "支援画面で攻略を進めましょう。攻略率100%でボスが出現します。",
+  "mvp.guide.quest": "支援画面で森、野営地の順に攻略しましょう。",
   "mvp.guide.away": "仲間は遠征中です。商売を続け、1日を終えると帰還します。",
   "mvp.guide.gold": "村は安全になりました。商売を続け、次の店の購入資金を貯めましょう。",
   "mvp.guide.ready": "討伐と資金の目標を達成しました。村で経営を続けるか、同行者を選んで出発できます。",
@@ -50,7 +50,7 @@ export default {
   "mvp.log.support": "{hero}に{item}と支度金{amount}を渡した。", "mvp.log.returnEquipment": "{hero}から{item}を倉庫へ戻した。", "mvp.log.dispatch": "仲間が{kind}へ出発。成果の成功確率{chance}%。帰還は{date}の予定。", "mvp.log.questSuccess": "討伐成功。村の安全を取り戻し、報酬{amount}を受け取った。", "mvp.log.questFailure": "討伐は失敗。3人は無事帰還した。支援を整えて再挑戦しよう。", "mvp.log.summary": "1日の記録：売上{sales}（販売原価{cogs}）、仕入れ{purchasing}、引取{buyback}、支度金{support}、報酬{rewards}、手伝い{aid}。現金収支{net}。", "mvp.log.aid": "村の手伝いをして{amount}を受け取った。", "mvp.log.departure": "{count}人の仲間と村を出発。次の街の開始資金は{amount}。",
   "mvp.heroGrowth": "Lv.{level} · 経験値 {experience}/{required} · 能力 {ability}",
   "mvp.heroHealthy": "派遣可能", "mvp.heroInjured": "怪我で療養中 · あと{days}日（{date}に回復）",
-  "mvp.progress": "攻略率 {amount}%", "mvp.step.progress": "攻略率を100%にしてボスを発見する",
+  "mvp.progress": "攻略率 {amount}%", "mvp.step.progress": "必要攻略値に到達してダンジョンを攻略する",
   "mvp.stage.outskirts": "村の周辺を調査し、魔物を追い払いましょう。",
   "mvp.stage.camp": "魔物の野営地を発見。仲間を育てながら攻略を続けましょう。",
   "mvp.stage.stronghold": "魔物の本拠地は目前。装備を整え、最後の攻略を進めましょう。",
@@ -76,6 +76,6 @@ export default {
   "mvp.line.wanderer": "今日は何が並んでいるんだい？",
   "mvp.log.visit": "{customer}が来店。「{line}」",
   "mvp.customer.traveler": "旅の冒険者", "mvp.customer.swordsman": "剣士の冒険者", "mvp.customer.guard": "護衛の冒険者", "mvp.customer.explorer": "探索者", "mvp.customer.wanderer": "流れの冒険者",
-  "mvp.ok": "操作を確定しました。", "mvp.error.trade": "取引を終えてから操作してください。", "mvp.error.money": "金額を確認してください。所持金の範囲内の整数を指定できます。", "mvp.error.full": "倉庫に入りません。倉庫で整理するか、不要品を商人へ渡してください。", "mvp.error.item": "商品が見つかりません。", "mvp.error.incoming": "入荷品をすべて収納するか、商人へ渡してください。", "mvp.error.opened": "今日は営業済みか、取引中です。", "mvp.error.shelf": "まず商品を陳列してください。", "mvp.error.away": "遠征中、取引中、または出発後は操作できません。", "mvp.error.equipment": "倉庫から対応する部位の装備を選んでください。", "mvp.error.emptySupport": "装備か支度金を用意してください。", "mvp.error.preparation": "装備を1人以上、支度金を合計30以上用意してください。", "mvp.error.aid": "手伝いは仕入れ資金が不足するとき、1日1回だけ利用できます。", "mvp.error.departure": "リーダー討伐と目標金額を達成し、有効な同行者を選んでください。",
+  "mvp.ok": "操作を確定しました。", "mvp.error.trade": "取引を終えてから操作してください。", "mvp.error.money": "金額を確認してください。所持金の範囲内の整数を指定できます。", "mvp.error.full": "倉庫に入りません。倉庫で整理するか、不要品を商人へ渡してください。", "mvp.error.item": "商品が見つかりません。", "mvp.error.incoming": "入荷品をすべて収納するか、商人へ渡してください。", "mvp.error.opened": "今日は営業済みか、取引中です。", "mvp.error.shelf": "まず商品を陳列してください。", "mvp.error.away": "遠征中、取引中、または出発後は操作できません。", "mvp.error.equipment": "倉庫から対応する部位の装備を選んでください。", "mvp.error.emptySupport": "装備か支度金を用意してください。", "mvp.error.preparation": "参加するパーティの1人以上に装備を用意してください。", "mvp.error.aid": "手伝いは仕入れ資金が不足するとき、1日1回だけ利用できます。", "mvp.error.departure": "すべてのダンジョン攻略と目標金額を達成し、有効な同行者を選んでください。",
   "mvp.save.saving": "保存中…", "mvp.save.saved": "自動保存済み", "mvp.save.failed": "保存できませんでした。JSONを書き出して保管してください。", "mvp.save.loading": "保存を読み込んでいます…", "mvp.save.invalid": "保存を読み込めませんでした。ファイルを確認するか、新しく始めてください。", "mvp.export": "セーブを書き出す", "mvp.import": "セーブを読み込む", "mvp.reset": "新しく始める", "mvp.resetConfirm": "現在の進行を消して最初から始めますか？", "mvp.importConfirm": "現在の進行を選んだセーブに置き換えますか？", "mvp.importError": "このセーブは読み込めません。形式・スキン・バージョンを確認してください。",
 };

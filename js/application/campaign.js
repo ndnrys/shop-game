@@ -1,3 +1,4 @@
+import { dungeonStatus, nextDungeon, partyAttack } from "../systems/dungeons.js";
 import { effectiveHeroStats } from "../systems/heroStats.js";
 import { setPartyMembers, assignPartyMember, fundParty, createParty } from "../systems/party.js";
 import { growHero } from "../systems/growth.js";
@@ -5,7 +6,7 @@ import { exchangeEquipment } from "../systems/equipment.js";
 import { itemPrice } from "../systems/pricing.js";
 import { buybackPrice, drawDelivery, deliveryQuote } from "../systems/gacha.js";
 import { sellToCustomers, dailyTotals } from "../systems/sales.js";
-import { successChance, departureQuote, planExpedition, resolveExpedition } from "../systems/expeditions.js";
+import { departureQuote, planExpedition, resolveExpedition } from "../systems/expeditions.js";
 import { addJournal } from "../systems/journal.js";
 
 export function createCampaignActions(state, config, definitions, inventory, commit) {
@@ -30,7 +31,9 @@ export function createCampaignActions(state, config, definitions, inventory, com
       return hero ? effectiveHeroStats(hero, config, definitions) : null;
     },
     quote: ids => departureQuote(c, config, ids),
-    chance: partyId => successChance(party(partyId), config, partyData(partyId)?.funds ?? 0, c.progress, c.progress >= 100 ? "boss" : "explore"),
+    dungeonStatus: id => dungeonStatus(c, config, id),
+    nextDungeon: () => nextDungeon(c, config)?.id ?? null,
+    attack: (partyId = c.parties[0].id) => partyAttack(c, config, definitions, partyId),
     buyback: value => {
       const item = typeof value === 'string' ? { itemId: value } : value;
       return merchant() ? buybackPrice(definitions[item.itemId], merchant(), itemPrice(definitions[item.itemId], item, config.usedPriceRate)) : 0;
@@ -163,16 +166,16 @@ export function createCampaignActions(state, config, definitions, inventory, com
       for (const item of result.returned) addJournal(state, "returnEquipment", { heroId, itemId: item.itemId });
       return commit({ ok: true });
     },
-    dispatch(kind = c.progress >= 100 ? "boss" : "explore", partyId = c.parties[0].id) {
+    dispatch(dungeonId = nextDungeon(c, config)?.id, partyId = c.parties[0].id) {
       if (!ready() || c.expedition || c.defeated) return fail("away");
-      if (!["explore", "boss"].includes(kind) || (kind === "boss") !== (c.progress >= 100)) return fail("bossLocked");
+      const status = dungeonStatus(c, config, dungeonId);
+      if (!status || !status.unlocked || status.cleared) return { ok: false, reason: "dungeon.unavailable" };
       if (!party(partyId).length) return fail("party");
       if (party(partyId).some(hero => hero.recoverUntil > c.day)) return fail("recovering");
-      const funds = partyData(partyId).funds;
-      if (funds < config.quest.minimumFunds || party(partyId).filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
-      c.expedition = planExpedition(c, config, kind, partyId);
-      partyData(partyId).funds = 0;
-      addJournal(state, "dispatch", { questId: config.quest.id, kind, returnDay: c.expedition.returnDay, chance: Math.round(c.expedition.chance * 100) });
+      if (party(partyId).filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
+      if (!Number.isSafeInteger(partyAttack(c, config, definitions, partyId))) return { ok: false, reason: "dungeon.invalidProgress" };
+      c.expedition = planExpedition(c, config, definitions, dungeonId, partyId);
+      addJournal(state, "dungeonDispatch", { dungeonId, partyId, returnDay: c.expedition.returnDay, attackPower: c.expedition.attackPower });
       return commit({ ok: true });
     },
     nextDay() {

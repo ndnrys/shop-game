@@ -1,0 +1,4 @@
+[
+  { "id": "forest", "nameKey": "dungeons.forest", "requiredProgress": 60, "requires": [], "duration": 1, "map": { "x": 32, "y": 52 } },
+  { "id": "camp", "nameKey": "dungeons.camp", "requiredProgress": 140, "requires": ["forest"], "duration": 1, "map": { "x": 51, "y": 43 } }
+]

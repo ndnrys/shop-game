@@ -1,7 +1,6 @@
 import { mountPartyEditor } from "./partyEditor.js";
 import { mountEquipmentEditor } from "./equipmentEditor.js";
 import { growthChoices } from "../systems/growth.js";
-import { equipmentPower, questStage } from "../systems/expeditions.js";
 import { dailyTotals } from "../systems/sales.js";
 import { calendarDate } from "../systems/calendar.js";
 import { itemArt } from "./itemArt.js";
@@ -55,17 +54,31 @@ export function mountCampaign(root, game) {
     return `<section class="mvp-card"><h2>${tr('mvp.tradeWith', { name: t(`mvp.merchant.${c.trade.merchantId}`) })}</h2><p>${tr('mvp.tradeHint')}</p>${link('warehouse', 'nav.warehouse')}<h3>${tr('mvp.incoming')}</h3><div class="mvp-products">${c.trade.incoming.map(item => product(item, 'incoming')).join('') || `<p>${tr('mvp.incomingEmpty')}</p>`}</div>${button('finishTrade', tr('mvp.finishTrade'), c.trade.incoming.length > 0)}</section><section class="mvp-card"><h2>${tr('mvp.oldStock')}</h2><p>${tr('mvp.oldStockHint')}</p><div class="mvp-products">${state.warehouse.items.map(item => product(item, 'warehouse')).join('') || tr('mvp.noStock')}</div></section>`;
   }
 
+  function dungeonName(id) { return t(config.dungeons.find(dungeon => dungeon.id === id).nameKey); }
+  function dungeonLabel(dungeon) {
+    const status = actions.dungeonStatus(dungeon.id);
+    return status.cleared ? t('dungeon.cleared') : status.unlocked ? t('dungeon.available') : t('dungeon.locked', { names: dungeon.requires.map(dungeonName).join(t('dungeon.separator')) });
+  }
   function questMap() {
     const map = config.quest.map;
     if (!map) return '';
-    const current = questStage(c.progress, config).key;
-    const marker = (point, home = false) => {
-      const active = !home && point.stage === current;
-      const selectable = active && !c.defeated && !c.expedition && view === 'support';
-      const status = c.defeated ? 'mvp.map.cleared' : c.progress >= 100 ? 'mvp.map.boss' : 'mvp.map.current';
-      return `<li class="quest-map-node ${home ? 'is-home' : ''} ${active ? 'is-current' : ''}" style="--map-x:${point.x}%;--map-y:${point.y}%" ${active ? 'aria-current="step"' : ''}><span class="quest-map-pin" aria-hidden="true"></span><span>${selectable ? `<button type="button" data-destination="${current}" aria-pressed="${destination === current}">${tr(point.labelKey)}</button>` : tr(point.labelKey)}${active ? `<small>${tr(status)}</small>` : ''}</span></li>`;
+    const marker = dungeon => {
+      const status = actions.dungeonStatus(dungeon.id);
+      const selectable = status.unlocked && !status.cleared && !c.expedition && !c.trade && view === 'support';
+      return `<li class="quest-map-node ${destination === dungeon.id ? 'is-current' : ''}" style="--map-x:${dungeon.map.x}%;--map-y:${dungeon.map.y}%"><span class="quest-map-pin" aria-hidden="true"></span><span>${selectable ? `<button type="button" data-destination="${dungeon.id}" aria-pressed="${destination === dungeon.id}">${tr(dungeon.nameKey)}</button>` : tr(dungeon.nameKey)}<small>${escape(dungeonLabel(dungeon))}</small></span></li>`;
     };
-    return `<figure class="quest-map"><figcaption>${tr(map.titleKey)}</figcaption><div class="quest-map-art"><img src="${escape(map.imageUrl)}" alt="${tr(map.descriptionKey)}"><ol>${marker(map.home, true)}${map.points.map(point => marker(point)).join('')}</ol></div></figure>`;
+    return `<figure class="quest-map"><figcaption>${tr(map.titleKey)}</figcaption><div class="quest-map-art"><img src="${escape(map.imageUrl)}" alt="${tr(map.descriptionKey)}"><ol><li class="quest-map-node is-home" style="--map-x:${map.home.x}%;--map-y:${map.home.y}%"><span class="quest-map-pin" aria-hidden="true"></span><span>${tr(map.home.labelKey)}</span></li>${config.dungeons.filter(dungeon => dungeon.map).map(marker).join('')}</ol></div></figure>`;
+  }
+  function dungeonPanel(adventureTab, locked) {
+    const activeId = c.expedition?.dungeonId ?? (destination || actions.nextDungeon());
+    const dungeon = config.dungeons.find(entry => entry.id === activeId);
+    const gain = dungeon ? Math.min(actions.attack(selectedPartyId), dungeon.requiredProgress - c.dungeonProgress[dungeon.id]) : 0;
+    const injured = c.heroes.some(hero => currentParty().members.includes(hero.id) && hero.recoverUntil > c.day);
+    const equipped = c.heroes.filter(hero => currentParty().members.includes(hero.id) && Object.keys(hero.equipment).length).length;
+    return `<section class="mvp-card quest-card"><h2>${tr('dungeon.title')}</h2>${adventureTab ? '' : questMap()}<div class="dungeon-list">${config.dungeons.map(entry => {
+      const status = actions.dungeonStatus(entry.id);
+      return `<article class="dungeon-card" data-dungeon="${entry.id}"><h3>${tr(entry.nameKey)}</h3><p>${tr('dungeon.progress', { progress: status.progress, required: status.required })}</p><progress max="${status.required}" value="${status.progress}" aria-label="${tr('dungeon.progressLabel', { name: t(entry.nameKey), progress: status.progress, required: status.required })}"></progress><p>${escape(dungeonLabel(entry))}</p>${adventureTab ? '' : `<button type="button" class="mvp-button" data-destination="${entry.id}" aria-pressed="${destination === entry.id}" ${locked || !status.unlocked || status.cleared ? 'disabled' : ''}>${tr('dungeon.select', { name: t(entry.nameKey) })}</button>`}</article>`;
+    }).join('')}</div><p>${tr('dungeon.rules', { equipped: config.quest.minimumEquipped })}</p><p>${tr('dungeon.fundsNote')}</p>${c.defeated ? `<strong>${tr('mvp.safe')}</strong>` : c.expedition ? `<strong>${tr('dungeon.away', { name: dungeonName(c.expedition.dungeonId), date: date(c.expedition.returnDay) })}</strong>${c.expedition.legacyOutcome ? `<p>${tr('dungeon.legacyPending')}</p>` : ''}` : `<p class="dungeon-preview">${tr('dungeon.preview', { attack: actions.attack(selectedPartyId), gain })}</p>${dungeon ? `<p>${tr('mvp.duration', { days: dungeon.duration, date: date(c.day + dungeon.duration) })}</p>` : ''}${injured ? `<p>${tr('mvp.recoveryWait')}</p>` : ''}${adventureTab ? `<p>${tr('routine.departInSupport')}</p>` : button('dispatch', tr('dungeon.dispatch'), locked || c.phase !== 'support' || !destination || !currentParty().members.some(Boolean) || injured || equipped < config.quest.minimumEquipped)}`}</section>`;
   }
 
   function fundsControls(partyId, locked) {
@@ -90,11 +103,13 @@ export function mountCampaign(root, game) {
   function support() {
     const locked = Boolean(c.expedition || c.trade || c.region !== 'village');
     const adventureTab = view === 'adventurers';
-    return `<section class="mvp-card party-settings"><h2>${tr('party.title')}</h2>${partyEditor.render(selectedPartyId, party => `<p class="party-funds">${tr('party.funds', { amount: money(party.funds) })}</p><form data-party-funds="${party.id}">${fundsControls(party.id, locked)}<button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('party.giveFunds')}</button></form>`, !adventureTab)}</section><div class="support-layout"><div class="mvp-grid hero-detail">${c.heroes.filter(hero => hero.id === selectedHeroId).map(hero => `<article class="mvp-card"><header class="hero-heading">${actor(hero.id)}<h2>${escape(heroName(hero.id))}</h2></header><p class="hero-job">${tr('equipment.job', { job: t(config.jobs[hero.jobId].nameKey) })}</p><p class="hero-trait">${tr('job.trait', { trait: t(config.jobs[hero.jobId].traitKey) })}</p><p>${tr('mvp.heroGrowth', { level: hero.level, experience: hero.experience, required: config.quest.levelExperience, ability: hero.ability })}</p>${growthControls(hero, locked)}<p class="hero-health">${hero.recoverUntil > c.day ? tr('mvp.heroInjured', { days: hero.recoverUntil-c.day, date: date(hero.recoverUntil) }) : tr('mvp.heroHealthy')}</p><form data-hero="${hero.id}">${equipmentEditor.render(hero, locked)}<p>${tr('mvp.gearPower', { amount: equipmentPower(hero, config) })}</p><button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('mvp.give')}</button></form><small>${tr('mvp.equippedHint', { percent: (config.usedPriceRate ?? 1) * 100 })}</small>${hero.giftedEquipment.length ? button('recoverArchived', tr('support.recoverArchived', { count: hero.giftedEquipment.length }), locked, `data-id="${hero.id}"`) : ''}</article>`).join('')}</div><section class="mvp-card quest-card"><h2>${tr('mvp.questName')}</h2>${adventureTab ? '' : config.quest.map ? questMap() : button('selectDestination', tr('mvp.questName'), Boolean(c.expedition || c.defeated))}<div class="quest-progress"><strong>${tr('mvp.progress', { amount: c.progress })}</strong><progress max="100" value="${c.progress}" aria-label="${tr('mvp.progress', { amount: c.progress })}"></progress><p>${c.defeated ? tr('mvp.safe') : c.progress >= 100 ? tr('mvp.bossAppeared') : tr(`mvp.stage.${questStage(c.progress, config).key}`)}</p></div><p>${tr('mvp.questHint', { gain: config.quest.progressSuccess, setback: config.quest.progressSetback, funds: config.quest.minimumFunds })}</p><p>${tr('mvp.spentFunds')}</p>${c.defeated ? `<strong>${tr('mvp.safe')}</strong>` : c.expedition ? `<strong>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</strong>` : `<strong>${tr('mvp.chance', { amount: Math.round(actions.chance(selectedPartyId) * 100) })}</strong><p>${tr('mvp.duration', { days: config.quest.duration, date: date(c.day + config.quest.duration) })}</p>${c.heroes.some(hero => hero.recoverUntil > c.day) ? `<p>${tr('mvp.recoveryWait')}</p>` : ''}${adventureTab ? `<p>${tr('routine.departInSupport')}</p>` : `${button('dispatch', tr(c.progress >= 100 ? 'mvp.dispatchBoss' : 'mvp.dispatch'), locked || !destination || !currentParty().members.some(Boolean) || c.heroes.some(hero => currentParty().members.includes(hero.id) && hero.recoverUntil > c.day))}`}`}</section></div>`;
+    return `<section class="mvp-card party-settings"><h2>${tr('party.title')}</h2>${partyEditor.render(selectedPartyId, party => `<p class="party-funds">${tr('party.funds', { amount: money(party.funds) })}</p><form data-party-funds="${party.id}">${fundsControls(party.id, locked)}<button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('party.giveFunds')}</button></form>`, !adventureTab)}</section><div class="support-layout"><div class="mvp-grid hero-detail">${c.heroes.filter(hero => hero.id === selectedHeroId).map(hero => `<article class="mvp-card"><header class="hero-heading">${actor(hero.id)}<h2>${escape(heroName(hero.id))}</h2></header><p class="hero-job">${tr('equipment.job', { job: t(config.jobs[hero.jobId].nameKey) })}</p><p class="hero-trait">${tr('job.trait', { trait: t(config.jobs[hero.jobId].traitKey) })}</p><p>${tr('dungeon.heroGrowth', { level: hero.level, experience: hero.experience, required: config.quest.levelExperience })}</p>${growthControls(hero, locked)}<p class="hero-health">${hero.recoverUntil > c.day ? tr('mvp.heroInjured', { days: hero.recoverUntil-c.day, date: date(hero.recoverUntil) }) : tr('mvp.heroHealthy')}</p><form data-hero="${hero.id}">${equipmentEditor.render(hero, locked)}<button class="mvp-button" type="submit" ${locked ? 'disabled' : ''}>${tr('mvp.give')}</button></form><small>${tr('mvp.equippedHint', { percent: (config.usedPriceRate ?? 1) * 100 })}</small>${hero.giftedEquipment.length ? button('recoverArchived', tr('support.recoverArchived', { count: hero.giftedEquipment.length }), locked, `data-id="${hero.id}"`) : ''}</article>`).join('')}</div>${dungeonPanel(adventureTab, locked)}</div>`;
   }
 
   function log(entry) {
     const details = { ...entry.details };
+    if (details.dungeonId) details.dungeon = dungeonName(details.dungeonId);
+    if (entry.type === 'levelUp' && details.ability === undefined) return tr('dungeon.log.levelUp', { ...details, hero: heroName(details.heroId) });
     if ('amount' in details) details.amount = money(details.amount);
     if (details.partyId) details.party = t('party.name', { number: c.parties.findIndex(party => party.id === details.partyId) + 1 });
     if (details.heroId) details.hero = heroName(details.heroId);
@@ -135,7 +150,7 @@ export function mountCampaign(root, game) {
       return `<div class="mvp-stats">${[['sales',c.today.sales],['grossProfit',totals.grossProfit],['cost',c.today.purchasing],['buyback',c.today.buyback],['supportCost',c.today.support],['reward',c.today.rewards],['aid',c.today.aid],['net',totals.net]].map(([key,amount]) => `<div><span>${tr(`mvp.${key}`)}</span><strong>${escape(money(amount))}</strong></div>`).join('')}</div>`;
     };
     if (c.phase === 'report') {
-      const entries = c.journal.filter(entry => (entry.day === c.day - 1 && entry.type === 'summary') || (entry.day === c.day && ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered'].includes(entry.type)));
+      const entries = c.journal.filter(entry => (entry.day === c.day - 1 && entry.type === 'summary') || (entry.day === c.day && ['dungeonReturn','dungeonClear','villageSecured','legacyDungeonReturn','exploration','bossSuccess','bossFailure','levelUp','injury','recovered'].includes(entry.type)));
       return `<section class="mvp-card"><h2>${tr('routine.phase.report')}</h2>${entries.length ? `<ul>${entries.map(entry => `<li>${log(entry)}</li>`).join('')}</ul>` : `<p>${tr('routine.firstReport')}</p>`}</section>${c.defeated && c.gold >= config.targetGold ? departure() : ''}`;
     }
     if (c.phase === 'opening') return `<section class="mvp-card"><h2>${tr('routine.phase.opening')}</h2><p>${tr('routine.openReview', { count: state.shop.displayedItems.length })}</p>${!state.shop.displayedItems.length ? `<p>${tr('routine.emptyShop')}</p>` : ''}${button('open', tr('routine.open'), Boolean(c.trade || c.opened))}${c.expedition ? `<p>${tr('mvp.away', { date: date(c.expedition.returnDay) })}</p>` : ''}</section>`;
@@ -202,9 +217,12 @@ export function mountCampaign(root, game) {
       return;
     }
 
-    if (event.target.closest('[data-action=selectDestination]')) { destination = questStage(c.progress, config).key; render(); return; }
     const point = event.target.closest('[data-destination]');
-    if (point) { destination = point.dataset.destination; render(); return; }
+    if (point) {
+      const status = actions.dungeonStatus(point.dataset.destination);
+      if (!point.disabled && status?.unlocked && !status.cleared && !c.expedition) { destination = point.dataset.destination; render(); }
+      return;
+    }
     const partySelection = event.target.closest('[data-expedition-party]');
     if (partySelection) {
       if (!partySelection.disabled && c.parties.some(party => party.id === partySelection.dataset.expeditionParty)) { selectedPartyId = partySelection.dataset.expeditionParty; render(); }
@@ -215,7 +233,7 @@ export function mountCampaign(root, game) {
     const target = event.target.closest('[data-action]');
     if (!target || target.disabled) return;
     const id = target.dataset.id;
-    const operations = { grow: () => actions.grow(id, target.dataset.choice), recoverArchived: () => actions.recoverArchivedEquipment(id), buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.advancePhase, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch(undefined, selectedPartyId) : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
+    const operations = { grow: () => actions.grow(id, target.dataset.choice), recoverArchived: () => actions.recoverArchivedEquipment(id), buy: () => actions.startTrade(id, amounts.get(id)), keep: () => actions.keep(id), sellBack: () => actions.sellBack(id, target.dataset.source), finishTrade: actions.finishTrade, open: actions.openShop, nextDay: actions.nextDay, relief: actions.relief, salesDone: actions.advancePhase, dispatch: () => view === 'support' && c.phase === 'support' && destination ? actions.dispatch(destination, selectedPartyId) : ({ ok: false, reason: 'mvp.error.phase' }), depart: () => actions.depart([...companionIds]) };
     announce(operations[target.dataset.action]());
   }, { signal: events.signal });
   render();

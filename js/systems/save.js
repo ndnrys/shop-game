@@ -1,7 +1,9 @@
+import { dungeonStatus, allDungeonsCleared } from "./dungeons.js";
+import { migrateLegacyDungeons, legacyExpeditionOutcome } from "./legacyDungeons.js";
 import { equipmentItemError, equipmentLoadoutError } from "./equipment.js";
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -11,7 +13,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, 5, 6, 7, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, 6, 7, 8, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -120,7 +122,7 @@ export function validateSave(value, skin) {
     }
     if (new Set(members).size !== members.length || members.some(id => !config.heroes.some(hero => hero.id === id))) reject();
     if ((c.opened && !['sales','end'].includes(c.phase)) || (!c.opened && ['sales','end'].includes(c.phase))) reject();
-    if (!integer(c.progress) || c.progress > 100 || (c.defeated && c.progress !== 100)) reject();
+
     if (c.customerVisits === undefined) c.customerVisits = [];
     if (!Array.isArray(c.customerVisits) || c.customerVisits.length > config.customers.length || new Set(c.customerVisits.map(visit=>visit.customerId)).size!==c.customerVisits.length) reject();
     for (const visit of c.customerVisits) {
@@ -154,23 +156,38 @@ export function validateSave(value, skin) {
       c.trade.incoming.forEach(item);
     }
     if (c.nextItemId <= maximumDeliveryId) reject();
+    if (value.version < 9) migrateLegacyDungeons(c, config, skin.itemDefinitions);
+    if (c.progress !== undefined || !c.dungeonProgress || typeof c.dungeonProgress !== 'object' || Array.isArray(c.dungeonProgress) || Object.keys(c.dungeonProgress).length !== config.dungeons.length) reject();
+    for (const dungeon of config.dungeons) {
+      const progress = c.dungeonProgress[dungeon.id];
+      if (!integer(progress) || progress > dungeon.requiredProgress || (progress > 0 && !dungeonStatus(c, config, dungeon.id).unlocked)) reject();
+    }
+    if (c.defeated !== allDungeonsCleared(c, config)) reject();
     if (c.expedition !== null) {
       const e = c.expedition;
-      if (!e || !c.parties.some(party => party.id === e.partyId) || !['explore','boss'].includes(e.kind) || (e.kind==='boss') !== (c.progress===100) || !Array.isArray(e.injuryRolls) || !Array.isArray(e.recoveryRolls) || e.injuryRolls.length!==e.heroIds?.length || e.recoveryRolls.length!==e.heroIds?.length || [...e.injuryRolls,...e.recoveryRolls].some(roll=>!Number.isFinite(roll)||roll<0||roll>=1) || e.questId !== config.quest.id || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay > c.day || e.returnDay <= c.day || !Number.isFinite(e.chance) || e.chance<0 || e.chance>1 || !Number.isFinite(e.roll) || e.roll<0 || e.roll>=1 || !integer(e.funds) || !Array.isArray(e.heroIds) || !e.heroIds.length || new Set(e.heroIds).size !== e.heroIds.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id))) reject();
+      const status = e && dungeonStatus(c, config, e.dungeonId);
+      if (!e || !status || !status.unlocked || status.cleared || c.defeated || !c.parties.some(party => party.id === e.partyId) || !integer(e.attackPower,1) || !integer(e.funds) || !Array.isArray(e.heroIds) || !e.heroIds.length || new Set(e.heroIds).size !== e.heroIds.length || e.heroIds.some(id=>!c.heroes.some(hero=>hero.id===id)) || !Array.isArray(e.injuryRolls) || !Array.isArray(e.recoveryRolls) || e.injuryRolls.length!==e.heroIds.length || e.recoveryRolls.length!==e.heroIds.length || [...e.injuryRolls,...e.recoveryRolls].some(roll=>!Number.isFinite(roll)||roll<0||roll>=1) || !integer(e.departedDay,1) || !integer(e.returnDay,e.departedDay+1) || e.departedDay>c.day || e.returnDay<=c.day) reject();
       const assigned = c.parties.find(party => party.id === e.partyId).members.filter(Boolean);
       if (e.heroIds.length !== assigned.length || e.heroIds.some(id => !assigned.includes(id))) reject();
+      if (e.legacyOutcome !== undefined) {
+        const old = e.legacyOutcome;
+        if (!old || !integer(old.sourceProgress) || old.sourceProgress>100 || !['explore','boss'].includes(old.kind) || (old.kind==='boss')!==(old.sourceProgress===100) || !Number.isFinite(old.roll) || old.roll<0 || old.roll>=1 || !Number.isFinite(old.chance) || old.chance<0 || old.chance>1) reject();
+        const expected = legacyExpeditionOutcome(old.sourceProgress,old.kind,old.roll,old.chance,config);
+        if (['reward','experience','injuryChance'].some(key=>old[key]!==expected[key]) || !old.targetProgress || Object.keys(old.targetProgress).length!==config.dungeons.length || config.dungeons.some(dungeon=>old.targetProgress[dungeon.id]!==expected.targetProgress[dungeon.id] || old.targetProgress[dungeon.id]<c.dungeonProgress[dungeon.id])) reject();
+      }
     }
     if (!Array.isArray(c.journal) || c.journal.length>100000) reject();
-    const types = ['exploration','bossSuccess','bossFailure','levelUp','injury','recovered','visit','purchase','buyback','sale','noSale','support','partySupport','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
+    const types = ['dungeonDispatch','dungeonReturn','dungeonClear','villageSecured','legacyDungeonReturn','exploration','bossSuccess','bossFailure','levelUp','injury','recovered','visit','purchase','buyback','sale','noSale','support','partySupport','returnEquipment','dispatch','questSuccess','questFailure','summary','aid','departure'];
     for (const entry of c.journal) {
       if (!integer(entry.day,1) || entry.day>c.day || !types.includes(entry.type) || !entry.details || typeof entry.details!=='object' || Array.isArray(entry.details)) reject();
       const d=entry.details;
       if (d.partyId && !c.parties.some(party => party.id === d.partyId)) reject();
+      if (d.dungeonId && !config.dungeons.some(dungeon=>dungeon.id===d.dungeonId)) reject();
       if (d.heroId && !config.heroes.some(hero=>hero.id===d.heroId)) reject();
       if (d.itemId && !skin.itemDefinitions[d.itemId]) reject();
       if (d.merchantId && !config.merchants.some(merchant=>merchant.id===d.merchantId)) reject();
       if (d.customerId && !config.customers.some(customer=>customer.id===d.customerId)) reject();
-      for (const key of ['gain','progress','days','level','ability','amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
+      for (const key of ['required','experience','attackPower','gain','progress','days','level','ability','amount','count','sales','cogs','purchasing','buyback','support','rewards','aid']) if (d[key]!==undefined && !integer(d[key])) reject();
       if (entry.type==='visit' && d.dialogueKey!==config.customers.find(customer=>customer.id===d.customerId)?.dialogueKey) reject();
       if (d.net!==undefined && !Number.isSafeInteger(d.net)) reject();
     }

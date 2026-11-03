@@ -116,10 +116,10 @@ try {
     get('[data-create-party]').click();get('[data-party-pick="lina"]').click();get('[data-party-id="party-2"][data-party-slot="0"]').click();
     choose('stock-001','weapon');submit();
     for(const [partyId,amount] of [['party-1',30],['party-2',60]]) { const form=get(`[data-party-funds="${partyId}"]`);setFunds(form,amount);form.requestSubmit(); }
-    get('[data-expedition-party="party-2"]').click();get('[data-destination="outskirts"]').click();get('[data-action="dispatch"]').click();
+    get('[data-expedition-party="party-2"]').click();get('[data-destination="forest"]').click();get('[data-action="dispatch"]').click();
     const c=game.state.campaign;
     assert(c.expedition.partyId==='party-2' && c.expedition.heroIds.join()==='lina' && c.expedition.funds===60,'selected party dispatched');
-    assert(c.parties[0].funds===30 && c.parties[1].funds===0,'other funds preserved');
+    assert(c.parties[0].funds===30 && c.parties[1].funds===60,'other funds preserved');
     assert(get('[data-create-party]').disabled && [...root.querySelectorAll('[data-party-slot]')].every(node=>node.disabled),'editing locked while away');
   });
   await check('job labels, equipment types and disabled candidates follow the selected adventurer',()=>{
@@ -207,6 +207,24 @@ try {
     assert(root.querySelector('.gear-slot.is-pending'),'draft retained after rejection');
     assert(get('form[data-party-funds]').elements.funds.value === '20','failed support preserves planned funds');
     assert(get('.mvp-status').classList.contains('is-error'),'error shown');
+  });
+  await check('dungeon selection caps progress and XP, unlocks camp and clears without a boss', () => {
+    reset('support');const c=game.state.campaign;c.phase='support';
+    game.campaign.support('lina','stock-001');c.dungeonProgress.forest=58;view.render();
+    assert(get('.dungeon-card [data-destination="camp"]').disabled,'camp locked');
+    get('.dungeon-card [data-destination="forest"]').click();
+    assert(get('.dungeon-preview').textContent.includes('＋2'),'actual capped gain shown');
+    get('[data-action="dispatch"]').click();assert(c.expedition.dungeonId==='forest','forest departs without funds');
+    c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();c.phase='support';view.render();
+    assert(c.dungeonProgress.forest===60&&c.heroes.every(h=>h.experience===2),'actual XP per member');
+    assert(get('.dungeon-card [data-destination="forest"]').disabled,'cleared forest locked');
+    assert(!get('.dungeon-card [data-destination="camp"]').disabled,'camp unlocked');
+    c.dungeonProgress.camp=139;view.render();get('.dungeon-card [data-destination="camp"]').click();
+    get('[data-action="dispatch"]').click();c.expedition.injuryRolls=[.999,.999,.999];game.campaign.nextDay();
+    assert(c.defeated&&c.dungeonProgress.camp===140,'camp threshold clears village');
+    assert(root.textContent.includes(game.i18n.t('mvp.safe')),'clear status displayed');
+    assert(!root.querySelector('[data-destination="boss"]'),'no separate boss');
+    assert(document.documentElement.scrollWidth<=innerWidth,'dungeon cards fit');
   });
   await check('locks and support screen share the editor; English copy and layout fit', () => {
     game.campaign.support('lina','stock-001',30); game.campaign.dispatch();

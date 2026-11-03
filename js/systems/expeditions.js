@@ -1,57 +1,61 @@
-import { random } from "./random.js";
+import { random } from './random.js';
+import { advanceDungeon, allDungeonsCleared, partyAttack } from './dungeons.js';
 
 export function equipmentPower(hero, config) {
   return Object.values(hero.equipment ?? {}).reduce((sum, item) => sum + (config.gearPower[item.itemId] ?? 0), 0);
 }
 
-export function questStage(progress, config) {
-  return config.quest.stages.findLast(stage => progress >= stage.from);
-}
-
-export function successChance(heroes, config, funds, progress = 0, kind = 'explore') {
-  const ability = heroes.reduce((sum, hero) => sum + hero.ability, 0);
-  const gear = heroes.reduce((sum, hero) => sum + equipmentPower(hero, config), 0);
-  const rules = config.chance;
-  const penalty = kind === 'boss' ? config.quest.bossPenalty : questStage(progress, config).penalty;
-  return Math.min(rules.maximum, Math.max(rules.minimum, rules.base + ability * rules.abilityRate + gear * rules.gearRate + funds * rules.fundsRate - penalty));
-}
-
-export function planExpedition(campaign, config, kind, partyId = campaign.parties[0].id) {
+export function planExpedition(campaign, config, definitions, dungeonId, partyId) {
+  const dungeon = config.dungeons.find(entry => entry.id === dungeonId);
   const party = campaign.parties.find(entry => entry.id === partyId);
-  const heroes = party.members.filter(Boolean).map(id => campaign.heroes.find(hero => hero.id === id));
-  const funds = party.funds;
+  const heroIds = party.members.filter(Boolean);
   return {
-    kind, partyId, questId: config.quest.id, heroIds: heroes.map(hero => hero.id),
-    departedDay: campaign.day, returnDay: campaign.day + Math.max(1, config.quest.duration),
-    chance: successChance(heroes, config, funds, campaign.progress, kind),
-    roll: random(campaign), funds,
-    injuryRolls: heroes.map(() => random(campaign)),
-    recoveryRolls: heroes.map(() => random(campaign)),
+    dungeonId, partyId, heroIds,
+    departedDay: campaign.day, returnDay: campaign.day + dungeon.duration,
+    attackPower: partyAttack(campaign, config, definitions, partyId), funds: party.funds,
+    injuryRolls: heroIds.map(() => random(campaign)),
+    recoveryRolls: heroIds.map(() => random(campaign)),
   };
 }
 
 export function resolveExpedition(campaign, config) {
   const expedition = campaign.expedition;
-  const success = expedition.roll < expedition.chance;
-  const boss = expedition.kind === 'boss';
+  const dungeon = config.dungeons.find(entry => entry.id === expedition.dungeonId);
   const events = [];
-  const gained = boss ? 0 : Math.min(100 - campaign.progress, success ? config.quest.progressSuccess : config.quest.progressSetback);
-  campaign.progress += gained;
-  const reward = boss ? (success ? config.quest.bossReward : 0) : (success ? config.quest.reward : 0);
-  campaign.gold += reward;
-  campaign.today.rewards += reward;
-  if (boss && success) campaign.defeated = true;
-  events.push({ type: boss ? (success ? 'bossSuccess' : 'bossFailure') : 'exploration', details: { questId: expedition.questId, amount: reward, gain: gained, progress: campaign.progress, success } });
-  const injuryChance = boss ? config.quest.injuryBoss : success ? config.quest.injurySuccess : config.quest.injurySetback;
+  let experience, injuryChance;
+  if (expedition.legacyOutcome) {
+    const legacy = expedition.legacyOutcome;
+    const gain = config.dungeons.reduce((sum, entry) => sum + legacy.targetProgress[entry.id] - campaign.dungeonProgress[entry.id], 0);
+    for (const entry of config.dungeons) {
+      const clearedBefore = campaign.dungeonProgress[entry.id] === entry.requiredProgress;
+      campaign.dungeonProgress[entry.id] = legacy.targetProgress[entry.id];
+      if (!clearedBefore && campaign.dungeonProgress[entry.id] === entry.requiredProgress) events.push({ type: 'dungeonClear', details: { dungeonId: entry.id } });
+    }
+    campaign.gold += legacy.reward;
+    campaign.today.rewards += legacy.reward;
+    experience = legacy.experience;
+    injuryChance = legacy.injuryChance;
+    events.unshift({ type: 'legacyDungeonReturn', details: { dungeonId: dungeon.id, partyId: expedition.partyId, gain, experience, amount: legacy.reward } });
+  } else {
+    const result = advanceDungeon(campaign, config, dungeon.id, expedition.attackPower);
+    if (!result.ok) throw new Error('Pending expedition dungeon is unavailable');
+    experience = result.gain;
+    injuryChance = config.quest.injuryChance;
+    events.push({ type: 'dungeonReturn', details: { dungeonId: dungeon.id, partyId: expedition.partyId, gain: result.gain, progress: result.progress, required: dungeon.requiredProgress, experience } });
+    if (result.cleared) events.push({ type: 'dungeonClear', details: { dungeonId: dungeon.id } });
+  }
+  if (!campaign.defeated && allDungeonsCleared(campaign, config)) {
+    campaign.defeated = true;
+    events.push({ type: 'villageSecured', details: {} });
+  }
   for (const [index, id] of expedition.heroIds.entries()) {
     const hero = campaign.heroes.find(entry => entry.id === id);
-    hero.experience += success ? config.quest.experienceSuccess : config.quest.experienceSetback;
+    hero.experience += experience;
     while (hero.experience >= config.quest.levelExperience) {
       hero.experience -= config.quest.levelExperience;
       hero.level += 1;
       hero.pendingGrowth += 1;
-      hero.ability += config.quest.abilityPerLevel;
-      events.push({ type: 'levelUp', details: { heroId: hero.id, level: hero.level, ability: hero.ability } });
+      events.push({ type: 'levelUp', details: { heroId: hero.id, level: hero.level } });
     }
     if (expedition.injuryRolls[index] < injuryChance) {
       const days = config.quest.recoveryMin + Math.floor(expedition.recoveryRolls[index] * (config.quest.recoveryMax - config.quest.recoveryMin + 1));

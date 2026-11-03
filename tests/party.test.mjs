@@ -28,14 +28,14 @@ test('assignment swaps within a party, moves across parties without duplicates a
     const before=structuredClone(game.state);assert.equal(a.assignPartySlot(...args).ok,false);assert.deepEqual(game.state,before);
   }
 });
-test('funding is per party and only the dispatched party spends its funds', () => {
+test('funding is per party and dispatch retains every party’s funds', () => {
   const game=setup(),a=game.campaign,c=game.state.campaign;
   a.createParty(); a.assignPartySlot('party-2',0,'lina'); a.support('lina','stock-001');
   a.fundParty(30,'party-1'); a.fundParty(60,'party-2');
-  const chance=a.chance('party-2'); assert.ok(chance>0);
+  assert.equal(a.attack('party-2'),3);
   assert.equal(a.dispatch(undefined,'party-2').ok,true);
   assert.equal(c.expedition.partyId,'party-2'); assert.deepEqual(c.expedition.heroIds,['lina']); assert.equal(c.expedition.funds,60);
-  assert.deepEqual(c.parties.map(p=>p.funds),[30,0]);
+  assert.deepEqual(c.parties.map(p=>p.funds),[30,60]);
   const before=structuredClone(game.state);
   for(const result of [a.createParty(),a.assignPartySlot('party-1',0,'lina'),a.fundParty(10,'party-1'),a.dispatch(undefined,'party-1')]) assert.equal(result.ok,false);
   assert.deepEqual(game.state,before);

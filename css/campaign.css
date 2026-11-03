@@ -122,11 +122,29 @@
 .quest-map-node button[aria-pressed=true] { outline:3px solid #e4bd67; }
 @media(max-width:700px) { .daily-routine { padding:12px; } .daily-routine li { font-size:10px; padding:5px; } }
 
-.support-gear { min-width:0; margin:8px 0 20px; }
-.hero-equipment .support-slot { display:grid; grid-template-columns:42px 24px minmax(0,1fr); align-items:center; gap:6px 8px; margin:0; }
-.support-slot .hero-equipment-art { grid-column:1; grid-row:1 / span 2; width:42px; }
-.support-slot-current { grid-column:2 / -1; min-width:0; overflow-wrap:anywhere; }
-.campaign-view .support-slot-check { grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center; min-height:44px; margin:0; cursor:pointer; }
-.support-slot-check input { width:20px; height:20px; margin:0; }
-.campaign-view .support-slot select { grid-column:3; grid-row:2; min-width:0; width:100%; margin:0; }
-.support-slot select:disabled { opacity:.5; cursor:default; }
+/* Equipment choices stay local until the support form is confirmed. */
+.equipment-editor { min-width:0; }
+.gear-slots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; list-style:none; padding:0; margin:12px 0; }
+.gear-slot { display:flex; flex-direction:column; min-width:0; border:1px solid var(--line); background:var(--paper); }
+.gear-slot-target { display:flex; align-items:center; gap:8px; width:100%; min-height:84px; padding:8px; border:0; background:transparent; color:var(--ink); text-align:left; cursor:pointer; font:inherit; }
+.gear-slot-target > span:last-child { min-width:0; overflow-wrap:anywhere; }
+.equipment-editor small { display:block; font-size:11px; line-height:1.5; }
+.equipment-editor strong { font-size:13px; }
+.gear-slot-target .hero-equipment-art, .gear-select .hero-equipment-art { width:38px; height:44px; flex:0 0 38px; }
+.gear-slot-target:focus-visible, .gear-select:focus-visible, .gear-drag-handle:focus-visible { outline:3px solid var(--green-dark); outline-offset:-3px; }
+.gear-remove { min-height:44px; padding:6px; border:0; border-top:1px solid var(--line); background:transparent; color:var(--green-dark); font:inherit; font-size:12px; cursor:pointer; }
+.gear-slot.is-pending { border:2px solid var(--green-dark); }
+.gear-pending { color:var(--green-dark); font-weight:bold; }
+.gear-selection { min-height:44px; padding:8px; margin:8px 0; background:#00000008; font-size:12px; overflow-wrap:anywhere; }
+.gear-editor-hint { font-size:12px; }
+.gear-candidates { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 12px; }
+.gear-candidate { display:flex; min-width:0; border:1px solid var(--line); background:var(--paper); }
+.gear-select { flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:8px; border:0; background:transparent; color:var(--ink); text-align:left; font:inherit; cursor:pointer; touch-action:pan-y; }
+.gear-select > span { min-width:0; overflow-wrap:anywhere; }
+.gear-drag-handle { flex:0 0 44px; min-height:44px; padding:6px; border:0; border-left:1px solid var(--line); background:#00000008; color:var(--green-dark); font-size:22px; touch-action:none; cursor:grab; user-select:none; }
+.gear-candidate.is-selected { outline:3px solid var(--green-dark); outline-offset:-3px; }
+.gear-candidate.is-assigned { border-style:dashed; }
+.gear-drop-target { outline:3px solid var(--green-dark); outline-offset:-3px; background:#597d5533; }
+.equipment-editor button:disabled { opacity:.45; cursor:default; }
+.gear-drag-preview { position:fixed; z-index:10000; max-width:180px; padding:10px; border:2px solid #36564b; background:#e5e7d0; color:#343d3d; pointer-events:none; font-size:13px; box-shadow:0 3px 10px #0003; }
+@media(min-width:1000px) { .gear-select { flex-direction:row; align-items:center; } }

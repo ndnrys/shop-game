@@ -1,4 +1,18 @@
 export default {
+  "equipment.hint": "倉庫の装備を選んで装備枠をタップするか、↕をつかんで枠へドラッグしてください。「支援を渡す」で変更を確定します。",
+  "equipment.slot": "{slot}：{item}",
+  "equipment.removeSlot": "{slot}を外す変更を準備",
+  "equipment.remove": "外す",
+  "equipment.pending": "変更予定",
+  "equipment.selected": "選択中：{item} → {slot}の枠へ",
+  "equipment.selectHint": "渡す装備を倉庫の候補から選んでください。",
+  "equipment.candidates": "倉庫の装備",
+  "equipment.drag": "{item}をドラッグ",
+  "equipment.empty": "倉庫に渡せる装備がありません。",
+  "equipment.reset": "装備の変更案を取り消す",
+  "equipment.wrongSlot": "この装備はその部位には装備できません。",
+  "equipment.staged": "変更予定を更新しました。「支援を渡す」で確定します。",
+
   "growth.stats": "HP {hp}・攻撃 {attack}・防御 {defense}",
   "growth.pending": "成長選択：残り{count}回",
   "growth.hint": "1回につき3ポイント。重視型は対象＋2、残り2能力のどちらかにランダムで＋1。",

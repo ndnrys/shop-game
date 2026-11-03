@@ -1,4 +1,18 @@
 export default {
+  "equipment.hint": "Select warehouse equipment, then tap its slot, or drag the ↕ handle onto a slot. Confirm support to apply your changes.",
+  "equipment.slot": "{slot}: {item}",
+  "equipment.removeSlot": "Prepare to remove {slot}",
+  "equipment.remove": "Remove",
+  "equipment.pending": "Pending change",
+  "equipment.selected": "Selected: {item} → {slot} slot",
+  "equipment.selectHint": "Choose equipment from the warehouse below.",
+  "equipment.candidates": "Warehouse equipment",
+  "equipment.drag": "Drag {item}",
+  "equipment.empty": "No equipment is available in the warehouse.",
+  "equipment.reset": "Discard equipment changes",
+  "equipment.wrongSlot": "This equipment does not fit that slot.",
+  "equipment.staged": "Pending changes updated. Confirm support to apply them.",
+
   "growth.stats": "HP {hp} · Attack {attack} · Defense {defense}",
   "growth.pending": "Growth choices remaining: {count}",
   "growth.hint": "3 points per choice. Focus grants +2 to one stat and +1 randomly to either other stat.",

@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Equipment responsive checks</title>
+<h1>Equipment responsive checks</h1><p id="result">Running</p><ol id="checks"></ol><div id="frames"></div>
+<script type="module">
+let passed = 0;
+for (const width of [320, 390, 1280]) {
+  const frame = document.createElement('iframe');
+  frame.style.cssText = `display:block;width:${width}px;height:900px;border:0`;
+  const loaded = new Promise(resolve => frame.addEventListener('load',resolve,{once:true}));
+  frame.src = './equipment-ui.html'; document.querySelector('#frames').append(frame); await loaded;
+  const status = frame.contentDocument.querySelector('#result').textContent;
+  const li = document.createElement('li'); li.textContent = `${width}px: ${status}`; document.querySelector('#checks').append(li);
+  if (!status.startsWith('PASS')) { document.querySelector('#result').textContent = `${width}px: ${status}`; break; }
+  passed++;
+  document.querySelector('#result').textContent = passed === 3 ? 'PASS 3/3 widths (30 interaction checks)' : 'Running';
+}
+</script></html>

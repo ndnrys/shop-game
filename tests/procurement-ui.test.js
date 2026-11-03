@@ -20,7 +20,7 @@ try {
  let rejected = false; try { validateSave(corrupt,skin); } catch { rejected = true; } assert(rejected,'invalid pending merchant rejected');
  for (const id of ['weapons','tools']) {
    assert(resumed.state.campaign.trade.merchantId === id, 'merchant order');
-   assert(resumed.state.campaign.trade.incoming.length === 4, 'delivery count per merchant');
+   assert(resumed.state.campaign.trade.incoming.length === 1, 'delivery count per merchant');
    assert(resumed.state.campaign.trade.incoming.reduce((n,item)=>n+item.purchaseCost,0) === (id === 'weapons' ? 150 : 120), 'allocated cost');
    for (const item of [...resumed.state.campaign.trade.incoming]) assert(resumed.campaign.sellBack(item.instanceId,'incoming').ok,'sell to current merchant');
    assert(resumed.campaign.finishTrade().ok, 'next paid merchant');
@@ -36,6 +36,7 @@ try {
    for(let i=0;!doc.querySelector('.procurement-selection')&&i<100;i++) await new Promise(resolve=>setTimeout(resolve,20));
    assert(doc.documentElement.scrollHeight<=height,'procurement fits viewport');
    assert(doc.querySelector('.topbar .day-label > span:first-child').textContent==='村のよろず屋','store title retained');
+   assert(!doc.querySelector('.procurement-row small').textContent.includes('品'),'price only in terms');
    assert(doc.querySelectorAll('.procurement-row').length===4, 'three merchants and villager');
    assert([...doc.querySelectorAll('.procurement-villager button')].every(button=>button.disabled),'video reward disabled');
    assert(doc.querySelector('.procurement-villager .procurement-video')?.disabled,'villager uses disabled video button');

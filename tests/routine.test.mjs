@@ -30,9 +30,9 @@ test('merchant payments change quantities and allocate the exact total cost; inv
   for (const amount of [0, -1, 151, 150.5, Infinity, 999999, NaN]) {
     const before = JSON.stringify(game.state); assert.equal(a.startTrade('weapons', amount).ok, false); assert.equal(JSON.stringify(game.state), before);
   }
-  assert.equal(a.deliveryQuote('weapons',300).count,8);
+  assert.equal(a.deliveryQuote('weapons',300).count,2);
   assert.equal(a.startTrade('weapons',300).ok,true);
-  assert.equal(c.gold,700); assert.equal(c.trade.incoming.length,8);
+  assert.equal(c.gold,700); assert.equal(c.trade.incoming.length,2);
   assert.equal(c.trade.incoming.reduce((sum,item)=>sum+item.purchaseCost,0),300);
   assert.deepEqual(validateSave(makeSave(game.state), skin),game.state);
 });

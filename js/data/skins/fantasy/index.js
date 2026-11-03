@@ -9,7 +9,7 @@ export default {
   contentVersion: 1,
   campaign,
   itemDefinitions,
-  stylesheet: new URL("../../../../css/skins/fantasy.css?v=procurement-fit", import.meta.url).href,
+  stylesheet: new URL("../../../../css/skins/fantasy.css?v=single-item-draw", import.meta.url).href,
   presentation: itemArtwork,
   locales: { ja, en },
   initialState: {

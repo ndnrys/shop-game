@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "status": "planned",
+  "regions": {
+    "central": {
+      "nameKey": "regions.central.name"
+    },
+    "northeast": {
+      "nameKey": "regions.northeast.name"
+    },
+    "southwest": {
+      "nameKey": "regions.southwest.name"
+    },
+    "demon_territory": {
+      "nameKey": "regions.demon_territory.name"
+    }
+  },
+  "chapters": [
+    {
+      "id": "prologue",
+      "number": 0,
+      "nameKey": "chapters.prologue.name",
+      "descriptionKey": null,
+      "regionId": null,
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": [
+        "forest",
+        "camp"
+      ],
+      "enemy": {
+        "id": "prologue_commander",
+        "nameKey": "enemies.prologue_commander.name",
+        "imageKey": null,
+        "dungeonId": "camp"
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "prologue_commander"
+      },
+      "nextChapterId": "chapter_1",
+      "carryover": {
+        "memberLimit": 1,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_1",
+      "number": 1,
+      "nameKey": "chapters.chapter_1.name",
+      "descriptionKey": null,
+      "regionId": "central",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [
+        "oswald"
+      ],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_1_commander",
+        "nameKey": "enemies.chapter_1_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_1_commander"
+      },
+      "nextChapterId": "chapter_2",
+      "carryover": {
+        "memberLimit": 2,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_2",
+      "number": 2,
+      "nameKey": "chapters.chapter_2.name",
+      "descriptionKey": null,
+      "regionId": "central",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_2_commander",
+        "nameKey": "enemies.chapter_2_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_2_commander"
+      },
+      "nextChapterId": "chapter_3",
+      "carryover": {
+        "memberLimit": 3,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_3",
+      "number": 3,
+      "nameKey": "chapters.chapter_3.name",
+      "descriptionKey": null,
+      "regionId": "northeast",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [
+        "vera"
+      ],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_3_commander",
+        "nameKey": "enemies.chapter_3_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_3_commander"
+      },
+      "nextChapterId": "chapter_4",
+      "carryover": {
+        "memberLimit": 4,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_4",
+      "number": 4,
+      "nameKey": "chapters.chapter_4.name",
+      "descriptionKey": null,
+      "regionId": "northeast",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_4_commander",
+        "nameKey": "enemies.chapter_4_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_4_commander"
+      },
+      "nextChapterId": "chapter_5",
+      "carryover": {
+        "memberLimit": 5,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_5",
+      "number": 5,
+      "nameKey": "chapters.chapter_5.name",
+      "descriptionKey": null,
+      "regionId": "southwest",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [
+        "hakim"
+      ],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_5_commander",
+        "nameKey": "enemies.chapter_5_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_5_commander"
+      },
+      "nextChapterId": "chapter_6",
+      "carryover": {
+        "memberLimit": 6,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_6",
+      "number": 6,
+      "nameKey": "chapters.chapter_6.name",
+      "descriptionKey": null,
+      "regionId": "southwest",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_6_commander",
+        "nameKey": "enemies.chapter_6_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_6_commander"
+      },
+      "nextChapterId": "chapter_7",
+      "carryover": {
+        "memberLimit": 6,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "chapter_7",
+      "number": 7,
+      "nameKey": "chapters.chapter_7.name",
+      "descriptionKey": null,
+      "regionId": "demon_territory",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "chapter_7_commander",
+        "nameKey": "enemies.chapter_7_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "chapter_7_commander"
+      },
+      "nextChapterId": "finale",
+      "carryover": {
+        "memberLimit": 6,
+        "candidateSource": "currentChapterMembers",
+        "gold": null,
+        "inventory": null,
+        "equipment": null,
+        "shop": null
+      }
+    },
+    {
+      "id": "finale",
+      "number": 8,
+      "nameKey": "chapters.finale.name",
+      "descriptionKey": null,
+      "regionId": "demon_territory",
+      "base": {
+        "nameKey": null,
+        "backgroundImageKey": null,
+        "mapImageKey": null
+      },
+      "recruitment": {
+        "source": "characters.joinChapter",
+        "timing": null
+      },
+      "featuredCharacterIds": [],
+      "dungeonIds": null,
+      "enemy": {
+        "id": "finale_commander",
+        "nameKey": "enemies.finale_commander.name",
+        "imageKey": null,
+        "dungeonId": null
+      },
+      "clearCondition": {
+        "type": "defeatEnemy",
+        "enemyId": "finale_commander"
+      },
+      "nextChapterId": null,
+      "carryover": null
+    }
+  ]
+}

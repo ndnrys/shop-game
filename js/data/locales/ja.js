@@ -50,7 +50,7 @@ export default {
   "procurement.videoPending": "動画報酬は準備中です",
   "procurement.minus": "{name}の仕入れ回数を減らす",
   "procurement.plus": "{name}の仕入れ回数を増やす",
-  "procurement.terms": "1回 {amount}・{count}品",
+  "procurement.terms": "1回{amount}",
   "procurement.remaining": "この後、商人{count}人の入荷品を整理します。",
 
   "report.title": "営業報告",

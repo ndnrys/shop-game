@@ -50,7 +50,7 @@ export default {
   "procurement.videoPending": "Video rewards coming soon",
   "procurement.minus": "Decrease orders from {name}",
   "procurement.plus": "Increase orders from {name}",
-  "procurement.terms": "{amount} / order · {count} items",
+  "procurement.terms": "{amount} / draw",
   "procurement.remaining": "Deliveries from {count} more merchants follow.",
 
   "report.title": "Business report",

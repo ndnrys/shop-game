@@ -1,4 +1,13 @@
 export default {
+  "growth.stats": "HP {hp} · Attack {attack} · Defense {defense}",
+  "growth.pending": "Growth choices remaining: {count}",
+  "growth.hint": "3 points per choice. Focus grants +2 to one stat and +1 randomly to either other stat.",
+  "growth.balanced": "Balanced (+1 each)",
+  "growth.attack": "Attack focus",
+  "growth.defense": "Defense focus",
+  "growth.hp": "HP focus",
+  "growth.error": "Invalid growth target or choice.",
+
   "home.settings": "Settings",
   "home.language": "Language", "home.saveData": "Save data",
   "home.today": "Today's business", "home.schedule": "Daily schedule", "home.details": "Open step details", "home.close": "Close details",

@@ -1,4 +1,13 @@
 export default {
+  "growth.stats": "HP {hp}・攻撃 {attack}・防御 {defense}",
+  "growth.pending": "成長選択：残り{count}回",
+  "growth.hint": "1回につき3ポイント。重視型は対象＋2、残り2能力のどちらかにランダムで＋1。",
+  "growth.balanced": "平均（各＋1）",
+  "growth.attack": "攻撃重視",
+  "growth.defense": "防御重視",
+  "growth.hp": "HP重視",
+  "growth.error": "成長対象または選択が無効です。",
+
   "home.settings": "設定",
   "home.language": "言語", "home.saveData": "セーブデータ",
   "home.today": "本日の営業", "home.schedule": "一日の予定", "home.details": "工程の詳細・操作を開く", "home.close": "詳細を閉じる",

@@ -1,3 +1,4 @@
+import { growHero } from "../systems/growth.js";
 import { exchangeEquipment } from "../systems/equipment.js";
 import { itemPrice } from "../systems/pricing.js";
 import { buybackPrice, drawDelivery, deliveryQuote } from "../systems/gacha.js";
@@ -44,6 +45,10 @@ export function createCampaignActions(state, config, definitions, inventory, com
       if (index <= 0) return fail("phase");
       c.phase = phases[index - 1];
       return commit({ ok: true });
+    },
+    grow(heroId, choice) {
+      if (!ready() || c.expedition) return fail("away");
+      return commit(growHero(c, c.heroes.find(hero => hero.id === heroId), choice));
     },
     setParty(ids) {
       if (!ready() || c.expedition) return fail("away");

@@ -1,6 +1,6 @@
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -10,7 +10,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -40,6 +40,18 @@ export function validateSave(value, skin) {
       c.expedition.injuryRolls = c.heroes.map(() => .999999);
       c.expedition.recoveryRolls = c.heroes.map(() => 0);
     }
+  }
+  if (value.version < 6 && s.campaign) {
+    const migrateStats = hero => {
+      const initial = skin.campaign.heroes.find(entry => entry.id === hero.id);
+      if (!initial || !integer(hero.level, initial.level ?? 1)) reject();
+      hero.hp = initial.hp;
+      hero.attack = initial.attack;
+      hero.defense = initial.defense;
+      hero.pendingGrowth = hero.level - (initial.level ?? 1);
+    };
+    if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateStats);
+    if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateStats);
   }
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
@@ -85,6 +97,8 @@ export function validateSave(value, skin) {
     if (!c.milestones || ['sold','supported','purchased'].some(key=>typeof c.milestones[key]!=='boolean')) reject();
     if (!Array.isArray(c.heroes) || c.heroes.length !== config.heroes.length || new Set(c.heroes.map(hero=>hero.id)).size !== config.heroes.length) reject();
     for (const hero of c.heroes) {
+      const initial = config.heroes.find(entry => entry.id === hero.id);
+      if (!initial || !integer(hero.hp, 1) || !integer(hero.attack, 1) || !integer(hero.defense, 1) || !integer(hero.pendingGrowth) || hero.pendingGrowth > hero.level - (initial.level ?? 1)) reject();
       if (!config.heroes.some(entry=>entry.id===hero.id) || !integer(hero.ability,1) || !integer(hero.funds) || !integer(hero.level,1) || !integer(hero.experience) || hero.experience >= config.quest.levelExperience || !integer(hero.recoverUntil) || hero.recoverUntil > c.day + config.quest.recoveryMax) reject();
       if (!hero.equipment || typeof hero.equipment !== 'object' || Array.isArray(hero.equipment) || !Array.isArray(hero.giftedEquipment) || hero.giftedEquipment.length > 10000) reject();
       for (const [slot, equipped] of Object.entries(hero.equipment)) {

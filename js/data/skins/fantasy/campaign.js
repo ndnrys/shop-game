@@ -27,7 +27,7 @@ export default {
     { id: "wanderer", dialogueKey: "mvp.line.wanderer", categories: ["weapon", "armor", "medicine", "food", "material", "accessory"], budget: 280 },
   ],
   purchaseChance: .9,
-  heroes: [{ id: "lina", ability: 12 }, { id: "bran", ability: 10 }, { id: "noa", ability: 8 }],
+  heroes: [{ id: "lina", level: 1, hp: 3, attack: 3, defense: 3, ability: 12 }, { id: "bran", level: 1, hp: 3, attack: 3, defense: 3, ability: 10 }, { id: "noa", level: 1, hp: 3, attack: 3, defense: 3, ability: 8 }],
   equipmentSlots: ["weapon", "offhand", "body", "accessory"],
   itemSlots: { steel_sword: "weapon", reinforced_shield: "offhand", chain_armor: "body", charm: "accessory", iron_sword: "weapon", iron_axe: "weapon", oak_shield: "offhand", leather_armor: "body", silver_ring: "accessory" },
   gearCategories: ["weapon", "armor", "accessory"],

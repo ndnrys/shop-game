@@ -48,6 +48,7 @@ export function resolveExpedition(campaign, config) {
     while (hero.experience >= config.quest.levelExperience) {
       hero.experience -= config.quest.levelExperience;
       hero.level += 1;
+      hero.pendingGrowth += 1;
       hero.ability += config.quest.abilityPerLevel;
       events.push({ type: 'levelUp', details: { heroId: hero.id, level: hero.level, ability: hero.ability } });
     }

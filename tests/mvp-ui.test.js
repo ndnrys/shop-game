@@ -78,6 +78,7 @@ try {
   await check('warehouse and stocking stages use existing controllers and can return to previous preparation',()=>{
     assert(!get('[data-screen="warehouse"]').hidden,'warehouse shown within routine');step();
     assert(!get('[data-screen="stocking"]').hidden,'stocking shown');
+    [...get('.shelf-toolbar').querySelectorAll('button')][1].click();
     const axes=[...get('#available-stock').querySelectorAll('.stock-card')].filter(card=>card.textContent.includes('鋼の剣'));assert(axes.length===2,'used and new axes in separate groups');assert(axes.some(card=>card.textContent.includes('95 G')&&card.textContent.includes('使用済み'))&&axes.some(card=>card.textContent.includes('190 G')),'condition-specific shelf prices');step('back');assert(game.state.campaign.phase==='warehouse','back');step();
     for(const item of [...game.state.warehouse.items]){const pos=game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,5,5);if(pos)game.stocking.put(item.instanceId,pos.x,pos.y);}
     assert(Number(get('#displayed-count').textContent)>0,'shelf rendered');step();

@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/layout.css"><link rel="stylesheet" href="../css/warehouse.css">
+<p id="test-status">Running</p><div id="fixture"></div>
+<script type="module">
+import skin from '../js/data/skins/fantasy/index.js';
+import {createSession} from '../js/application/createSession.js';
+import {mountStocking} from '../js/ui/stocking.js';
+import {applyTranslations} from '../js/ui/i18n.js';
+const html=new DOMParser().parseFromString(await(await fetch('../index.html')).text(),'text/html');
+const root=document.querySelector('#fixture');root.append(html.querySelector('#stocking-screen'));root.firstElementChild.hidden=false;
+const game=createSession(skin);applyTranslations(root,game.i18n);const screen=mountStocking(root,game);game.subscribe(screen.render);
+let checks=0;
+const assert=(v,m)=>{if(!v)throw Error(m);checks++};
+const click=(el)=>{el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerType:new URLSearchParams(location.search).get('pointer')||'mouse'}));el.click();el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));};
+try {
+ assert(root.querySelector('.shelf-layout-summary').textContent.includes('1/25'),'fixture limit');
+ const buttons=()=>[...root.querySelectorAll('.shelf-toolbar button')];
+ click(buttons()[3]);click(root.querySelectorAll('.shelf-cell')[1]);assert(game.state.shop.fixtures.length===2,'add special shelf');assert(root.querySelector('.shelf-layout-summary').textContent.includes('あと23個'),'remaining spaces update');
+ click(root.querySelectorAll('.shelf-cell')[1]);click(root.querySelectorAll('.shelf-cell')[7]);assert(game.state.shop.fixtures[1].y===1,'move fixture');
+ click(buttons()[1]);assert(!root.querySelector('#available-stock').hidden,'restock mode');
+ click(root.querySelector('.stock-card button'));assert(game.state.shop.displayedItems.length===1,'restock');
+ assert(root.querySelector('.shelf-stock-row').textContent.includes('×1'),'quantity');
+ click(root.querySelector('.shelf-stock-row button'));assert(game.state.shop.displayedItems.length===0,'return stock');
+ assert(game.state.shop.fixtures.length===2,'empty shelf remains');
+ assert(document.documentElement.scrollWidth<=innerWidth,'no overflow');
+ document.querySelector('#test-status').textContent=`PASS ${checks} checks ${innerWidth}px`;
+} catch(e){document.querySelector('#test-status').textContent='FAIL '+e.stack;}
+</script>

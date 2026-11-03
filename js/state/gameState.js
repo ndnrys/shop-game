@@ -1,6 +1,8 @@
+import { initializeShop } from "../data/shopFixtures.js";
+
 // Only committed game data belongs here; the selected skin supplies starting data.
 export function createGameState(skin) {
-  return {
+  const state = {
     skinId: skin.id,
     contentVersion: skin.contentVersion,
     ...structuredClone(skin.initialState),
@@ -13,4 +15,6 @@ export function createGameState(skin) {
       opened: false, customerVisits: [], aidDay: 0, journal: [], milestones: { purchased: false, sold: false, supported: false },
     } } : {}),
   };
+  initializeShop(state.shop);
+  return state;
 }

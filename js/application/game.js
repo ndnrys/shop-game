@@ -1,7 +1,7 @@
 import { itemPrice } from "../systems/pricing.js";
 import { createCampaignActions } from "./campaign.js";
 import { createInventorySystem } from "../systems/inventory.js";
-import { createStoreSystem } from "../systems/stores.js";
+import { createStoreSystem, initializeShop } from "../systems/stores.js";
 
 // Coordinates systems and successful-change notifications without depending on a UI.
 // This is also the integration point for future saving; previews never pass here.
@@ -9,9 +9,10 @@ export function createGame(state, skin, i18n) {
   if (state.skinId !== skin.id || state.contentVersion !== skin.contentVersion) {
     throw new Error("Game state and skin content do not match");
   }
+  initializeShop(state.shop);
   const inventory = createInventorySystem(skin.itemDefinitions);
   const { moveItem, rotateItem } = inventory;
-  const { putOnDisplay, storeFromDisplay } = createStoreSystem(inventory);
+  const { putOnDisplay, storeFromDisplay, replenish, placeFixture } = createStoreSystem(inventory);
   const listeners = new Set();
   let warehouseUndo = null;
 
@@ -76,18 +77,11 @@ export function createGame(state, skin, i18n) {
       },
     },
     stocking: {
+      replenish: (id, shelf, quantity) => transfer(replenish, id, shelf, quantity),
+      placeFixture: (type, x, y, id) => transfer(placeFixture, type, x, y, id),
       put: (instanceId, x, y) => transfer(putOnDisplay, instanceId, x, y),
       return: (instanceId) => transfer(storeFromDisplay, instanceId),
-      move(instanceId, x, y) {
-        if (!editable()) return locked();
-        const { displayedItems, columns, rows } = state.shop;
-        return commit(moveItem(displayedItems, instanceId, x, y, columns, rows));
-      },
-      rotate(instanceId) {
-        if (!editable()) return locked();
-        const { displayedItems, columns, rows } = state.shop;
-        return commit(rotateItem(displayedItems, instanceId, columns, rows));
-      },
+
     },
   };
 }

@@ -1,3 +1,4 @@
+import { fixtureBonus } from "./stores.js";
 import { itemPrice } from "./pricing.js";
 import { random } from "./random.js";
 
@@ -12,8 +13,11 @@ export function sellToCustomers(state, definitions, config) {
       const definition = definitions[item.itemId];
       return customer.categories.includes(definition.categoryKey) && itemPrice(definition, item, config.usedPriceRate) <= customer.budget;
     });
-    if (!eligible.length || random(state.campaign) >= config.purchaseChance) continue;
-    const item = eligible[Math.floor(random(state.campaign) * eligible.length)];
+    if (!eligible.length) continue;
+    const roll = random(state.campaign);
+    const purchasable = eligible.filter(item => roll < Math.min(1, config.purchaseChance + fixtureBonus(state.shop, item.shelfId)));
+    if (!purchasable.length) continue;
+    const item = purchasable[Math.floor(random(state.campaign) * purchasable.length)];
     const amount = itemPrice(definitions[item.itemId], item, config.usedPriceRate);
     state.shop.displayedItems.splice(state.shop.displayedItems.indexOf(item), 1);
     state.campaign.gold += amount;

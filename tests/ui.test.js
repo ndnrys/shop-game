@@ -50,12 +50,13 @@ try {
   });
   await check("stocking works when warehouse screen is not registered", () => {
     reset([features[1]]);
-    get('.add-stock[data-instance-id="stock-009"]').click();
-    clickCell('#shop-board', 0, 0);
-    get('.add-stock[data-instance-id="stock-004"]').click();
-    clickCell('#shop-board', 1, 1);
-    assert(game.state.shop.displayedItems.length === 2, 'interlocking shelf placement');
-    get('#return-stock-button').click();
+    get('.shelf-cell').click();
+    get('.shelf-toolbar button:nth-child(2)').click();
+    get('.stock-card[data-instance-id="stock-009"] button').click();
+    get('.stock-card[data-instance-id="stock-004"] button').click();
+    assert(game.state.shop.displayedItems.length === 2, 'shelf stock without shape constraints');
+    const row=[...fixture.querySelectorAll('.shelf-stock-row')].find(r=>r.textContent.includes('魔晶石'));
+    row.querySelector('button').click();
     assert(item('stock-004'), 'return to warehouse data without warehouse screen');
   });
   await check("destroy and remount does not duplicate handlers", () => {
@@ -97,12 +98,13 @@ try {
     assert(get('[data-i18n="app.storeName"]').textContent === 'ペットグッズショップ', 'skin store name');
     assert(get('#warehouse-board [data-instance-id="brush-1"]').textContent.includes('🪮'), 'skin glyph');
     get('a[href="#stocking"]').click();
-    get('.add-stock[data-instance-id="brush-1"]').click();
-    clickCell('#shop-board', 0, 0);
+    get('.shelf-cell').click();
+    get('.shelf-toolbar button:nth-child(2)').click();
+    get('.stock-card[data-instance-id="brush-1"] button').click();
     assert(game.state.shop.displayedItems.length === 1, 'place product from unrelated catalog');
     assert(get('#stocking-selection').textContent.includes('ペットブラシ'), 'skin product label');
     assert(get('#stocking-selection').textContent.includes('100 円'), 'skin currency');
-    get('#return-stock-button').click();
+    get('.shelf-stock-row button').click();
     assert(game.state.warehouse.items.length === 2, 'return product');
     get('a[href="#warehouse"]').click();
   });

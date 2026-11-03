@@ -1,10 +1,11 @@
+import { fixtureDefinitions, initializeShop } from "../data/shopFixtures.js";
 import { expeditionRisks } from './health.js';
 import { dungeonStatus, allDungeonsCleared } from "./dungeons.js";
 import { migrateLegacyDungeons, legacyExpeditionOutcome } from "./legacyDungeons.js";
 import { equipmentItemError, equipmentLoadoutError } from "./equipment.js";
 import { createInventorySystem } from "./inventory.js";
 
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
 
 export function makeSave(state) {
@@ -14,7 +15,7 @@ export function makeSave(state) {
 export function validateSave(value, skin) {
   const reject = () => { throw new Error('Invalid save data'); };
   const s = value?.state ? structuredClone(value.state) : null;
-  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
+  if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, SAVE_VERSION].includes(value?.version) || !s || s.skinId !== skin.id || s.contentVersion !== skin.contentVersion) reject();
   // Version 1 used one nullable equipment item. Preserve it in its configured slot.
   if (value.version === 1 && s.campaign) {
     const migrateHero = hero => {
@@ -78,6 +79,7 @@ export function validateSave(value, skin) {
     if (Array.isArray(s.campaign.heroes)) s.campaign.heroes.forEach(migrateJob);
     if (Array.isArray(s.campaign.departure?.companions)) s.campaign.departure.companions.forEach(migrateJob);
   }
+  if (value.version < 11 && s.shop && Array.isArray(s.shop.displayedItems)) initializeShop(s.shop);
   const inventory = createInventorySystem(skin.itemDefinitions);
   const ids = new Set();
   let maximumDeliveryId = 0;
@@ -95,9 +97,17 @@ export function validateSave(value, skin) {
     if (!grid || grid.columns !== initial.columns || grid.rows !== initial.rows || !Array.isArray(grid[itemsKey]) || grid[itemsKey].length > 1000) reject();
     for (const entry of grid[itemsKey]) {
       item(entry);
-      if (!inventory.canPlace(grid[itemsKey], entry.itemId, entry.x, entry.y, entry.rotated, grid.columns, grid.rows, entry.instanceId)) reject();
+      if ((key === "warehouse" || value.version < 11) && !inventory.canPlace(grid[itemsKey], entry.itemId, entry.x, entry.y, entry.rotated, grid.columns, grid.rows, entry.instanceId)) reject();
     }
   }
+  if (!Array.isArray(s.shop.fixtures) || s.shop.fixtures.length > s.shop.columns*s.shop.rows) reject();
+  const fixtureIds = new Set(), cells = new Set();
+  for (const f of s.shop.fixtures) {
+    if (!f || typeof f.id !== 'string' || !f.id || fixtureIds.has(f.id) || !Object.hasOwn(fixtureDefinitions,f.type) || !integer(f.x) || !integer(f.y) || f.x >= s.shop.columns || f.y >= s.shop.rows || cells.has(`${f.x}:${f.y}`)) reject();
+    fixtureIds.add(f.id); cells.add(`${f.x}:${f.y}`);
+    if (s.shop.displayedItems.filter(i => i.shelfId === f.id).length > fixtureDefinitions[f.type].capacity) reject();
+  }
+  if (s.shop.displayedItems.some(i => !fixtureIds.has(i.shelfId))) reject();
   if (skin.campaign) {
     const c = s.campaign; const config = skin.campaign;
     if (!c || !integer(c.gold) || !integer(c.day,1) || !integer(c.seed) || c.seed > 4294967295 || !integer(c.nextItemId,1) || !integer(c.aidDay) || c.aidDay > c.day || !['village','next-town'].includes(c.region) || typeof c.opened !== 'boolean' || typeof c.defeated !== 'boolean') reject();

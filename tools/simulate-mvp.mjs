@@ -36,8 +36,13 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
       return price(b)-price(a);
     });
     for (const item of goods) {
-      const position = game.inventory.findOpenPosition(game.state.shop.displayedItems,item,0,0,game.state.shop.columns,game.state.shop.rows);
-      if (position) check(game.stocking.put(item.instanceId,position.x,position.y), 'stock');
+      let shelf = game.state.shop.fixtures.find(f => f.type === 'normal' && game.state.shop.displayedItems.filter(i => i.shelfId === f.id).length < 8);
+      if (!shelf) {
+        outer: for (let y=0;y<game.state.shop.rows;y++) for(let x=0;x<game.state.shop.columns;x++) {
+          if (!game.state.shop.fixtures.some(f=>f.x===x&&f.y===y)) { check(game.stocking.placeFixture('normal',x,y),'shelf'); shelf=game.state.shop.fixtures.at(-1); break outer; }
+        }
+      }
+      if (shelf) check(game.stocking.replenish(item.instanceId,shelf.id,1),'stock');
     }
   }
   while (c.day <= maxDays) {

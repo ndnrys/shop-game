@@ -2,7 +2,7 @@ export default {
   "mvp.title.adventurers": "冒険者", "mvp.subtitle.adventurers": "編成・装備・支度金を事前に準備できます。出発は一日の支援工程で行います。",
   "mvp.title.residents": "村の住人", "mvp.subtitle.residents": "村で暮らす人々と、街の施設。",
   "residents.carpenter.name": "大工", "residents.carpenter.description": "倉庫や店舗のマス目を増築する施設を追加予定です。",
-  "residents.church.name": "教会", "residents.church.description": "死亡した冒険者を生き返らせる施設を追加予定です。",
+  "residents.church.name": "教会", "residents.church.description": "死亡した冒険者の蘇生を依頼できます。",
 
   "mvp.roster.status": "Lv.{level} · {status}", "mvp.roster": "支援者の編成", "mvp.roster.ready": "派遣可能", "mvp.roster.injured": "療養中",
 

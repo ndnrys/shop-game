@@ -44,6 +44,7 @@ export default {
   gearPower: { iron_sword: 20, iron_axe: 20, oak_shield: 16, leather_armor: 22, silver_ring: 12, steel_sword: 28, reinforced_shield: 24, chain_armor: 34, charm: 18 },
   // Historical values are used only to settle expeditions dispatched by saves 1–8.
   legacy: { questId: "village-leader", reward: 20, bossReward: 250, progressSuccess: 9, progressSetback: 3, experienceSuccess: 10, experienceSetback: 6, injurySuccess: .18, injurySetback: .35, injuryBoss: .3 },
+  danger: { incident: .4, death: .08, severe: .32, lightDays: 3, severeDays: 7, maximumReduction: .6, revivalCost: 100, revivalDays: 1 },
   quest: {
     map: {
       imageUrl: new URL("../../../../assets/skins/fantasy/ui/village-map.svg", import.meta.url).href,

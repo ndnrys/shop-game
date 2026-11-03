@@ -186,3 +186,10 @@
 .dungeon-card progress { width:100%; }
 .dungeon-card [aria-pressed=true] { outline:3px solid var(--green-dark); outline-offset:-3px; }
 .dungeon-card .mvp-button { max-width:100%; overflow-wrap:anywhere; }
+
+.party-slot.is-unavailable { background:repeating-linear-gradient(135deg,transparent,transparent 8px,#715e4018 8px,#715e4018 16px); border:2px dashed #806546; }
+.party-slot.is-unavailable small { color:#704821; font-weight:bold; }
+.risk-preview { padding:12px; border:1px solid var(--line); font-size:13px; overflow-wrap:anywhere; }
+.risk-preview ul { padding-left:20px; }
+.church article { border-top:1px solid var(--line); padding:12px 0; }
+.church h3 { color:var(--ink); }

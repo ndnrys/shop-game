@@ -43,7 +43,7 @@ test("support transfers unique equipment and funds; expedition locks support", (
   assert.equal(c.gold,370); assert.equal(c.parties[0].funds,30);
   assert.equal(game.campaign.attack(),9);
   assert.equal(game.campaign.dispatch().ok,true);
-  assert.equal(c.parties[0].funds,30); assert.equal(c.expedition.heroIds.length,3);
+  assert.equal(c.parties[0].funds,0); assert.equal(c.expedition.heroIds.length,3);
   assert.equal(game.campaign.support('bran',null,10).ok,false);
   const reconstructed=createSession(skin,JSON.parse(JSON.stringify(game.state)));
   assert.deepEqual(reconstructed.state.campaign.expedition,c.expedition);
@@ -125,15 +125,12 @@ test("forest threshold caps XP and unlocks the separate camp",()=>{
   assert.equal(game.campaign.dispatch('forest').ok,false);assert.equal(game.campaign.dispatch('camp').ok,true);
 });
 
-test("each return grants deterministic growth and progress, and health recovers on the exact day",()=>{
-  const game=setup();const c=game.state.campaign;
-  game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
-  c.expedition.roll=.999;c.expedition.injuryRolls=[0,.999,.999];c.expedition.recoveryRolls=[.999,0,0];
-  game.campaign.nextDay();assert.equal(c.dungeonProgress.forest,9);
-  assert.equal(c.heroes[0].experience,9);
-  assert.equal(c.heroes[0].recoverUntil,5);
-  game.campaign.support('lina',null,30);
-  for(let i=0;i<3;i++){assert.equal(game.campaign.dispatch().reason,'mvp.error.recovering');game.campaign.nextDay();}
-  assert.equal(c.day,5);assert.equal(game.campaign.dispatch().ok,true);
-  assert.ok(c.journal.some(entry=>entry.type==='recovered'&&entry.details.heroId==='lina'));
+test("injured members retain their slots and the rest depart",()=>{
+  const game=setup(),c=game.state.campaign;game.campaign.support('lina','stock-001');game.campaign.support('bran','stock-009');
+  game.campaign.dispatch();c.expedition.injuryRolls=[0,.999,.999];c.expedition.severityRolls=[.999,.999,.999];game.campaign.nextDay();
+  assert.equal(c.heroes[0].health,'light');assert.equal(c.heroes[0].recoverUntil,4);
+  assert.deepEqual(c.parties[0].members,['lina','bran','noa']);assert.equal(game.campaign.dispatch().ok,true);
+  assert.deepEqual(c.expedition.heroIds,['bran','noa']);assert.equal(c.expedition.attackPower,6);
+  c.expedition.injuryRolls=[.999,.999];game.campaign.nextDay();game.campaign.nextDay();
+  assert.equal(c.heroes[0].health,'healthy');assert.equal(c.heroes[0].recoverUntil,0);
 });

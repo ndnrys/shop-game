@@ -28,6 +28,6 @@ export function sellToCustomers(state, definitions, config) {
 export function dailyTotals(today) {
   return {
     grossProfit: today.sales - (today.cogs ?? 0),
-    net: today.sales + today.buyback + today.rewards + today.aid - today.purchasing - today.support,
+    net: today.sales + today.buyback + today.rewards + today.aid - today.purchasing - today.support - (today.revival ?? 0),
   };
 }

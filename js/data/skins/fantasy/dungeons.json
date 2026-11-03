@@ -1,4 +1,30 @@
 [
-  { "id": "forest", "nameKey": "dungeons.forest", "requiredProgress": 60, "requires": [], "duration": 1, "map": { "x": 32, "y": 52 } },
-  { "id": "camp", "nameKey": "dungeons.camp", "requiredProgress": 140, "requires": ["forest"], "duration": 1, "map": { "x": 51, "y": 43 } }
+  {
+    "id": "forest",
+    "nameKey": "dungeons.forest",
+    "requiredProgress": 60,
+    "requires": [],
+    "duration": 1,
+    "map": {
+      "x": 32,
+      "y": 52
+    },
+    "danger": 3,
+    "fundingBase": 100
+  },
+  {
+    "id": "camp",
+    "nameKey": "dungeons.camp",
+    "requiredProgress": 140,
+    "requires": [
+      "forest"
+    ],
+    "duration": 1,
+    "map": {
+      "x": 51,
+      "y": 43
+    },
+    "danger": 5,
+    "fundingBase": 300
+  }
 ]

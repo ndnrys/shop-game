@@ -59,8 +59,9 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
       equip();fillShelf();
     }
     if(game.state.shop.displayedItems.length)check(game.campaign.openShop(),'sell');
+    for(const hero of c.heroes)if(hero.health==='dead'&&c.gold>=game.campaign.config.danger.revivalCost)check(game.campaign.revive(hero.id),'revive');
     if (!c.defeated && !c.expedition) {
-      if(c.heroes.some(hero=>hero.recoverUntil>c.day)) recoveryDays++;
+      if(!game.campaign.members().length || !game.campaign.members().some(hero=>Object.keys(hero.equipment).length)) recoveryDays++;
       else {
         const target=policy==='frugal'?30:policy==='generous'?90:60;
         const funds=c.parties[0].funds;
@@ -76,7 +77,7 @@ export function simulateRun(seed, policy = 'balanced', maxDays = 120) {
     if(c.gold>=game.campaign.config.targetGold && targetDay===null) targetDay=c.day;
     if(c.defeated && c.gold>=game.campaign.config.targetGold) {
       check(game.campaign.depart(['lina']),'depart');
-      injuries=c.journal.filter(event=>event.type==='injury').length;
+      injuries=c.journal.filter(event=>['injury','wound'].includes(event.type)).length;
       return {seed,policy,cleared:true,day:c.day,gold:c.departure.villageGold,dungeonProgress:{...c.dungeonProgress},expeditions,injuries,recoveryDays,relief,firstDungeonClearDay,dungeonsClearDay,targetDay,reloads,levels:c.heroes.map(hero=>hero.level),equipment:[...equipmentIds]};
     }
     if(c.day%5===0){game=createSession(skin,validateSave(makeSave(game.state),skin));c=game.state.campaign;reloads++;}

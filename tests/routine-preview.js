@@ -22,6 +22,13 @@ if(new URLSearchParams(location.search).has('dungeons')){
   game.campaign.support('lina','stock-001');
 }
 
+if(new URLSearchParams(location.search).has('health')){
+  const c=game.state.campaign;c.phase='support';
+  game.campaign.support('noa','stock-007');
+  c.heroes[0].health='light';c.heroes[0].recoverUntil=c.day+2;
+  c.heroes[1].health='dead';
+}
+
 for(const [key,value] of Object.entries(skin.theme))document.documentElement.style.setProperty(key,value);
 document.documentElement.dataset.skin='fantasy';
 const app=mountScreens(document,game,[...['home','purchase','support','journal','residents','adventurers'].map(id=>({id,mount:mountCampaign})),{id:'settings',mount:()=>({render(){},destroy(){}})},{id:'warehouse',mount:mountWarehouse},{id:'stocking',mount:mountStocking}]);

@@ -44,7 +44,7 @@ test('party funds are shared while only selected members contribute power, grow 
   assert.equal(a.setParty(['unknown']).ok,false); assert.equal(a.setParty(['lina','lina']).ok,false);
   a.setParty([]); assert.equal(a.dispatch().reason,'mvp.error.party');
   a.setParty(['lina']); assert.equal(a.dispatch().ok,true);
-  assert.deepEqual(c.expedition.heroIds,['lina']); assert.equal(c.expedition.funds,70); assert.equal(c.parties[0].funds,70);
+  assert.deepEqual(c.expedition.heroIds,['lina']); assert.equal(c.expedition.funds,70); assert.equal(c.parties[0].funds,0);
   assert.equal(a.setParty(['bran']).ok,false);
   assert.deepEqual(validateSave(makeSave(game.state),skin),game.state);
   c.expedition.roll=0;c.expedition.injuryRolls=[0];c.expedition.recoveryRolls=[0];

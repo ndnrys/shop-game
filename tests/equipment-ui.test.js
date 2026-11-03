@@ -119,7 +119,7 @@ try {
     get('[data-expedition-party="party-2"]').click();get('[data-destination="forest"]').click();get('[data-action="dispatch"]').click();
     const c=game.state.campaign;
     assert(c.expedition.partyId==='party-2' && c.expedition.heroIds.join()==='lina' && c.expedition.funds===60,'selected party dispatched');
-    assert(c.parties[0].funds===30 && c.parties[1].funds===60,'other funds preserved');
+    assert(c.parties[0].funds===30 && c.parties[1].funds===0,'other funds preserved');
     assert(get('[data-create-party]').disabled && [...root.querySelectorAll('[data-party-slot]')].every(node=>node.disabled),'editing locked while away');
   });
   await check('job labels, equipment types and disabled candidates follow the selected adventurer',()=>{
@@ -225,6 +225,34 @@ try {
     assert(root.textContent.includes(game.i18n.t('mvp.safe')),'clear status displayed');
     assert(!root.querySelector('[data-destination="boss"]'),'no separate boss');
     assert(document.documentElement.scrollWidth<=innerWidth,'dungeon cards fit');
+  });
+  await check('resting and dead companions keep slots while only available members depart; church revives', () => {
+    reset('support');const c=game.state.campaign;c.phase='support';
+    game.campaign.support('noa','stock-007');c.heroes[0].health='light';c.heroes[0].recoverUntil=4;c.heroes[1].health='dead';view.render();
+    assert(get('[data-party-slot="0"]').textContent.includes('軽傷'),'rest displayed in party slot');
+    assert(get('[data-party-slot="1"]').textContent.includes('死亡'),'death displayed in party slot');
+    assert(root.querySelectorAll('.party-slot.is-unavailable').length===2,'unavailable slots marked');
+    assert(get('.dungeon-preview').textContent.includes('合計攻撃力 3'),'only available power');
+    assert(get('.risk-preview').textContent.includes('参加 1人'),'actual participants');
+    get('.dungeon-card [data-destination="forest"]').click();get('[data-action="dispatch"]').click();
+    assert(c.expedition.heroIds.join()==='noa'&&c.parties[0].members.join()==='lina,bran,noa','roster retained');
+    c.expedition.injuryRolls=[.999];game.campaign.nextDay();
+    view.destroy();unsubscribe();root.dataset.screen='residents';view=mountCampaign(root,game);unsubscribe=game.subscribe(view.render);
+    const gold=c.gold;get('[data-action="revive"][data-id="bran"]').click();
+    assert(c.heroes[1].health==='reviving'&&c.gold===gold-100,'revival commits once');
+    assert(!root.querySelector('[data-action="revive"][data-id="bran"]'),'no repeat payment');
+    assert(root.textContent.includes('あと1日'),'revival remaining days');
+    assert(JSON.stringify(validateSave(makeSave(game.state),skin))===snapshot(),'health save roundtrip');
+    game.campaign.nextDay();assert(c.heroes[1].health==='healthy','next-day revival');
+    game.i18n.setLocale('en');view.render();assert(root.textContent.includes('Church'),'translated church');
+    assert(document.documentElement.scrollWidth<=innerWidth,'church fits');
+  });
+  await check('no available members disables departure without removing assignments or funds', () => {
+    reset('support');const c=game.state.campaign;c.phase='support';game.campaign.fundParty(30);
+    c.heroes.forEach(hero=>{hero.health='severe';hero.recoverUntil=5;});view.render();
+    get('.dungeon-card [data-destination="forest"]').click();
+    assert(get('[data-action="dispatch"]').disabled,'no available departure');
+    assert(c.parties[0].members.filter(Boolean).length===3&&c.parties[0].funds===30,'slots and funds preserved');
   });
   await check('locks and support screen share the editor; English copy and layout fit', () => {
     game.campaign.support('lina','stock-001',30); game.campaign.dispatch();

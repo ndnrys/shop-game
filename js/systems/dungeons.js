@@ -1,3 +1,4 @@
+import { expeditionMembers } from './health.js';
 import { effectiveHeroStats } from './heroStats.js';
 
 export function dungeonStatus(campaign, config, id) {
@@ -22,11 +23,7 @@ export function nextDungeon(campaign, config) {
 }
 
 export function partyAttack(campaign, config, definitions, partyId) {
-  const party = campaign.parties.find(entry => entry.id === partyId);
-  return (party?.members ?? []).filter(Boolean).reduce((sum, id) => {
-    const hero = campaign.heroes.find(entry => entry.id === id);
-    return sum + effectiveHeroStats(hero, config, definitions).attack;
-  }, 0);
+  return expeditionMembers(campaign, partyId).reduce((sum, hero) => sum + effectiveHeroStats(hero, config, definitions).attack, 0);
 }
 
 export function advanceDungeon(campaign, config, id, amount) {

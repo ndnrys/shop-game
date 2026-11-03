@@ -1,3 +1,4 @@
+import { expeditionMembers, expeditionRisks, canExpedition, reviveHero } from '../systems/health.js';
 import { dungeonStatus, nextDungeon, partyAttack } from "../systems/dungeons.js";
 import { effectiveHeroStats } from "../systems/heroStats.js";
 import { setPartyMembers, assignPartyMember, fundParty, createParty } from "../systems/party.js";
@@ -58,6 +59,15 @@ export function createCampaignActions(state, config, definitions, inventory, com
   }
   return {
     config,
+    members: (partyId = c.parties[0].id) => expeditionMembers(c, partyId),
+    risks: (dungeonId, partyId = c.parties[0].id) => expeditionRisks(c, config, definitions, dungeonId, partyId),
+    available: id => canExpedition(c.heroes.find(hero => hero.id === id), c.day),
+    revive(heroId) {
+      if (!ready()) return fail("trade");
+      const result = reviveHero(c, config, heroId);
+      if (result.ok) addJournal(state, "revival", { heroId, amount: config.danger.revivalCost, returnDay: c.heroes.find(hero => hero.id === heroId).recoverUntil });
+      return commit(result);
+    },
     procurementQuote,
     startProcurement,
     heroStats: id => {
@@ -206,10 +216,11 @@ export function createCampaignActions(state, config, definitions, inventory, com
       const status = dungeonStatus(c, config, dungeonId);
       if (!status || !status.unlocked || status.cleared) return { ok: false, reason: "dungeon.unavailable" };
       if (!party(partyId).length) return fail("party");
-      if (party(partyId).some(hero => hero.recoverUntil > c.day)) return fail("recovering");
-      if (party(partyId).filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
+      if (!expeditionMembers(c, partyId).length) return { ok: false, reason: "health.noMembers" };
+      if (expeditionMembers(c, partyId).filter(hero => Object.keys(hero.equipment).length > 0).length < config.quest.minimumEquipped) return fail("preparation");
       if (!Number.isSafeInteger(partyAttack(c, config, definitions, partyId))) return { ok: false, reason: "dungeon.invalidProgress" };
       c.expedition = planExpedition(c, config, definitions, dungeonId, partyId);
+      partyData(partyId).funds = 0;
       addJournal(state, "dungeonDispatch", { dungeonId, partyId, returnDay: c.expedition.returnDay, attackPower: c.expedition.attackPower });
       return commit({ ok: true });
     },
@@ -220,9 +231,13 @@ export function createCampaignActions(state, config, definitions, inventory, com
       c.phase = "report";
       c.opened = false;
       c.customerVisits = [];
-      c.today = { sales: 0, cogs: 0, purchasing: 0, buyback: 0, support: 0, rewards: 0, aid: 0 };
+      c.today = { sales: 0, cogs: 0, purchasing: 0, buyback: 0, support: 0, rewards: 0, aid: 0, revival: 0 };
       for (const hero of c.heroes) {
-        if (hero.recoverUntil === c.day) addJournal(state, "recovered", { heroId: hero.id });
+        if (hero.health !== 'dead' && hero.recoverUntil === c.day) {
+          const resurrected = hero.health === 'reviving';
+          hero.health = 'healthy'; hero.recoverUntil = 0;
+          addJournal(state, resurrected ? 'revived' : 'recovered', { heroId: hero.id });
+        }
       }
       if (c.expedition && c.day >= c.expedition.returnDay) {
         for (const event of resolveExpedition(c, config)) addJournal(state, event.type, event.details);

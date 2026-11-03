@@ -22,11 +22,13 @@ export function createSession(skin, state = createGameState(skin)) {
     }
     if (skin.campaign) {
       const config = skin.campaign;
+      const danger = config.danger;
+      if (!danger || ['incident','death','severe','maximumReduction'].some(key => !Number.isFinite(danger[key]) || danger[key] < 0 || danger[key] > 1) || danger.death + danger.severe > 1 || ['lightDays','severeDays','revivalCost','revivalDays'].some(key => !Number.isSafeInteger(danger[key]) || danger[key] < 1)) throw new Error('Invalid danger rules');
       const dungeonIds = new Set();
       if (!Array.isArray(config.dungeons) || !config.dungeons.length) throw new Error('Missing dungeon definitions');
       for (const dungeon of config.dungeons) {
         required.push(dungeon.nameKey);
-        if (!dungeon.id || dungeonIds.has(dungeon.id) || !Number.isSafeInteger(dungeon.requiredProgress) || dungeon.requiredProgress < 1 || !Number.isSafeInteger(dungeon.duration) || dungeon.duration < 1 || !Array.isArray(dungeon.requires) || new Set(dungeon.requires).size !== dungeon.requires.length || dungeon.requires.some(id => !dungeonIds.has(id))) throw new Error('Invalid dungeon definitions');
+        if (!Number.isSafeInteger(dungeon.danger) || dungeon.danger < 1 || !Number.isSafeInteger(dungeon.fundingBase) || dungeon.fundingBase < 1 || !dungeon.id || dungeonIds.has(dungeon.id) || !Number.isSafeInteger(dungeon.requiredProgress) || dungeon.requiredProgress < 1 || !Number.isSafeInteger(dungeon.duration) || dungeon.duration < 1 || !Array.isArray(dungeon.requires) || new Set(dungeon.requires).size !== dungeon.requires.length || dungeon.requires.some(id => !dungeonIds.has(id))) throw new Error('Invalid dungeon definitions');
         dungeonIds.add(dungeon.id);
       }
       for (const hero of config.heroes) if (!Object.hasOwn(config.jobs, hero.jobId)) throw new Error(`Unknown initial job: ${hero.id}`);

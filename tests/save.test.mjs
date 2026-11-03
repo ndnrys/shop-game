@@ -81,10 +81,10 @@ test('visitor speech and purchase results roundtrip; forged speech keys are reje
 
 test('progress, levels, injuries and recovery dates survive restart',()=>{
   const game=createSession(skin);game.campaign.support('lina','stock-001',30);game.campaign.dispatch();
-  const c=game.state.campaign;c.expedition.roll=0;c.expedition.injuryRolls=[0,0,0];c.expedition.recoveryRolls=[.999,.999,.999];game.campaign.nextDay();
+  const c=game.state.campaign;c.expedition.roll=0;c.expedition.injuryRolls=[0,0,0];c.expedition.severityRolls=[.1,.1,.1];game.campaign.nextDay();
   const state=validateSave(makeSave(game.state),skin);assert.deepEqual(state,game.state);
   const resumed=createSession(skin,state);
-  assert.equal(resumed.campaign.dispatch().reason,'mvp.error.recovering');
+  assert.equal(resumed.campaign.dispatch().reason,'health.noMembers');
   assert.equal(state.progress,undefined);assert.equal(state.campaign.dungeonProgress.forest,9);
   assert.equal(state.campaign.heroes[0].recoverUntil,5);
   const invalid=makeSave(game.state);invalid.state.campaign.dungeonProgress.forest=61;assert.throws(()=>validateSave(invalid,skin));

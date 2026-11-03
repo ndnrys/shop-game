@@ -11,6 +11,6 @@ for (const width of [320, 390, 1280]) {
   const li = document.createElement('li'); li.textContent = `${width}px: ${status}`; document.querySelector('#checks').append(li);
   if (!status.startsWith('PASS')) { document.querySelector('#result').textContent = `${width}px: ${status}`; break; }
   passed++;
-  document.querySelector('#result').textContent = passed === 3 ? 'PASS 3/3 widths (57 interaction checks)' : 'Running';
+  document.querySelector('#result').textContent = passed === 3 ? 'PASS 3/3 widths (63 interaction checks)' : 'Running';
 }
 </script></html>

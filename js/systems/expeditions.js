@@ -1,3 +1,4 @@
+import { expeditionMembers, expeditionRisks, resolveHealth } from './health.js';
 import { random } from './random.js';
 import { advanceDungeon, allDungeonsCleared, partyAttack } from './dungeons.js';
 
@@ -8,11 +9,13 @@ export function equipmentPower(hero, config) {
 export function planExpedition(campaign, config, definitions, dungeonId, partyId) {
   const dungeon = config.dungeons.find(entry => entry.id === dungeonId);
   const party = campaign.parties.find(entry => entry.id === partyId);
-  const heroIds = party.members.filter(Boolean);
+  const heroIds = expeditionMembers(campaign, partyId).map(hero => hero.id);
   return {
     dungeonId, partyId, heroIds,
     departedDay: campaign.day, returnDay: campaign.day + dungeon.duration,
     attackPower: partyAttack(campaign, config, definitions, partyId), funds: party.funds,
+    risks: expeditionRisks(campaign, config, definitions, dungeonId, partyId).members,
+    severityRolls: heroIds.map(() => random(campaign)),
     injuryRolls: heroIds.map(() => random(campaign)),
     recoveryRolls: heroIds.map(() => random(campaign)),
   };
@@ -57,8 +60,15 @@ export function resolveExpedition(campaign, config) {
       hero.pendingGrowth += 1;
       events.push({ type: 'levelUp', details: { heroId: hero.id, level: hero.level } });
     }
-    if (expedition.injuryRolls[index] < injuryChance) {
+    if (expedition.risks) {
+      const outcome = resolveHealth(expedition.risks[index], expedition.injuryRolls[index], expedition.severityRolls[index]);
+      hero.health = outcome.health;
+      hero.recoverUntil = outcome.days ? campaign.day + outcome.days : 0;
+      if (outcome.health === 'dead') events.push({ type: 'death', details: { heroId: hero.id } });
+      else if (outcome.days) events.push({ type: 'wound', details: { heroId: hero.id, severity: outcome.health, days: outcome.days, returnDay: hero.recoverUntil } });
+    } else if (expedition.injuryRolls[index] < injuryChance) {
       const days = config.quest.recoveryMin + Math.floor(expedition.recoveryRolls[index] * (config.quest.recoveryMax - config.quest.recoveryMin + 1));
+      hero.health = 'light';
       hero.recoverUntil = campaign.day + days;
       events.push({ type: 'injury', details: { heroId: hero.id, days, returnDay: hero.recoverUntil } });
     }

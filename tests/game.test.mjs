@@ -52,12 +52,12 @@ test('main entry references only existing scripts and CSS',()=>{
  assert(!html.includes('design-previews'));
 });
 
-test('235 unique items, fixed elements and two planned accessories',()=>{
+test('206 unique pictured items in 19 categories with fixed magic elements',()=>{
  assert(rules.validate(catalog,settings));
- assert.equal(catalog.items.length,235);
- assert.equal(new Set(catalog.items.map(i=>i.id)).size,235);
- assert.equal(catalog.items.filter(i=>i.status==='planned').length,2);
- const counts={weapon:94,offhand:32,head:30,body:30,accessory:45};
+ assert.equal(catalog.items.length,206);
+ assert.equal(new Set(catalog.items.map(i=>i.id)).size,206);
+ assert.equal(catalog.items.filter(i=>i.status==='planned').length,0);
+ const counts={weapon:94,offhand:32,head:30,body:30,accessory:20};
  for(const [slot,count] of Object.entries(counts))assert.equal(catalog.items.filter(i=>types[i.typeId].slot===slot).length,count);
  for(const id of ['staff','rod','spellbook'])for(const element of ['fire','water','wind','earth'])assert.equal(catalog.items.filter(i=>i.typeId===id&&i.element===element).length,3);
 });
@@ -346,4 +346,46 @@ test('clicking a roster character in another party or on an expedition opens rea
  assert.equal(g.run('equipCharacter'),'kyle');assert.equal(g.run('partyNumber("kyle")'),1);
  g.run("closeCharacterEquipment();party=0;screen='home';phase=4;depart();openCharacterEquipment('kyle')");assert(g.view.innerHTML.includes('遠征中は装備変更できません。'));
  g.run('changeEquipment(1)');assert.equal(g.run('gear("kyle").weapon??null'),null);
+});
+
+test('all 206 images are unique transparent PNGs and category dimensions match the specification',()=>{
+ assert.equal(catalog.types.length,19);
+ assert.equal(new Set(catalog.items.map(i=>i.image)).size,206);
+ for(const item of catalog.items){
+  const image=readFileSync(resolve(root,item.image));
+  assert.equal(image.subarray(1,4).toString(),'PNG');
+  assert.equal(image[25],6,'RGBA image required: '+item.name);
+  const type=types[item.typeId];
+  assert.equal(image.readUInt32BE(16)*type.height,image.readUInt32BE(20)*type.width,item.name);
+ }
+ assert.equal(catalog.items.filter(i=>i.typeId==='accessory').length,20);
+ assert(!catalog.types.some(t=>t.id==='forge_material'));
+ assert(!catalog.items.some(i=>i.element==='composite'));
+});
+
+test('old saves retain common items and gold while removing retired stock, equipment and records',async()=>{
+ const g=await game();
+ const previous=JSON.parse(g.run('JSON.stringify(snapshot())'));
+ const retired=catalog.migration.removedItemIds[0],hero=previous.availableCharacterIds[0];
+ delete previous.catalogVersion;
+ previous.gold=4321;
+ previous.stock.push({uid:901,itemId:retired,typeId:'arrow',x:7,y:7,rotation:0,durability:10,maxDurability:10});
+ previous.equipment[hero]={offhand:{uid:902,itemId:retired,typeId:'arrow',durability:10,maxDurability:10}};
+ previous.brokenTargets[hero]={offhand:retired};
+ previous.encyclopedia.items[retired]={discovered:true,sold:2,expeditions:0,usedInstances:[]};
+ const restored=await game(previous);
+ assert.equal(restored.run('gold'),4321);
+ assert.equal(restored.run('stock.length'),previous.stock.length-1);
+ assert.equal(restored.run(`equipment['${hero}'].offhand`),null);
+ assert.equal(restored.run(`encyclopedia.items['${retired}']`),undefined);
+ assert.equal(restored.run('snapshot().catalogVersion'),2);
+ assert.equal(restored.run(`validateSave(${JSON.stringify(previous)}).catalogMigrationRemoved`),2);
+});
+
+test('new catalog saves reject unknown IDs and future versions instead of silently discarding them',async()=>{
+ const g=await game();const raw=JSON.parse(g.run('JSON.stringify(snapshot())'));
+ raw.stock[0].itemId='not_an_item';
+ assert.throws(()=>g.run(`validateSave(${JSON.stringify(raw)})`));
+ raw.stock[0].itemId=catalog.items[0].id;raw.catalogVersion=999;
+ assert.throws(()=>g.run(`validateSave(${JSON.stringify(raw)})`));
 });

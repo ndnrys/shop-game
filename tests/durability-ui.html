@@ -10,7 +10,7 @@ frame.onload=async()=>{try{
  const w=frame.contentWindow;while(!w.document.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const run=code=>w.eval(code);run('reset()');
  for(const [name,code] of [['装備',"screen='adventurers';sub=0;openCharacterEquipment('kyle')"],['倉庫',"screen='warehouse';sub=0;render()"],['倉庫一覧',"sub=1;render()"],['入荷',"pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()"],['入荷一覧',"sub=1;render()"],['設定',"screen='settings';render()"],['支援編成',"pending=[];phase=4;screen='home';sub=0;render()"],['支援装備',"openCharacterEquipment('mira')"],['目的地',"closeCharacterEquipment();sub=2;render()"]]){run(code);check(name)}
- run("equipCharacter='kyle';equipmentSlot='weapon';changeEquipment(1);autoEquip={kyle:{weapon:true}};gear('kyle').weapon.durability=1;sub=2;depart();phase=5;finishDay();sub=1;render()");check('帰還報告');run("returnReport=Array.from({length:48},()=> 'カイル：四元素のお守りが破損');render()");check('大量破損報告');
+ run("equipCharacter='kyle';equipmentSlot='weapon';changeEquipment(1);autoEquip={kyle:{weapon:true}};gear('kyle').weapon.durability=1;sub=2;depart();phase=5;finishDay();sub=1;render()");check('帰還報告');run("returnReport=Array.from({length:48},()=> 'カイル：紅玉の指輪が破損');render()");check('大量破損報告');
  if(run('gear("kyle").weapon!==null||expeditions.length!==0'))failures.push('帰還処理');
  run("screen='adventurers';sub=0;openCharacterEquipment('kyle')");check('破損後装備');
  if(params.get('scene')==='support')run("screen='home';phase=4;sub=0;render()");if(params.get('scene')==='intake')run("pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()");

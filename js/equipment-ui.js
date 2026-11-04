@@ -72,4 +72,4 @@ function buybackValue(item){return config.development.salePrice>0?Math.floor(sal
 function buybackIncoming(){const item=pending[0];if(!item||item.forged)return;gold+=buybackValue(item);pending.shift();render()}
 function buybackStock(){const item=stock[selected];if(!item)return;if(item.forged)return info('引取できません','鍛冶済み装備は手動装備または破棄してください。');gold+=buybackValue(item);stock.splice(selected,1);selected=0;render()}
 function discardStock(){if(!stock[selected])return;stock.splice(selected,1);selected=0;render()}
-function finishDay(){if(phase!==5)return;lastSales=0;if(shelf.length&&!shelf[0].forged){const item=shelf.shift();lastSales=saleValue(item);gold+=lastSales;EncyclopediaCore.sold(encyclopedia,item.itemId)}advance()}
+function finishDay(){if(phase!==5)return;advance()}

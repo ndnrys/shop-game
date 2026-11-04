@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "notes": [
+    "顧客・章・噂の数値は動作確認用の暫定値。正式な価格・客層は未設定。"
+  ],
+  "effects": {
+    "set": {
+      "bonus": 0.3
+    },
+    "identical": {
+      "minimum": 2,
+      "bonus": 0.2
+    },
+    "slot": {
+      "minimum": 2,
+      "bonus": 0.1
+    }
+  },
+  "rules": {
+    "minProbability": 0,
+    "maxProbability": 1,
+    "setPriority": "definitionOrder",
+    "selection": "uniform",
+    "allowUsedInSets": true
+  },
+  "customers": [
+    {
+      "id": "villager",
+      "name": "村人",
+      "probability": 0.5,
+      "items": {},
+      "categories": {}
+    },
+    {
+      "id": "warrior",
+      "name": "戦士",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "one_hand_sword": 0.7,
+        "shield": 0.7
+      }
+    }
+  ],
+  "chapters": {
+    "prologue": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_1": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_2": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_3": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_4": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_5": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_6": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "chapter_7": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    },
+    "finale": {
+      "visitors": {
+        "min": 1,
+        "max": 3
+      },
+      "customers": {
+        "villager": {
+          "money": {
+            "min": 200,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "warrior": {
+          "money": {
+            "min": 200,
+            "max": 600
+          },
+          "weight": 1
+        }
+      }
+    }
+  },
+  "rumors": [
+    {
+      "id": "forest_monsters",
+      "name": "森で魔物が増えている",
+      "duration": 3,
+      "weights": {
+        "warrior": 2,
+        "villager": 0.5
+      }
+    }
+  ]
+}

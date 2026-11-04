@@ -36,7 +36,7 @@ async function game(saved=null){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -128,6 +128,7 @@ test('encyclopedia acquisition survives buyback and does not infer sales',async(
  assert.equal(g.run('encyclopedia.items[acquired].sold'),0);
  g.run('replenish();globalThis.soldId=shelf[0].itemId;phase=5;screen="home";render()');
  assert.equal(g.run('encyclopedia.items[soldId].sold'),0);
+ g.run('tradingConfig.customers.forEach(c=>{c.probability=1;c.categories={}});tradingChapter().visitors={min:1,max:1};tradingChapter().customers.villager.money={min:1000,max:1000};tradingChapter().customers.warrior.money={min:1000,max:1000}');
  const action=[...g.view.innerHTML.matchAll(/onclick="([^"]*)"/g)].find(m=>m[1].includes('finishDay()'))[1];
  g.run(action.replaceAll('&quot;','"'));
  assert.equal(g.run('encyclopedia.items[soldId].sold'),1);
@@ -433,7 +434,7 @@ test('unset prices and malformed economy saves are rejected without corrupting c
 
 test('30-day cashflow simulation covers trading, no sales and expansion without income',async()=>{
  for(const [policy,expectedDays,expectedGold,unpaid] of [['trade',30,2450,false],['idle',30,50,false],['expand-idle',30,600,false]]){
-  const g=await game();if(policy==='expand-idle')g.run('expandShelf()');let days=0;
+  const g=await game();g.run('tradingConfig.customers.forEach(c=>{c.probability=1;c.categories={}});tradingChapter().visitors={min:1,max:1};Object.values(tradingChapter().customers).forEach(c=>c.money={min:1000,max:1000})');if(policy==='expand-idle')g.run('expandShelf()');let days=0;
   for(;days<30;){g.run(`phase=1;if(${policy==='trade'}&&stock.length===0&&gold>=prices[0]){counts=[1,0,0];buy();while(pending.length)receive()}if(${policy==='trade'}&&stock.length){selected=0;replenish()}phase=5;finishDay()`);days++;if(g.run('!!bankruptcyExpense()'))break}
   assert.equal(days,expectedDays,policy);assert.equal(g.run('gold'),expectedGold,policy);assert.equal(g.run('!!bankruptcyExpense()'),unpaid,policy);
  }
@@ -446,4 +447,41 @@ test('healing and expansion reject insufficient funds without changing state',as
 test('chapter transition and next-morning edits do not recalculate the previous bill',async()=>{
  const g=await game();g.run('day=5;chapter=1;phase=5;finishDay();chapter=2;expandShelf();render()');
  assert.equal(g.run('economyState.bill.chapterId'),'chapter_1');assert.equal(g.run('economyState.bill.total'),240);assert.equal(g.run('gold'),110);
+});
+
+test('sets reserve exact units per shelf and surplus gets only identical bonus',async()=>{
+ const g=await game();g.run(`shelf=[];for(let n=0;n<4;n++)shelf.push({...newItem('one_hand_sword_01'),shelfId:0});for(let n=0;n<3;n++)shelf.push({...newItem('shield_01'),shelfId:0})`);
+ assert.equal(g.run("shelfCandidates().filter(c=>c.effect==='set').length"),3);
+ assert.equal(g.run("shelfCandidates().filter(c=>c.effect==='identical').length"),1);
+ assert.equal(g.run('new Set(shelfCandidates().flatMap(c=>c.items.map(i=>i.uid))).size'),7);
+ g.run("shelf[6].shelfId=1");assert.equal(g.run("shelfCandidates().filter(c=>c.effect==='set').length"),2);
+ g.run("shelf=[{...newItem('one_hand_sword_01'),shelfId:0},{...newItem('shield_01'),shelfId:1}];encyclopedia.sets={};discoverShelfSets()");
+ assert.equal(g.run('Object.keys(encyclopedia.sets).length'),0);
+});
+test('purchase is atomic, affordable, and each visitor buys at most one candidate',async()=>{
+ const g=await game();g.run("shelf=[newItem('one_hand_sword_01'),newItem('shield_01')];tradingChapter().visitors={min:1,max:1};tradingChapter().customers.villager.money={min:399,max:399};resolveTradingDay(()=>0)");
+ assert.equal(g.run('shelf.length'),2);assert.equal(g.run('lastSales'),0);
+ g.run('tradingChapter().customers.villager.money={min:400,max:400};resolveTradingDay(()=>0)');
+ assert.equal(g.run('shelf.length'),0);assert.equal(g.run('lastSales'),400);assert.equal(g.run('tradingState.report.visits[0].uids.length'),2);
+ assert.equal(g.run('encyclopedia.items.shield_01.sold'),1);
+});
+test('failed purchases preserve inventory, rumor duration and save are stable',async()=>{
+ const g=await game();g.run("replenish();tradingConfig.customers.forEach(c=>{c.probability=0;c.categories={}});tradingChapter().visitors={min:1,max:1};activateRumor('forest_monsters');phase=5;finishDay()");
+ assert.equal(g.run('shelf.length'),1);assert.equal(g.run('lastSales'),0);
+ assert.equal(g.run('tradingState.rumors[0].endDay'),5);
+ assert.equal(g.run("TradingCore.weights(tradingConfig,tradingChapter(),tradingState.rumors,day)[1].weight"),2);
+ const save=g.run('JSON.stringify(snapshot())');g.run(`applySave(${save})`);assert.equal(g.run('JSON.stringify(snapshot())'),save);
+ g.run('phase=5;finishDay();phase=5;finishDay()');assert.equal(g.run('tradingState.rumors.length'),0);
+});
+test('legacy shelves migrate without combining shelves and invalid trading saves reject atomically',async()=>{
+ const g=await game();g.run("replenish();globalThis.legacy=JSON.parse(JSON.stringify(snapshot()));delete legacy.tradingState;delete legacy.shelf[0].shelfId;applySave(legacy)");
+ assert.equal(g.run('shelf[0].shelfId'),0);
+ for(const mutation of ['bad.shelf[0].shelfId=10','bad.tradingState.rumors=[{id:"unknown",startDay:2,endDay:5}]','bad.tradingState.report={day:2,revenue:0,visits:[]}']){
+  g.run('globalThis.bad=JSON.parse(JSON.stringify(snapshot()))');g.run(mutation);assert.throws(()=>g.run('applySave(bad)'));assert.equal(g.run('shelf[0].shelfId'),0);
+ }
+});
+test('same slot bonus, probability clamps and set competition follow data',async()=>{
+ const g=await game();g.run("shelf=[newItem('one_hand_sword_01'),newItem('one_hand_sword_03')]");assert.equal(g.run('shelfCandidates()[0].bonus'),.1);
+ g.run("tradingConfig.customers[0].probability=1;tradingConfig.customers[0].categories={}");assert.equal(g.run('TradingCore.probability(shelfCandidates()[0],tradingConfig.customers[0],definitions,tradingConfig)'),1);
+ g.run("shelf.push(newItem('shield_01'));encyclopediaDefinitions.sets.push({id:'competing',itemIds:['shield_01','one_hand_sword_03']})");assert.equal(g.run("shelfCandidates().find(c=>c.effect==='set').setId"),'wood_sword_shield');
 });

@@ -38,3 +38,8 @@
 /* Growth is a separate character panel, sized for touch without scrolling. */
 .character-view-actions{align-items:center;flex:none;gap:8px}.character-view-actions .mini,.character-view-actions .gear-close{min-height:44px;min-width:44px}.character-view-actions .gear-close{flex:none}
 .growth-policies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.growth-policies button{text-align:left;min-height:72px;padding:10px 8px}.growth-policies b,.growth-policies small{display:block}.growth-policies small{font-size:10px;line-height:1.6;margin-top:5px}
+
+[data-equipment-item],[data-equipment-slot]{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+[data-equipment-item]:not(:disabled),[data-equipment-slot][onpointerdown]{cursor:grab}
+.equipment-slot.equipment-target{outline:2px solid var(--accent);outline-offset:-2px}.equipment-drop-target{outline:3px solid var(--accent);outline-offset:-3px;background:var(--soft)}
+.equipment-inventory{border-radius:8px}.equipment-slot{min-height:60px}.equipment-controls>small{min-height:18px}

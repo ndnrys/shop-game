@@ -37,7 +37,7 @@ async function game(saved=null){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/balance.js','js/adventurer-core.js','js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/balance.js','js/adventurer-core.js','js/equipment-core.js','js/equipment-ui.js','js/equipment-input.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -320,14 +320,13 @@ test('browser save reload and JSON import/export data preserve pending, shelves,
 });
 
 
-test('equipment close restores the exact origin, navigation stays within available characters and slots filter inventory',async()=>{
+test('equipment close restores the exact origin and inventory supports selecting items across all slots',async()=>{
  const g=await game();g.run("screen='home';phase=4;party=1;partySlot=2;rosterPage=1;page=2;sub=0;render();globalThis.before=JSON.stringify({screen,sub,page,party,partySlot,rosterPage});openCharacterEquipment('gares')");
  assert.equal(g.run('screen'),'equipment');assert(g.view.innerHTML.includes('ガレス · 装備'));
  assert(g.view.innerHTML.includes('HP <b>4</b>'));assert(g.view.innerHTML.includes('攻撃 <b>2</b>'));assert(g.view.innerHTML.includes('防御 <b>3</b>'));
  assert.equal((g.view.innerHTML.match(/class="equipment-slot /g)||[]).length,5);
- assert(g.view.innerHTML.includes('鉄の剣'));assert(!g.view.innerHTML.includes('onclick="changeEquipment(2)"'));
- g.run("selectEquipmentSlot('offhand')");assert(g.view.innerHTML.includes('onclick="changeEquipment(2)"'));assert(!g.view.innerHTML.includes('onclick="changeEquipment(1)"'));
- g.run('changeEquipment(2)');assert.equal(g.run('gear("gares").offhand.uid'),2);
+ assert(g.view.innerHTML.includes('鉄の剣'));assert(g.view.innerHTML.includes('onclick="selectEquipmentItem(2)"'));assert(!g.view.innerHTML.includes('onclick="changeEquipment(1)"'));
+ g.run('selectEquipmentItem(2)');assert.equal(g.run('gear("gares").offhand??null'),null);g.run("selectEquipmentSlot('offhand')");assert.equal(g.run('gear("gares").offhand.uid'),2);
  g.run('moveEquipmentCharacter(1)');assert.equal(g.run('equipCharacter'),'mira');assert(g.view.innerHTML.includes('固有属性 '+catalog.elements.fire+'1'));assert.equal(g.run('equipmentSlot'),'offhand');
  g.run('moveEquipmentCharacter(1)');assert.equal(g.run('equipCharacter'),'mira');
  g.run('moveEquipmentCharacter(-1);moveEquipmentCharacter(-1);moveEquipmentCharacter(-1)');assert.equal(g.run('equipCharacter'),'kyle');
@@ -653,4 +652,44 @@ test('invalid growth imports and allocations reject atomically',async()=>{
  }
  g.run("equipCharacter='kyle';setGrowthPolicy('invalid')");assert.equal(g.run('growthPolicy("kyle")'),'balanced');
  g.run('config.adventurers.growth.policies.balanced.attack=2');assert.throws(()=>g.run('validateAdventurerConfig()'));
+});
+
+test('tap selection commits only on matching slot, preserves identity and durability and clears on character changes',async()=>{
+ const g=await game();g.run("openCharacterEquipment('kyle');stock[0].durability=3;globalThis.before=JSON.stringify(snapshot());selectEquipmentItem(1)");
+ assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));assert.equal(g.run('equipmentSelectedUid'),1);
+ g.run("selectEquipmentSlot('offhand')");assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run("selectEquipmentSlot('weapon')");assert.equal(g.run("gear('kyle').weapon.uid"),1);assert.equal(g.run("gear('kyle').weapon.durability"),3);assert.equal(g.run('equipmentSelectedUid'),null);
+ g.run('selectEquipmentItem(2);selectEquipmentItem(2)');assert.equal(g.run('equipmentSelectedUid'),null);
+ g.run('selectEquipmentItem(2);moveEquipmentCharacter(1)');assert.equal(g.run('equipmentSelectedUid'),null);
+ g.run('selectEquipmentItem(2);selectCharacterPanel("growth")');assert.equal(g.run('equipmentSelectedUid'),null);
+ g.run('go("warehouse")');assert.equal(g.run('equipmentSelectedUid'),null);
+});
+
+async function gearInputGame(){
+ const g=await game();g.run(`openCharacterEquipment('kyle');availableCharacterIds.forEach(gear);globalThis.gearHandlers={};globalThis.dropKind='slot';globalThis.dropSlot='weapon';window.addEventListener=(name,fn)=>gearHandlers[name]=fn;window.removeEventListener=(name,fn)=>{if(gearHandlers[name]===fn)delete gearHandlers[name]};document.elementFromPoint=()=>({closest:selector=>selector===(dropKind==='slot'?'[data-equipment-slot]':'[data-equipment-warehouse]')?{dataset:{equipmentSlot:dropSlot},classList:{add(){},remove(){}}}:null});globalThis.gearPointer={pointerId:11,pointerType:'touch',button:0,isPrimary:true,clientX:20,clientY:20,preventDefault(){}}`);
+ const hold=()=>{const timer=[...g.timers.values()].find(t=>t.delay===100);assert(timer);timer.fn()};
+ return {...g,hold};
+}
+for(const pointerType of ['touch','mouse'])test(`${pointerType}: equipment hold drag commits only on valid release and supports warehouse return`,async()=>{
+ const g=await gearInputGame();g.run(`gearPointer.pointerType='${pointerType}';globalThis.before=JSON.stringify(snapshot());startEquipmentDrag(gearPointer,1)`);g.hold();
+ assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run('gearHandlers.pointermove(gearPointer)');assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run('gearHandlers.pointerup(gearPointer)');assert.equal(g.run("gear('kyle').weapon.uid"),1);assert.equal(g.run('equipmentDrag'),null);
+ g.run("dropKind='warehouse';startEquipmentDrag(gearPointer,null,'weapon')");g.hold();g.run('gearHandlers.pointerup(gearPointer)');
+ assert.equal(g.run("gear('kyle').weapon"),null);assert(g.run('stock.some(i=>i.uid===1&&i.durability===10)'));
+});
+
+test('equipment drag cancellation, wrong targets and stale screens preserve saved state and clean listeners',async()=>{
+ for(const cancel of ["gearHandlers.pointercancel(gearPointer)","gearHandlers.blur()","gearHandlers.keydown({key:'Escape'})","dropSlot='body';gearHandlers.pointerup(gearPointer)","dropKind='outside';gearHandlers.pointerup(gearPointer)","moveEquipmentCharacter(1)","selectCharacterPanel('growth')"]){
+  const g=await gearInputGame();g.run('globalThis.before=JSON.stringify(snapshot());startEquipmentDrag(gearPointer,1)');g.hold();g.run(cancel);
+  assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));assert.equal(g.run('equipmentDrag'),null);assert.equal(g.run('Object.keys(gearHandlers).length'),0);
+ }
+ const g=await gearInputGame();g.run('startEquipmentDrag(gearPointer,1);gearHandlers.pointerup(gearPointer)');assert.equal(g.run('equipmentDrag'),null);assert.equal(g.timers.size,0);
+});
+
+test('equipment input respects job and expedition locks, and full-warehouse exchanges remain atomic without alerts',async()=>{
+ const g=await gearInputGame();g.run("selectEquipmentItem(5)");assert.equal(g.run('equipmentSelectedUid'),null);
+ g.run("changeEquipment(1);globalThis.spare=newItem('one_hand_sword_03');stock.push(spare);config.warehouse={width:1,height:1};globalThis.before=JSON.stringify(snapshot());selectEquipmentItem(spare.uid);selectEquipmentSlot('weapon')");assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run('startEquipmentDrag(gearPointer,spare.uid)');g.hold();g.run('gearHandlers.pointerup(gearPointer)');assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run("config.warehouse={width:8,height:8};phase=4;screen='home';depart();openCharacterEquipment('kyle');equipmentSelectedUid=null;selectEquipmentItem(2);startEquipmentDrag(gearPointer,2)");assert.equal(g.run('equipmentSelectedUid'),null);assert.equal(g.run('equipmentDrag'),null);
 });

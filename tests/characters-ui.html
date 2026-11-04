@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>キャラクター画像検証</title>
+<style>body{margin:0}iframe{border:0}pre{white-space:pre-wrap}</style>
+<pre id="status">RUNNING</pre><iframe src="../index.html"></iframe>
+<script>
+const params=new URLSearchParams(location.search),width=Number(params.get('width')||360),height=Number(params.get('height')||640),frame=document.querySelector('iframe');frame.style.width=width+'px';frame.style.height=height+'px';
+const prior=localStorage.getItem('shop-game-save');
+frame.onload=async()=>{try{
+ const w=frame.contentWindow,d=frame.contentDocument,run=s=>w.eval(s);
+ while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
+ const assert=(ok,message)=>{if(!ok)throw Error(message)},characters=run('characters');
+ assert(characters.length===27,'27人');assert(new Set(characters.map(c=>c.images.normal)).size===27,'画像の重複なし');
+ await Promise.all(characters.flatMap(c=>Object.values(c.images)).map(src=>new Promise((resolve,reject)=>{const img=new Image();img.onload=resolve;img.onerror=()=>reject(Error(src));img.src='../'+src})));
+ const layout=()=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1,'縦収まり');assert([...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||(r.right<=width+1&&r.left>=0&&r.bottom<=nav.top+1)}),'枠内表示')};
+ run("go('adventurers')");layout();assert(d.querySelectorAll('.character-art').length===6,'編成画像');
+ for(const c of characters){run(`availableCharacterIds=['${c.id}'];openCharacterEquipment('${c.id}')`);layout();assert(d.querySelector('.character-art').getAttribute('src')===c.images.normal,c.name);run("selectCharacterPanel('growth')");layout()}
+ document.querySelector('#status').textContent=`PASS ${width}×${height}：27人の画像読み込み・編成・装備・育成の収まり`;
+ }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(prior===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',prior)}};
+</script>

@@ -36,7 +36,7 @@ async function game(saved=null){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -388,4 +388,54 @@ test('new catalog saves reject unknown IDs and future versions instead of silent
  assert.throws(()=>g.run(`validateSave(${JSON.stringify(raw)})`));
  raw.stock[0].itemId=catalog.items[0].id;raw.catalogVersion=999;
  assert.throws(()=>g.run(`validateSave(${JSON.stringify(raw)})`));
+});
+
+test('daily costs use evening chapter, shelves and status, charge tax on day five once',async()=>{
+ const g=await game();assert.equal(g.run('economyState.bill'),null);
+ g.run("day=5;phase=5;economyState.shelfCount=2;economyState.companions[availableCharacterIds[1]]={recoveryDay:8};economyState.companions[availableCharacterIds[2]]={dead:true};finishDay()");
+ assert.equal(g.run('day'),6);assert.equal(g.run('economyState.bill.total'),120);
+ assert.equal(g.run('gold'),1130);g.run("go('home');settleEconomyBill()");assert.equal(g.run('gold'),1130);
+ const saved=JSON.parse(g.run('JSON.stringify(snapshot())')),loaded=await game(saved);assert.equal(loaded.run('gold'),1130);assert.equal(loaded.run('economyState.bill.status'),'paid');
+});
+test('departed companions incur no maintenance even when they return that morning',async()=>{
+ const g=await game();g.run("phase=4;screen='home';depart();phase=5;finishDay()");
+ assert.equal(g.run('economyState.bill.companions'),0);assert.equal(g.run('gold'),1245);assert.equal(g.run('expeditions.length'),0);
+});
+test('healing costs level times 200, excludes dead, and natural recovery is free',async()=>{
+ const g=await game();g.run("economyState.companions[availableCharacterIds[0]]={level:3,recoveryDay:5};healCompanion(availableCharacterIds[0])");
+ assert.equal(g.run('gold'),650);assert.equal(g.run('companionStatus(availableCharacterIds[0])'),'waiting');
+ g.run("healCompanion(availableCharacterIds[0]);economyState.companions[availableCharacterIds[0]]={level:3,recoveryDay:5,dead:true};healCompanion(availableCharacterIds[0])");assert.equal(g.run('gold'),650);
+ g.run("economyState.companions[availableCharacterIds[1]]={recoveryDay:3};phase=5;finishDay()");assert.equal(g.run('gold'),635);assert.equal(g.run('companionStatus(availableCharacterIds[1])'),'waiting');
+});
+test('carpenter expands real capacity, persists shelves, migrates old saves without backcharging',async()=>{
+ const g=await game();g.run('expandShelf()');assert.equal(g.run('gold'),950);assert.equal(g.run('shelfCapacity()'),16);
+ const s=JSON.parse(g.run('JSON.stringify(snapshot())'));const loaded=await game(s);assert.equal(loaded.run('economyState.shelfCount'),2);
+ delete s.economyState;const old=await game(s);assert.equal(old.run('gold'),950);assert.equal(old.run('economyState.shelfCount'),1);assert.equal(old.run('economyState.bill'),null);
+});
+test('unaffordable bill is saved in full, blocks progress, and can only settle once',async()=>{
+ const g=await game();g.run('gold=1;phase=5;finishDay()');assert.equal(g.run('gold'),1);assert.equal(g.run('bankruptcyExpense().shortfall'),19);
+ g.run('advance()');assert.equal(g.run('phase'),0);
+ const loaded=await game(JSON.parse(g.run('JSON.stringify(snapshot())')));assert.equal(loaded.run('economyState.bill.status'),'unpaid');loaded.run('gold=100;retryEconomyBill();retryEconomyBill()');assert.equal(loaded.run('gold'),80);
+});
+test('unset prices and malformed economy saves are rejected without corrupting current progress',async()=>{
+ const g=await game();assert.throws(()=>g.run('validateEconomyConfig({chapters:{},healing:{costPerLevel:null}})'));
+ for(const change of ["bad.economyState.shelfCount=0","bad.economyState.companions.unknown={level:1}","bad.economyState.companions[availableCharacterIds[0]]={level:0}"]){g.run('globalThis.bad=JSON.parse(JSON.stringify(snapshot()))');g.run(change);assert.throws(()=>g.run('applySave(bad)'))}
+ assert.equal(g.run('gold'),1250);
+});
+
+test('30-day cashflow simulation covers trading, no sales and expansion without income',async()=>{
+ for(const [policy,expectedDays,expectedGold,unpaid] of [['trade',30,2450,false],['idle',30,50,false],['expand-idle',23,0,true]]){
+  const g=await game();if(policy==='expand-idle')g.run('expandShelf()');let days=0;
+  for(;days<30;){g.run(`phase=1;if(${policy==='trade'}&&stock.length===0&&gold>=prices[0]){counts=[1,0,0];buy();while(pending.length)receive()}if(${policy==='trade'}&&stock.length){selected=0;replenish()}phase=5;finishDay()`);days++;if(g.run('!!bankruptcyExpense()'))break}
+  assert.equal(days,expectedDays,policy);assert.equal(g.run('gold'),expectedGold,policy);assert.equal(g.run('!!bankruptcyExpense()'),unpaid,policy);
+ }
+});
+
+test('healing and expansion reject insufficient funds without changing state',async()=>{
+ const g=await game();g.run("document.querySelector('#modal').showModal=()=>{};gold=199;economyState.companions[availableCharacterIds[0]]={level:1,recoveryDay:5};healCompanion(availableCharacterIds[0]);expandShelf()");
+ assert.equal(g.run('gold'),199);assert.equal(g.run('economyState.shelfCount'),1);assert.equal(g.run('companionStatus(availableCharacterIds[0])'),'recovering');
+});
+test('chapter transition and next-morning edits do not recalculate the previous bill',async()=>{
+ const g=await game();g.run('day=5;chapter=1;phase=5;finishDay();chapter=2;expandShelf();render()');
+ assert.equal(g.run('economyState.bill.chapterId'),'chapter_1');assert.equal(g.run('economyState.bill.total'),240);assert.equal(g.run('gold'),110);
 });

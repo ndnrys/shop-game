@@ -11,7 +11,7 @@ function prepareEquipment(ids){for(const id of ids)for(const slot of Object.keys
 }}
 function depart(){
  if(phase!==4||screen!=='home'||partyAway(party))return;
- const members=parties[party].filter(Boolean);if(!members.length)return info('派遣できません','パーティに仲間を編成してください。');
+ const members=parties[party].filter(id=>id&&companionStatus(id)==='waiting');if(!members.length)return info('派遣できません','パーティに仲間を編成してください。');
  if(members.some(isAway))return;
  if(funds[party]>gold)return info('所持金不足','支度金が所持金を超えています。');
  prepareEquipment(members);gold-=funds[party];funds[party]=0;

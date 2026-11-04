@@ -1,5 +1,5 @@
 const SAVE_KEY='shop-game-save';let saveError='',saveReady=false,catalogMigrationNotice='';
-function snapshot(){return {version:EquipmentCore.version,catalogVersion:catalog.contentVersion,day,phase,gold,counts,pending,stock,shelf,funds,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,expeditions,returnReport,lastSales,encyclopedia}}
+function snapshot(){return {version:EquipmentCore.version,catalogVersion:catalog.contentVersion,day,phase,gold,counts,pending,stock,shelf,funds,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,expeditions,returnReport,lastSales,encyclopedia,economyState}}
 function readStoredGame(){try{return typeof localStorage==='undefined'?null:JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(error){saveError='保存データを読めません。JSONのバックアップから復元してください。';return null}}
 function persist(){if(!saveReady||typeof localStorage==='undefined')return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()));saveError=''}catch(error){saveError='自動保存できません。JSONを書き出して保管してください。'}}
 function validateSave(raw){
@@ -28,7 +28,8 @@ function validateSave(raw){
  const migrate=item=>{if(!item||!integer(item.uid,1)||seen.has(item.uid)||!definitions[item.itemId])fail();seen.add(item.uid);const d=definitions[item.itemId];return {...(types[d.typeId].slot?EquipmentCore.normalize(item):item),typeId:d.typeId}};
  for(const k of ['stock','pending','shelf']){if(!Array.isArray(s[k]))fail();s[k]=s[k].map(migrate)}
  for(const item of s.stock)if(![0,1].includes(item.rotation)||!ItemCore.canPlace(item,item.x,item.y,item.rotation,s.stock,types,config.warehouse))fail();
- if(s.shelf.length>config.development.shelfCapacity||s.shelf.some(i=>i.forged))fail();
+ validateEconomySave(s,fail);
+ if(s.shelf.length>config.development.shelfCapacity*s.economyState.shelfCount||s.shelf.some(i=>i.forged))fail();
  s.equipment??={};s.autoEquip??={};s.brokenTargets??={};s.expeditions??=[];s.returnReport??=[];s.lastSales??=0;
  for(const [id,slots] of Object.entries(s.equipment)){if(!ids.has(id)||!slots||typeof slots!=='object')fail();for(const [slot,item] of Object.entries(slots)){if(!Object.hasOwn(catalog.slots,slot))fail();if(item){slots[slot]=migrate(item);if(types[slots[slot].typeId].slot!==slot)fail()}}}
  for(const [key,boolean] of [['autoEquip',true],['brokenTargets',false]])for(const [id,slots] of Object.entries(s[key])){if(!ids.has(id)||!slots||typeof slots!=='object')fail();for(const [slot,value] of Object.entries(slots))if(!Object.hasOwn(catalog.slots,slot)||(boolean?typeof value!=='boolean':!definitions[value]||types[definitions[value].typeId].slot!==slot))fail()}
@@ -41,6 +42,6 @@ function validateSave(raw){
  for(const [id,r] of Object.entries(s.encyclopedia.people))if(!encyclopediaDefinitions.people.some(d=>d.id===id)||!r||r.discovered!==true)fail();
  s.uid=Math.max(integer(s.uid)?s.uid:0,...seen);s.version=EquipmentCore.version;return s;
 }
-function applySave(raw){const s=validateSave(raw);catalogMigrationNotice=s.catalogMigrationRemoved?`アイテム一覧を更新し、廃止品${s.catalogMigrationRemoved}点を取り除きました。共通の商品・所持金・日数は維持しました。`:'';({day,phase,gold,counts,pending,stock,shelf,funds,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,expeditions,returnReport,lastSales,encyclopedia}=s);away=expeditions.length>0;party=0;partySlot=0;selected=0;page=0;equipPage=0;equipCharacter=null;equipmentOrigin=null}
+function applySave(raw){const s=validateSave(raw);catalogMigrationNotice=s.catalogMigrationRemoved?`アイテム一覧を更新し、廃止品${s.catalogMigrationRemoved}点を取り除きました。共通の商品・所持金・日数は維持しました。`:'';({day,phase,gold,counts,pending,stock,shelf,funds,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,expeditions,returnReport,lastSales,encyclopedia,economyState}=s);away=expeditions.length>0;party=0;partySlot=0;selected=0;page=0;equipPage=0;equipCharacter=null;equipmentOrigin=null}
 function exportGame(){const url=URL.createObjectURL(new Blob([JSON.stringify(snapshot(),null,2)+'\n'],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='shop-game-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 async function importGame(file){if(!file)return;try{if(file.size>5*1024*1024)throw Error('ファイルは5MB以内にしてください');const data=JSON.parse(await file.text());applySave(data);saveReady=true;go('home');info('読み込み完了','進行データを復元しました。')}catch(error){info('読み込めません',error.message)}}

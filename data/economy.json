@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "provisional",
+  "chapters": {
+    "prologue": {
+      "seasonTax": 100,
+      "shopMaintenancePerShelf": 5,
+      "companionMaintenancePerPerson": 5,
+      "shelfExpansionCost": 300
+    },
+    "chapter_1": {
+      "seasonTax": 200,
+      "shopMaintenancePerShelf": 10,
+      "companionMaintenancePerPerson": 10,
+      "shelfExpansionCost": 600
+    },
+    "chapter_2": {
+      "seasonTax": 300,
+      "shopMaintenancePerShelf": 15,
+      "companionMaintenancePerPerson": 15,
+      "shelfExpansionCost": 900
+    },
+    "chapter_3": {
+      "seasonTax": 400,
+      "shopMaintenancePerShelf": 20,
+      "companionMaintenancePerPerson": 20,
+      "shelfExpansionCost": 1200
+    },
+    "chapter_4": {
+      "seasonTax": 500,
+      "shopMaintenancePerShelf": 25,
+      "companionMaintenancePerPerson": 25,
+      "shelfExpansionCost": 1500
+    },
+    "chapter_5": {
+      "seasonTax": 600,
+      "shopMaintenancePerShelf": 30,
+      "companionMaintenancePerPerson": 30,
+      "shelfExpansionCost": 1800
+    },
+    "chapter_6": {
+      "seasonTax": 700,
+      "shopMaintenancePerShelf": 35,
+      "companionMaintenancePerPerson": 35,
+      "shelfExpansionCost": 2100
+    },
+    "chapter_7": {
+      "seasonTax": 800,
+      "shopMaintenancePerShelf": 40,
+      "companionMaintenancePerPerson": 40,
+      "shelfExpansionCost": 2400
+    },
+    "finale": {
+      "seasonTax": 900,
+      "shopMaintenancePerShelf": 45,
+      "companionMaintenancePerPerson": 45,
+      "shelfExpansionCost": 2700
+    }
+  },
+  "healing": {
+    "costPerLevel": 200
+  },
+  "notes": [
+    "治療単価200Gは合意済み暫定値。章別金額は調整用仮値。後で自動プレイにより調整する。"
+  ]
+}

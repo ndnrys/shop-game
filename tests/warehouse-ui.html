@@ -9,7 +9,7 @@ frame.onload=async()=>{try{
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const assert=(v,label)=>{if(!v)throw Error(label);checks.push(label)};
  const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1&&d.documentElement.scrollWidth<=width&&[...view.children].every(e=>{const r=e.getBoundingClientRect();return r.bottom<=nav.top+1&&r.left>=0&&r.right<=width+1}),label)};
- run('reset()');assert(run('warehouseSize.width')===5&&run('stock.length+pending.length')===6,'5x5と初期6品維持');assert(run('pending[0].itemId')==='spear_01','槍を入荷待ちへ保持');
+ run('reset()');assert(run('warehouseSize.width')===5&&run('stock.length')===5&&run('pending.length')===0,'5x5と初期5品');run("pending=[newItem('spear_01')]");assert(run('pending[0].itemId')==='spear_01','既存の大型入荷品は維持');
  run("go('warehouse')");layout('初期入荷画面');assert(d.querySelectorAll('.real-board button').length===25,'25マス表示');assert([...d.querySelectorAll('button')].some(b=>b.disabled&&b.textContent==='収納不可'),'収納不可を表示');
  run("phase=1;go('home')");layout('容量付き仕入れ画面');assert(d.querySelector('#view').textContent.includes('5×5 · 空き'),'仕入れで容量表示');
  run("gold=2000;go('residents');sub=1;render();globalThis.originalStock=JSON.stringify(stock)");layout('大工画面');

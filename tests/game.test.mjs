@@ -694,15 +694,14 @@ test('equipment input respects job and expedition locks, and full-warehouse exch
  g.run("warehouseSize={width:8,height:8};phase=4;screen='home';depart();openCharacterEquipment('kyle');equipmentSelectedUid=null;selectEquipmentItem(2);startEquipmentDrag(gearPointer,2)");assert.equal(g.run('equipmentSelectedUid'),null);assert.equal(g.run('equipmentDrag'),null);
 });
 
-test('new 5x5 warehouse preserves all initial items and holds oversized spear in incoming stock',async()=>{
+test('new 5x5 game excludes oversized initial items without creating incoming stock or discoveries',async()=>{
  const g=await game(null,5);
  assert.equal(settings.warehouse.width,5);assert.equal(g.run('warehouseSize.width'),5);
- assert.equal(g.run('stock.length+pending.length'),settings.development.initialItemIds.length);
- assert.equal(g.run('pending[0].itemId'),'spear_01');assert.equal(g.run('pending[0].uid'),4);
+ assert.equal(g.run('stock.length'),5);assert.equal(g.run('pending.length'),0);
+ assert.equal(g.run("encyclopedia.items.spear_01"),undefined);
  assert(g.run('stock.every(i=>ItemCore.canPlace(i,i.x,i.y,i.rotation,stock,types,warehouseSize))'));
  const restored=await game(JSON.parse(g.run('JSON.stringify(snapshot())')),5);
- assert.equal(restored.run('warehouseSize.width'),5);assert.equal(restored.run('pending[0].uid'),4);
- restored.run('advance()');assert.equal(restored.run('screen'),'trade');assert.equal(restored.run('phase'),0);
+ assert.equal(restored.run('warehouseSize.width'),5);assert.equal(restored.run('pending.length'),0);
 });
 
 test('carpenter expands in order, charges once, preserves positions, and stops at 8x8',async()=>{
@@ -724,8 +723,8 @@ test('legacy warehouses stay 8x8 without moving or losing stock and invalid size
 });
 
 test('warehouse capacity and dimensions constrain incoming goods until expansion; pending blocks progression',async()=>{
- const g=await game(null,5);g.run('gold=2000;globalThis.spear=pending[0];receive()');assert.equal(g.run('pending[0].uid'),4);
- g.run('expandWarehouse();receive()');assert.equal(g.run('pending[0].uid'),4);
+ const g=await game(null,5);g.run("gold=2000;pending=[newItem('spear_01')];globalThis.spear=pending[0];receive()");assert.equal(g.run('pending[0].uid'),g.run('spear.uid'));
+ g.run('expandWarehouse();receive()');assert.equal(g.run('pending[0].uid'),g.run('spear.uid'));
  g.run('expandWarehouse();receive()');assert.equal(g.run('pending.length'),0);assert(g.run('stock.some(i=>i.uid===4)'));
  g.run("reset();stock=[];pending=[];for(let n=0;n<25;n++)storeItem(newItem('accessory_01'));pending=[newItem('accessory_01')];globalThis.before=JSON.stringify(stock);receive()");
  assert.equal(g.run('stock.length'),25);assert.equal(g.run('pending.length'),1);assert.equal(g.run('JSON.stringify(stock)'),g.run('before'));
@@ -739,4 +738,23 @@ for(const pointerType of ['mouse','touch'])test(`${pointerType}: 5x5 drag stays 
  assert.equal(g.run('stock[0].x'),4);assert.equal(g.run('stock[0].y'),2);assert(g.run('ItemCore.canPlace(stock[0],4,2,0,stock,types,warehouseSize)'));
  const before=g.run('JSON.stringify(stock)');g.handlers.pointerdown(g.event(45,25,pointerType));for(const t of [...g.timers.values()])t.fn();g.handlers.pointermove(g.event(150,150,pointerType));g.handlers.pointercancel();assert.equal(g.run('JSON.stringify(stock)'),before);
  g.run('rotateSelected()');assert.equal(g.run('stock[0].rotation'),1);assert(g.run('ItemCore.canPlace(stock[0],stock[0].x,stock[0].y,1,stock,types,warehouseSize)'));
+});
+
+test('warehouse draw filter checks both rotations independently of occupied cells and unlocks large items after expansion',async()=>{
+ assert(rules.fitsBoard({typeId:'spear'},types,{width:7,height:5}));
+ assert(!rules.fitsBoard({typeId:'spear'},types,{width:6,height:6}));
+ const g=await game(null,5);
+ assert.equal(g.run("fitsWarehouse(definitions.spear_01)"),false);
+ g.run('gold=2000;expandWarehouse()');assert.equal(g.run('fitsWarehouse(definitions.spear_01)'),false);
+ g.run('expandWarehouse()');assert.equal(g.run('fitsWarehouse(definitions.spear_01)'),true);
+ g.run("warehouseSize={width:5,height:5};stock=[];pending=[];for(let i=0;i<25;i++)storeItem(newItem('accessory_01'));counts=[100,100,100];gold=100000;buy()");
+ assert.equal(g.run('pending.length'),300);assert(g.run('pending.every(i=>fitsWarehouse(definitions[i.itemId]))'));
+ assert.equal(g.run('stock.length'),25);
+});
+
+test('donation draw excludes items too large for the warehouse and empty pools consume neither money nor ad quota',async()=>{
+ const g=await game(null,5);g.run("registerDonationAdapter({showRewardedAd:async()=>({completed:true})});Math.random=()=>0.56");
+ await g.run('watchDonation()');assert(g.run('pending.every(i=>fitsWarehouse(definitions[i.itemId]))'));assert.equal(g.run('pending.length'),3);
+ g.run("pending=[];catalog.items.forEach(d=>d.status='planned');counts=[1,0,0];document.querySelector('#modal').showModal=()=>{};globalThis.beforeGold=gold;buy()");assert.equal(g.run('gold'),g.run('beforeGold'));assert.equal(g.run('pending.length'),0);
+ const used=g.run('donationState.used');await g.run('watchDonation()');assert.equal(g.run('donationState.used'),used);assert.equal(g.run('pending.length'),0);
 });

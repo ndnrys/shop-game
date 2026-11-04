@@ -29,7 +29,7 @@ async function watchDonation(){
  try{
   const result=await donationAdapter.showRewardedAd();
   if(donationState!==claimState||result?.completed!==true||pending.length||donationRemaining()<=0)return;
-  const pool=catalog.items.filter(d=>d.status==='active');
+  const pool=catalog.items.filter(d=>d.status==='active'&&fitsWarehouse(d));if(!pool.length)return;
   const ids=Array.from({length:config.donation.itemsPerAd},()=>pool[Math.floor(Math.random()*pool.length)].id);
   const date=donationDate();if(donationState.date!==date){donationState.date=date;donationState.used=0}
   pending=ids.map(newItem);donationState.used++;donationState.rewards=ids;

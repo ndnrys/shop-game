@@ -8,7 +8,7 @@ frame.onload=async()=>{try{
  const w=frame.contentWindow,d=frame.contentDocument,run=code=>w.eval(code);
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const assert=(value,label)=>{if(!value)throw Error(label);checks.push(label)};
- const fresh=()=>run("reset();warehouseSize={width:8,height:8};for(const i of pending)storeItem(i);pending=[];Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
+ const fresh=()=>run("globalThis.defaultWarehouse=config.warehouse;config.warehouse={width:8,height:8};reset();config.warehouse=defaultWarehouse;Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
  const item=uid=>d.querySelector(`[data-equipment-item="${uid}"]`),slot=id=>d.querySelector(`[data-equipment-slot="${id}"]`);
  const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(d.documentElement.scrollWidth<=width&&view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().height).every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
  const drag=async(source,target,{cancel=false,pointerType='touch',during=()=>{}}={})=>{

@@ -11,3 +11,5 @@
 @media(max-height:600px){.intake{padding:6px}.intake~.real-board{max-width:145px}.intake .mini{padding:5px}.intake b{font-size:11px}.intake h2{font-size:11px}}
 
 .real-board,.incoming-draggable{touch-action:none;user-select:none;-webkit-user-select:none}.real-board .filled,.incoming-draggable{cursor:grab}.dragging,.dragging *{cursor:grabbing!important}.real-board button.drop-preview{background:var(--accent);color:var(--paper);outline:2px solid var(--ink);outline-offset:-2px;opacity:.65}.drag-ghost{position:fixed;z-index:99;pointer-events:none;padding:7px 10px;border:1px solid var(--accent);border-radius:6px;background:var(--paper);color:var(--ink);font-size:12px;box-shadow:0 3px 15px #0002;max-width:180px}.drag-ghost.invalid{opacity:.45}.incoming-draggable{padding:5px 0}
+
+.encyclopedia-detail .ledger .row{padding:5px 0}.encyclopedia-detail .row b{text-align:right;overflow-wrap:anywhere}

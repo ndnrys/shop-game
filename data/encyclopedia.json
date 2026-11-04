@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "sets": [
+    {
+      "id": "wood_sword_shield",
+      "name": "木剣＋木の盾",
+      "itemIds": [
+        "one_hand_sword_01",
+        "shield_01"
+      ]
+    }
+  ],
+  "people": []
+}

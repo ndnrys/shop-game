@@ -33,6 +33,8 @@ async function game(){
   setTimeout:(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;},clearTimeout:id=>timers.delete(id)
  });
  vm.runInContext(read('js/item-core.js'),context);
+ vm.runInContext(read('js/encyclopedia-core.js'),context);
+ vm.runInContext(read('js/encyclopedia-ui.js'),context);
  vm.runInContext(read('js/main.js'),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
@@ -69,7 +71,7 @@ test('rotation finds a free fourth row in the reported layout',()=>{
 
 test('all current screens render and generated actions are valid JavaScript',async()=>{
  const g=await game();
- for(const screen of ['home','trade','warehouse','adventurers','residents','journal','settings','catalog','departure'])for(let phase=0;phase<6;phase++)for(let sub=0;sub<4;sub++){
+ for(const screen of ['home','trade','warehouse','adventurers','residents','records','journal','settings','catalog','encyclopedia','departure'])for(let phase=0;phase<6;phase++)for(let sub=0;sub<4;sub++){
   g.run(`screen='${screen}';phase=${phase};sub=${sub};render()`);
   assert(g.view.innerHTML.length>0);
   for(const match of g.view.innerHTML.matchAll(/onclick="([^"]*)"/g))new vm.Script(match[1].replaceAll('&quot;','"'));
@@ -115,4 +117,45 @@ test('incoming drag consumes exactly one item and preserves unique instance IDs'
  g.handlers.pointermove(g.event(5,45,'touch',true));g.handlers.pointerup(g.event(5,45,'touch',true));
  assert.equal(g.run('pending.length'),0);assert.equal(g.run('stock.length'),7);
  assert.equal(g.run('new Set(stock.map(i=>i.uid)).size'),7);
+});
+
+test('encyclopedia acquisition survives buyback and does not infer sales',async()=>{
+ const g=await game();
+ assert.equal(g.run('Object.keys(encyclopedia.items).length'),settings.development.initialItemIds.length);
+ g.run('counts=[1,0,0];buy();globalThis.acquired=pending[0].itemId;pending.shift()');
+ assert(g.run('encyclopedia.items[acquired].discovered'));
+ assert.equal(g.run('encyclopedia.items[acquired].sold'),0);
+ g.run('replenish();globalThis.soldId=shelf[0].itemId;phase=5;screen="home";render()');
+ assert.equal(g.run('encyclopedia.items[soldId].sold'),0);
+ const action=[...g.view.innerHTML.matchAll(/onclick="([^"]*)"/g)].find(m=>m[1].includes('EncyclopediaCore.sold'))[1];
+ g.run(action.replaceAll('&quot;','"'));
+ assert.equal(g.run('encyclopedia.items[soldId].sold'),1);
+});
+test('set discovery requires simultaneous placement and survives return',async()=>{
+ const g=await game();
+ g.run("stock=[newItem('one_hand_sword_01'),newItem('shield_01')];selected=0;replenish()");
+ assert.equal(g.run('Object.keys(encyclopedia.sets).length'),0);
+ g.run('replenish()');
+ assert(g.run('encyclopedia.sets.wood_sword_shield.discovered'));
+ g.run('returnShelf()');
+ assert(g.run('encyclopedia.sets.wood_sword_shield.discovered'));
+ assert.equal(g.run('encyclopedia.sets.wood_sword_shield.expeditions'),0);
+ g.run("screen='encyclopedia';encyclopediaTab='sets';encyclopediaSelection='wood_sword_shield';render()");
+ assert(g.view.innerHTML.includes('木剣＋木の盾'));
+});
+test('undiscovered detail hides definition and reset clears records',async()=>{
+ const g=await game();
+ g.run("screen='encyclopedia';encyclopediaTab='sets';encyclopediaSelection='wood_sword_shield';render()");
+ assert(!g.view.innerHTML.includes('木剣'));
+ g.run("EncyclopediaCore.acquire(encyclopedia,'shield_01');reset()");
+ assert.equal(g.run('Object.keys(encyclopedia.sets).length'),0);
+});
+
+test('failed purchase does not discover any new products',async()=>{
+ const g=await game();
+ const before=g.run('JSON.stringify(encyclopedia)');
+ g.run('gold=0;counts=[1,0,0]');
+ assert.throws(()=>g.run('buy()'),/Unexpected alert/);
+ assert.equal(g.run('JSON.stringify(encyclopedia)'),before);
+ assert.equal(g.run('pending.length'),0);
 });

@@ -1,60 +1,111 @@
-import { loadGame } from "./systems/save.js";
-import { calendarDate } from "./systems/calendar.js";
-import { mountCampaign } from "./ui/campaign.js";
-import { mountSaveControls } from "./ui/saveControls.js";
-import { createSession } from "./application/createSession.js";
-import { mountWarehouse } from "./ui/warehouse.js";
-import { mountStocking } from "./ui/stocking.js";
-import { mountScreens } from "./ui/app.js";
-import { mountLocaleControls } from "./ui/localeControls.js";
-import { applyTranslations } from "./ui/i18n.js";
-import skin from "./data/skins/fantasy/index.js";
 
-let loaded = null;
-let loadFailed = false;
-try { loaded = await loadGame(skin); } catch { loadFailed = true; }
-const game = loaded ? createSession(skin, loaded) : createSession(skin);
-const { i18n } = game;
-for (const [key, value] of Object.entries(skin.theme)) document.documentElement.style.setProperty(key, value);
-document.documentElement.dataset.skin = skin.id;
-if (skin.stylesheet) {
-  const stylesheet = document.createElement('link');
-  stylesheet.rel = 'stylesheet';
-  stylesheet.href = skin.stylesheet;
-  document.head.append(stylesheet);
-}
+const $=s=>document.querySelector(s);const phases=['報告','仕入れ','倉庫整理','陳列','支援','営業'];const navs=[['home','⌂','経営'],['warehouse','▦','倉庫'],['residents','♧','住人'],['adventurers','♙','冒険者'],['journal','≡','日誌'],['settings','⚙','設定']];
+let day=2,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=0,away=false;const prices=[];
+const title=(a,b='')=>`<div class="heading"><h1>${a}</h1>${b?`<span class="tag">${b}</span>`:''}</div>`;const btn=(s,fn,cl='')=>`<button class="${cl}" onclick="${fn.replaceAll('"','&quot;')}">${s}</button>`;const card=s=>`<section class="card">${s}</section>`;const steps=()=>`<div class="steps">${phases.map((p,i)=>`<span class="${phase===i?'current':''}">${p}</span>`).join('')}</div>`;const next=(label='次へ')=>`<div class="bottom"><div class="actions">${phase>0&&phase<5?btn('前の工程',`phase--;go('home')`):''}${btn(label,'advance()','primary')}</div>${steps()}</div>`;const row=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;const note=s=>`<p class="muted">${s}</p>`;const money=n=>n.toLocaleString()+' G';
+function go(id){screen=id;page=0;sub=0;render()}function advance(){if(pending.length){go('trade');return}if(phase===5){day++;phase=0;away=false}else phase++;go('home')}
+function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}
+function home(){if(phase===0)return report();if(phase===1)return purchase();if(phase===2)return warehouse(true);if(phase===3)return stocking();if(phase===4)return support(true);return sales()}
+function report(){return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+(sub?card(`<h2>第1パーティが帰還</h2><p>リナ・ブラン・ノアが帰還しました。</p><br>${row('周辺の森','攻略 24 / 60')}<progress value="24" max="60"></progress><br><br>${row('仲間の状態','全員活動可能')}${note('帰還・回復結果をここでまとめて確認。')}`):card(`<div class="ledger">${row('前日の売上','＋480 G')}${row('仕入れ','−300 G')}${row('支度金','−100 G')}${row('現金収支','＋80 G')}</div>`)+card('<h2>村の噂</h2>'+note('現行仕様：記録なし')))+`<div class="bottom">${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;render()','primary')}${sub?btn('収支に戻る','sub=0;render()','mini'):''}${steps()}</div>`}
+function purchase(){let total=counts.reduce((a,n,i)=>a+n*prices[i],0);return title('今日の仕入れ','02 / 06')+note('商人ごとに回数を選択。1回につき1品が入荷。')+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${prices[i]} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`)}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`)}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)+' 品',money(total)))+note('村人の動画報酬：現行では未実装')+`<div class="bottom">${btn('仕入れて入荷品を確認','buy()','primary')} ${btn('今日は仕入れない','phase=2;go("home")','mini')}${steps()}</div>`}
+function stocking(){return title('店舗の陳列','04 / 06')+`<div class="tabs">${btn('商品の補充','sub=0;render()',!sub?'active':'')}${btn('棚・設備の配置','sub=1;render()',sub?'active':'')}</div>`+(!sub?card(row('通常棚 A · 補充済み',shelf.length+' 点 / '+config.development.shelfCapacity+' 点'))+itemList(stock,'selected=INDEX;render()')+`<div class="actions">${btn('選んだ商品を補充','replenish()','primary')}${btn('1点を倉庫へ戻す','returnShelf()')}</div>`:card(`<h2>店舗レイアウト · 5 × 5</h2><div class="grid shelves">${Array.from({length:25},(_,i)=>`<button class="${[0,1,5,6,18,19].includes(i)?'filled':''}" onclick="info('設備の配置','通常棚・専用棚・設備を配置する領域です。現在はマス選択のみ確認できます。')">${[0,1,5,6].includes(i)?'棚':i===18?'台':''}</button>`).join('')}</div><br>${row('設備を選ぶ','通常棚 / 専用棚')}`))+note('棚と売れ残りは翌日も維持する設計。')+next('仲間の支援へ')}
+function support(routine=false){return title(routine?'仲間への支援':'冒険者',away?'遠征中':'活動可能')+`<div class="tabs">${['編成','装備','支度金',...(routine?['目的地']:[])].map((x,i)=>btn(x,`sub=${i};render()`,sub===i?'active':'')).join('')}</div>`+(sub===0?card(`<h2>第${party+1}パーティ · 3人枠</h2><div class="actions">${['リナ','ブラン','ノア'].map((n,i)=>btn('♙<br>'+n,`info('${n}','Lv.1 / HP 3 / 攻撃 3 / 防御 3。編成枠の選択と移動を置く領域です。')`)).join('')}</div><br>${btn('パーティを切替',`party=(party+1)%3;render()`,'mini')}`)+card('<h2>待機中の冒険者</h2>'+note('選択してパーティ枠へ配置。最大3パーティ。')):sub===1?card(`<h2>リナ · 装備</h2><div class="equipment">${['武器','盾','頭','体','装飾品'].map(x=>btn(x+'<b>未装備</b>',`info('${x}の候補','倉庫の対応する装備を選び、変更案を確定する画面を開きます。')`)).join('')}</div><br>${btn('支援を渡す',`info('装備の確定','装備の受け渡しは未実装です。')`,'primary')}`)+note('交換・取り外した旧装備は使用済みとして倉庫へ戻る。'):sub===2?card(`<h2>第${party+1}パーティの支度金</h2><div class="stat">${money(funds)}</div><br><div class="actions">${[10,100,1000].map(n=>btn('＋'+n,`if(funds+${n}<=gold)funds+=${n};render()`)).join('')}</div><br>${btn('用意した額を確認',`info('支度金','現在は予定額の表示のみです。支度金の確定処理は未実装です。')`)}<br>${note('派遣時に消費。パーティごとに管理。')}`):`<button class="map-node active" onclick="info('周辺の森','所要1日。参加者の装備・能力と危険度を確認して派遣します。')"><strong>周辺の森</strong><small>攻略 24 / 60 · 翌朝帰還</small><progress value="24" max="60"></progress></button><div class="divider">↓</div><div class="map-node"><strong>魔物の野営地</strong><small>森を攻略すると解放</small></div>${btn(away?'遠征中':'第'+(party+1)+'パーティを派遣',`away=true;render()`,'primary')}`)+(routine?next('今日のお店を開ける'):`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}${btn('経営に戻る',`go('home')`,'primary')}</div>`)}
+function residents(){return title('村の住人')+card('<h2>教会</h2>'+note('死亡した仲間の蘇生を依頼。1人100 G・翌日蘇生。')+'<br>'+row('現在の仲間','全員活動可能'))+card('<h2>大工</h2>'+note('倉庫・店舗の増築。現行では追加予定。'))+`<div class="bottom">${btn('経営に戻る',`go('home')`)}</div>`}
+function journal(){let days=['春 2日','春 1日'];return title('店主の日誌')+`<div class="page">${btn('‹','page=0;render()')}<b>${days[page]}</b>${btn('›','page=1;render()')}</div>`+card(`<div class="ledger">${row('商売','売上 480 G')}${row('仕入れ','300 G')}${row('仲間への支援','支度金 100 G')}${row('遠征','周辺の森へ出発')}${row('現金収支','＋80 G')}</div>`)+note('日付ごとに短い記録を表示。会話全文は重ねない。')+`<div class="bottom">${btn('経営に戻る',`go('home')`)}</div>`}
+function renderBase(){ $('#date').textContent=`1年 春${day}日 · ${phases[phase]}`;$('#gold').textContent=money(gold);$('#nav').innerHTML=navs.map(([id,icon,s])=>`<button class="${screen===id||id==='home'&&screen==='trade'?'active':''}" onclick="go('${id}')"><span>${icon}</span>${s}</button>`).join('');$('#view').innerHTML=({home,trade,catalog:catalogView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,journal,settings}[screen]||home)();$('#flow').innerHTML=phases.map((x,i)=>btn(String(i+1).padStart(2,'0')+'　'+x,`if(pending.length){go('trade')}else{phase=${i};go('home')}`,phase===i?'active':'')).join('');}
 
-// Remove a registration and its import to omit a screen; other screens keep working.
-const screens = mountScreens(document, game, [
-  ...(game.campaign ? ['home','purchase','support','journal','residents','adventurers'].map(id => ({ id, mount: mountCampaign })) : []),
-  { id: "settings", mount: () => ({ render() {}, destroy() {} }) },
-  { id: "warehouse", mount: mountWarehouse },
-  { id: "stocking", mount: mountStocking },
-]);
+// JSON-driven item definitions and current game screens.
+let catalog,config,definitions={},types={},uid=0,catalogFilter='',catalogQuery='',catalogSlot='',showPlanned=false,catalogItemId=null,catalogDetail=false,catalogOrigin='warehouse';
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function def(instance){return definitions[instance.itemId]}
+function type(instance){return types[def(instance).typeId]}
+function newItem(id){return{uid:++uid,itemId:id,typeId:definitions[id].typeId,x:null,y:null,rotation:0}}
+function itemName(instance){return def(instance).name}
+function itemMeta(instance){const d=def(instance),t=type(instance);return `${t.label} · ${t.width?`${t.width}×${t.height}`:'寸法未設定'} · ${catalog.elements[d.element]}`}
+function shape(d){const t=types[d.typeId];if(!t.width)return '<div class="shape-empty">寸法未設定</div>';return `<div class="shape" style="grid-template-columns:repeat(${t.width},10px)">${Array.from({length:t.width*t.height},()=>'<i></i>').join('')}</div>`}
+function storeItem(instance){const position=ItemCore.findSpace(instance,stock,types,config.warehouse);if(!position)return false;Object.assign(instance,position);stock.push(instance);return true}
+function reset(){day=2;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=0;away=false;selected=0;page=0;uid=0;for(const id of config.development.initialItemIds){if(!storeItem(newItem(id)))throw Error('初期在庫が倉庫に入りません')}go('home')};
+function itemList(items,fn){const size=config.ui.pageSize;page=Math.min(page,Math.max(0,Math.ceil(items.length/size)-1));return `<div class="list">${items.slice(page*size,page*size+size).map((item,i)=>`<button class="item ${selected===page*size+i?'active':''}" onclick="${fn.replaceAll('INDEX',page*size+i)}"><span><b>${esc(itemName(item))}</b><small class="block">${esc(itemMeta(item))}</small></span><span class="item-mini">${shape(def(item))}</span></button>`).join('')||note('商品はありません')}</div>`+pager(items.length,size)};
+function pager(length,size){const pages=Math.max(1,Math.ceil(length/size));return `<div class="page"><button class="mini" ${page===0?'disabled':''} onclick="page--;render()">‹</button><small>${page+1} / ${pages} ページ · ${length}件</small><button class="mini" ${page===pages-1?'disabled':''} onclick="page++;render()">›</button></div>`}
+function openCatalog(origin){catalogOrigin=origin;catalogDetail=false;page=0;screen='catalog';render()}
+function filteredItems(){return catalog.items.filter(d=>(showPlanned||d.status==='active')&&(!catalogSlot||(catalogSlot==='material'?types[d.typeId].slot===null:types[d.typeId].slot===catalogSlot))&&(!catalogFilter||d.typeId===catalogFilter)&&(!catalogQuery||d.name.includes(catalogQuery)))}
+function catalogView(){if(catalogDetail)return catalogItemView();const items=filteredItems();return title('アイテム設定一覧',`${catalog.items.length}種類`)+`<div class="catalog-filters"><select aria-label="装備枠" onchange="catalogSlot=this.value;catalogFilter='';page=0;render()"><option value="">すべての枠</option>${Object.entries({...catalog.slots,material:'鍛冶素材'}).map(([id,name])=>`<option value="${id}" ${catalogSlot===id?'selected':''}>${name}</option>`).join('')}</select><select aria-label="装備種類" onchange="catalogFilter=this.value;page=0;render()"><option value="">すべての種類</option>${catalog.types.filter(t=>!catalogSlot||(catalogSlot==='material'?t.slot===null:t.slot===catalogSlot)).map(t=>`<option value="${t.id}" ${catalogFilter===t.id?'selected':''}>${esc(t.label)}</option>`).join('')}</select></div><form class="actions" onsubmit="event.preventDefault();catalogQuery=this.elements.query.value.trim();page=0;render()"><input name="query" aria-label="アイテム名検索" placeholder="アイテム名を検索" value="${esc(catalogQuery)}"><button class="mini">検索</button></form><label class="muted"><input type="checkbox" ${showPlanned?'checked':''} onchange="showPlanned=this.checked;page=0;render()"> 将来候補2種を含める</label><div class="catalog-list">${items.slice(page*config.ui.pageSize,(page+1)*config.ui.pageSize).map(d=>`<button class="item" onclick="catalogItemId='${d.id}';catalogDetail=true;render()"><span><b>${esc(d.name)}</b><small class="block">${esc(types[d.typeId].label)} · ${catalog.elements[d.element]}${d.status==='planned'?' · 将来候補':''}</small></span>${shape(d)}</button>`).join('')||note('一致するアイテムはありません')}</div>${pager(items.length,config.ui.pageSize)}<div class="bottom">${note('未指定の価格・能力・耐久は未設定のまま保存。')}${btn('戻る',`go('${catalogOrigin}')`)}</div>`}
+function catalogItemView(){const d=definitions[catalogItemId],t=types[d.typeId];return title('アイテム詳細',d.status==='planned'?'将来候補':'登録済み')+card(`<div class="row"><div><h2>${esc(d.name)}</h2><small>${esc(t.label)}</small></div>${shape(d)}</div><div class="ledger">${row('装備枠',t.slot?catalog.slots[t.slot]:'装備不可')}${row('寸法（横×縦）',t.width?`${t.width} × ${t.height}`:'未設定')}${row('形状の指定',esc(t.shapeLabel||'未設定'))}${row('属性',catalog.elements[d.element])}${row('価格',d.price===null?'未設定':esc(d.price)+' G')}${row('能力',d.stats===null?'未設定':esc(JSON.stringify(d.stats)))}${row('耐久',d.durability===null?'未設定':esc(JSON.stringify(d.durability)))}</div>`)+(d.effect?card(`<h2>素材の用途</h2><p>${catalog.elements[d.effect.element]}属性付与</p>${note('付与量・費用・対象・消費ルールは未設定。')}`):'')+(t.id==='body_light'?note('配置は指定寸法2×3を使用。「正方形」は原文の形状表記。'):'')+note('ID: '+d.id)+`<div class="bottom">${btn('一覧へ戻る','catalogDetail=false;render()','primary')}</div>`}
+function warehouseCell(x,y){const hit=stock.find(item=>{const d=ItemCore.dimensions(item,types);return d&&x>=item.x&&x<item.x+d.width&&y>=item.y&&y<item.y+d.height});if(hit){const index=stock.indexOf(hit);if(selected===index){rotateSelected();return}selected=index;render();return}const item=stock[selected];if(!item)return;const position=ItemCore.findNearby(item,x,y,item.rotation,stock,types,config.warehouse);if(!position)return;Object.assign(item,position);render()}
+function rotateSelected(){const item=stock[selected];if(!item)return;const rotation=(item.rotation+1)%2;const position=ItemCore.findNearby(item,item.x,item.y,rotation,stock,types,config.warehouse,true);if(!position)return;Object.assign(item,position);render()}
+function warehouseWorkspace(routine=false){selected=Math.min(selected,Math.max(0,stock.length-1));const item=stock[selected],board=config.warehouse,used=stock.reduce((a,i)=>{const d=ItemCore.dimensions(i,types);return a+d.width*d.height},0);let grid=`<div class="grid real-board" style="grid-template-columns:repeat(${board.width},1fr);--board-rows:${board.height}">`;for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++){const index=stock.findIndex(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});grid+=`<button class="${index>=0?'filled':''} ${index===selected?'selected':''}" data-x="${x}" data-y="${y}" onclick="warehouseCell(${x},${y})" aria-label="${x+1}列${y+1}行 ${index>=0?esc(itemName(stock[index])):'空き'}">${index>=0?index+1:''}</button>`}grid+='</div>';return title('倉庫',`${used}/${board.width*board.height}マス`)+`<div class="tabs">${btn('配置','sub=0;render()',sub===0?'active':'')}${btn('商品一覧','sub=1;render()',sub===1?'active':'')}${btn('種類一覧',`openCatalog('warehouse')`)}</div>`+(sub?itemList(stock,'selected=INDEX;render()'):grid)+card(`<div class="row"><div><h2>${item?esc(itemName(item)):'商品なし'}</h2><small>${item?esc(itemMeta(item)):'入荷した商品を収納してください。'}</small></div>${btn('↻ 回転','rotateSelected()','mini')}</div>`)+note('クリックで選択／選択中は回転／長押しでドラッグ。')+(routine?next('陳列へ'):`<div class="bottom">${btn(pending.length?'取引へ戻る':'経営に戻る',`go('${pending.length?'trade':'home'}')`,'primary')}</div>`)};
+function buy(){if(pending.length){phase=2;go('trade');return}const total=counts.reduce((a,n,i)=>a+n*prices[i],0);if(!total)return info('回数を選択','商人の＋で回数を選んでください。');if(total>gold)return info('所持金不足','仕入れ回数を減らしてください。');const pools=[['weapon'],['offhand','head','body'],['accessory']].map(slots=>catalog.items.filter(d=>d.status==='active'&&slots.includes(types[d.typeId].slot)));pending=counts.flatMap((n,i)=>Array.from({length:n},()=>newItem(pools[i][Math.floor(Math.random()*pools[i].length)].id)));gold-=total;counts=[0,0,0];phase=2;go('trade')};
+function receive(){if(!pending.length)return;if(!storeItem(pending[0]))return info('倉庫に入りません','倉庫を整理するか、商人へ引き取ってもらってください。');selected=stock.length-1;pending.shift();render()}
+function replenish(){if(!stock.length||shelf.length>=config.development.shelfCapacity)return info('補充できません','在庫と棚の空きを確認してください。');shelf.push(stock.splice(selected,1)[0]);selected=0;page=0;render()};
+function returnShelf(){if(!shelf.length)return;if(!storeItem(shelf[shelf.length-1]))return info('倉庫に入りません','倉庫を整理してください。');shelf.pop();render()}
+function sales(){return title('本日の営業','06 / 06')+card('<h2>旅の冒険者が来店</h2><p>「今日は何が並んでいるんだい？」</p>')+card(`<h2>購入結果</h2>${shelf.length?row(esc(itemName(shelf[0])),money(config.development.salePrice)):note('陳列がないため販売なし。')}`)+note('価格は開発中の仮設定。正式価格は未設定。')+`<div class="hero-placeholder">販売した品は翌日への操作で棚から除去</div><div class="bottom">${btn('翌日へ · 朝の報告',`if(shelf.length){gold+=config.development.salePrice;shelf.shift()}advance()`,'primary')}${steps()}</div>`};
 
-applyTranslations(document, i18n);
-function renderHeader() {
-  if (!game.campaign) return;
-  const value = calendarDate(game.state.campaign.day, game.campaign.config.daysPerSeason);
-  document.querySelector('#game-date').textContent = i18n.t('mvp.date', { ...value, season: i18n.t(`mvp.season.${value.season}`) });
-  document.querySelector('#game-gold').textContent = i18n.t('money.amount', { amount: game.state.campaign.gold.toLocaleString(i18n.getLocale()) });
-}
-renderHeader();
-const unsubscribeHeader = game.subscribe(renderHeader);
-const saveControls = mountSaveControls(document.querySelector('#save-controls'), game, skin, loadFailed, document.querySelector('#save-notice'));
-const localeControls = mountLocaleControls(document.querySelector('#locale-select'), game);
-const unsubscribeLocale = i18n.onLocaleChange(() => {
-  applyTranslations(document, i18n);
-  screens.render();
-  renderHeader();
-});
+function downloadConfig(kind){const data=kind==='items'?catalog:config;const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=kind==='items'?'item-catalog.json':'game-settings.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function settings(){return title('設定')+card(`<h2>表示スキン</h2><div class="actions">${[['','標準'],['paper','紙'],['night','夜']].map(([id,s])=>btn(s,`document.documentElement.dataset.skin='${id}';render()`)).join('')}</div>`)+card(`<h2>アイテム設定 · ${catalog.items.length}種類</h2>${btn('設定されたアイテムを確認',`openCatalog('settings')`)}<br>${note('JSONを編集して再読み込みすると反映されます。')}`)+card(`<h2>設定JSONの書き出し</h2><div class="actions">${btn('アイテム定義',`downloadConfig('items')`)}${btn('確認用設定',`downloadConfig('settings')`)}</div>`)+note('価格・能力・耐久は未設定。素材寸法と複合属性は未確定。')+`<div class="bottom">${btn('経営に戻る',`go('home')`,'primary')}</div>`};
+function render(){renderBase()}
+async function loadItemSettings(){try{const responses=await Promise.all(['data/item-catalog.json','data/game-settings.json'].map(path=>fetch(path,{cache:'no-store'})));if(responses.some(r=>!r.ok))throw Error('設定ファイルが読み込めません');[catalog,config]=await Promise.all(responses.map(r=>r.json()));ItemCore.validate(catalog,config);types=Object.fromEntries(catalog.types.map(t=>[t.id,t]));definitions=Object.fromEntries(catalog.items.map(d=>[d.id,d]));prices.splice(0,prices.length,...config.development.merchantCosts);reset()}catch(error){$('#view').innerHTML=title('設定の読み込みエラー')+note(esc(error.message))+note('HTTPプレビューから開いてください。JSONを修正した場合は構文とIDを確認してください。')+btn('再読み込み','location.reload()')}}
 
-window.addEventListener("pagehide", (event) => {
-  // A back-forward-cache entry resumes with its existing listeners intact.
-  if (event.persisted) return;
-  unsubscribeLocale();
-  unsubscribeHeader();
-  localeControls.destroy();
-  saveControls.destroy();
-  screens.destroy();
-});
+// Procurement results and warehouse organisation share one workspace.
+function intakePanel(){const item=pending[0];return `<section class="card intake"><div class="row"><h2>仕入れ結果 · 残り${pending.length}品</h2>${item?`<small>${esc(type(item).width)}×${esc(type(item).height)} · ${catalog.elements[def(item).element]}</small>`:''}</div>${item?`<div class="row"><b class="incoming-draggable" data-drag-incoming="true" title="倉庫へドラッグ">↕ ${esc(itemName(item))}</b><div class="actions">${btn('収納','receive()','primary mini')}${btn('引取 '+money(config.development.buybackPrice),'pending.shift();gold+=config.development.buybackPrice;render()','mini')}</div></div>`:note('入荷品の振り分け完了。倉庫の配置を調整できます。')}</section>`}
+function combinedWarehouse(routine=true){let content=warehouseWorkspace(routine);content=content.replace(title('倉庫',`${stock.reduce((a,i)=>{const d=ItemCore.dimensions(i,types);return a+d.width*d.height},0)}/${config.warehouse.width*config.warehouse.height}マス`),title('仕入れ結果・倉庫整理',`${stock.length}点を保管`));content=content.replace('<div class="tabs">',intakePanel()+'<div class="tabs">');if(pending.length)content=content.replace('onclick="advance()"','disabled onclick="advance()"');return content}
+function trade(){return combinedWarehouse(true)};
+function warehouse(routine=false){return (pending.length||routine&&phase===2)?combinedWarehouse(true):warehouseWorkspace(routine)};
+
+// Pointer-based drag and drop supports touch and mouse with the same rules.
+(function installWarehouseDrag(){
+ const root=document.querySelector('#view');
+ let drag=null,suppressClickUntil=0;
+ function clearPreview(){root.querySelectorAll('.drop-preview').forEach(cell=>cell.classList.remove('drop-preview'));}
+ function cleanup(){if(!drag)return;const pointer=drag.pointerId;clearTimeout(drag.holdTimer);drag.ghost?.remove();clearPreview();drag=null;root.classList.remove('dragging');if(root.hasPointerCapture?.(pointer))root.releasePointerCapture(pointer);}
+ function targetAt(event){
+  const board=root.querySelector('.real-board');if(!board)return null;
+  const bounds=board.getBoundingClientRect();
+  if(event.clientX<bounds.left||event.clientX>=bounds.right||event.clientY<bounds.top||event.clientY>=bounds.bottom)return null;
+  const cells=board.querySelectorAll('button'),first=cells[0].getBoundingClientRect();
+  const stepX=config.warehouse.width>1?cells[1].getBoundingClientRect().left-first.left:first.width;
+  const stepY=config.warehouse.height>1?cells[config.warehouse.width].getBoundingClientRect().top-first.top:first.height;
+  const x=Math.floor((event.clientX-first.left)/stepX)-drag.offsetX;
+  const y=Math.floor((event.clientY-first.top)/stepY)-drag.offsetY;
+  return ItemCore.findNearby(drag.item,x,y,drag.item.rotation,stock,types,config.warehouse);
+ }
+ function update(event){
+  clearPreview();drag.position=targetAt(event);
+  drag.ghost.style.left=event.clientX+12+'px';drag.ghost.style.top=event.clientY+12+'px';
+  drag.ghost.classList.toggle('invalid',!drag.position);
+  if(!drag.position)return;
+  const d=ItemCore.dimensions(drag.item,types),p=drag.position;
+  root.querySelectorAll('.real-board button').forEach(cell=>{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);if(x>=p.x&&x<p.x+d.width&&y>=p.y&&y<p.y+d.height)cell.classList.add('drop-preview');});
+ }
+ root.addEventListener('pointerdown',event=>{
+  if(event.isPrimary===false||event.button!==0||drag)return;
+  const incoming=event.target.closest('[data-drag-incoming]');
+  const cell=event.target.closest('.real-board button');
+  if(!incoming&&!cell)return;
+  let item,offsetX=0,offsetY=0;
+  if(incoming)item=pending[0];
+  else{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);item=stock.find(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});if(item){offsetX=x-item.x;offsetY=y-item.y;}}
+  if(!item)return;
+  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,ghost:null,holdTimer:null};
+  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');drag.ghost=document.createElement('div');drag.ghost.className='drag-ghost';drag.ghost.textContent=itemName(drag.item);document.body.append(drag.ghost);update(event);},100);
+ });
+ root.addEventListener('pointermove',event=>{
+  if(!drag||event.pointerId!==drag.pointerId)return;
+  if(!drag.active){if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>6){suppressClickUntil=Date.now()+1000;cleanup();}return;}
+  event.preventDefault();update(event);
+ });
+ root.addEventListener('pointerup',event=>{
+  if(!drag||event.pointerId!==drag.pointerId)return;
+  if(!drag.active){cleanup();return;}
+  event.preventDefault();update(event);
+  const {item,position,incoming}=drag;suppressClickUntil=Date.now()+400;
+  cleanup();
+  if(position){Object.assign(item,position);if(incoming){if(pending[0]!==item)return;pending.shift();stock.push(item);}selected=stock.indexOf(item);}
+  render();
+ });
+ root.addEventListener('click',event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);
+ root.addEventListener('pointercancel',()=>{if(drag?.active)suppressClickUntil=Date.now()+400;cleanup();});
+ root.addEventListener('lostpointercapture',cleanup);
+ window.addEventListener('blur',cleanup);
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){suppressClickUntil=Date.now()+400;cleanup();}});
+})();
+
+loadItemSettings();

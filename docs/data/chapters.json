@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "planned",
+  "status": "partial",
   "regions": {
     "central": {
       "nameKey": "regions.central.name"
@@ -351,5 +351,16 @@
       "nextChapterId": null,
       "carryover": null
     }
-  ]
+  ],
+  "releaseProfiles": {
+    "mvp": [
+      "prologue"
+    ],
+    "product": [
+      "prologue",
+      "chapter_1",
+      "chapter_2"
+    ]
+  },
+  "activeRelease": "mvp"
 }

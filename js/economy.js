@@ -38,6 +38,11 @@ function validateEconomySave(s,fail){
  const e=s.economyState,int=(n,min=0)=>Number.isSafeInteger(n)&&n>=min;
  if(e.version!==1||!int(e.shelfCount,1)||!e.companions||typeof e.companions!=='object'||Array.isArray(e.companions))fail();
  for(const [id,c] of Object.entries(e.companions))if(!characters.some(x=>x.id===id)||!c||typeof c!=='object'||(c.dead!==undefined&&typeof c.dead!=='boolean')||(c.level!==undefined&&!int(c.level,1))||(c.recoveryDay!==undefined&&!int(c.recoveryDay,1)))fail();
+ for(const [id,c] of Object.entries(e.companions)){
+  if(c.experience!==undefined&&!int(c.experience))fail();
+  if(c.growthPolicy!==undefined&&!Object.hasOwn(config.adventurers.growth.policies,c.growthPolicy))fail();
+  if(c.growth!==undefined){if(!c.growth||typeof c.growth!=='object'||Array.isArray(c.growth)||Object.keys(c.growth).length!==3||!['attack','defense','hp'].every(k=>int(c.growth[k]))||!Number.isSafeInteger(c.growth.attack+c.growth.defense+c.growth.hp)||(c.growth.attack+c.growth.defense+c.growth.hp)%3!==0)fail();const initial=characters.find(x=>x.id===id);if(c.growth.attack+c.growth.defense+c.growth.hp>3*Math.max(0,(c.level??initial.initialLevel)-initial.initialLevel)||!['attack','defense','hp'].every(k=>Number.isSafeInteger(initial.initialStats[k]+c.growth[k])))fail()}
+ }
  const b=e.bill;
  if(b!==null){if(!b||!int(b.day,1)||b.day!==s.day-1||!economyConfig.chapters[b.chapterId]||!['paid','unpaid'].includes(b.status)||!['shelfCount','companionCount','shop','companions','tax','total'].every(k=>int(b[k]))||b.shelfCount<1||b.total!==b.shop+b.companions+b.tax)fail()}
 }

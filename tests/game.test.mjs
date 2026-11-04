@@ -33,10 +33,11 @@ async function game(saved=null){
   fetch:async path=>({ok:true,json:async()=>JSON.parse(read(path))}),
   setTimeout:(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;},clearTimeout:id=>timers.delete(id)
  });
+ vm.runInContext('Math.random=()=>0.99',context);
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/balance.js','js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/balance.js','js/adventurer-core.js','js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -493,4 +494,163 @@ test('balance registry rejects invalid overrides and preserves defaults',()=>{
  for(const overrides of [{'unknown':1},{'game.development.initialGold':-1},{'runtime.itemsPerPurchase':1.5},{'trading.chapters.prologue.visitors.min':10},{'game.development.salePrice':0},{'runtime.minimumPriceRatio':2}])assert.throws(()=>registry.validate({version:1,overrides}));
  assert.equal(registry.validate({version:1,overrides:{'runtime.expeditionWear':3}}).runtime.expeditionWear,3);
  const balance=vm.runInContext('Balance',context);assert.equal(balance.enabled({hostname:'example.com',search:'?dev=balance'}),false);assert.equal(balance.enabled({hostname:'localhost',search:''}),false);assert.equal(balance.enabled({hostname:'localhost',search:'?dev=balance'}),true);
+});
+
+test('dungeon progress uses all members, equipment attributes and persists once on return',async()=>{
+ const g=await game();
+ g.run("phase=4;screen='home';depart()");
+ assert.equal(g.run('expeditions[0].power.attack'),7);
+ assert.equal(g.run('expeditions[0].power.bonus'),0);
+ const restored=await game(JSON.parse(g.run('JSON.stringify(snapshot())')));
+ restored.run('phase=5;finishDay()');
+ assert.equal(restored.run('dungeonProgress.forest'),7);
+ restored.run('resolveExpeditions()');
+ assert.equal(restored.run('dungeonProgress.forest'),7);
+ restored.run("dungeonProgress.forest=59;phase=4;screen='home';depart();phase=5;finishDay()");
+ assert.equal(restored.run('dungeonProgress.forest'),60);
+ assert.equal(restored.run("dungeonAvailable(config.dungeons[1])"),true);
+ assert.match(restored.run("returnReport.join(' ')"),/クリア/);
+ restored.run("definitions.one_hand_sword_03.attributes={fire:3};gear('kyle').weapon=newItem('one_hand_sword_03')");
+ assert.equal(restored.run("expeditionPower(['kyle','gares','mira'],config.dungeons[0]).bonus"),3);
+ assert.equal(restored.run("expeditionPower(['kyle','gares','mira'],config.dungeons[1]).bonus"),0);
+});
+
+test('locked destination cannot consume funding; legacy trips remain durability-only',async()=>{
+ const g=await game();
+ g.run("phase=4;screen='home';selectedDungeon='camp';funds[0]=100;depart()");
+ assert.equal(g.run('expeditions.length'),0);assert.equal(g.run('funds[0]'),100);
+ const old=JSON.parse(g.run('JSON.stringify(snapshot())'));delete old.dungeonProgress;
+ old.expeditions=[{party:0,members:['kyle'],returnDay:old.day+1}];
+ const restored=await game(old);restored.run('phase=5;finishDay()');
+ assert.equal(restored.run('Object.keys(dungeonProgress).length'),0);
+ assert.throws(()=>g.run("validateSave({...snapshot(),dungeonProgress:{forest:-1}})"));
+ assert.throws(()=>g.run("validateSave({...snapshot(),expeditions:[{party:0,members:['kyle'],returnDay:day+1,dungeonId:'forest',power:{attack:-1,bonus:0}}]})"));
+});
+
+test('village dungeon thresholds take 29 expeditions without level-ups or equipment bonuses',async()=>{
+ const g=await game();let trips=0;
+ g.run('Math.random=()=>0.99;config.adventurers.growth.experience.baseRequired=100000');
+ for(const d of settings.dungeons){
+  while(!g.run(`dungeonCleared('${d.id}')`)){
+   g.run(`phase=4;screen='home';selectedDungeon='${d.id}';depart();day++;resolveExpeditions()`);
+   if(++trips>40)throw Error('Village progress stalled');
+  }
+ }
+ assert.equal(trips,29);
+});
+
+test('expedition risks improve with defense and HP; tutorial limits death; outcome boundaries are exact',async()=>{
+ const g=await game(),risk=stats=>JSON.parse(g.run(`JSON.stringify(AdventurerCore.risks(${JSON.stringify(stats)},5,config.adventurers.risk,false))`));
+ const base=risk({hp:3,defense:2}),defended=risk({hp:3,defense:10}),healthy=risk({hp:20,defense:2});
+ assert(defended.injury<base.injury);assert(defended.death<base.death);
+ assert(healthy.severe<base.severe);assert(healthy.death<base.death);assert(healthy.severeDays<base.severeDays);
+ assert(g.run('AdventurerCore.risks({hp:3,defense:2},5,config.adventurers.risk,true).death')<=settings.adventurers.risk.tutorialDeathCap);
+ const status=n=>g.run(`AdventurerCore.outcome(${JSON.stringify(base)},()=>${n}).status`);
+ assert.equal(status(0),'dead');assert.equal(status(base.death),'severe');assert.equal(status(base.death+base.severe),'injured');assert.equal(status(base.death+base.injury),'healthy');
+ assert.equal(g.run('AdventurerCore.risks({hp:3,defense:2},0,config.adventurers.risk,true).injury'),0);
+});
+
+test('individual injury and death persist from departure, return once and connect to treatment',async()=>{
+ const g=await game();
+ g.run(`phase=4;screen='home';let rolls=[0,0.001,0.01];Math.random=()=>rolls.shift()??0.99;depart()`);
+ assert.equal(g.run('expeditions[0].health.kyle.status'),'dead');
+ assert.equal(g.run('expeditions[0].health.gares.status'),'severe');
+ assert.equal(g.run('expeditions[0].health.mira.status'),'injured');
+ const saved=JSON.parse(g.run('JSON.stringify(snapshot())')),restored=await game(saved);
+ assert.equal(restored.run('JSON.stringify(expeditions[0].health)'),JSON.stringify(saved.expeditions[0].health));
+ restored.run('phase=5;finishDay()');
+ assert.equal(restored.run("companionStatus('kyle')"),'dead');assert.equal(restored.run("companionStatus('gares')"),'recovering');
+ const recovery=restored.run('economyState.companions.gares.recoveryDay');
+ assert.match(restored.run("returnReport.join(' ')"),/死亡.*重傷.*負傷/);
+ restored.run('resolveExpeditions()');assert.equal(restored.run('economyState.companions.gares.recoveryDay'),recovery);
+ const before=restored.run('gold');restored.run("healCompanion('gares')");assert.equal(restored.run('gold'),before-200);assert.equal(restored.run("companionStatus('gares')"),'waiting');
+ restored.run('day=10;recoverCompanions()');assert.equal(restored.run("companionStatus('mira')"),'waiting');assert.equal(restored.run("companionStatus('kyle')"),'dead');
+ restored.run("parties[0]=['kyle','gares','mira'];phase=4;depart()");assert.equal(restored.run("expeditions[0].members.includes('kyle')"),false);
+});
+
+test('job restrictions apply to manual and automatic equipment; legacy equipment remains removable',async()=>{
+ const g=await game();g.run("equipCharacter='kyle';equipmentSlot='weapon';changeEquipment(5)");
+ assert.equal(g.run("gear('kyle').weapon??null"),null);assert(g.run('stock.some(i=>i.uid===5)'));
+ g.run("equipCharacter='mira';changeEquipment(5)");assert.equal(g.run("gear('mira').weapon.uid"),5);
+ g.run("equipCharacter='kyle';autoEquip={kyle:{body:true}};brokenTargets={kyle:{body:'body_heavy_02'}};prepareEquipment(['kyle'])");
+ assert.equal(g.run("gear('kyle').body??null"),null);
+ // Preserve existing unsupported equipment through save migration; allow its return to inventory.
+ g.run("stock=stock.filter(i=>i.uid!==3);gear('kyle').body={...newItem('body_heavy_02'),x:null,y:null};equipmentSlot='body'");
+ const old=JSON.parse(g.run('JSON.stringify(snapshot())')),restored=await game(old);
+ assert(restored.run("gear('kyle').body"));restored.run("equipCharacter='kyle';equipmentSlot='body';changeEquipment()");assert.equal(restored.run("gear('kyle').body"),null);
+});
+
+test('invalid health saves and risk settings are rejected atomically',async()=>{
+ const g=await game();g.run("phase=4;screen='home';depart();globalThis.valid=JSON.stringify(snapshot())");
+ for(const mutation of ["s.expeditions[0].health.kyle.status='unknown'","s.expeditions[0].health.kyle.recoveryDays=1","delete s.expeditions[0].health.mira","s.expeditions[0].health=[]"]){
+  g.run('globalThis.s=JSON.parse(valid)');g.run(mutation);assert.throws(()=>g.run('applySave(s)'));assert.equal(g.run('JSON.stringify(snapshot())'),g.run('valid'));
+ }
+ g.run('config.adventurers.risk.injuryRate=2');assert.throws(()=>g.run('validateAdventurerConfig()'));
+});
+
+test('each growth policy distributes exactly three points and policy changes preserve previous gains',async()=>{
+ for(const [policy,expected] of Object.entries(settings.adventurers.growth.policies)){
+  const g=await game();g.run(`equipCharacter='kyle';setGrowthPolicy('${policy}');grantExpeditionExperience(['kyle'],45)`);
+  assert.equal(g.run("companionLevel('kyle')"),2);
+  for(const stat of ['attack','defense','hp'])assert.equal(g.run(`economyState.companions.kyle.growth.${stat}`),expected[stat]);
+ }
+ const g=await game();g.run("equipCharacter='kyle';grantExpeditionExperience(['kyle'],45);globalThis.before=JSON.stringify(companionStats('kyle'));setGrowthPolicy('attack')");
+ assert.equal(g.run("JSON.stringify(companionStats('kyle'))"),g.run('before'));
+ g.run("grantExpeditionExperience(['kyle'],90)");
+ assert.equal(g.run("companionLevel('kyle')"),3);
+ assert.equal(g.run('JSON.stringify(economyState.companions.kyle.growth)'),JSON.stringify({attack:3,defense:1,hp:2}));
+ assert.equal(g.run('growthPolicy("gares")'),'balanced');
+});
+
+test('expedition XP divides actual progress among participants and floors the share',async()=>{
+ for(const [members,power,expected] of [[['kyle','gares','mira'],120,40],[['kyle','gares','mira'],7,2],[['kyle','gares'],7,3],[['kyle'],7,7]]){
+  const g=await game();g.run(`config.dungeons[0].requiredProgress=1000;parties[0]=${JSON.stringify(members)};phase=4;screen='home';depart();expeditions[0].power.attack=${power};day++;resolveExpeditions()`);
+  for(const id of members)assert.equal(g.run(`economyState.companions.${id}.experience`),expected);
+  if(!members.includes('mira'))assert.equal(g.run('economyState.companions.mira?.experience??0'),0);
+  const saved=g.run('JSON.stringify(economyState.companions)');g.run('resolveExpeditions()');assert.equal(g.run('JSON.stringify(economyState.companions)'),saved);
+ }
+ const g=await game();g.run("dungeonProgress.forest=59;phase=4;screen='home';depart();day++;resolveExpeditions()");
+ assert.equal(g.run('dungeonProgress.forest'),60);
+ for(const id of ['kyle','gares','mira'])assert.equal(g.run(`economyState.companions.${id}.experience`),0);
+ g.run("phase=4;depart();day++;resolveExpeditions()");
+ assert.equal(g.run('economyState.companions.kyle.experience'),0);
+});
+
+test('level-ups carry leftover XP, handle multiple levels, update combat stats and current-level treatment',async()=>{
+ const g=await game();g.run("equipCharacter='kyle';setGrowthPolicy('attack');grantExpeditionExperience(['kyle'],280)");
+ assert.equal(g.run("companionLevel('kyle')"),4);assert.equal(g.run('economyState.companions.kyle.experience'),10);
+ assert.equal(g.run('JSON.stringify(economyState.companions.kyle.growth)'),JSON.stringify({attack:6,defense:0,hp:3}));
+ assert.equal(g.run("expeditionPower(['kyle','gares','mira'],config.dungeons[0]).attack"),13);
+ assert.equal(g.run("companionStats('kyle').hp"),6);assert.equal(g.run("characters.find(c=>c.id==='kyle').initialStats.hp"),3);
+ g.run("openCharacterEquipment('kyle');selectCharacterPanel('growth')");assert(g.view.innerHTML.includes('Lv.4'));assert(g.view.innerHTML.includes('10 / 180'));
+ g.run("gold=2000;economyState.companions.kyle.recoveryDay=day+2;healCompanion('kyle')");assert.equal(g.run('gold'),1200);
+ g.run("document.querySelector('#modal').showModal=()=>{};characterInfo('kyle')");assert.match(g.elements['#modalBody'].textContent,/Lv.4 \/ HP 6 \/ 攻撃 10 \/ 防御 2/);
+});
+
+test('growth policies, XP and gains round-trip; legacy levels do not retroactively add growth',async()=>{
+ const g=await game();g.run("equipCharacter='mira';setGrowthPolicy('defense');grantExpeditionExperience(['mira'],50);render()");
+ const saved=JSON.parse(g.storage.get('shop-game-save')),restored=await game(saved);
+ assert.equal(restored.run("growthPolicy('mira')"),'defense');assert.equal(restored.run('economyState.companions.mira.experience'),5);
+ assert.equal(restored.run("companionStats('mira').defense"),5);
+ restored.run('globalThis.s=JSON.parse(JSON.stringify(snapshot()));s.economyState.companions.kyle={level:3};applySave(s)');
+ assert.equal(restored.run("companionStats('kyle').attack"),4);assert.equal(restored.run("growthPolicy('kyle')"),'balanced');
+ restored.run("grantExpeditionExperience(['kyle'],135)");assert.equal(restored.run("companionLevel('kyle')"),4);assert.equal(restored.run("companionStats('kyle').attack"),5);
+ const legacy=await game();legacy.run("phase=4;screen='home';depart();delete expeditions[0].dungeonId;delete expeditions[0].power;delete expeditions[0].health;day++;resolveExpeditions()");
+ assert.equal(legacy.run('Object.keys(economyState.companions).length'),0);
+});
+
+test('policy at level-up applies during an expedition, while departure power and risk stay fixed',async()=>{
+ const g=await game();g.run("economyState.companions.kyle={experience:44};phase=4;screen='home';depart();globalThis.trip=JSON.stringify(expeditions[0]);openCharacterEquipment('kyle');selectCharacterPanel('growth');setGrowthPolicy('hp')");
+ assert.equal(g.run('JSON.stringify(expeditions[0])'),g.run('trip'));
+ g.run('day++;resolveExpeditions()');assert.equal(g.run('JSON.stringify(economyState.companions.kyle.growth)'),JSON.stringify({attack:0,defense:1,hp:2}));
+ assert.equal(g.run('economyState.companions.kyle.experience'),1);
+});
+
+test('invalid growth imports and allocations reject atomically',async()=>{
+ const g=await game();g.run("globalThis.original=JSON.stringify(snapshot())");
+ for(const value of [{growthPolicy:'bad'},{experience:-1},{experience:1.5},{growth:{attack:0,defense:0,hp:1}},{growth:{attack:1,defense:1,hp:1}},{growth:[]}]){
+  g.run(`globalThis.bad=JSON.parse(original);bad.economyState.companions.kyle=${JSON.stringify(value)}`);assert.throws(()=>g.run('applySave(bad)'));assert.equal(g.run('JSON.stringify(snapshot())'),g.run('original'));
+ }
+ g.run("equipCharacter='kyle';setGrowthPolicy('invalid')");assert.equal(g.run('growthPolicy("kyle")'),'balanced');
+ g.run('config.adventurers.growth.policies.balanced.attack=2');assert.throws(()=>g.run('validateAdventurerConfig()'));
 });

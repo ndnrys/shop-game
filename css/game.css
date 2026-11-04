@@ -34,3 +34,7 @@
 @media(max-height:600px){.catalog-list .item-art{height:32px;width:36px}.item-art{height:40px;width:40px}}
 
 .gear-item-art .item-art{width:28px;height:28px}
+
+/* Growth is a separate character panel, sized for touch without scrolling. */
+.character-view-actions{align-items:center;flex:none;gap:8px}.character-view-actions .mini,.character-view-actions .gear-close{min-height:44px;min-width:44px}.character-view-actions .gear-close{flex:none}
+.growth-policies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.growth-policies button{text-align:left;min-height:72px;padding:10px 8px}.growth-policies b,.growth-policies small{display:block}.growth-policies small{font-size:10px;line-height:1.6;margin-top:5px}

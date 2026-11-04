@@ -8,12 +8,26 @@ const failures=[],results=[];
 function check(name){const d=frame.contentDocument,view=d.querySelector('#view'),nav=d.querySelector('nav'),r=view.getBoundingClientRect(),n=nav.getBoundingClientRect();const children=[...view.children,...view.querySelectorAll('.character-equipment *')].filter(e=>e.getBoundingClientRect().height);let bad=children.some(e=>{const b=e.getBoundingClientRect();return b.bottom>n.top+1||b.right>width+1||b.left<0});if(d.documentElement.scrollWidth>width||view.scrollHeight>view.clientHeight+1||bad)failures.push(name+' overflow '+children.map(e=>e.tagName+':'+Math.round(e.getBoundingClientRect().bottom-n.top)).join(','));results.push(name)}
 frame.onload=async()=>{try{
  const w=frame.contentWindow;while(!w.document.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
- const run=code=>w.eval(code);run('reset()');
+ const run=code=>w.eval(code);run('reset();Math.random=()=>0.99');
  for(const [name,code] of [['装備',"screen='adventurers';sub=0;openCharacterEquipment('kyle')"],['倉庫',"screen='warehouse';sub=0;render()"],['倉庫一覧',"sub=1;render()"],['入荷',"pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()"],['入荷一覧',"sub=1;render()"],['設定',"screen='settings';render()"],['支援編成',"pending=[];phase=4;screen='home';sub=0;render()"],['支援装備',"openCharacterEquipment('mira')"],['目的地',"closeCharacterEquipment();sub=2;render()"]]){run(code);check(name)}
+ run("screen='adventurers';openCharacterEquipment('kyle');selectCharacterPanel('growth')");check('育成方針');
+ for(const policy of ['balanced','attack','defense','hp']){
+  const button=frame.contentDocument.querySelector(`[onclick="setGrowthPolicy('${policy}')"]`);
+  if(!button)throw Error('育成ボタンなし '+policy);
+  const r=button.getBoundingClientRect();if(r.height<44||r.width<44)failures.push('育成ボタンが小さい '+policy);
+  button.click();if(run("growthPolicy('kyle')")!==policy)failures.push('育成切替 '+policy);
+ }
+ run("grantExpeditionExperience(['kyle'],280);render()");check('育成後の能力');
+ run("moveEquipmentCharacter(1)");check('別の仲間の育成');
+ run("selectCharacterPanel('equipment')");check('育成から装備');
+ run("reset();phase=4;screen='home';sub=0;render()");
+ run("economyState.companions.kyle={recoveryDay:day+2};sub=0;render()");check('療養中編成');
+ run("economyState.companions.kyle={dead:true};openCharacterEquipment('kyle')");check('死亡装備');
+ run("closeCharacterEquipment();economyState.companions={}");
  run("equipCharacter='kyle';equipmentSlot='weapon';changeEquipment(1);autoEquip={kyle:{weapon:true}};gear('kyle').weapon.durability=1;sub=2;depart();phase=5;finishDay();sub=1;render()");check('帰還報告');run("returnReport=Array.from({length:48},()=> 'カイル：紅玉の指輪が破損');render()");check('大量破損報告');
  if(run('gear("kyle").weapon!==null||expeditions.length!==0'))failures.push('帰還処理');
  run("screen='adventurers';sub=0;openCharacterEquipment('kyle')");check('破損後装備');
- if(params.get('scene')==='support')run("screen='home';phase=4;sub=0;render()");if(params.get('scene')==='intake')run("pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()");
+ if(params.get('scene')==='growth')run("screen='adventurers';openCharacterEquipment('kyle');selectCharacterPanel('growth')");if(params.get('scene')==='support')run("screen='home';phase=4;sub=0;render()");if(params.get('scene')==='intake')run("pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()");
  document.querySelector('#status').textContent=(failures.length?'FAIL':'PASS')+' '+width+'×'+height+' '+results.length+' views\n'+failures.join('\n');
  }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{restoreStorage()}}
 </script>

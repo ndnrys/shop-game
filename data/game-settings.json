@@ -78,5 +78,164 @@
     "resetTimeZone": "UTC",
     "resetHour": 0,
     "rewardPool": "all"
+  },
+  "dungeons": [
+    {
+      "id": "forest",
+      "name": "周辺の森",
+      "chapter": 0,
+      "requiredProgress": 60,
+      "danger": 3,
+      "requires": [],
+      "recommendedAttributes": {
+        "fire": 1
+      },
+      "attributeBonus": 1
+    },
+    {
+      "id": "camp",
+      "name": "野営地",
+      "chapter": 0,
+      "requiredProgress": 140,
+      "danger": 5,
+      "requires": [
+        "forest"
+      ],
+      "recommendedAttributes": {
+        "wind": 1
+      },
+      "attributeBonus": 1
+    }
+  ],
+  "adventurers": {
+    "status": "provisional",
+    "risk": {
+      "injuryRate": 0.06,
+      "severeRate": 0.35,
+      "deathRate": 0.003,
+      "tutorialChapter": 0,
+      "tutorialDeathCap": 0.0001,
+      "denominatorOffset": 1,
+      "injuryRecoveryFactor": 1,
+      "severeRecoveryFactor": 3,
+      "minRecoveryDays": 1,
+      "maxRecoveryDays": 4
+    },
+    "jobEquipment": {
+      "adventurer": [
+        "one_hand_sword",
+        "two_hand_sword",
+        "spear",
+        "bow",
+        "arrow",
+        "shield",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ],
+      "archmage": [
+        "one_hand_sword",
+        "staff",
+        "one_hand_mace",
+        "spellbook",
+        "shield",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ],
+      "warrior": [
+        "one_hand_sword",
+        "two_hand_sword",
+        "two_hand_axe",
+        "spear",
+        "one_hand_mace",
+        "shield",
+        "head_heavy",
+        "body_heavy",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ],
+      "heavy_knight": [
+        "one_hand_sword",
+        "two_hand_sword",
+        "two_hand_axe",
+        "spear",
+        "one_hand_mace",
+        "shield",
+        "head_heavy",
+        "body_heavy",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ],
+      "sniper": [
+        "one_hand_sword",
+        "two_hand_sword",
+        "spear",
+        "bow",
+        "arrow",
+        "shield",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ],
+      "mage": [
+        "one_hand_sword",
+        "staff",
+        "one_hand_mace",
+        "spellbook",
+        "shield",
+        "head_light",
+        "body_light",
+        "head_cloth",
+        "body_cloth",
+        "accessory"
+      ]
+    },
+    "growth": {
+      "defaultPolicy": "balanced",
+      "pointsPerLevel": 3,
+      "policies": {
+        "balanced": {
+          "name": "均等",
+          "attack": 1,
+          "defense": 1,
+          "hp": 1
+        },
+        "attack": {
+          "name": "攻撃重視",
+          "attack": 2,
+          "defense": 0,
+          "hp": 1
+        },
+        "defense": {
+          "name": "防御重視",
+          "attack": 0,
+          "defense": 2,
+          "hp": 1
+        },
+        "hp": {
+          "name": "HP重視",
+          "attack": 0,
+          "defense": 1,
+          "hp": 2
+        }
+      },
+      "experience": {
+        "baseRequired": 45,
+        "perLevel": 45
+      }
+    }
   }
 }

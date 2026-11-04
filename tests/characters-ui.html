@@ -10,9 +10,13 @@ frame.onload=async()=>{try{
  const assert=(ok,message)=>{if(!ok)throw Error(message)},characters=run('characters');
  assert(characters.length===27,'27人');assert(new Set(characters.map(c=>c.images.normal)).size===27,'画像の重複なし');
  await Promise.all(characters.flatMap(c=>Object.values(c.images)).map(src=>new Promise((resolve,reject)=>{const img=new Image();img.onload=resolve;img.onerror=()=>reject(Error(src));img.src='../'+src})));
- const layout=()=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1,'縦収まり');assert([...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||(r.right<=width+1&&r.left>=0&&r.bottom<=nav.top+1)}),'枠内表示')};
- run("go('adventurers')");layout();assert(d.querySelectorAll('.character-art').length===6,'編成画像');
- for(const c of characters){run(`availableCharacterIds=['${c.id}'];openCharacterEquipment('${c.id}')`);layout();assert(d.querySelector('.character-art').getAttribute('src')===c.images.normal,c.name);run("selectCharacterPanel('growth')");layout()}
+ const layout=()=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1,'縦収まり '+run('screen')+' '+view.scrollHeight+'/'+view.clientHeight);assert([...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||(r.right<=width+1&&r.left>=0&&r.bottom<=nav.top+1)}),'枠内表示')};
+ run("go('adventurers')");layout();assert(d.querySelector('nav').textContent.includes('仲間'),'仲間タブ');assert(d.querySelectorAll('.character-art').length===6,'編成画像');
+ run("phase=4;go('home')");layout();run("go('adventurers')");
+ const source=d.querySelector('.chapter-roster .party-character'),target=d.querySelector('[data-party-slot="1"]'),a=source.getBoundingClientRect(),b=target.getBoundingClientRect();
+ source.click();assert(d.querySelector('.character-identity'),'画像タップで装備');run("go('adventurers')");
+ for(const pointerType of ['mouse','touch']){const source=d.querySelector('.chapter-roster .party-character');source.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,pointerId:1,pointerType,isPrimary:true,button:0,clientX:a.x+10,clientY:a.y+10}));w.dispatchEvent(new w.PointerEvent('pointermove',{pointerId:1,pointerType,clientX:b.x+10,clientY:b.y+10}));assert(d.querySelector('.drag-ghost .character-art'),'ドラッグ画像');w.dispatchEvent(new w.PointerEvent('pointercancel',{pointerId:1,pointerType}));assert(!d.querySelector('.drag-ghost'),'取消');}
+ for(const c of characters){run(`partySuppressClick=0;availableCharacterIds=['${c.id}'];openCharacterEquipment('${c.id}')`);layout();assert(d.querySelector('.character-art').getAttribute('src')===c.images.normal,c.name);run("selectCharacterPanel('growth')");layout()}
  document.querySelector('#status').textContent=`PASS ${width}×${height}：27人の画像読み込み・編成・装備・育成の収まり`;
  }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(prior===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',prior)}};
 </script>

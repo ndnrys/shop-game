@@ -77,7 +77,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   root.querySelectorAll('.real-board button').forEach(cell=>{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);if(x>=p.x&&x<p.x+d.width&&y>=p.y&&y<p.y+d.height)cell.classList.add('drop-preview');});
  }
  root.addEventListener('pointerdown',event=>{
-  if(event.isPrimary===false||event.button!==0||drag)return;
+  if(event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0)||drag)return;
   const incoming=event.target.closest('[data-drag-incoming]');
   const cell=event.target.closest('.real-board button');
   if(!incoming&&!cell)return;
@@ -85,12 +85,14 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   if(incoming)item=pending[0];
   else{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);item=stock.find(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});if(item){offsetX=x-item.x;offsetY=y-item.y;}}
   if(!item)return;
-  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,ghost:null,holdTimer:null};
-  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');drag.ghost=document.createElement('div');drag.ghost.className='drag-ghost';drag.ghost.textContent=itemName(drag.item);document.body.append(drag.ghost);update(event);},100);
+  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,ghost:null,holdTimer:null,lastPoint:{clientX:event.clientX,clientY:event.clientY}};
+  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');drag.ghost=document.createElement('div');drag.ghost.className='drag-ghost';drag.ghost.textContent=itemName(drag.item);document.body.append(drag.ghost);update(drag.lastPoint);},100);
  });
  root.addEventListener('pointermove',event=>{
   if(!drag||event.pointerId!==drag.pointerId)return;
-  if(!drag.active){if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>6){suppressClickUntil=Date.now()+1000;cleanup();}return;}
+  drag.lastPoint={clientX:event.clientX,clientY:event.clientY};
+  // Small finger movement during the 100ms hold must not cancel the gesture.
+  if(!drag.active)return;
   event.preventDefault();update(event);
  });
  root.addEventListener('pointerup',event=>{
@@ -104,7 +106,11 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
  });
  root.addEventListener('click',event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);
  root.addEventListener('pointercancel',()=>{if(drag?.active)suppressClickUntil=Date.now()+400;cleanup();});
- root.addEventListener('lostpointercapture',cleanup);
+ // Touch browsers initially capture on the touched cell. Transferring capture
+ // to the workspace emits a bubbling loss from that cell; it is not cancellation.
+ root.addEventListener('lostpointercapture',event=>{if(event.target===root&&drag&&event.pointerId===drag.pointerId)cleanup();});
+ root.addEventListener('contextmenu',event=>{if(event.target.closest('.real-board,[data-drag-incoming]'))event.preventDefault();});
+ root.addEventListener('dragstart',event=>{if(event.target.closest('.real-board,[data-drag-incoming]'))event.preventDefault();});
  window.addEventListener('blur',cleanup);
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){suppressClickUntil=Date.now()+400;cleanup();}});
 })();

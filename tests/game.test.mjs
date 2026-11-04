@@ -159,3 +159,18 @@ test('failed purchase does not discover any new products',async()=>{
  assert.equal(g.run('JSON.stringify(encyclopedia)'),before);
  assert.equal(g.run('pending.length'),0);
 });
+
+test('touch movement before hold and capture transfer from the touched cell do not cancel dragging',async()=>{
+ const g=await game();
+ g.handlers.pointerdown(g.event(5,5,'touch'));
+ // A real finger starts moving while the long-press timer is still pending.
+ g.handlers.pointermove(g.event(5,25,'touch'));
+ assert.equal(g.timers.size,1);
+ for(const timer of [...g.timers.values()])timer.fn();
+ // Implicit capture on the cell is lost when capture moves to the workspace.
+ g.handlers.lostpointercapture({target:{nodeName:'BUTTON'},pointerId:1});
+ g.handlers.pointermove(g.event(5,45,'touch'));
+ g.handlers.pointerup(g.event(5,45,'touch'));
+ assert.equal(g.run('stock[0].y'),4);
+ assert.equal(g.run('stock[0].rotation'),0);
+});

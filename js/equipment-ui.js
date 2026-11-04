@@ -115,7 +115,7 @@ function changeEquipment(uid=null,slot=equipmentSlot,quiet=false){
  if(uid!==null&&(!next||type(next).slot!==slot||next.durability<1||!canEquip(id,next)||companionStatus(id)==='dead'))return;
  // Plan the old item's return before mutating either inventory.
  const remaining=stock.filter(i=>i!==next);
- const position=old?ItemCore.findSpace(old,remaining,types,config.warehouse):null;
+ const position=old?ItemCore.findSpace(old,remaining,types,warehouseSize):null;
  if(old&&!position){if(!quiet)info('倉庫に入りません','装備を戻す空きを作ってください。');return false}
  stock=remaining;if(old){Object.assign(old,position);stock.push(old)}
  if(next){next.x=null;next.y=null}gear(id)[slot]=next;delete (brokenTargets[id]??={})[slot];equipmentSlot=slot;equipmentSelectedUid=null;equipPage=0;selected=0;render();return true;

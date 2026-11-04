@@ -8,7 +8,7 @@ frame.onload=async()=>{try{
  const w=frame.contentWindow,d=frame.contentDocument,run=code=>w.eval(code);
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const assert=(value,label)=>{if(!value)throw Error(label);checks.push(label)};
- const fresh=()=>run("config.warehouse={width:8,height:8};reset();Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
+ const fresh=()=>run("reset();warehouseSize={width:8,height:8};for(const i of pending)storeItem(i);pending=[];Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
  const item=uid=>d.querySelector(`[data-equipment-item="${uid}"]`),slot=id=>d.querySelector(`[data-equipment-slot="${id}"]`);
  const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(d.documentElement.scrollWidth<=width&&view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().height).every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
  const drag=async(source,target,{cancel=false,pointerType='touch',during=()=>{}}={})=>{
@@ -29,7 +29,7 @@ frame.onload=async()=>{try{
  await drag(item(1),null);assert(run('JSON.stringify(snapshot())')===before,'枠外ドロップ維持');
  await drag(item(1),slot('weapon'),{cancel:true});assert(run('JSON.stringify(snapshot())')===before,'キャンセル維持');assert(!d.querySelector('.drag-ghost')&&!d.querySelector('.equipment-drop-target'),'キャンセル表示を除去');
  fresh();await drag(item(2),slot('offhand'));assert(run("gear('kyle').offhand.uid")===2,'盾ドラッグ');
- fresh();run("changeEquipment(1);globalThis.spare=newItem('one_hand_sword_03');storeItem(spare);stock.sort((a,b)=>(b===spare)-(a===spare));render();config.warehouse={width:1,height:1}");before=run('JSON.stringify(snapshot())');await drag(item(run('spare.uid')),slot('weapon'));assert(run('JSON.stringify(snapshot())')===before,'倉庫満杯の交換は原状維持');
+ fresh();run("changeEquipment(1);globalThis.spare=newItem('one_hand_sword_03');storeItem(spare);stock.sort((a,b)=>(b===spare)-(a===spare));render();warehouseSize={width:1,height:1}");before=run('JSON.stringify(snapshot())');await drag(item(run('spare.uid')),slot('weapon'));assert(run('JSON.stringify(snapshot())')===before,'倉庫満杯の交換は原状維持');
  fresh();run("phase=4;screen='home';depart();openCharacterEquipment('kyle')");assert([...d.querySelectorAll('[data-equipment-item]')].every(e=>e.disabled),'遠征中は変更不可');layout('遠征中');
  fresh();run("moveEquipmentCharacter(2)");assert([...d.querySelectorAll('[data-equipment-item]')].every(e=>run(`canEquip(equipCharacter,stock.find(i=>i.uid===${Number(e.dataset.equipmentItem)}))`)),'職業制限');
  fresh();run('equipmentInventoryPage(1)');layout('在庫2ページ目');assert(run('equipPage')===1,'ページ切替');

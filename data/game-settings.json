@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "warehouse": {
-    "width": 8,
-    "height": 8
+    "width": 5,
+    "height": 5
   },
   "ui": {
     "pageSize": 3
@@ -237,5 +237,19 @@
         "perLevel": 45
       }
     }
+  },
+  "warehouseExpansion": {
+    "sizes": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "costs": [
+      300,
+      600,
+      900
+    ],
+    "legacySize": 8
   }
 }

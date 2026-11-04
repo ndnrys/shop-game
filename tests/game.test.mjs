@@ -14,14 +14,14 @@ const rulesContext=vm.createContext({});
 vm.runInContext(read('js/item-core.js'),rulesContext);
 const rules=rulesContext.ItemCore;
 
-async function game(saved=null){
+async function game(saved=null,boardSize=8){
  const handlers={},timers=new Map();let timerId=0;
- const cells=Array.from({length:64},(_,index)=>({
-  dataset:{x:String(index%8),y:String(Math.floor(index/8))},
+ const cells=Array.from({length:boardSize*boardSize},(_,index)=>({
+  dataset:{x:String(index%boardSize),y:String(Math.floor(index/boardSize))},
   classList:{add(){},remove(){}},
-  getBoundingClientRect(){return{left:index%8*10,top:Math.floor(index/8)*10,width:10,height:10};}
+  getBoundingClientRect(){return{left:index%boardSize*10,top:Math.floor(index/boardSize)*10,width:10,height:10};}
  }));
- const board={getBoundingClientRect:()=>({left:0,top:0,right:80,bottom:80}),querySelectorAll:()=>cells};
+ const board={getBoundingClientRect:()=>({left:0,top:0,right:boardSize*10,bottom:boardSize*10}),querySelectorAll:()=>cells};
  const view={innerHTML:'',classList:{add(){},remove(){}},
   addEventListener:(name,fn)=>handlers[name]=fn,querySelector:()=>board,querySelectorAll:()=>cells,
   setPointerCapture(){},hasPointerCapture:()=>false};
@@ -30,7 +30,7 @@ async function game(saved=null){
  const context=vm.createContext({localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
   document:{querySelector:key=>key==='#view'?view:elements[key]??(elements[key]={innerHTML:'',textContent:'',showModal(){throw Error('Unexpected alert');}}),documentElement:{dataset:{}},body:{append(){}},createElement:()=>({style:{},classList:{toggle(){}},remove(){}}),addEventListener(){}},
   window:{addEventListener(){}},
-  fetch:async path=>({ok:true,json:async()=>JSON.parse(read(path))}),
+  fetch:async path=>({ok:true,json:async()=>{const data=JSON.parse(read(path));if(path==='data/game-settings.json')data.warehouse={width:boardSize,height:boardSize};return data}}),
   setTimeout:(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;},clearTimeout:id=>timers.delete(id)
  });
  vm.runInContext('Math.random=()=>0.99',context);
@@ -41,7 +41,7 @@ async function game(saved=null){
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
-  target:{closest:selector=>selector==='[data-drag-incoming]'?(incoming?{}:null):(incoming?null:cells[Math.floor(y/10)*8+Math.floor(x/10)])},
+  target:{closest:selector=>selector==='[data-drag-incoming]'?(incoming?{}:null):(incoming?null:cells[Math.floor(y/10)*boardSize+Math.floor(x/10)])},
   pointerId:1,isPrimary:true,button:0,clientX:x,clientY:y,pointerType,preventDefault(){}
  });
  return{run,view,elements,handlers,timers,event,storage};
@@ -65,9 +65,9 @@ test('206 unique pictured items in 19 categories with fixed magic elements',()=>
 
 test('rotation finds a free fourth row in the reported layout',()=>{
  const inventory=[['one_hand_sword',0,0],['shield',1,0],['body_heavy',3,0],['spear',6,0],['staff',5,4],['head_light',1,2]].map(([typeId,x,y],i)=>({uid:i+1,typeId,x,y,rotation:0}));
- const result=rules.findNearby(inventory[3],6,0,1,inventory,types,settings.warehouse,true);
+ const result=rules.findNearby(inventory[3],6,0,1,inventory,types,{width:8,height:8},true);
  assert.equal(result.x,1);assert.equal(result.y,3);assert.equal(result.rotation,1);
- assert(rules.canPlace(inventory[3],result.x,result.y,result.rotation,inventory,types,settings.warehouse));
+ assert(rules.canPlace(inventory[3],result.x,result.y,result.rotation,inventory,types,{width:8,height:8}));
  assert.equal(rules.findNearby(inventory[3],0,0,1,inventory,types,{width:1,height:1}),null);
 });
 
@@ -264,7 +264,7 @@ test('equipping and removing preserves durability; full warehouse returns are at
  const g=await game();g.run("equipCharacter='kyle';equipmentSlot='weapon';stock[0].durability=3;changeEquipment(stock[0].uid)");
  assert.equal(g.run('gear("kyle").weapon.durability'),3);assert.equal(g.run('stock.length'),5);
  g.run('changeEquipment()');assert.equal(g.run('stock.find(i=>i.uid===1).durability'),3);
- g.run('changeEquipment(1);config.warehouse={width:1,height:1}');
+ g.run('changeEquipment(1);warehouseSize={width:1,height:1}');
  assert.throws(()=>g.run('changeEquipment()'),/Unexpected alert/);assert.equal(g.run('gear("kyle").weapon.uid'),1);assert.equal(g.run('stock.length'),5);
 });
 
@@ -689,7 +689,54 @@ test('equipment drag cancellation, wrong targets and stale screens preserve save
 
 test('equipment input respects job and expedition locks, and full-warehouse exchanges remain atomic without alerts',async()=>{
  const g=await gearInputGame();g.run("selectEquipmentItem(5)");assert.equal(g.run('equipmentSelectedUid'),null);
- g.run("changeEquipment(1);globalThis.spare=newItem('one_hand_sword_03');stock.push(spare);config.warehouse={width:1,height:1};globalThis.before=JSON.stringify(snapshot());selectEquipmentItem(spare.uid);selectEquipmentSlot('weapon')");assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ g.run("changeEquipment(1);globalThis.spare=newItem('one_hand_sword_03');stock.push(spare);warehouseSize={width:1,height:1};globalThis.before=JSON.stringify(snapshot());selectEquipmentItem(spare.uid);selectEquipmentSlot('weapon')");assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
  g.run('startEquipmentDrag(gearPointer,spare.uid)');g.hold();g.run('gearHandlers.pointerup(gearPointer)');assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
- g.run("config.warehouse={width:8,height:8};phase=4;screen='home';depart();openCharacterEquipment('kyle');equipmentSelectedUid=null;selectEquipmentItem(2);startEquipmentDrag(gearPointer,2)");assert.equal(g.run('equipmentSelectedUid'),null);assert.equal(g.run('equipmentDrag'),null);
+ g.run("warehouseSize={width:8,height:8};phase=4;screen='home';depart();openCharacterEquipment('kyle');equipmentSelectedUid=null;selectEquipmentItem(2);startEquipmentDrag(gearPointer,2)");assert.equal(g.run('equipmentSelectedUid'),null);assert.equal(g.run('equipmentDrag'),null);
+});
+
+test('new 5x5 warehouse preserves all initial items and holds oversized spear in incoming stock',async()=>{
+ const g=await game(null,5);
+ assert.equal(settings.warehouse.width,5);assert.equal(g.run('warehouseSize.width'),5);
+ assert.equal(g.run('stock.length+pending.length'),settings.development.initialItemIds.length);
+ assert.equal(g.run('pending[0].itemId'),'spear_01');assert.equal(g.run('pending[0].uid'),4);
+ assert(g.run('stock.every(i=>ItemCore.canPlace(i,i.x,i.y,i.rotation,stock,types,warehouseSize))'));
+ const restored=await game(JSON.parse(g.run('JSON.stringify(snapshot())')),5);
+ assert.equal(restored.run('warehouseSize.width'),5);assert.equal(restored.run('pending[0].uid'),4);
+ restored.run('advance()');assert.equal(restored.run('screen'),'trade');assert.equal(restored.run('phase'),0);
+});
+
+test('carpenter expands in order, charges once, preserves positions, and stops at 8x8',async()=>{
+ const g=await game(null,5);g.run('gold=2000;globalThis.before=JSON.stringify(stock)');
+ for(const size of [6,7,8]){g.run('expandWarehouse()');assert.equal(g.run('warehouseSize.width'),size);assert.equal(g.run('JSON.stringify(stock)'),g.run('before'));const restored=await game(JSON.parse(g.run('JSON.stringify(snapshot())')),5);assert.equal(restored.run('warehouseSize.width'),size)}
+ assert.equal(g.run('gold'),200);g.run('expandWarehouse()');assert.equal(g.run('gold'),200);assert.equal(g.run('warehouseSize.width'),8);
+ g.run('reset();gold=299;globalThis.before=JSON.stringify(snapshot());expandWarehouse()');assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+});
+
+test('legacy warehouses stay 8x8 without moving or losing stock and invalid sizes reject atomically',async()=>{
+ const old=await game();const saved=JSON.parse(old.run('JSON.stringify(snapshot())'));delete saved.warehouseSize;
+ const g=await game(saved,5);assert.equal(g.run('warehouseSize.width'),8);assert.equal(g.run('gold'),saved.gold);assert.equal(g.run('JSON.stringify(stock)'),JSON.stringify(saved.stock));
+ g.run('globalThis.before=JSON.stringify(snapshot())');
+ for(const size of [{width:4,height:4},{width:6,height:5},{width:9,height:9},null]){
+  g.run(`globalThis.bad=JSON.parse(before);bad.warehouseSize=${JSON.stringify(size)}`);
+  assert.throws(()=>g.run('applySave(bad)'));assert.equal(g.run('JSON.stringify(snapshot())'),g.run('before'));
+ }
+ g.run('bad=JSON.parse(before);bad.warehouseSize={width:5,height:5};bad.stock[0].x=5');assert.throws(()=>g.run('applySave(bad)'));
+});
+
+test('warehouse capacity and dimensions constrain incoming goods until expansion; pending blocks progression',async()=>{
+ const g=await game(null,5);g.run('gold=2000;globalThis.spear=pending[0];receive()');assert.equal(g.run('pending[0].uid'),4);
+ g.run('expandWarehouse();receive()');assert.equal(g.run('pending[0].uid'),4);
+ g.run('expandWarehouse();receive()');assert.equal(g.run('pending.length'),0);assert(g.run('stock.some(i=>i.uid===4)'));
+ g.run("reset();stock=[];pending=[];for(let n=0;n<25;n++)storeItem(newItem('accessory_01'));pending=[newItem('accessory_01')];globalThis.before=JSON.stringify(stock);receive()");
+ assert.equal(g.run('stock.length'),25);assert.equal(g.run('pending.length'),1);assert.equal(g.run('JSON.stringify(stock)'),g.run('before'));
+ g.run('phase=2;advance()');assert.equal(g.run('phase'),2);
+ g.run('gold=300;expandWarehouse();receive()');assert.equal(g.run('pending.length'),0);assert.equal(g.run('stock.length'),26);
+});
+
+for(const pointerType of ['mouse','touch'])test(`${pointerType}: 5x5 drag stays in bounds and cancellation preserves the original placement`,async()=>{
+ const g=await game(null,5);g.run('stock=[stock[0]];pending=[];stock[0].x=0;stock[0].y=0;stock[0].rotation=0;selected=0');
+ g.handlers.pointerdown(g.event(5,5,pointerType));for(const t of [...g.timers.values()])t.fn();g.handlers.pointermove(g.event(45,45,pointerType));g.handlers.pointerup(g.event(45,45,pointerType));
+ assert.equal(g.run('stock[0].x'),4);assert.equal(g.run('stock[0].y'),2);assert(g.run('ItemCore.canPlace(stock[0],4,2,0,stock,types,warehouseSize)'));
+ const before=g.run('JSON.stringify(stock)');g.handlers.pointerdown(g.event(45,25,pointerType));for(const t of [...g.timers.values()])t.fn();g.handlers.pointermove(g.event(150,150,pointerType));g.handlers.pointercancel();assert.equal(g.run('JSON.stringify(stock)'),before);
+ g.run('rotateSelected()');assert.equal(g.run('stock[0].rotation'),1);assert(g.run('ItemCore.canPlace(stock[0],stock[0].x,stock[0].y,1,stock,types,warehouseSize)'));
 });

@@ -8,7 +8,7 @@ const failures=[],results=[];
 function check(name){const d=frame.contentDocument,view=d.querySelector('#view'),nav=d.querySelector('nav'),r=view.getBoundingClientRect(),n=nav.getBoundingClientRect();const children=[...view.children,...view.querySelectorAll('.character-equipment *')].filter(e=>e.getBoundingClientRect().height);let bad=children.some(e=>{const b=e.getBoundingClientRect();return b.bottom>n.top+1||b.right>width+1||b.left<0});if(d.documentElement.scrollWidth>width||view.scrollHeight>view.clientHeight+1||bad)failures.push(name+' overflow '+children.map(e=>e.tagName+':'+Math.round(e.getBoundingClientRect().bottom-n.top)).join(','));results.push(name)}
 frame.onload=async()=>{try{
  const w=frame.contentWindow;while(!w.document.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
- const run=code=>w.eval(code);run('reset();Math.random=()=>0.99');
+ const run=code=>w.eval(code);run('reset();pending=[];Math.random=()=>0.99');
  run("phase=1;screen='home';render()");check('仕入れボタン');
  const touchSize=selector=>{for(const b of frame.contentDocument.querySelectorAll(selector)){const r=b.getBoundingClientRect();if(r.width<44||r.height<44)failures.push('タップ領域不足 '+b.textContent)}};
  touchSize('.touch-target');
@@ -21,7 +21,7 @@ frame.onload=async()=>{try{
  if(run('funds[0]')!==1110)failures.push('支度金加算');
  frame.contentDocument.querySelector('[aria-label="支度金の予定額を取り消す"]').click();
  if(run('funds[0]')!==0)failures.push('支度金取消');
- run('reset()');
+ run('reset();pending=[]');
  for(const [name,code] of [['装備',"screen='adventurers';sub=0;openCharacterEquipment('kyle')"],['倉庫',"screen='warehouse';sub=0;render()"],['倉庫一覧',"sub=1;render()"],['入荷',"pending=[newItem('one_hand_sword_03')];screen='trade';sub=0;render()"],['入荷一覧',"sub=1;render()"],['設定',"screen='settings';render()"],['支援編成',"pending=[];phase=4;screen='home';sub=0;render()"],['支援装備',"openCharacterEquipment('mira')"],['目的地',"closeCharacterEquipment();sub=2;render()"]]){run(code);check(name)}
  run("screen='adventurers';openCharacterEquipment('kyle');selectCharacterPanel('growth')");check('育成方針');
  for(const policy of ['balanced','attack','defense','hp']){
@@ -33,7 +33,7 @@ frame.onload=async()=>{try{
  run("grantExpeditionExperience(['kyle'],280);render()");check('育成後の能力');
  run("moveEquipmentCharacter(1)");check('別の仲間の育成');
  run("selectCharacterPanel('equipment')");check('育成から装備');
- run("reset();phase=4;screen='home';sub=0;render()");
+ run("reset();pending=[];phase=4;screen='home';sub=0;render()");
  run("economyState.companions.kyle={recoveryDay:day+2};sub=0;render()");check('療養中編成');
  run("economyState.companions.kyle={dead:true};openCharacterEquipment('kyle')");check('死亡装備');
  run("closeCharacterEquipment();economyState.companions={}");

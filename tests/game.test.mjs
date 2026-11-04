@@ -174,3 +174,77 @@ test('touch movement before hold and capture transfer from the touched cell do n
  assert.equal(g.run('stock[0].y'),4);
  assert.equal(g.run('stock[0].rotation'),0);
 });
+
+test('agreed village characters and individual initial stats replace placeholder names',async()=>{
+ const g=await game();
+ assert.equal(g.run('characters.length'),27);
+ g.run("screen='adventurers';sub=0;render()");
+ for(const name of ['カイル','ガレス','ミラ'])assert(g.view.innerHTML.includes(name));
+ assert(!/リナ|ブラン|ノア/.test(g.view.innerHTML));
+ for(const [id,expected] of [['kyle','冒険者 / Lv.1 / HP 3 / 攻撃 4 / 防御 2 / 固有属性 なし'],['gares','戦士 / Lv.1 / HP 4 / 攻撃 2 / 防御 3 / 固有属性 なし'],['mira','魔法使い / Lv.1 / HP 4 / 攻撃 1 / 防御 3 / 固有属性 炎1']]){
+  assert.throws(()=>g.run(`characterInfo('${id}')`),/Unexpected alert/);
+  assert.equal(g.elements['#modalBody'].textContent,expected);
+ }
+ g.run('sub=1;render()');assert(g.view.innerHTML.includes('カイル · 装備'));
+ g.run("screen='home';phase=0;sub=1;render()");
+ assert(g.view.innerHTML.includes('カイル・ガレス・ミラが帰還しました。'));
+});
+
+test('party rosters are independent and moving a member updates chapter membership badges',async()=>{
+ const g=await game();
+ assert.equal(g.run('JSON.stringify(parties)'),JSON.stringify([['kyle','gares','mira'],[],[]]));
+ g.run("screen='adventurers';switchParty(1)");
+ assert.equal(g.run('parties[1].filter(Boolean).length'),0);
+ assert(g.view.innerHTML.includes('この章で使える仲間 · 3人'));
+ assert(!g.view.innerHTML.includes('待機中の冒険者'));
+ assert(!g.view.innerHTML.includes('パーティの支度金'));
+ g.run("assignCharacter('kyle')");
+ assert.equal(g.run('parties[0][0]'),'kyle');
+ assert.equal(g.run('parties[1].filter(Boolean).length'),0);
+ assert(g.view.innerHTML.includes('disabled'));
+ g.run("switchParty(0);partySlot=0;removePartyMember();switchParty(1);assignCharacter('kyle')");
+ assert.equal(g.run('parties[0][0]'),null);
+ assert.equal(g.run('parties[1][0]'),'kyle');
+ assert.equal(g.run("partyNumber('kyle')"),2);
+ assert.equal(g.run("parties.flat().filter(id=>id==='kyle').length"),1);
+ assert(g.view.innerHTML.includes('party-badge">2</span>カイル'));
+ g.run("assignCharacter('leon')");assert.equal(g.run('parties[1][0]'),'kyle');
+ g.run('removePartyMember()');assert.equal(g.run("partyNumber('kyle')"),0);
+ g.run("screen='home';phase=4;sub=0;render()");
+ assert(g.view.innerHTML.indexOf('パーティの支度金')<g.view.innerHTML.indexOf('パーティ · 3人枠'));
+ g.run('funds[1]=100;switchParty(0)');assert.equal(g.run('funds[0]'),0);
+ g.run('reset()');assert.equal(g.run('party'),0);assert.equal(g.run("partyNumber('kyle')"),1);
+});
+
+for(const pointerType of ['mouse','touch'])test(`${pointerType}: party drop targets a slot and cancellation preserves membership`,async()=>{
+ const g=await game();
+ g.run(`globalThis.dragHandlers={};globalThis.dragTarget=null;
+ window.addEventListener=(name,fn)=>dragHandlers[name]=fn;
+ window.removeEventListener=(name,fn)=>{if(dragHandlers[name]===fn)delete dragHandlers[name]};
+ document.elementFromPoint=()=>dragTarget;
+ globalThis.dropSlot={dataset:{partySlot:'2'},classList:{add(){},remove(){}}};
+ globalThis.dragEvent={pointerId:9,isPrimary:true,button:0,pointerType:'${pointerType}',clientX:0,clientY:0,preventDefault(){}};
+ screen='adventurers';switchParty(1);startPartyDrag(dragEvent,'kyle');`);
+ assert.equal(g.run('Object.keys(dragHandlers).length'),0);
+ g.run(`switchParty(0);removePartyMember();switchParty(1);startPartyDrag(dragEvent,'kyle');dragTarget={closest:()=>dropSlot};dragHandlers.pointermove({...dragEvent,clientX:30});dragHandlers.pointerup({...dragEvent,clientX:30})`);
+ assert.equal(g.run('parties[1][2]'),'kyle');
+ assert.equal(g.run('Object.keys(dragHandlers).length'),0);
+ const before=g.run('JSON.stringify(parties)');
+ g.run(`startPartyDrag(dragEvent,'kyle');dragTarget=null;dragHandlers.pointermove({...dragEvent,clientX:30});dragHandlers.pointerup({...dragEvent,clientX:30})`);
+ assert.equal(g.run('JSON.stringify(parties)'),before);
+ g.run(`startPartyDrag(dragEvent,'kyle');dragTarget={closest:()=>dropSlot};dragHandlers.pointermove({...dragEvent,clientX:30});dragHandlers.pointercancel()`);
+ assert.equal(g.run('JSON.stringify(parties)'),before);
+ assert.equal(g.run('Object.keys(dragHandlers).length'),0);
+});
+
+test('clear releases only the selected party and preserves other parties and funds',async()=>{
+ const g=await game();
+ g.run("screen='adventurers';parties=[['kyle'],['gares','mira'],[]];funds=[10,100,1000];switchParty(1);partySlot=2;clearParty()");
+ assert.equal(g.run('JSON.stringify(parties)'),JSON.stringify([['kyle'],[],[]]));
+ assert.equal(g.run("partyNumber('gares')"),0);
+ assert.equal(g.run("partyNumber('mira')"),0);
+ assert.equal(g.run('JSON.stringify(funds)'),JSON.stringify([10,100,1000]));
+ assert.equal(g.run('party'),1);assert.equal(g.run('partySlot'),0);
+ assert(g.view.innerHTML.includes('クリア'));
+ g.run('clearParty()');assert.equal(g.run('parties[0][0]'),'kyle');
+});

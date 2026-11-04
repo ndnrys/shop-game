@@ -13,3 +13,7 @@
 .real-board,.incoming-draggable{touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}.real-board .filled,.incoming-draggable{cursor:grab}.dragging,.dragging *{cursor:grabbing!important}.real-board button.drop-preview{background:var(--accent);color:var(--paper);outline:2px solid var(--ink);outline-offset:-2px;opacity:.65}.drag-ghost{position:fixed;z-index:99;pointer-events:none;padding:7px 10px;border:1px solid var(--accent);border-radius:6px;background:var(--paper);color:var(--ink);font-size:12px;box-shadow:0 3px 15px #0002;max-width:180px}.drag-ghost.invalid{opacity:.45}.incoming-draggable{padding:5px 0}
 
 .encyclopedia-detail .ledger .row{padding:5px 0}.encyclopedia-detail .row b{text-align:right;overflow-wrap:anywhere}
+
+.party-slots{margin:8px 0}.party-slots button{min-width:0;padding:12px 4px}.chapter-roster button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:9px 3px}.party-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:700}
+
+.chapter-roster button{touch-action:none;user-select:none}.chapter-roster button:not(:disabled){cursor:grab}.party-slots button.party-drop-target{outline:2px solid var(--accent);background:var(--soft)}

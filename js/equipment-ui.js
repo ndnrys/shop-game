@@ -22,7 +22,7 @@ function resolveExpeditions(){
  const due=expeditions.filter(e=>e.returnDay<=day);
  for(const trip of due){let count=0;for(const id of trip.members){
   const before=Object.values(gear(id)).filter(Boolean);
-  const broken=EquipmentCore.wear(gear(id));brokenTargets[id]??={};
+  const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
   for(const result of broken){brokenTargets[id][result.slot]=result.itemId;count++;returnReport.push(`${characters.find(c=>c.id===id).name}：${definitions[result.itemId].name}が破損`)}
   for(const item of before){const record=EncyclopediaCore.acquire(encyclopedia,item.itemId);if(!record.usedInstances.includes(item.uid))record.usedInstances.push(item.uid);record.expeditions++}
  }returnReport.unshift(`第${trip.party+1}パーティ帰還・装備耐久−1・破損${count}点`)}
@@ -67,7 +67,7 @@ function equipmentView(){
  <div class="equipment-inventory"><h2>倉庫 · ${catalog.slots[equipmentSlot]} ${candidates.length}点</h2><div class="gear-candidates">${candidates.slice(equipPage*size,(equipPage+1)*size).map(i=>`<button class="item" ${locked?'disabled':''} onclick="changeEquipment(${i.uid})"><span><b>${esc(itemName(i))}</b><small class="block">耐久 ${i.durability}/${i.maxDurability}${i.forged?' · 鍛冶済み':''}</small></span><span class="gear-item-art">${shape(def(i))}</span></button>`).join('')||note('対応する倉庫在庫はありません。')}</div></div>
  <div class="page"><button aria-label="倉庫アイテムの前のページ" ${equipPage===0?'disabled':''} onclick="equipPage--;render()">‹</button><small>${equipPage+1}/${total}</small><button aria-label="倉庫アイテムの次のページ" ${equipPage===total-1?'disabled':''} onclick="equipPage++;render()">›</button></div></section>`;
 }
-function saleValue(item){return type(item).slot?EquipmentCore.price(item,def(item).price??config.development.salePrice):(def(item).price??config.development.salePrice)}
+function saleValue(item){return type(item).slot?EquipmentCore.price(item,def(item).price??config.development.salePrice,balanceRuntime.minimumPriceRatio):(def(item).price??config.development.salePrice)}
 function buybackValue(item){return config.development.salePrice>0?Math.floor(saleValue(item)*config.development.buybackPrice/config.development.salePrice):0}
 function buybackIncoming(){const item=pending[0];if(!item||item.forged)return;gold+=buybackValue(item);pending.shift();render()}
 function buybackStock(){const item=stock[selected];if(!item)return;if(item.forged)return info('引取できません','鍛冶済み装備は手動装備または破棄してください。');gold+=buybackValue(item);stock.splice(selected,1);selected=0;render()}

@@ -16,7 +16,7 @@ function closeEconomyDay(){
  const chapterId=economyChapterId(chapter),rates=economyConfig.chapters[chapterId];
  if(!rates)throw Error('現在の章の経済設定がありません');
  const count=availableCharacterIds.filter(id=>['waiting','recovering'].includes(companionStatus(id))).length;
- const bill={day,chapterId,shelfCount:economyState.shelfCount,companionCount:count,shop:rates.shopMaintenancePerShelf*economyState.shelfCount,companions:rates.companionMaintenancePerPerson*count,tax:day%5===0?rates.seasonTax:0,status:'unpaid'};
+ const bill={day,chapterId,shelfCount:economyState.shelfCount,companionCount:count,shop:rates.shopMaintenancePerShelf*economyState.shelfCount,companions:rates.companionMaintenancePerPerson*count,tax:day%balanceRuntime.taxPeriod===0?rates.seasonTax:0,status:'unpaid'};
  bill.total=bill.shop+bill.companions+bill.tax;economyState.bill=bill;settleEconomyBill();
 }
 function settleEconomyBill(){const bill=economyState.bill;if(!bill||bill.status!=='unpaid'||gold<bill.total)return false;gold-=bill.total;bill.status='paid';return true}

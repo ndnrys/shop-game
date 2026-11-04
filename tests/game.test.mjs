@@ -36,7 +36,7 @@ async function game(saved=null){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/balance.js','js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -484,4 +484,13 @@ test('same slot bonus, probability clamps and set competition follow data',async
  const g=await game();g.run("shelf=[newItem('one_hand_sword_01'),newItem('one_hand_sword_03')]");assert.equal(g.run('shelfCandidates()[0].bonus'),.1);
  g.run("tradingConfig.customers[0].probability=1;tradingConfig.customers[0].categories={}");assert.equal(g.run('TradingCore.probability(shelfCandidates()[0],tradingConfig.customers[0],definitions,tradingConfig)'),1);
  g.run("shelf.push(newItem('shield_01'));encyclopediaDefinitions.sets.push({id:'competing',itemIds:['shield_01','one_hand_sword_03']})");assert.equal(g.run("shelfCandidates().find(c=>c.effect==='set').setId"),'wood_sword_shield');
+});
+
+test('balance registry rejects invalid overrides and preserves defaults',()=>{
+ const context=vm.createContext({URLSearchParams});vm.runInContext(read('js/balance.js'),context);
+ const registry=vm.runInContext('Balance',context).create({game:settings,economy:JSON.parse(read('data/economy.json')),trading:JSON.parse(read('data/trading.json'))});
+ assert.equal(registry.validate({version:1,overrides:{}}).game.development.initialGold,1250);
+ for(const overrides of [{'unknown':1},{'game.development.initialGold':-1},{'runtime.itemsPerPurchase':1.5},{'trading.chapters.prologue.visitors.min':10},{'game.development.salePrice':0},{'runtime.minimumPriceRatio':2}])assert.throws(()=>registry.validate({version:1,overrides}));
+ assert.equal(registry.validate({version:1,overrides:{'runtime.expeditionWear':3}}).runtime.expeditionWear,3);
+ const balance=vm.runInContext('Balance',context);assert.equal(balance.enabled({hostname:'example.com',search:'?dev=balance'}),false);assert.equal(balance.enabled({hostname:'localhost',search:''}),false);assert.equal(balance.enabled({hostname:'localhost',search:'?dev=balance'}),true);
 });

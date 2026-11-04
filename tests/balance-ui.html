@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><title>Balance UI test</title><pre id="result">RUNNING</pre><script>
+(async()=>{const result=document.querySelector('#result');try{
+ const frames=[];async function open(url,width){const f=document.createElement('iframe');f.width=width;f.height=900;document.body.append(f);f.src=url;await new Promise(r=>f.onload=r);for(let i=0;i<100&&!f.contentDocument.querySelector('input[type=number],#view .heading');i++)await new Promise(r=>setTimeout(r,20));frames.push(f);return f}
+ const check=(v,m)=>{if(!v)throw Error(m)};
+ const dashboard=await open('/dev/balance.html',1280),dev=await open('/index.html?dev=balance',390),normal=await open('/index.html',1280),doc=dashboard.contentDocument;
+ const input=doc.querySelector('[aria-label="game / 経済・仕入れ / 初期資金"]')||[...doc.querySelectorAll('input')].find(i=>i.getAttribute('aria-label')?.endsWith('初期資金'));
+ check(input,'入力欄');input.value='-1';doc.querySelector('#apply').click();check(doc.querySelector('#status').textContent.includes('初期資金'),'不正値エラー');
+ const key='shop-game-dev-balance-v1',value={version:1,overrides:{'game.development.initialGold':1500,'game.development.salePrice':400,'runtime.expeditionWear':2}};localStorage.setItem(key,JSON.stringify(value));await new Promise(r=>setTimeout(r,100));
+ check(dev.contentWindow.eval('config.development.salePrice')===400,'別タブ反映');check(normal.contentWindow.eval('config.development.salePrice')===200,'通常モード無効');check(dev.contentWindow.eval('gold')===1250,'所持金維持');dev.contentWindow.eval('reset()');check(dev.contentWindow.eval('gold')===1500,'新規初期資金');
+ doc.querySelector('#reset').click();await new Promise(r=>setTimeout(r,100));check(dev.contentWindow.eval('config.development.salePrice')===200,'復元');
+ check(doc.documentElement.scrollWidth<=1280,'PC横幅');dashboard.width=390;await new Promise(r=>setTimeout(r,50));check(doc.documentElement.scrollWidth<=390,'スマホ横幅');result.textContent='PASS: 入力検証・別タブ反映・通常モード無効・既存状態維持・新規開始・復元・PC/スマホ幅';
+ }catch(e){result.textContent='FAIL: '+e.stack}})();
+</script>

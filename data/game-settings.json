@@ -29,5 +29,54 @@
       "staff_01",
       "head_light_11"
     ]
+  },
+  "bankruptcy": {
+    "clearFundsMultiplier": 1.2,
+    "maxClearFundsMultiplier": 2,
+    "chapters": {
+      "prologue": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_1": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_2": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_3": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_4": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_5": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_6": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "chapter_7": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      },
+      "finale": {
+        "baseClearFunds": 3500,
+        "loanAmount": 1000
+      }
+    }
+  },
+  "donation": {
+    "itemsPerAd": 3,
+    "dailyAdLimit": 3,
+    "resetTimeZone": "UTC",
+    "resetHour": 0,
+    "rewardPool": "all"
   }
 }

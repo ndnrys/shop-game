@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>固定費・治療 UI検証</title>
+<style>body{margin:0;font:12px sans-serif}iframe{border:0;display:block}#status{white-space:pre-wrap}</style>
+<pre id="status">RUNNING</pre><iframe src="../index.html"></iframe>
+<script>
+const params=new URLSearchParams(location.search),width=Number(params.get('width')||390),height=Number(params.get('height')||844),frame=document.querySelector('iframe');frame.style.width=width+'px';frame.style.height=height+'px';
+const saved=localStorage.getItem('shop-game-save'),failures=[],results=[];
+frame.onload=async()=>{try{
+ const w=frame.contentWindow;while(!w.document.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));const run=code=>w.eval(code);
+ run('reset()');
+ for(const [name,code] of [
+ ['寄付画面',"go('donation')"],
+ ['初回報告',"go('home')"],
+ ['支払済み報告',"day=5;phase=5;finishDay()"],
+ ['棚情報',"phase=3;sub=1;render()"],
+ ['療養と治療',"economyState.companions[availableCharacterIds[0]]={level:2,recoveryDay:9};economyState.companions[availableCharacterIds[1]]={level:1,recoveryDay:8};go('residents')"],
+ ['治療後',"healCompanion(availableCharacterIds[0])"],
+ ['増設後',"expandShelf()"],
+ ['未払い報告',"gold=0;phase=5;finishDay()"],
+ ['未払い再読込',"applySave(JSON.parse(JSON.stringify(snapshot())));go('home')"]]){
+ run(code);const d=frame.contentDocument,v=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();
+ if(d.documentElement.scrollWidth>width||v.scrollHeight>v.clientHeight+1||[...v.children].some(e=>e.getBoundingClientRect().bottom>nav.top+1))failures.push(name+' overflow');results.push(name);
+ }
+ document.querySelector('#status').textContent=(failures.length?'FAIL':'PASS')+' '+width+'×'+height+' '+results.length+' views\n'+failures.join('\n');
+ }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(saved===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',saved)}};
+</script>

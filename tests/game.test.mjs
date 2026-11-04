@@ -36,7 +36,7 @@ async function game(saved=null){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/equipment-core.js','js/equipment-ui.js','js/economy.js','js/rescue.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -412,10 +412,18 @@ test('carpenter expands real capacity, persists shelves, migrates old saves with
  const s=JSON.parse(g.run('JSON.stringify(snapshot())'));const loaded=await game(s);assert.equal(loaded.run('economyState.shelfCount'),2);
  delete s.economyState;const old=await game(s);assert.equal(old.run('gold'),950);assert.equal(old.run('economyState.shelfCount'),1);assert.equal(old.run('economyState.bill'),null);
 });
-test('unaffordable bill is saved in full, blocks progress, and can only settle once',async()=>{
- const g=await game();g.run('gold=1;phase=5;finishDay()');assert.equal(g.run('gold'),1);assert.equal(g.run('bankruptcyExpense().shortfall'),19);
- g.run('advance()');assert.equal(g.run('phase'),0);
- const loaded=await game(JSON.parse(g.run('JSON.stringify(snapshot())')));assert.equal(loaded.run('economyState.bill.status'),'unpaid');loaded.run('gold=100;retryEconomyBill();retryEconomyBill()');assert.equal(loaded.run('gold'),80);
+test('unaffordable bill triggers rescue once and persists paid costs',async()=>{
+ const g=await game();g.run('gold=1;phase=5;finishDay()');assert.equal(g.run('gold'),981);assert.equal(g.run('rescueState.count'),1);assert.equal(g.run('clearFunds()'),4700);
+ const loaded=await game(JSON.parse(g.run('JSON.stringify(snapshot())')));loaded.run('render();retryEconomyBill()');assert.equal(loaded.run('gold'),981);assert.equal(loaded.run('rescueState.totalLoans'),1000);
+ g.run('gold=0;phase=5;finishDay();gold=0;phase=5;finishDay();gold=0;phase=5;finishDay()');assert.equal(g.run('clearFunds()'),7000);assert.equal(g.run('rescueState.count'),4);
+});
+test('donation requires completion, prevents concurrent claims and persists UTC quota',async()=>{
+ const g=await game();await g.run('watchDonation()');assert.equal(g.run('pending.length'),0);
+ g.run('registerDonationAdapter({showRewardedAd:async()=>({completed:false})})');await g.run('watchDonation()');assert.equal(g.run('donationState.used'),0);
+ g.run('registerDonationAdapter({showRewardedAd:async()=>({completed:true})})');await g.run('Promise.all([watchDonation(),watchDonation()])');assert.equal(g.run('pending.length'),3);assert.equal(g.run('donationState.used'),1);
+ const loaded=await game(JSON.parse(g.run('JSON.stringify(snapshot())')));assert.equal(loaded.run('donationRemaining()'),2);assert.equal(loaded.run('pending.length'),3);
+ g.run('pending=[]');await g.run('watchDonation()');g.run('pending=[]');await g.run('watchDonation()');g.run('pending=[]');await g.run('watchDonation()');assert.equal(g.run('donationState.used'),3);assert.equal(g.run('pending.length'),0);
+ assert.equal(g.run("donationDate(Date.parse('2026-11-04T23:59:59Z'))"),'2026-11-04');assert.equal(g.run("donationDate(Date.parse('2026-11-05T00:00:00Z'))"),'2026-11-05');assert.equal(g.run("donationRemaining(Date.parse(donationState.date+'T00:00:00Z')+86400000)"),3);
 });
 test('unset prices and malformed economy saves are rejected without corrupting current progress',async()=>{
  const g=await game();assert.throws(()=>g.run('validateEconomyConfig({chapters:{},healing:{costPerLevel:null}})'));
@@ -424,7 +432,7 @@ test('unset prices and malformed economy saves are rejected without corrupting c
 });
 
 test('30-day cashflow simulation covers trading, no sales and expansion without income',async()=>{
- for(const [policy,expectedDays,expectedGold,unpaid] of [['trade',30,2450,false],['idle',30,50,false],['expand-idle',23,0,true]]){
+ for(const [policy,expectedDays,expectedGold,unpaid] of [['trade',30,2450,false],['idle',30,50,false],['expand-idle',30,600,false]]){
   const g=await game();if(policy==='expand-idle')g.run('expandShelf()');let days=0;
   for(;days<30;){g.run(`phase=1;if(${policy==='trade'}&&stock.length===0&&gold>=prices[0]){counts=[1,0,0];buy();while(pending.length)receive()}if(${policy==='trade'}&&stock.length){selected=0;replenish()}phase=5;finishDay()`);days++;if(g.run('!!bankruptcyExpense()'))break}
   assert.equal(days,expectedDays,policy);assert.equal(g.run('gold'),expectedGold,policy);assert.equal(g.run('!!bankruptcyExpense()'),unpaid,policy);

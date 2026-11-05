@@ -68,3 +68,6 @@
 .warehouse-board-area{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 .warehouse-board-area .real-board{flex-shrink:0}
 .warehouse-board-area+.warehouse-footer{margin-top:0}
+
+/* Fixed 8x8 warehouse display; cells outside the unlocked size are inactive. */
+.real-board button.warehouse-locked,.real-board button.warehouse-locked:disabled{background:#b9bfbd;opacity:1;cursor:default;box-shadow:inset -1px -1px 0 #929b97}

@@ -119,7 +119,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
  const root=document.querySelector('#view');
  let drag=null,suppressClickUntil=0;
  function clearPreview(){root.querySelectorAll('.drop-preview').forEach(cell=>cell.classList.remove('drop-preview'));}
- function cleanup(){if(!drag)return;const pointer=drag.pointerId;clearTimeout(drag.holdTimer);drag.ghost?.remove();clearPreview();drag=null;root.classList.remove('dragging');if(root.hasPointerCapture?.(pointer))root.releasePointerCapture(pointer);}
+ function cleanup(){if(!drag)return;const pointer=drag.pointerId;clearTimeout(drag.holdTimer);drag.ghost?.remove();drag.preview?.remove();drag.sourceArt?.classList.remove('drag-source');clearPreview();drag=null;root.classList.remove('dragging');if(root.hasPointerCapture?.(pointer))root.releasePointerCapture(pointer);}
  function targetAt(event){
   const board=root.querySelector('.real-board');if(!board)return null;
   const bounds=board.getBoundingClientRect();
@@ -133,12 +133,14 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
  }
  function update(event){
   clearPreview();drag.position=targetAt(event);
-  drag.ghost.style.left=event.clientX+12+'px';drag.ghost.style.top=event.clientY+12+'px';
-  drag.ghost.classList.toggle('invalid',!drag.position);
+  const board=root.querySelector('.real-board');
+  if(!drag.preview||!board)return;
+  drag.preview.hidden=!drag.position;
   if(!drag.position)return;
   const d=ItemCore.dimensions(drag.item,types),p=drag.position;
-  root.querySelectorAll('.real-board button').forEach(cell=>{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);if(x>=p.x&&x<p.x+d.width&&y>=p.y&&y<p.y+d.height)cell.classList.add('drop-preview');});
+  Object.assign(drag.preview.style,{left:p.x/warehouseSize.width*100+'%',top:p.y/warehouseSize.height*100+'%',width:d.width/warehouseSize.width*100+'%',height:d.height/warehouseSize.height*100+'%'});
  }
+
  root.addEventListener('pointerdown',event=>{
   if(event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0)||drag)return;
   const incoming=event.target.closest('[data-drag-incoming]');
@@ -148,8 +150,15 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   if(incoming)item=pending[0];
   else{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);item=stock.find(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});if(item){offsetX=x-item.x;offsetY=y-item.y;}}
   if(!item)return;
-  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,ghost:null,holdTimer:null,lastPoint:{clientX:event.clientX,clientY:event.clientY}};
-  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');drag.ghost=document.createElement('div');drag.ghost.className='drag-ghost';drag.ghost.textContent=itemName(drag.item);document.body.append(drag.ghost);update(drag.lastPoint);},100);
+  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,preview:null,holdTimer:null,lastPoint:{clientX:event.clientX,clientY:event.clientY}};
+  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');const board=root.querySelector('.real-board');if(!board){cleanup();return;}
+  drag.preview=document.createElement('span');drag.preview.className='warehouse-drag-preview';
+  const d=ItemCore.dimensions(drag.item,types),rotated=drag.item.rotation%2;
+  const img=document.createElement('img');img.src=def(drag.item).image;img.alt='';img.draggable=false;
+  Object.assign(img.style,{width:(rotated?d.height/d.width*100:100)+'%',height:(rotated?d.width/d.height*100:100)+'%',transform:'translate(-50%,-50%) rotate('+(rotated?90:0)+'deg)'});
+  drag.preview.append(img);board.append(drag.preview);
+  if(!drag.incoming){const art=[...board.querySelectorAll('.warehouse-art')].find(el=>el.style.left===drag.item.x/warehouseSize.width*100+'%'&&el.style.top===drag.item.y/warehouseSize.height*100+'%');if(art){drag.sourceArt=art;art.classList.add('drag-source');}}
+  update(drag.lastPoint);},100);
  });
  root.addEventListener('pointermove',event=>{
   if(!drag||event.pointerId!==drag.pointerId)return;

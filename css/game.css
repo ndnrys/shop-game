@@ -81,9 +81,11 @@
 .warehouse-pagination button{min-width:34px;min-height:28px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-size:20px;line-height:1}
 .warehouse-pagination button:disabled{opacity:.35;cursor:default}
 
-/* Collapsible navigation overlays the game without resizing its content. */
+/* The collapsed menu leaves a 2px edge visible; the right tab opens it. */
 .shell{position:relative;grid-template-rows:26px 57px minmax(0,1fr)}
-#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:calc(44px + env(safe-area-inset-bottom));z-index:10;background:var(--paper);box-shadow:0 -4px 16px #0002}
+.shell::after{content:"";position:absolute;bottom:env(safe-area-inset-bottom);left:env(safe-area-inset-left);right:env(safe-area-inset-right);height:2px;background:var(--accent);pointer-events:none;z-index:9}
+#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);height:57px;z-index:10;background:var(--paper);box-shadow:0 -4px 16px #0002}
 #nav[hidden]{display:none}
-#menuToggle{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);height:44px;z-index:11;border-radius:0;border-left:0;border-right:0;border-bottom:0;background:var(--paper);font-weight:700}
-@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}}
+#menuToggle{position:absolute;right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);width:88px;height:44px;padding:6px;z-index:11;border-radius:10px 10px 0 0;background:var(--paper);border:1px solid var(--line);border-bottom:2px solid var(--accent);font-weight:700;box-shadow:0 -2px 8px #0002}
+#nav:not([hidden])+#menuToggle{bottom:calc(57px + env(safe-area-inset-bottom))}
+@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px}#nav:not([hidden])+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}

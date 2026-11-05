@@ -72,6 +72,6 @@
 /* Fixed 8x8 warehouse display; cells outside the unlocked size are inactive. */
 /* Unavailable cells have a strong, patterned fill; warehouse matches the item-info card width. */
 .warehouse-board-area{width:100%}
-.warehouse-board-area .real-board{width:100%;max-width:100%;margin:0;aspect-ratio:1;grid-template-rows:repeat(8,minmax(0,1fr))}
+.warehouse-board-area .real-board{align-self:stretch;flex:0 0 auto;width:100%;max-width:none;min-width:100%;height:auto;margin:0;aspect-ratio:1 / 1;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}.warehouse-board-area .real-board>button{width:100%;height:100%;aspect-ratio:auto}
 .real-board button.warehouse-locked,.real-board button.warehouse-locked:disabled{background:repeating-linear-gradient(135deg,#aab2ae 0px,#aab2ae 7px,#c2c9c5 7px,#c2c9c5 14px);opacity:1;cursor:not-allowed;box-shadow:inset -1px -1px 0 #89938d}
 .real-board button.warehouse-locked:focus-visible{outline:none}

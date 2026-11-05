@@ -48,3 +48,6 @@
 
 /* Primary purchasing and funding controls keep a finger-sized hit area. */
 .touch-target{min-width:44px;min-height:44px}.counter button.touch-target{width:44px;min-height:44px;padding:8px}.funding-controls .touch-target{padding:8px 4px;white-space:nowrap}
+
+/* Keep warehouse item actions at the bottom of the screen. */
+.warehouse-controls{margin-top:auto;display:flex;flex-direction:column;gap:10px}

@@ -52,8 +52,8 @@
 /* Keep warehouse item actions at the bottom of the screen. */
 .warehouse-footer{margin-top:auto;display:flex;flex-direction:column;gap:8px}.warehouse-controls{display:flex;flex-direction:column;gap:10px}.warehouse-footer .bottom{margin-top:0}
 
-/* Warehouse: hide individual cell borders; outline only the selected item's footprint. */
+/* Warehouse: show the board grid, with a separate outline around the selected item. */
 .real-board{border:1px solid var(--line)}
-.real-board button,.real-board button.filled,.real-board button.selected{border:0;border-radius:0;background:transparent;box-shadow:none}
+.real-board button,.real-board button.filled,.real-board button.selected{border:0;border-radius:0;background:transparent;box-shadow:inset -1px -1px 0 var(--line)}
 .real-board .warehouse-art.is-selected{outline:2px solid var(--accent);outline-offset:-2px}
 .real-board button.drop-preview{background:color-mix(in srgb,var(--accent) 25%,transparent);box-shadow:inset 0 0 0 2px var(--ink)}

@@ -81,7 +81,7 @@ function newItem(id){EncyclopediaCore.acquire(encyclopedia,id);const maxDurabili
 function itemName(instance){return def(instance).name}
 function itemMeta(instance){const d=def(instance),t=type(instance);return `${t.label} · ${t.width?`${t.width}×${t.height}`:'寸法未設定'} · ${catalog.elements[d.element]} · 販売 ${saleValue(instance)} G${t.slot?` · 耐久 ${instance.durability}/${instance.maxDurability}${instance.forged?' · 鍛冶済み':''}`:''}` }
 function shape(d){return `<span class="item-art"><img src="${esc(d.image)}" alt="" loading="lazy" decoding="async" draggable="false"></span>`}
-function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board=warehouseSize,rotated=item.rotation%2;return `<span class="warehouse-art ${stock[selected]===item?'is-selected':''}" style="left:${item.x/board.width*100}%;top:${item.y/board.height*100}%;width:${d.width/board.width*100}%;height:${d.height/board.height*100}%"><img src="${esc(def(item).image)}" alt="" draggable="false" style="width:${rotated?d.height/d.width*100:100}%;height:${rotated?d.width/d.height*100:100}%;transform:translate(-50%,-50%) rotate(${rotated?90:0}deg)"></span>`}
+function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board={width:8,height:8},rotated=item.rotation%2;return `<span class="warehouse-art ${stock[selected]===item?'is-selected':''}" style="left:${item.x/board.width*100}%;top:${item.y/board.height*100}%;width:${d.width/board.width*100}%;height:${d.height/board.height*100}%"><img src="${esc(def(item).image)}" alt="" draggable="false" style="width:${rotated?d.height/d.width*100:100}%;height:${rotated?d.width/d.height*100:100}%;transform:translate(-50%,-50%) rotate(${rotated?90:0}deg)"></span>`}
 
 
 function storeItem(instance){const position=ItemCore.findSpace(instance,stock,types,warehouseSize);if(!position)return false;Object.assign(instance,position);stock.push(instance);return true}
@@ -96,7 +96,7 @@ function warehouseCell(x,y){const hit=stock.find(item=>{const d=ItemCore.dimensi
 function rotateSelected(){const item=stock[selected];if(!item)return;const rotation=(item.rotation+1)%2;const position=ItemCore.findNearby(item,item.x,item.y,rotation,stock,types,warehouseSize,true);if(!position)return;Object.assign(item,position);render()}
 function warehouseUsed(){return stock.reduce((sum,item)=>{const d=ItemCore.dimensions(item,types);return sum+d.width*d.height},0)}
 function warehouseSummary(){return `${warehouseSize.width}×${warehouseSize.height} · ${warehouseUsed()}/${warehouseSize.width*warehouseSize.height}マス`}
-function warehouseWorkspace(routine=false){selected=Math.min(selected,Math.max(0,stock.length-1));const item=stock[selected],board=warehouseSize;let grid=`<div class="grid real-board" style="grid-template-columns:repeat(${board.width},1fr);--board-rows:${board.height}">`;for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++){const index=stock.findIndex(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});grid+=`<button class="${index>=0?'filled':''} ${index===selected?'selected':''}" data-x="${x}" data-y="${y}" onclick="warehouseCell(${x},${y})" aria-label="${x+1}列${y+1}行 ${index>=0?esc(itemName(stock[index])):'空き'}"></button>`}grid+=stock.map(warehouseArtwork).join('')+'</div>';return `<div class="warehouse-board-area">`+grid+`</div><div class="warehouse-footer"><div class="warehouse-controls">`+card(`<div class="row"><div><h2>${item?esc(itemName(item)):'商品なし'}</h2><small>${item?esc(itemMeta(item)):'入荷した商品を収納してください。'}</small></div>${btn('↻ 回転','rotateSelected()','mini')}</div><div class="actions">${btn(item?'商人へ引取 '+money(buybackValue(item)):'商人へ引取',"confirmStockAction('buyback')",'mini')}${btn('破棄',"confirmStockAction('discard')",'mini')}</div>`)+note('クリックで選択／選択中は回転／長押しでドラッグ。')+`</div>`+(routine?next(phase===2?'陳列へ':'経営の次の工程へ'):(pending.length?`<div class="bottom">${btn('取引へ戻る',`go('trade')`,'primary')}</div>`:''))+`</div>`};
+function warehouseWorkspace(routine=false){selected=Math.min(selected,Math.max(0,stock.length-1));const item=stock[selected],board={width:8,height:8};let grid=`<div class="grid real-board" style="grid-template-columns:repeat(${board.width},1fr);--board-rows:${board.height}">`;for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++){const locked=x>=warehouseSize.width||y>=warehouseSize.height;const index=locked?-1:stock.findIndex(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});grid+=`<button class="${locked?'warehouse-locked ':''}${index>=0?'filled':''} ${index===selected?'selected':''}" data-x="${x}" data-y="${y}" ${locked?'disabled':`onclick="warehouseCell(${x},${y})"`} aria-label="${locked?'未開放':`${x+1}列${y+1}行 ${index>=0?esc(itemName(stock[index])):'空き'}`}"></button>`}grid+=stock.map(warehouseArtwork).join('')+'</div>';return `<div class="warehouse-board-area">`+grid+`</div><div class="warehouse-footer"><div class="warehouse-controls">`+card(`<div class="row"><div><h2>${item?esc(itemName(item)):'商品なし'}</h2><small>${item?esc(itemMeta(item)):'入荷した商品を収納してください。'}</small></div>${btn('↻ 回転','rotateSelected()','mini')}</div><div class="actions">${btn(item?'商人へ引取 '+money(buybackValue(item)):'商人へ引取',"confirmStockAction('buyback')",'mini')}${btn('破棄',"confirmStockAction('discard')",'mini')}</div>`)+note('クリックで選択／選択中は回転／長押しでドラッグ。')+`</div>`+(routine?next(phase===2?'陳列へ':'経営の次の工程へ'):(pending.length?`<div class="bottom">${btn('取引へ戻る',`go('trade')`,'primary')}</div>`:''))+`</div>`};
 function buy(){if(pending.length){phase=2;go('trade');return}const total=counts.reduce((a,n,i)=>a+n*prices[i],0);if(!counts.some(n=>n>0))return info('回数を選択','商人の＋で回数を選んでください。');if(total>gold)return info('所持金不足','仕入れ回数を減らしてください。');const pools=[['weapon'],['offhand','head','body'],['accessory']].map(slots=>catalog.items.filter(d=>d.status==='active'&&slots.includes(types[d.typeId].slot)&&fitsWarehouse(d)));if(counts.some((n,i)=>n>0&&!pools[i].length))return info('仕入れできません','現在の倉庫サイズに合う商品がありません。');pending=counts.flatMap((n,i)=>Array.from({length:n*balanceRuntime.itemsPerPurchase},()=>newItem(pools[i][Math.floor(Math.random()*pools[i].length)].id)));gold-=total;counts=[0,0,0];phase=2;go('trade')};
 function receive(){if(!pending.length)return;if(!storeItem(pending[0]))return;selected=stock.length-1;pending.shift();render()}
 function replenish(){if(!stock.length||shelfItems().length>=config.development.shelfCapacity)return info('補充できません','在庫と棚の空きを確認してください。');if(stock[selected]?.forged)return info('陳列できません','鍛冶済み装備は手動装備または破棄してください。');if(!stock[selected])return;const item=stock.splice(selected,1)[0];item.shelfId=selectedShelf;shelf.push(item);selected=0;page=0;discoverShelfSets();render()};
@@ -125,8 +125,8 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   const bounds=board.getBoundingClientRect();
   if(event.clientX<bounds.left||event.clientX>=bounds.right||event.clientY<bounds.top||event.clientY>=bounds.bottom)return null;
   const cells=board.querySelectorAll('button'),first=cells[0].getBoundingClientRect();
-  const stepX=warehouseSize.width>1?cells[1].getBoundingClientRect().left-first.left:first.width;
-  const stepY=warehouseSize.height>1?cells[warehouseSize.width].getBoundingClientRect().top-first.top:first.height;
+  const stepX=cells[1].getBoundingClientRect().left-first.left;
+  const stepY=cells[8].getBoundingClientRect().top-first.top;
   const x=Math.floor((event.clientX-first.left)/stepX)-drag.offsetX;
   const y=Math.floor((event.clientY-first.top)/stepY)-drag.offsetY;
   return ItemCore.findNearby(drag.item,x,y,drag.item.rotation,stock,types,warehouseSize);
@@ -138,7 +138,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   drag.preview.hidden=!drag.position;
   if(!drag.position)return;
   const d=ItemCore.dimensions(drag.item,types),p=drag.position;
-  Object.assign(drag.preview.style,{left:p.x/warehouseSize.width*100+'%',top:p.y/warehouseSize.height*100+'%',width:d.width/warehouseSize.width*100+'%',height:d.height/warehouseSize.height*100+'%'});
+  Object.assign(drag.preview.style,{left:p.x/8*100+'%',top:p.y/8*100+'%',width:d.width/8*100+'%',height:d.height/8*100+'%'});
  }
 
  root.addEventListener('pointerdown',event=>{
@@ -157,7 +157,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   const img=document.createElement('img');img.src=def(drag.item).image;img.alt='';img.draggable=false;
   Object.assign(img.style,{width:(rotated?d.height/d.width*100:100)+'%',height:(rotated?d.width/d.height*100:100)+'%',transform:'translate(-50%,-50%) rotate('+(rotated?90:0)+'deg)'});
   drag.preview.append(img);board.append(drag.preview);
-  if(!drag.incoming){const art=[...board.querySelectorAll('.warehouse-art')].find(el=>el.style.left===drag.item.x/warehouseSize.width*100+'%'&&el.style.top===drag.item.y/warehouseSize.height*100+'%');if(art){drag.sourceArt=art;art.classList.add('drag-source');}}
+  if(!drag.incoming){const art=[...board.querySelectorAll('.warehouse-art')].find(el=>el.style.left===drag.item.x/8*100+'%'&&el.style.top===drag.item.y/8*100+'%');if(art){drag.sourceArt=art;art.classList.add('drag-source');}}
   update(drag.lastPoint);},100);
  });
  root.addEventListener('pointermove',event=>{

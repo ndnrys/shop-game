@@ -63,3 +63,8 @@
 .real-board .warehouse-drag-preview[hidden]{display:none}
 .real-board .warehouse-drag-preview img{position:absolute;left:50%;top:50%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .real-board .warehouse-art.drag-source{opacity:.2}
+
+/* Reserve the upper warehouse space for future artwork; align the board immediately above the controls. */
+.warehouse-board-area{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.warehouse-board-area .real-board{flex-shrink:0}
+.warehouse-board-area+.warehouse-footer{margin-top:0}

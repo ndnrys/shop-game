@@ -163,18 +163,18 @@ function stocking(){
  const stockItems=stock.filter(i=>!i.forged);
  const source=shopInventoryTab===0?'shelf':'stock',all=source==='shelf'?items:stockItems;
  const chosen=source==='shelf'?shopSelectedShelf:shopSelectedStock;
- const perPage=3,pages=Math.max(1,Math.ceil(all.length/perPage));page=Math.max(0,Math.min(page,pages-1));
+ const perPage=6,pages=Math.max(1,Math.ceil(all.length/perPage));page=Math.max(0,Math.min(page,pages-1));
  const visible=all.slice(page*perPage,(page+1)*perPage);
  const pager=pages>1?'<div class="page">'+btn('‹','page=Math.max(0,page-1);render()','mini')+'<small>'+(page+1)+' / '+pages+'</small>'+btn('›','page=Math.min('+(pages-1)+',page+1);render()','mini')+'</div>':'';
  const controls='<div class="actions">'+(source==='shelf'?
  btn('選択した'+chosen.size+'点を倉庫へ戻す','shopBulkReturn()','primary'):
  btn('選択した'+chosen.size+'点を棚に補充','shopBulkStock()','primary'))+'</div>';
- const tabs='<div class="tabs">'+btn('この棚の商品 ('+items.length+')','shopInventoryTab=0;page=0;render()',shopInventoryTab===0?'active':'')+
+ const tabs='<div class="shop-folder-tabs" role="tablist">'+btn('この棚の商品 ('+items.length+')','shopInventoryTab=0;page=0;render()',shopInventoryTab===0?'active':'')+
  btn('倉庫から補充 ('+stockItems.length+')','shopInventoryTab=1;page=0;render()',shopInventoryTab===1?'active':'')+'</div>';
  const details=card('<div class="row"><h2>棚 '+(selectedShelf+1)+'</h2><b>'+items.length+' / '+capacity+' 点</b></div>'+
  row('棚の商品総額',money(totalValue))+note(esc(shelfSummary())));
- const list=card('<div class="row"><h2>'+(source==='shelf'?'陳列中の商品':'倉庫の商品')+'</h2><small>'+chosen.size+'点選択中</small></div>'+
- (visible.length?'<div class="shop-product-list">'+visible.map(i=>shopItemCard(i,source)).join('')+'</div>':note('商品がありません。'))+pager+controls);
+ const list='<div class="card shop-folder-content"><div class="row"><h2>'+(source==='shelf'?'陳列中の商品':'倉庫の商品')+'</h2><small>'+chosen.size+'点選択中</small></div>'+
+ (visible.length?'<div class="shop-product-list">'+visible.map(i=>shopItemCard(i,source)).join('')+'</div>':note('商品がありません。'))+pager+controls+'</div>';
  return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+tabs+list+next('仲間の支援へ');
 }
 

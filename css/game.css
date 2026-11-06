@@ -83,8 +83,8 @@
 
 /* Slide the navigation into view while keeping the game area unchanged. */
 .shell{position:relative;grid-template-rows:26px 57px minmax(0,1fr)}
-#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);height:57px;z-index:20;display:grid;background:var(--paper);box-shadow:0 -4px 16px #0002;clip-path:inset(100% 0 0 0);transition:clip-path .2s ease;pointer-events:none}
-#nav.is-open{clip-path:inset(0);pointer-events:auto}
+#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);height:57px;z-index:20;display:grid;background:var(--paper);box-shadow:0 -4px 16px #0002;transform:translateY(100%);visibility:hidden;transition:transform .2s ease,visibility 0s linear .2s;pointer-events:none}
+#nav.is-open{transform:translateY(0);visibility:visible;transition:transform .2s ease,visibility 0s;pointer-events:auto}
 #menuToggle{position:absolute;right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);width:44px;height:44px;padding:6px;z-index:21;border-radius:10px 10px 0 0;background:var(--paper);border:1px solid var(--line);border-bottom:2px solid var(--accent);font-weight:700;box-shadow:0 -2px 8px #0002;transition:bottom .2s ease}
 #nav.is-open+#menuToggle{bottom:calc(57px + env(safe-area-inset-bottom))}
-@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px}#nav.is-open{bottom:env(safe-area-inset-bottom)}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}
+@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}

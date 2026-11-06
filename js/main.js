@@ -171,21 +171,19 @@ function stocking(){
  const items=shelfItems(),capacity=config.development.shelfCapacity;
  const totalValue=items.reduce((sum,item)=>sum+saleValue(item),0);
  const stockItems=stock.filter(i=>!i.forged);
- const source=shopInventoryTab===0?'shelf':'stock',all=source==='shelf'?items:stockItems;
- const chosen=source==='shelf'?shopSelectedShelf:shopSelectedStock;
- const perPage=6,pages=Math.max(1,Math.ceil(all.length/perPage));page=Math.max(0,Math.min(page,pages-1));
- const visible=all.slice(page*perPage,(page+1)*perPage);
+ const perPage=8,pages=Math.max(1,Math.ceil(stockItems.length/perPage));page=Math.max(0,Math.min(page,pages-1));
+ const visibleStock=stockItems.slice(page*perPage,(page+1)*perPage);
  const pager=pages>1?'<div class="page">'+btn('‹','page=Math.max(0,page-1);render()','mini')+'<small>'+(page+1)+' / '+pages+'</small>'+btn('›','page=Math.min('+(pages-1)+',page+1);render()','mini')+'</div>':'';
- const controls='<div class="actions">'+(source==='shelf'?
- btn('選択した'+chosen.size+'点を倉庫へ戻す','shopBulkReturn()','primary'):
- btn('選択した'+chosen.size+'点を棚に補充','shopBulkStock()','primary'))+'</div>';
- const tabs='<div class="shop-folder-tabs" role="tablist">'+btn('この棚の商品 ('+items.length+')','shopInventoryTab=0;page=0;render()',shopInventoryTab===0?'active':'')+
- btn('倉庫から補充 ('+stockItems.length+')','shopInventoryTab=1;page=0;render()',shopInventoryTab===1?'active':'')+'</div>';
  const details=card('<div class="row"><h2>棚 '+(selectedShelf+1)+'</h2><b>'+items.length+' / '+capacity+' 点</b></div>'+
  row('棚の商品総額',money(totalValue))+note(esc(shelfSummary())));
- const list='<div class="card shop-folder-content"><div class="row"><h2>'+(source==='shelf'?'陳列中の商品':'倉庫の商品')+'</h2><small>'+chosen.size+'点選択中</small></div>'+
- (visible.length?'<div class="shop-product-list">'+visible.map(i=>shopItemCard(i,source)).join('')+'</div>':note('商品がありません。'))+pager+controls+'</div>';
- return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+tabs+list+next('仲間の支援へ');
+ const shelfSection='<div class="card shop-folder-content shop-shelf-section"><div class="row"><h2>棚の商品</h2><small>'+shopSelectedShelf.size+'点選択中</small></div>'+
+ '<div class="shop-product-list">'+items.map(i=>shopItemCard(i,'shelf')).join('')+
+ Array.from({length:Math.max(0,capacity-items.length)},()=>'<div class="shop-empty-slot" aria-label="空き枠">＋</div>').join('')+'</div>'+
+ '<div class="actions">'+btn('選択した'+shopSelectedShelf.size+'点を倉庫へ戻す','shopBulkReturn()','primary')+'</div></div>';
+ const stockSection='<div class="card shop-folder-content shop-stock-section"><div class="row"><h2>倉庫から補充 ('+stockItems.length+')</h2><small>'+shopSelectedStock.size+'点選択中</small></div>'+
+ (visibleStock.length?'<div class="shop-product-list">'+visibleStock.map(i=>shopItemCard(i,'stock')).join('')+'</div>':note('商品がありません。'))+
+ pager+'<div class="actions">'+btn('選択した'+shopSelectedStock.size+'点を棚に補充','shopBulkStock()','primary')+'</div></div>';
+ return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+shelfSection+stockSection+next('仲間の支援へ');
 }
 
 function support(routine=false){return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+`<div class="tabs">${[['編成',0],...(routine?[['目的地',2]]:[])].map(([label,index])=>btn(label,`sub=${index};render()`,sub===index?'active':'')).join('')}</div>`+(sub!==2?(routine?card(`<div class="row"><h2>第${party+1}パーティの支度金</h2><b>${money(funds[party])}</b></div><div class="actions funding-controls">${[10,100,1000].map(n=>btn('＋'+n,`if(!partyAway(party)&&funds[party]+${n}<=gold)funds[party]+=${n};render()`,'mini touch-target',`支度金を${n}G加算`)).join('')}${btn('取消',`if(!partyAway(party))funds[party]=0;render()`,'mini touch-target','支度金の予定額を取り消す')}</div>${note('派遣時に消費。パーティごとに管理。')}`):'')+partyFormation():destinationView())+(routine?next('今日のお店を開ける'):`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`)}

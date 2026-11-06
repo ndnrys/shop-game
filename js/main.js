@@ -66,7 +66,7 @@ function report(){const size=3;page=Math.min(page,Math.max(0,Math.ceil(returnRep
 function purchase(){let total=counts.reduce((a,n,i)=>a+n*prices[i],0);return title('今日の仕入れ',`${warehouseSize.width}×${warehouseSize.height} · 空き${warehouseSize.width*warehouseSize.height-warehouseUsed()}マス`)+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${prices[i]} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れて入荷品を確認','buy()','primary touch-target')} ${btn('今日は仕入れない','phase=2;go("home")','mini touch-target')}${steps()}</div>`}
 // 店舗の棚は8×8マスに2×2で配置する。
 const SHOP_WIDTH=8,SHOP_HEIGHT=8,SHELF_SIDE=2;
-let shopMoveShelf=false;
+let shopMoveShelf=false,shopDragSuppressClick=0;
 function shopLayout(){return economyState.shelfLayout}
 function shopShelfAt(x,y){return shopLayout().findIndex(p=>p&&x>=p.x&&x<p.x+SHELF_SIDE&&y>=p.y&&y<p.y+SHELF_SIDE)}
 function shopCanPlace(index,x,y){
@@ -81,13 +81,39 @@ function shopPlaceAt(x,y){
  if(!shopCanPlace(index,x,y))return;
  shopLayout()[index]={x,y};selectedShelf=index;shopMoveShelf=false;render();
 }
+
+function startShopDrag(event,x,y){
+ if(event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0))return;
+ const index=shopShelfAt(x,y);if(index<0)return;
+ const origin=shopLayout()[index],pointerId=event.pointerId;
+ const offsetX=x-origin.x,offsetY=y-origin.y;
+ const sx=event.clientX,sy=event.clientY;
+ let active=false,done=false;
+ const timer=setTimeout(()=>{if(!done)active=true},100);
+ function cleanup(){done=true;clearTimeout(timer);window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel)}
+ function move(e){if(e.pointerId!==pointerId)return;if(!active&&Math.hypot(e.clientX-sx,e.clientY-sy)>8)cleanup();if(active)e.preventDefault()}
+ function up(e){
+  if(e.pointerId!==pointerId)return;
+  const dragging=active;cleanup();if(!dragging)return;
+  shopDragSuppressClick=Date.now()+500;
+  const cell=document.elementFromPoint(e.clientX,e.clientY)?.closest('.shop-layout-grid .shop-cell');
+  if(cell){
+   const nx=Number(cell.dataset.shopX)-offsetX,ny=Number(cell.dataset.shopY)-offsetY;
+   if(shopCanPlace(index,nx,ny))shopLayout()[index]={x:nx,y:ny};
+  }
+  selectedShelf=index;render();
+ }
+ function cancel(){if(active)shopDragSuppressClick=Date.now()+500;cleanup()}
+ window.addEventListener('pointermove',move,{passive:false});
+ window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
+}
 function shopLayoutView(){
  const layout=shopLayout(),unplaced=layout.filter(p=>!p).length;
  const cells=Array.from({length:SHOP_WIDTH*SHOP_HEIGHT},(_,i)=>{
   const x=i%SHOP_WIDTH,y=Math.floor(i/SHOP_WIDTH),hit=shopShelfAt(x,y),position=layout[hit];
   const label=hit<0?'空きマス':`棚${hit+1}`;
   const origin=hit>=0&&position.x===x&&position.y===y;
-  return `<button type="button" class="shop-cell ${hit>=0?'occupied':''} ${hit===selectedShelf?'chosen':''}" aria-label="${label} ${x+1}列${y+1}行" onclick="shopPlaceAt(${x},${y})">${origin?'棚'+(hit+1):''}</button>`;
+  return `<button type="button" data-shop-x="${x}" data-shop-y="${y}" class="shop-cell ${hit>=0?'occupied':''} ${hit===selectedShelf?'chosen':''}" aria-label="${label} ${x+1}列${y+1}行" onpointerdown="startShopDrag(event,${x},${y})" onclick="if(Date.now()>shopDragSuppressClick)shopPlaceAt(${x},${y})">${origin?'棚'+(hit+1):''}</button>`;
  }).join('');
  return card(`<div class="row"><h2>店舗レイアウト</h2><small>8×8マス · 棚${layout.length-unplaced}/${economyState.shelfCount}</small></div><div class="shop-layout-grid">${cells}</div>`
  +note(shopMoveShelf?'移動先の左上マスをタップしてください。':unplaced?'空きマスをタップすると未配置の棚を置けます。':'棚をタップして選択できます。')

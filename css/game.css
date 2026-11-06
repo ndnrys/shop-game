@@ -130,7 +130,7 @@
 .shop-folder-tabs button{flex:1;min-width:0;padding:9px 3px;border:1px solid var(--line);border-radius:8px 8px 0 0;background:var(--soft);font-size:11px}
 .shop-folder-tabs button.active{background:var(--paper);border-bottom-color:var(--paper);box-shadow:none}
 .shop-folder-content{border-radius:0 0 var(--radius) var(--radius)}
-.shop-folder-content .shop-product-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.shop-folder-content .shop-product-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
 .shop-folder-content .page{margin-top:14px}
 .shop-folder-content .actions{margin-top:14px}
 .shop-folder-content .shop-product-card{max-height:155px}

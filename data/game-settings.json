@@ -28,6 +28,11 @@
       "spear_01",
       "staff_01",
       "head_light_11"
+    ],
+    "prologueMerchantCosts": [
+      50,
+      50,
+      30
     ]
   },
   "bankruptcy": {

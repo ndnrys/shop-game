@@ -52,7 +52,7 @@ function validateEconomySave(s,fail){
  if(!Array.isArray(e.shelfLayout)||e.shelfLayout.length!==e.shelfCount)fail();
  for(let i=0;i<e.shelfLayout.length;i++){
   const p=e.shelfLayout[i];if(p===null)continue;
-  if(!p||!int(p.x)||!int(p.y)||p.x+2>8||p.y+2>6)fail();
+  if(!p||!int(p.x)||!int(p.y)||p.x+2>8||p.y+2>8)fail();
   for(let j=0;j<i;j++){const q=e.shelfLayout[j];if(q&&p.x<q.x+2&&q.x<p.x+2&&p.y<q.y+2&&q.y<p.y+2)fail()}
  }
 

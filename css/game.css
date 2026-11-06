@@ -121,7 +121,7 @@
 
 .shop-product-list{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,auto)}
 .shop-product-card{position:relative;display:block;aspect-ratio:1/1;height:auto;min-height:0;padding:0;border-radius:4px;overflow:hidden}
-.shop-product-image{position:absolute;inset:5% 5% 22%;width:90%;height:73%;max-width:90%;max-height:73%;object-fit:contain;image-rendering:pixelated}
+.shop-product-image{position:absolute;inset:5% 5% 22%;width:90%;height:73%;max-width:90%;max-height:73%;object-fit:contain;image-rendering:auto}
 .shop-product-name{position:absolute;bottom:3%;left:4%;width:92%;font-size:10px;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .shop-product-card.active{outline:2px solid var(--accent);outline-offset:-2px}
 

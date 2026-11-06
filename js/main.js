@@ -158,12 +158,27 @@ function shopProductInfo(uid,source){
  '販売価格：'+saleValue(item)+' G','基礎価格：'+(d.price==null?'未設定':d.price+' G'),
  '能力：'+(d.stats==null?'未設定':JSON.stringify(d.stats))].join('\n'));
 }
+function shopTransferItem(uid,source){
+ if(source==='shelf'){
+  const item=shelfItems().find(i=>i.uid===uid);if(!item)return;
+  const position=ItemCore.findSpace(item,stock,types,warehouseSize);
+  if(!position)return info('倉庫に入りません','倉庫に空きがありません。');
+  shelf=shelf.filter(i=>i.uid!==uid);Object.assign(item,position);delete item.shelfId;stock.push(item);
+ }else{
+  if(!shopLayout()[selectedShelf])return;
+  const item=stock.find(i=>i.uid===uid&&!i.forged);if(!item)return;
+  if(shelfItems().length>=config.development.shelfCapacity)return info('補充できません','棚に空きがありません。');
+  stock=stock.filter(i=>i.uid!==uid);item.shelfId=selectedShelf;shelf.push(item);
+ }
+ shopSelectedShelf.clear();shopSelectedStock.clear();discoverShelfSets();render();
+}
 function shopItemCard(item,source){
- const checked=(source==='shelf'?shopSelectedShelf:shopSelectedStock).has(item.uid);
- return '<div class="shop-product-tile"><button type="button" class="shop-product-card '+(checked?'active':'')+'" aria-pressed="'+checked+'" onclick="shopToggleSelection(&quot;'+source+'&quot;,'+item.uid+')">'+
+ const isShelf=source==='shelf',label=isShelf?'倉庫へ戻す':'棚に補充';
+ return '<div class="shop-product-tile"><div class="shop-product-card">'+
  '<img class="shop-product-image" src="'+esc(def(item).image)+'" alt="" loading="lazy" draggable="false">'+
- '<span class="shop-product-name">'+esc(itemName(item))+'</span></button>'+
- '<button type="button" class="shop-product-detail" aria-label="'+esc(itemName(item))+'の情報" onclick="shopProductInfo('+item.uid+',&quot;'+source+'&quot;)">i</button></div>';
+ '<span class="shop-product-name">'+esc(itemName(item))+'</span></div>'+
+ '<button type="button" class="shop-product-detail" aria-label="'+esc(itemName(item))+'の情報" onclick="shopProductInfo('+item.uid+',&quot;'+source+'&quot;)">i</button>'+
+ '<button type="button" class="shop-product-transfer" aria-label="'+esc(itemName(item))+'を'+label+'" onclick="shopTransferItem('+item.uid+',&quot;'+source+'&quot;)">'+(isShelf?'×':'＋')+'</button></div>';
 }
 function stocking(){
  if(!shopPanelOpen)return title('店舗の陳列','04 / 06')+shopLayoutView()+
@@ -176,13 +191,13 @@ function stocking(){
  const pager=pages>1?'<div class="page">'+btn('‹','page=Math.max(0,page-1);render()','mini')+'<small>'+(page+1)+' / '+pages+'</small>'+btn('›','page=Math.min('+(pages-1)+',page+1);render()','mini')+'</div>':'';
  const details=card('<div class="row"><h2>棚 '+(selectedShelf+1)+'</h2><b>'+items.length+' / '+capacity+' 点</b></div>'+
  row('棚の商品総額',money(totalValue))+note(esc(shelfSummary())));
- const shelfSection='<div class="card shop-folder-content shop-shelf-section"><div class="row"><h2>棚の商品</h2><small>'+shopSelectedShelf.size+'点選択中</small></div>'+
+ const shelfSection='<div class="card shop-folder-content shop-shelf-section"><div class="row"><h2>棚の商品</h2><small>×で倉庫へ戻す</small></div>'+
  '<div class="shop-product-list">'+items.map(i=>shopItemCard(i,'shelf')).join('')+
  Array.from({length:Math.max(0,capacity-items.length)},()=>'<div class="shop-empty-slot" aria-label="空き枠">＋</div>').join('')+'</div>'+
- '<div class="actions">'+btn('選択した'+shopSelectedShelf.size+'点を倉庫へ戻す','shopBulkReturn()','primary')+'</div></div>';
- const stockSection='<div class="card shop-folder-content shop-stock-section"><div class="row"><h2>倉庫から補充 ('+stockItems.length+')</h2><small>'+shopSelectedStock.size+'点選択中</small></div>'+
+ '</div>';
+ const stockSection='<div class="card shop-folder-content shop-stock-section"><div class="row"><h2>倉庫から補充 ('+stockItems.length+')</h2><small>＋で棚に補充</small></div>'+
  (visibleStock.length?'<div class="shop-product-list">'+visibleStock.map(i=>shopItemCard(i,'stock')).join('')+'</div>':note('商品がありません。'))+
- pager+'<div class="actions">'+btn('選択した'+shopSelectedStock.size+'点を棚に補充','shopBulkStock()','primary')+'</div></div>';
+ pager+'</div>';
  return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+shelfSection+stockSection+next('仲間の支援へ');
 }
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 2,
   "slots": {
     "weapon": "武器",
     "offhand": "盾",

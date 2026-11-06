@@ -185,6 +185,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   const {item,position,incoming}=drag;suppressClickUntil=Date.now()+400;
   cleanup();
   if(position){Object.assign(item,position);if(incoming){if(pending[0]!==item)return;pending.shift();stock.push(item);}selected=stock.indexOf(item);}
+  if(!incoming){selected=stock.indexOf(item);warehouseShowStock=true;}
   render();
  });
  root.addEventListener('click',event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);

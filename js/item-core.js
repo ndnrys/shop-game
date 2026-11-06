@@ -4,7 +4,7 @@
   if(c.schemaVersion!==1||s.schemaVersion!==1)throw Error('未対応の設定バージョンです');
   const ids=new Set(),types=new Map();
   for(const t of c.types){if(types.has(t.id))throw Error('装備種類IDが重複');types.set(t.id,t);if(t.slot!==null&&!Object.hasOwn(c.slots,t.slot))throw Error('装備枠が不正');if(!((t.width===null&&t.height===null)||(Number.isInteger(t.width)&&t.width>0&&Number.isInteger(t.height)&&t.height>0)))throw Error('寸法が不正');}
-  for(const i of c.items){if(!/^[a-z][a-z0-9_]*$/.test(i.id))throw Error('アイテムIDの形式が不正');if(ids.has(i.id))throw Error('アイテムIDが重複');ids.add(i.id);if(!types.has(i.typeId)||!Object.hasOwn(c.elements,i.element)||!['active','planned'].includes(i.status)||typeof i.name!=='string')throw Error('アイテム設定が不正');}
+  for(const i of c.items){if(!/^[a-z][a-z0-9_]*$/.test(i.id))throw Error('アイテムIDの形式が不正');if(ids.has(i.id))throw Error('アイテムIDが重複');ids.add(i.id);if(!types.has(i.typeId)||!Object.hasOwn(c.elements,i.element)||!['active','planned'].includes(i.status)||typeof i.name!=='string'||(i.description!=null&&typeof i.description!=='string'))throw Error('アイテム設定が不正');}
   for(const key of ['width','height'])if(!Number.isInteger(s.warehouse[key])||s.warehouse[key]<1||s.warehouse[key]>20)throw Error('倉庫寸法は1〜20');
   if(!Number.isInteger(s.ui.pageSize)||s.ui.pageSize<1||s.ui.pageSize>3)throw Error('画面内の表示数は1〜3');
   const p=s.development;if(!Array.isArray(p.merchantCosts)||p.merchantCosts.length!==3||p.merchantCosts.some(n=>!Number.isFinite(n)||n<0)||!['initialGold','salePrice','buybackPrice','shelfCapacity'].every(k=>Number.isInteger(p[k])&&p[k]>=0))throw Error('確認用設定が不正');

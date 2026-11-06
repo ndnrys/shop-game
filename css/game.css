@@ -124,3 +124,14 @@
 .shop-product-image{position:absolute;inset:5% 5% 22%;width:90%;height:73%;max-width:90%;max-height:73%;object-fit:contain;image-rendering:pixelated}
 .shop-product-name{position:absolute;bottom:3%;left:4%;width:92%;font-size:10px;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .shop-product-card.active{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* 商品管理：フォルダ見出し型のタブと、2列の正方形カード */
+.shop-folder-tabs{display:flex;gap:4px;align-items:flex-end;margin-bottom:-1px;position:relative;z-index:1}
+.shop-folder-tabs button{flex:1;min-width:0;padding:9px 3px;border:1px solid var(--line);border-radius:8px 8px 0 0;background:var(--soft);font-size:11px}
+.shop-folder-tabs button.active{background:var(--paper);border-bottom-color:var(--paper);box-shadow:none}
+.shop-folder-content{border-radius:0 0 var(--radius) var(--radius)}
+.shop-folder-content .shop-product-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.shop-folder-content .page{margin-top:14px}
+.shop-folder-content .actions{margin-top:14px}
+.shop-folder-content .shop-product-card{max-height:155px}
+@media(max-height:700px){.shop-folder-content .shop-product-card{max-height:110px}.shop-folder-content .shop-product-list{gap:7px;margin-top:8px}.shop-folder-content .page,.shop-folder-content .actions{margin-top:10px}}

@@ -149,11 +149,20 @@ function shopBulkReturn(){
  for(const {item,position} of positions){Object.assign(item,position);delete item.shelfId;stock.push(item)}
  shopSelectedShelf.clear();discoverShelfSets();render();
 }
+function shopProductInfo(uid,source){
+ const item=(source==='shelf'?shelf:stock).find(i=>i.uid===uid);
+ if(!item)return;
+ const d=def(item),t=type(item);
+ info(d.name,[d.description||'説明未設定','種類：'+t.label,'属性：'+catalog.elements[d.element],
+ '販売価格：'+saleValue(item)+' G','基礎価格：'+(d.price==null?'未設定':d.price+' G'),
+ '能力：'+(d.stats==null?'未設定':JSON.stringify(d.stats))].join('\n'));
+}
 function shopItemCard(item,source){
  const checked=(source==='shelf'?shopSelectedShelf:shopSelectedStock).has(item.uid);
- return '<button type="button" class="shop-product-card '+(checked?'active':'')+'" aria-pressed="'+checked+'" onclick="shopToggleSelection(&quot;'+source+'&quot;,'+item.uid+')">'+
+ return '<div class="shop-product-tile"><button type="button" class="shop-product-card '+(checked?'active':'')+'" aria-pressed="'+checked+'" onclick="shopToggleSelection(&quot;'+source+'&quot;,'+item.uid+')">'+
  '<img class="shop-product-image" src="'+esc(def(item).image)+'" alt="" loading="lazy" draggable="false">'+
- '<span class="shop-product-name">'+esc(itemName(item))+'</span></button>';
+ '<span class="shop-product-name">'+esc(itemName(item))+'</span></button>'+
+ '<button type="button" class="shop-product-detail" aria-label="'+esc(itemName(item))+'の情報" onclick="shopProductInfo('+item.uid+',&quot;'+source+'&quot;)">i</button></div>';
 }
 function stocking(){
  if(!shopPanelOpen)return title('店舗の陳列','04 / 06')+shopLayoutView()+
@@ -205,7 +214,7 @@ function pager(length,size){const pages=Math.max(1,Math.ceil(length/size));retur
 function openCatalog(origin){catalogOrigin=origin;catalogDetail=false;page=0;screen='catalog';render()}
 function filteredItems(){return catalog.items.filter(d=>(!catalogSlot||types[d.typeId].slot===catalogSlot)&&(!catalogFilter||d.typeId===catalogFilter)&&(!catalogQuery||d.name.includes(catalogQuery)))}
 function catalogView(){if(catalogDetail)return catalogItemView();const items=filteredItems();return title('アイテム設定一覧',`${catalog.items.length}種類`)+`<div class="catalog-filters"><select aria-label="装備枠" onchange="catalogSlot=this.value;catalogFilter='';page=0;render()"><option value="">すべての枠</option>${Object.entries(catalog.slots).map(([id,name])=>`<option value="${id}" ${catalogSlot===id?'selected':''}>${name}</option>`).join('')}</select><select aria-label="装備種類" onchange="catalogFilter=this.value;page=0;render()"><option value="">すべての種類</option>${catalog.types.filter(t=>!catalogSlot||t.slot===catalogSlot).map(t=>`<option value="${t.id}" ${catalogFilter===t.id?'selected':''}>${esc(t.label)}</option>`).join('')}</select></div><form class="actions" onsubmit="event.preventDefault();catalogQuery=this.elements.query.value.trim();page=0;render()"><input name="query" aria-label="アイテム名検索" placeholder="アイテム名を検索" value="${esc(catalogQuery)}"><button class="mini">検索</button></form><div class="catalog-list">${items.slice(page*config.ui.pageSize,(page+1)*config.ui.pageSize).map(d=>`<button class="item" onclick="catalogItemId='${d.id}';catalogDetail=true;render()"><span><b>${esc(d.name)}</b><small class="block">${esc(types[d.typeId].label)} · ${catalog.elements[d.element]}</small></span>${shape(d)}</button>`).join('')||note('一致するアイテムはありません')}</div>${pager(items.length,config.ui.pageSize)}<div class="bottom">${note('正式価格・能力は未設定。装備の耐久度は個体ごとに管理。')}${btn('戻る',`go('${catalogOrigin}')`)}</div>`}
-function catalogItemView(){const d=definitions[catalogItemId],t=types[d.typeId];return title('アイテム詳細','登録済み')+card(`<div class="row"><div><h2>${esc(d.name)}</h2><small>${esc(t.label)}</small></div>${shape(d)}</div><div class="ledger">${row('装備枠',t.slot?catalog.slots[t.slot]:'装備不可')}${row('寸法（横×縦）',t.width?`${t.width} × ${t.height}`:'未設定')}${row('形状の指定',esc(t.shapeLabel||'未設定'))}${row('属性',catalog.elements[d.element])}${row('価格',d.price===null?'未設定':esc(d.price)+' G')}${row('能力',d.stats===null?'未設定':esc(JSON.stringify(d.stats)))}${row('耐久',t.slot?'基準10（仕入れ時8〜12）':'装備対象外')}</div>`)+(d.effect?card(`<h2>素材の用途</h2><p>${catalog.elements[d.effect.element]}属性付与</p>${note('付与量・費用・対象・消費ルールは未設定。')}`):'')+note('ID: '+d.id)+`<div class="bottom">${btn('一覧へ戻る','catalogDetail=false;render()','primary')}</div>`}
+function catalogItemView(){const d=definitions[catalogItemId],t=types[d.typeId];return title('アイテム詳細','登録済み')+card(`<div class="row"><div><h2>${esc(d.name)}</h2><small>${esc(t.label)}</small></div>${shape(d)}</div><div class="ledger">${row('装備枠',t.slot?catalog.slots[t.slot]:'装備不可')}${row('寸法（横×縦）',t.width?`${t.width} × ${t.height}`:'未設定')}${row('形状の指定',esc(t.shapeLabel||'未設定'))}${row('属性',catalog.elements[d.element])}${row('価格',d.price===null?'未設定':esc(d.price)+' G')+row('商品説明',esc(d.description||'未設定'))}${row('能力',d.stats===null?'未設定':esc(JSON.stringify(d.stats)))}${row('耐久',t.slot?'基準10（仕入れ時8〜12）':'装備対象外')}</div>`)+(d.effect?card(`<h2>素材の用途</h2><p>${catalog.elements[d.effect.element]}属性付与</p>${note('付与量・費用・対象・消費ルールは未設定。')}`):'')+note('ID: '+d.id)+`<div class="bottom">${btn('一覧へ戻る','catalogDetail=false;render()','primary')}</div>`}
 let warehouseShowStock=false;
 function showIncomingWarehouseItem(){warehouseShowStock=false;render()}
 function warehouseCell(x,y){const hit=stock.find(item=>{const d=ItemCore.dimensions(item,types);return d&&x>=item.x&&x<item.x+d.width&&y>=item.y&&y<item.y+d.height});if(hit){const index=stock.indexOf(hit);if(selected===index){warehouseShowStock=true;rotateSelected();render();return}selected=index;warehouseShowStock=true;render();return}const item=stock[selected];if(!item)return;const position=ItemCore.findNearby(item,x,y,item.rotation,stock,types,warehouseSize);if(!position)return;Object.assign(item,position);render()}

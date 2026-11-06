@@ -105,3 +105,6 @@
 .shop-layout-grid .shop-cell.occupied{background:var(--soft);box-shadow:inset -1px -1px 0 var(--line)}
 .shop-layout-grid .shop-cell.chosen{background:color-mix(in srgb,var(--accent) 28%,var(--paper));box-shadow:inset -1px -1px 0 var(--accent)}
 .shop-layout-grid .shop-cell:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* Shelf drag: prevent touch scrolling on the grid while holding a shelf. */
+.shop-layout-grid .shop-cell{touch-action:none;user-select:none;-webkit-user-select:none}

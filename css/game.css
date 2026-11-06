@@ -89,3 +89,12 @@
 #menuToggle{position:absolute;right:calc(env(safe-area-inset-right) + 10px);bottom:calc(env(safe-area-inset-bottom) - 8px);width:52px;height:44px;padding:19px 4px 3px;z-index:21;clip-path:polygon(50% 0,100% 100%,0 100%);border:0;border-radius:0;background:#e9ecef;font-size:10px;line-height:1;font-weight:600;transition:bottom .2s ease-in-out}
 #nav.is-open+#menuToggle{bottom:calc(57px + env(safe-area-inset-bottom))}
 @media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px;bottom:calc(env(safe-area-inset-bottom) - 56px)}#nav.is-open{bottom:env(safe-area-inset-bottom)}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}
+
+/* Shared item panel for incoming stock and warehouse selection. */
+.warehouse-item-panel{display:flex;flex-direction:column;gap:6px;padding:10px}
+.warehouse-item-panel h2{margin:0;font-size:12px}
+.warehouse-item-panel .row{min-width:0}
+.warehouse-item-panel .row>div{min-width:0}
+.warehouse-item-panel .actions{display:flex;flex-wrap:wrap;gap:6px}
+.warehouse-item-panel .incoming-draggable{touch-action:none;cursor:grab}
+@media(max-height:700px){.warehouse-item-panel{padding:6px;gap:4px}}

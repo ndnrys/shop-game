@@ -108,3 +108,13 @@
 
 /* Shelf drag: prevent touch scrolling on the grid while holding a shelf. */
 .shop-layout-grid .shop-cell{touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* 店舗の商品選択：棚・倉庫で共通のカード表示 */
+.shop-product-list{display:grid;gap:6px}
+.shop-product-card{display:flex;align-items:center;gap:9px;width:100%;min-width:0;padding:9px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.shop-product-card.active{border-color:var(--accent);background:var(--soft)}
+.shop-product-mark{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border:1px solid var(--accent);border-radius:5px;color:var(--accent)}
+.shop-product-info{display:flex;flex-direction:column;min-width:0;gap:3px}
+.shop-product-info b{font-size:12px}
+.shop-product-info small{font-size:10px;overflow-wrap:anywhere}
+@media(max-height:700px){.shop-product-card{padding:5px 7px}.shop-product-list{gap:4px}}

@@ -83,8 +83,8 @@
 
 /* Slide the navigation into view while keeping the game area unchanged. */
 .shell{position:relative;grid-template-rows:26px 57px minmax(0,1fr)}
-#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:calc(env(safe-area-inset-bottom) - 57px);height:57px;z-index:20;display:grid;background:var(--paper);box-shadow:0 -4px 16px #0002;transition:bottom .2s ease-in-out;pointer-events:none}
+#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:calc(env(safe-area-inset-bottom) - 56px);height:57px;z-index:20;display:grid;background:#e9ecef;box-shadow:none;transition:bottom .2s ease-in-out;pointer-events:none}
 #nav.is-open{bottom:env(safe-area-inset-bottom);pointer-events:auto}
-#menuToggle{position:absolute;right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);width:44px;height:44px;padding:6px;z-index:21;border-radius:10px 10px 0 0;background:var(--paper);border:1px solid var(--line);border-bottom:2px solid var(--accent);font-weight:700;box-shadow:0 -2px 8px #0002;transition:bottom .2s ease-in-out}
+#menuToggle{position:absolute;right:env(safe-area-inset-right);bottom:env(safe-area-inset-bottom);width:44px;height:44px;padding:6px;z-index:21;border-radius:10px 10px 0 0;background:var(--paper);border:1px solid var(--line);border-bottom:0;font-weight:700;box-shadow:0 -2px 8px #0002;transition:bottom .2s ease-in-out}
 #nav.is-open+#menuToggle{bottom:calc(57px + env(safe-area-inset-bottom))}
-@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px;bottom:calc(env(safe-area-inset-bottom) - 48px)}#nav.is-open{bottom:env(safe-area-inset-bottom)}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}
+@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px;bottom:calc(env(safe-area-inset-bottom) - 47px)}#nav.is-open{bottom:env(safe-area-inset-bottom)}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}

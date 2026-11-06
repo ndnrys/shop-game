@@ -142,3 +142,12 @@
 .shop-product-tile .shop-product-detail{position:absolute;top:4px;right:4px;z-index:1;width:23px;height:23px;min-width:23px;min-height:23px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);font-size:12px;font-weight:700;line-height:1}
 .shop-folder-content .shop-product-tile{max-height:155px}
 @media(max-height:700px){.shop-folder-content .shop-product-tile{max-height:110px}}
+
+/* 棚の商品4枠と倉庫補充を同じ画面に表示 */
+.shop-shelf-section .shop-product-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.shop-shelf-section .shop-product-tile,.shop-shelf-section .shop-empty-slot{min-width:0;aspect-ratio:1}
+.shop-empty-slot{display:grid;place-items:center;border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-size:18px}
+.shop-shelf-section .shop-product-name{font-size:9px}
+.shop-stock-section .shop-product-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.shop-shelf-section,.shop-stock-section{margin-top:8px}
+.shop-shelf-section .actions,.shop-stock-section .actions{margin-top:8px}

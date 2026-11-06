@@ -12,7 +12,7 @@
     "入荷抽選は動作確認用の一様抽選。正式な抽選率は未設定。"
   ],
   "development": {
-    "initialGold": 1250,
+    "initialGold": 500,
     "merchantCosts": [
       150,
       150,

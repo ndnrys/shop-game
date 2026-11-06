@@ -151,8 +151,9 @@ function shopBulkReturn(){
 }
 function shopItemCard(item,source){
  const checked=(source==='shelf'?shopSelectedShelf:shopSelectedStock).has(item.uid);
- return '<button type="button" class="shop-product-card '+(checked?'active':'')+'" aria-pressed="'+checked+'" onclick="shopToggleSelection(\''+source+'\','+item.uid+')">'+
- '<span class="shop-product-mark">'+(checked?'✓':'○')+'</span><span class="shop-product-info"><b>'+esc(itemName(item))+'</b><small>'+esc(itemMeta(item))+'</small></span></button>';
+ return '<button type="button" class="shop-product-card '+(checked?'active':'')+'" aria-pressed="'+checked+'" onclick="shopToggleSelection(&quot;'+source+'&quot;,'+item.uid+')">'+
+ '<img class="shop-product-image" src="'+esc(def(item).image)+'" alt="" loading="lazy" draggable="false">'+
+ '<span class="shop-product-name">'+esc(itemName(item))+'</span></button>';
 }
 function stocking(){
  if(!shopPanelOpen)return title('店舗の陳列','04 / 06')+shopLayoutView()+

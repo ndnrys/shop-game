@@ -41,7 +41,7 @@ function partyFormation(){
 function characterInfo(id){const c=characters.find(c=>c.id===id),s=companionStats(id);const attrs=Object.entries(s.attributes).map(([id,n])=>({fire:'炎',water:'水',wind:'風',earth:'土'}[id]||id)+n).join('・')||'なし';info(c.name,`${c.jobName} / Lv.${companionLevel(id)} / HP ${s.hp} / 攻撃 ${s.attack} / 防御 ${s.defense} / 固有属性 ${attrs}`)}
 const title=(a,b='')=>`<div class="heading"><h1>${a}</h1>${b?`<span class="tag">${b}</span>`:''}</div>`;const btn=(s,fn,cl='',label='')=>`<button ${label?`aria-label="${esc(label)}" `:''}class="${cl}" onclick="${fn.replaceAll('"','&quot;')}">${s}</button>`;const card=s=>`<section class="card">${s}</section>`;const steps=()=>`<div class="steps">${phases.map((p,i)=>`<span class="${phase===i?'current':''}">${p}</span>`).join('')}</div>`;const next=(label='次へ')=>`<div class="bottom"><div class="actions">${phase>0&&phase<5?btn('前の工程',`phase--;go('home')`):''}${btn(label,'advance()','primary')}</div>${steps()}</div>`;const row=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;const note=s=>`<p class="muted">${s}</p>`;const money=n=>n.toLocaleString()+' G';
 function toggleMenu(){const nav=$('#nav'),toggle=$('#menuToggle');const opening=nav.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(opening))}
-function go(id){cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(pending.length){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){resolveTradingDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions()}else phase++;go('home')}
+function go(id){shopPanelOpen=false;cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(pending.length){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){resolveTradingDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions()}else phase++;go('home')}
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}
 let pendingStockAction=null;
 function confirmStockAction(action){
@@ -66,7 +66,7 @@ function report(){const size=3;page=Math.min(page,Math.max(0,Math.ceil(returnRep
 function purchase(){let total=counts.reduce((a,n,i)=>a+n*prices[i],0);return title('今日の仕入れ',`${warehouseSize.width}×${warehouseSize.height} · 空き${warehouseSize.width*warehouseSize.height-warehouseUsed()}マス`)+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${prices[i]} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れて入荷品を確認','buy()','primary touch-target')} ${btn('今日は仕入れない','phase=2;go("home")','mini touch-target')}${steps()}</div>`}
 // 店舗の棚は8×8マスに2×2で配置する。
 const SHOP_WIDTH=8,SHOP_HEIGHT=8,SHELF_SIDE=2;
-let shopMoveShelf=false,shopDragSuppressClick=0;
+let shopMoveShelf=false,shopDragSuppressClick=0,shopPanelOpen=false;
 function shopLayout(){return economyState.shelfLayout}
 function shopShelfAt(x,y){return shopLayout().findIndex(p=>p&&x>=p.x&&x<p.x+SHELF_SIDE&&y>=p.y&&y<p.y+SHELF_SIDE)}
 function shopCanPlace(index,x,y){
@@ -75,7 +75,7 @@ function shopCanPlace(index,x,y){
 }
 function shopPlaceAt(x,y){
  const hit=shopShelfAt(x,y);
- if(hit>=0&&!shopMoveShelf){selectedShelf=hit;sub=0;page=0;render();return}
+ if(hit>=0&&!shopMoveShelf){selectedShelf=hit;shopPanelOpen=true;page=0;render();return}
  const index=shopMoveShelf?selectedShelf:shopLayout().findIndex(p=>p===null);
  if(index<0||index>=economyState.shelfCount)return;
  if(!shopCanPlace(index,x,y))return;
@@ -116,9 +116,8 @@ function shopLayoutView(){
   return `<button type="button" data-shop-x="${x}" data-shop-y="${y}" class="shop-cell ${hit>=0?'occupied':''} ${hit===selectedShelf?'chosen':''}" aria-label="${label} ${x+1}列${y+1}行" onpointerdown="startShopDrag(event,${x},${y})" onclick="if(Date.now()>shopDragSuppressClick)shopPlaceAt(${x},${y})">${origin?'棚'+(hit+1):''}</button>`;
  }).join('');
  return card(`<div class="row"><h2>店舗レイアウト</h2><small>8×8マス · 棚${layout.length-unplaced}/${economyState.shelfCount}</small></div><div class="shop-layout-grid">${cells}</div>`
- +note(shopMoveShelf?'移動先の左上マスをタップしてください。':unplaced?'空きマスをタップすると未配置の棚を置けます。':'棚をタップして選択できます。')
- +`<div class="row"><span>選択中：棚${selectedShelf+1}${layout[selectedShelf]?'':'（未配置）'}</span>${btn(shopMoveShelf?'移動を取消':'選択棚を移動','shopMoveShelf=!shopMoveShelf;render()','mini')}</div>`
- +note('棚をタップするとその棚の補充画面を開きます。位置は自動保存されます。'));
+ +note(unplaced?'空きマスをタップして棚を設置。長押しドラッグで移動できます。':'棚をタップして商品管理。長押しドラッグで移動できます。')
+ +note('位置は自動保存されます。'));
 }
 function stocking(){
  const placed=!!shopLayout()[selectedShelf],items=shelfItems(),capacity=config.development.shelfCapacity;
@@ -127,8 +126,10 @@ function stocking(){
  const perPage=3,total=Math.max(1,Math.ceil(inventory.length/perPage));page=Math.min(page,total-1);
  const choices=inventory.slice(page*perPage,(page+1)*perPage).map(item=>`<button class="item ${stock[selected]?.uid===item.uid?'active':''}" onclick="selected=stock.findIndex(i=>i.uid===${item.uid});render()"><span><b>${esc(itemName(item))}</b><small class="block">${esc(itemMeta(item))}</small></span></button>`).join('');
  const listing=card('<h2>倉庫から補充</h2>'+(inventory.length?`<div class="list">${choices}</div>${total>1?`<div class="page">${btn('‹','page=Math.max(0,page-1);render()','mini')}<small>${page+1} / ${total}</small>${btn('›',`page=Math.min(${total-1},page+1);render()`,'mini')}</div>`:''}`:note('補充できる商品がありません。'))+`<div class="actions">${btn('選んだ商品を補充','replenish()','primary')}${btn('1点を倉庫へ戻す','returnShelf()')}</div>`);
- const products=shopLayoutView()+summary+card('<h2>この棚の商品</h2>'+(items.length?items.map(i=>'<small class="block">'+esc(itemName(i))+'</small>').join(''):note('商品がありません。')))+(placed?listing:note('棚を配置すると補充できます。'));
- return title('店舗の陳列','04 / 06')+products+card(row('棚の設置数',economyState.shelfCount+' 棚')+btn('大工へ棚増設を依頼',"go('residents');sub=1;render()",'mini'))+next('仲間の支援へ');
+ const details=summary+card('<h2>この棚の商品</h2>'+(items.length?items.map(i=>'<small class="block">'+esc(itemName(i))+'</small>').join(''):note('商品がありません。')))+(placed?listing:note('棚を配置すると補充できます。'));
+ const back=btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini');
+ const overview=shopLayoutView()+card(row('棚の設置数',economyState.shelfCount+' 棚')+btn('大工へ棚増設を依頼',"go('residents');sub=1;render()",'mini'));
+ return title('店舗の陳列','04 / 06')+(shopPanelOpen?back+details:overview)+next('仲間の支援へ');
 }
 function support(routine=false){return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+`<div class="tabs">${[['編成',0],...(routine?[['目的地',2]]:[])].map(([label,index])=>btn(label,`sub=${index};render()`,sub===index?'active':'')).join('')}</div>`+(sub!==2?(routine?card(`<div class="row"><h2>第${party+1}パーティの支度金</h2><b>${money(funds[party])}</b></div><div class="actions funding-controls">${[10,100,1000].map(n=>btn('＋'+n,`if(!partyAway(party)&&funds[party]+${n}<=gold)funds[party]+=${n};render()`,'mini touch-target',`支度金を${n}G加算`)).join('')}${btn('取消',`if(!partyAway(party))funds[party]=0;render()`,'mini touch-target','支度金の予定額を取り消す')}</div>${note('派遣時に消費。パーティごとに管理。')}`):'')+partyFormation():destinationView())+(routine?next('今日のお店を開ける'):`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`)}
 function records(){return title('記録')+card(`<h2>日誌</h2><p>日々の商売や冒険の出来事を振り返ります。</p><br>${btn('日誌を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}
@@ -151,7 +152,7 @@ function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board={w
 
 
 function storeItem(instance){const position=ItemCore.findSpace(instance,stock,types,warehouseSize);if(!position)return false;Object.assign(instance,position);stock.push(instance);return true}
-function reset(persistReset=true){warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=2;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:10,maxDurability:10};if(!storeItem(item))pending.push(item)}go('home')};
+function reset(persistReset=true){shopPanelOpen=false;warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=2;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:10,maxDurability:10};if(!storeItem(item))pending.push(item)}go('home')};
 function itemList(items,fn){const size=pending.length?Math.min(2,config.ui.pageSize):config.ui.pageSize;page=Math.min(page,Math.max(0,Math.ceil(items.length/size)-1));return `<div class="list">${items.slice(page*size,page*size+size).map((item,i)=>`<button class="item ${selected===page*size+i?'active':''}" onclick="${fn.replaceAll('INDEX',page*size+i)}"><span><b>${esc(itemName(item))}</b><small class="block">${esc(itemMeta(item))}</small></span><span class="item-mini">${shape(def(item))}</span></button>`).join('')||note('商品はありません')}</div>`+pager(items.length,size)};
 function pager(length,size){const pages=Math.max(1,Math.ceil(length/size));return `<div class="page"><button class="mini" ${page===0?'disabled':''} onclick="page--;render()">‹</button><small>${page+1} / ${pages} ページ · ${length}件</small><button class="mini" ${page===pages-1?'disabled':''} onclick="page++;render()">›</button></div>`}
 function openCatalog(origin){catalogOrigin=origin;catalogDetail=false;page=0;screen='catalog';render()}

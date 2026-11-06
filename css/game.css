@@ -135,3 +135,10 @@
 .shop-folder-content .actions{margin-top:14px}
 .shop-folder-content .shop-product-card{max-height:155px}
 @media(max-height:700px){.shop-folder-content .shop-product-card{max-height:110px}.shop-folder-content .shop-product-list{gap:7px;margin-top:8px}.shop-folder-content .page,.shop-folder-content .actions{margin-top:10px}}
+
+/* 商品タイルの情報ボタンは複数選択とは独立 */
+.shop-product-tile{position:relative;min-width:0;aspect-ratio:1}
+.shop-product-tile .shop-product-card{height:100%;max-height:none}
+.shop-product-tile .shop-product-detail{position:absolute;top:4px;right:4px;z-index:1;width:23px;height:23px;min-width:23px;min-height:23px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);font-size:12px;font-weight:700;line-height:1}
+.shop-folder-content .shop-product-tile{max-height:155px}
+@media(max-height:700px){.shop-folder-content .shop-product-tile{max-height:110px}}

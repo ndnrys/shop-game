@@ -6,7 +6,18 @@ const partyAway=index=>expeditions.some(e=>e.party===index);
 const isAway=id=>expeditions.some(e=>e.members.includes(id));
 function gear(id){return equipment[id]??={}}
 function canEquip(id,item){const c=characters.find(c=>c.id===id);return !!c&&config.adventurers.jobEquipment[c.initialJobId]?.includes(item.typeId)===true}
-function companionStats(id){return AdventurerCore.stats(characters.find(c=>c.id===id).initialStats,economyState.companions[id]?.growth)}
+function companionStats(id){
+ const stats=AdventurerCore.stats(characters.find(c=>c.id===id).initialStats,economyState.companions[id]?.growth);
+ for(const item of Object.values(gear(id)).filter(Boolean)){
+  if(item.durability<=0)continue;
+  const bonus=definitions[item.itemId]?.stats;
+  if(!bonus)continue;
+  for(const key of ['hp','attack','defense']){
+   if(Number.isFinite(bonus[key]))stats[key]+=bonus[key];
+  }
+ }
+ return stats;
+}
 function growthPolicy(id){return economyState.companions[id]?.growthPolicy||config.adventurers.growth.defaultPolicy}
 function setGrowthPolicy(policy){
  if(!availableCharacterIds.includes(equipCharacter)||!Object.hasOwn(config.adventurers.growth.policies,policy)||companionStatus(equipCharacter)==='dead')return;

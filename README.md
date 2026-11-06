@@ -23,6 +23,8 @@ JSONをHTTP経由で読み込むため、HTMLファイルを直接開く方法�
 - `js/economy.js`：固定費精算・治療・自然回復・棚増設。
 - `js/save-game.js`：自動保存、JSON入出力、バージョン移行と検証。
 - `data/item-catalog.json`：206種のアイテム定義。
+  - `description` は商品説明文（文字列または `null`）。未設定の価格・能力・効果は従来どおり仮定せず、商品詳細画面で確認する。
+  - 店舗の商品カード右上の `i` で商品情報を確認できる。カード本体のタップは複数選択のまま。
 - `data/game-settings.json`：倉庫・表示・開発中の仮数値。
 - `data/economy.json`：章別の固定費・棚増設費と、Lvあたり治療単価の暫定値。
 - `tests/game.test.mjs`：現行実装のデータ・画面遷移・倉庫操作の確認。

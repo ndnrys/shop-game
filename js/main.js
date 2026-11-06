@@ -64,7 +64,37 @@ function executeStockAction(){
 function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();if(phase===1)return purchase();if(phase===2)return warehouse(true);if(phase===3)return stocking();if(phase===4)return support(true);return sales()}
 function report(){const size=3;page=Math.min(page,Math.max(0,Math.ceil(returnReport.length/size)-1));return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+(sub?card(`<h2>遠征の結果</h2>${returnReport.length?returnReport.slice(page*size,(page+1)*size).map(line=>`<p>${esc(line)}</p>`).join(''):note('帰還したパーティはありません。')}`)+(returnReport.length>size?pager(returnReport.length,size):''):card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+`<div class="bottom">${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;page=0;render()','primary')}${steps()}</div>`}
 function purchase(){let total=counts.reduce((a,n,i)=>a+n*prices[i],0);return title('今日の仕入れ',`${warehouseSize.width}×${warehouseSize.height} · 空き${warehouseSize.width*warehouseSize.height-warehouseUsed()}マス`)+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${prices[i]} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れて入荷品を確認','buy()','primary touch-target')} ${btn('今日は仕入れない','phase=2;go("home")','mini touch-target')}${steps()}</div>`}
-function stocking(){return title('店舗の陳列','04 / 06')+`<div class="tabs">${btn('商品の補充','sub=0;render()',!sub?'active':'')}${btn('棚・設備の配置','sub=1;render()',sub?'active':'')}</div>`+(!sub?shelfSelector()+card(row('補充済み',shelfItems().length+' 点 / '+config.development.shelfCapacity+' 点')+note(esc(shelfSummary())))+itemList(stock,'selected=INDEX;render()')+`<div class="actions">${btn('選んだ商品を補充','replenish()','primary')}${btn('1点を倉庫へ戻す','returnShelf()')}</div>`:card(`<h2>店舗の棚</h2>${row('設置済み',economyState.shelfCount+' 棚')}${row('陳列上限',shelfCapacity()+' 点')}${row('棚の日額管理費',money(economyState.shelfCount*economyConfig.chapters[economyChapterId(chapter)].shopMaintenancePerShelf))}${btn('大工へ棚増設を依頼',"go('residents');sub=1;render()",'mini')}`))+note('商品と棚は翌日も維持。棚1つの容量は開発設定で管理。')+next('仲間の支援へ')}
+// 店舗の棚は8×6マスに2×2で配置する。商品補充は次の段階で接続する。
+const SHOP_WIDTH=8,SHOP_HEIGHT=6,SHELF_SIDE=2;
+let shopMoveShelf=false;
+function shopLayout(){return economyState.shelfLayout}
+function shopShelfAt(x,y){return shopLayout().findIndex(p=>p&&x>=p.x&&x<p.x+SHELF_SIDE&&y>=p.y&&y<p.y+SHELF_SIDE)}
+function shopCanPlace(index,x,y){
+ if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x+SHELF_SIDE>SHOP_WIDTH||y+SHELF_SIDE>SHOP_HEIGHT)return false;
+ return shopLayout().every((p,i)=>i===index||!p||x+SHELF_SIDE<=p.x||p.x+SHELF_SIDE<=x||y+SHELF_SIDE<=p.y||p.y+SHELF_SIDE<=y);
+}
+function shopPlaceAt(x,y){
+ const hit=shopShelfAt(x,y);
+ if(hit>=0&&!shopMoveShelf){selectedShelf=hit;render();return}
+ const index=shopMoveShelf?selectedShelf:shopLayout().findIndex(p=>p===null);
+ if(index<0||index>=economyState.shelfCount)return;
+ if(!shopCanPlace(index,x,y))return;
+ shopLayout()[index]={x,y};selectedShelf=index;shopMoveShelf=false;render();
+}
+function shopLayoutView(){
+ const layout=shopLayout(),unplaced=layout.filter(p=>!p).length;
+ const cells=Array.from({length:SHOP_WIDTH*SHOP_HEIGHT},(_,i)=>{
+  const x=i%SHOP_WIDTH,y=Math.floor(i/SHOP_WIDTH),hit=shopShelfAt(x,y),position=layout[hit];
+  const label=hit<0?'空きマス':`棚${hit+1}`;
+  const origin=hit>=0&&position.x===x&&position.y===y;
+  return `<button type="button" class="shop-cell ${hit>=0?'occupied':''} ${hit===selectedShelf?'chosen':''}" aria-label="${label} ${x+1}列${y+1}行" onclick="shopPlaceAt(${x},${y})">${origin?'棚'+(hit+1):''}</button>`;
+ }).join('');
+ return card(`<div class="row"><h2>店舗レイアウト</h2><small>8×6マス · 棚${layout.length-unplaced}/${economyState.shelfCount}</small></div><div class="shop-layout-grid">${cells}</div>`
+ +note(shopMoveShelf?'移動先の左上マスをタップしてください。':unplaced?'空きマスをタップすると未配置の棚を置けます。':'棚をタップして選択できます。')
+ +`<div class="row"><span>選択中：棚${selectedShelf+1}${layout[selectedShelf]?'':'（未配置）'}</span>${btn(shopMoveShelf?'移動を取消':'選択棚を移動','shopMoveShelf=!shopMoveShelf;render()','mini')}</div>`
+ +note('商品補充は従来の「商品の補充」タブで行えます。棚の位置は自動保存されます。'));
+}
+function stocking(){return title('店舗の陳列','04 / 06')+`<div class="tabs">${btn('商品の補充','sub=0;render()',!sub?'active':'')}${btn('棚・設備の配置','sub=1;render()',sub?'active':'')}</div>`+(!sub?shelfSelector()+card(row('補充済み',shelfItems().length+' 点 / '+config.development.shelfCapacity+' 点')+note(esc(shelfSummary())))+itemList(stock,'selected=INDEX;render()')+`<div class="actions">${btn('選んだ商品を補充','replenish()','primary')}${btn('1点を倉庫へ戻す','returnShelf()')}</div>`:shopLayoutView()+card(`<h2>店舗の棚</h2>${row('設置済み',economyState.shelfCount+' 棚')}${row('陳列上限',shelfCapacity()+' 点')}${row('棚の日額管理費',money(economyState.shelfCount*economyConfig.chapters[economyChapterId(chapter)].shopMaintenancePerShelf))}${btn('大工へ棚増設を依頼',"go('residents');sub=1;render()",'mini')}`))+note('商品と棚は翌日も維持。棚1つの容量は開発設定で管理。')+next('仲間の支援へ')}
 function support(routine=false){return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+`<div class="tabs">${[['編成',0],...(routine?[['目的地',2]]:[])].map(([label,index])=>btn(label,`sub=${index};render()`,sub===index?'active':'')).join('')}</div>`+(sub!==2?(routine?card(`<div class="row"><h2>第${party+1}パーティの支度金</h2><b>${money(funds[party])}</b></div><div class="actions funding-controls">${[10,100,1000].map(n=>btn('＋'+n,`if(!partyAway(party)&&funds[party]+${n}<=gold)funds[party]+=${n};render()`,'mini touch-target',`支度金を${n}G加算`)).join('')}${btn('取消',`if(!partyAway(party))funds[party]=0;render()`,'mini touch-target','支度金の予定額を取り消す')}</div>${note('派遣時に消費。パーティごとに管理。')}`):'')+partyFormation():destinationView())+(routine?next('今日のお店を開ける'):`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`)}
 function records(){return title('記録')+card(`<h2>日誌</h2><p>日々の商売や冒険の出来事を振り返ります。</p><br>${btn('日誌を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}
 function journal(){let days=['春 2日','春 1日'];return title('店主の日誌')+`<div class="page">${btn('‹','page=0;render()')}<b>${days[page]}</b>${btn('›','page=1;render()')}</div>`+card(`<div class="ledger">${row('商売','売上 480 G')}${row('仕入れ','300 G')}${row('仲間への支援','支度金 100 G')}${row('遠征','周辺の森へ出発')}${row('現金収支','＋80 G')}</div>`)+note('日付ごとに短い記録を表示。会話全文は重ねない。')+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`}

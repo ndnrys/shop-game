@@ -198,10 +198,13 @@
       "status": "active",
       "image": "assets/equipment/01_片手剣/01_木剣.png",
       "order": 1,
-      "price": 35,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 50,
+      "stats": {
+        "attack": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "one_hand_sword_02",
@@ -212,10 +215,13 @@
       "status": "active",
       "image": "assets/equipment/01_片手剣/02_銅の剣.png",
       "order": 2,
-      "price": 35,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 75,
+      "stats": {
+        "attack": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "one_hand_sword_03",
@@ -226,10 +232,13 @@
       "status": "active",
       "image": "assets/equipment/01_片手剣/03_鉄の剣.png",
       "order": 3,
-      "price": 70,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 100,
+      "stats": {
+        "attack": 8
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "one_hand_sword_04",
@@ -242,8 +251,9 @@
       "order": 4,
       "price": 70,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_05",
@@ -256,8 +266,9 @@
       "order": 5,
       "price": 140,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_06",
@@ -270,8 +281,9 @@
       "order": 6,
       "price": 140,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_07",
@@ -284,8 +296,9 @@
       "order": 7,
       "price": 280,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_08",
@@ -298,8 +311,9 @@
       "order": 8,
       "price": 280,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_09",
@@ -312,8 +326,9 @@
       "order": 9,
       "price": 560,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_sword_10",
@@ -326,8 +341,9 @@
       "order": 10,
       "price": 560,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_01",
@@ -338,10 +354,13 @@
       "status": "active",
       "image": "assets/equipment/02_片手メイス/01_木の棍棒.png",
       "order": 1,
-      "price": 30,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 50,
+      "stats": {
+        "attack": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "one_hand_mace_02",
@@ -352,10 +371,13 @@
       "status": "active",
       "image": "assets/equipment/02_片手メイス/02_石の棍棒.png",
       "order": 2,
-      "price": 30,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 70,
+      "stats": {
+        "attack": 5
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "one_hand_mace_03",
@@ -368,8 +390,9 @@
       "order": 3,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_04",
@@ -382,8 +405,9 @@
       "order": 4,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_05",
@@ -396,8 +420,9 @@
       "order": 5,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_06",
@@ -410,8 +435,9 @@
       "order": 6,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_07",
@@ -424,8 +450,9 @@
       "order": 7,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_08",
@@ -438,8 +465,9 @@
       "order": 8,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_09",
@@ -452,8 +480,9 @@
       "order": 9,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "one_hand_mace_10",
@@ -466,8 +495,9 @@
       "order": 10,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_01",
@@ -479,9 +509,12 @@
       "image": "assets/equipment/03_両手剣/01_錆びた大剣.png",
       "order": 1,
       "price": 55,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "stats": {
+        "attack": 7
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "two_hand_sword_02",
@@ -492,10 +525,13 @@
       "status": "active",
       "image": "assets/equipment/03_両手剣/02_鉄の大剣.png",
       "order": 2,
-      "price": 55,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 140,
+      "stats": {
+        "attack": 12
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "two_hand_sword_03",
@@ -508,8 +544,9 @@
       "order": 3,
       "price": 110,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_04",
@@ -522,8 +559,9 @@
       "order": 4,
       "price": 110,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_05",
@@ -536,8 +574,9 @@
       "order": 5,
       "price": 220,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_06",
@@ -550,8 +589,9 @@
       "order": 6,
       "price": 220,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_07",
@@ -564,8 +604,9 @@
       "order": 7,
       "price": 440,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_08",
@@ -578,8 +619,9 @@
       "order": 8,
       "price": 440,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_09",
@@ -592,8 +634,9 @@
       "order": 9,
       "price": 880,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_sword_10",
@@ -606,8 +649,9 @@
       "order": 10,
       "price": 880,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_01",
@@ -618,10 +662,13 @@
       "status": "active",
       "image": "assets/equipment/04_両手斧/01_木こりの斧.png",
       "order": 1,
-      "price": 50,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 70,
+      "stats": {
+        "attack": 9
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "two_hand_axe_02",
@@ -632,10 +679,13 @@
       "status": "active",
       "image": "assets/equipment/04_両手斧/02_石斧.png",
       "order": 2,
-      "price": 50,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 90,
+      "stats": {
+        "attack": 11
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "two_hand_axe_03",
@@ -646,10 +696,13 @@
       "status": "active",
       "image": "assets/equipment/04_両手斧/03_鉄の大斧.png",
       "order": 3,
-      "price": 100,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 150,
+      "stats": {
+        "attack": 15
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "two_hand_axe_04",
@@ -662,8 +715,9 @@
       "order": 4,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_05",
@@ -676,8 +730,9 @@
       "order": 5,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_06",
@@ -690,8 +745,9 @@
       "order": 6,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_07",
@@ -704,8 +760,9 @@
       "order": 7,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_08",
@@ -718,8 +775,9 @@
       "order": 8,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_09",
@@ -732,8 +790,9 @@
       "order": 9,
       "price": 800,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "two_hand_axe_10",
@@ -746,8 +805,9 @@
       "order": 10,
       "price": 800,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_01",
@@ -758,10 +818,13 @@
       "status": "active",
       "image": "assets/equipment/05_弓/01_木の弓.png",
       "order": 1,
-      "price": 40,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 60,
+      "stats": {
+        "attack": 3
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "bow_02",
@@ -772,10 +835,13 @@
       "status": "active",
       "image": "assets/equipment/05_弓/02_狩人の弓.png",
       "order": 2,
-      "price": 40,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 100,
+      "stats": {
+        "attack": 6
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "bow_03",
@@ -788,8 +854,9 @@
       "order": 3,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_04",
@@ -802,8 +869,9 @@
       "order": 4,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_05",
@@ -816,8 +884,9 @@
       "order": 5,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_06",
@@ -830,8 +899,9 @@
       "order": 6,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_07",
@@ -844,8 +914,9 @@
       "order": 7,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_08",
@@ -858,8 +929,9 @@
       "order": 8,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_09",
@@ -872,8 +944,9 @@
       "order": 9,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "bow_10",
@@ -886,8 +959,9 @@
       "order": 10,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_01",
@@ -900,8 +974,9 @@
       "order": 1,
       "price": 65,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_02",
@@ -914,8 +989,9 @@
       "order": 2,
       "price": 65,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_03",
@@ -928,8 +1004,9 @@
       "order": 3,
       "price": 130,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_04",
@@ -942,8 +1019,9 @@
       "order": 4,
       "price": 130,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_13",
@@ -956,8 +1034,9 @@
       "order": 5,
       "price": 260,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_14",
@@ -970,8 +1049,9 @@
       "order": 6,
       "price": 260,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_07",
@@ -984,8 +1064,9 @@
       "order": 7,
       "price": 260,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_15",
@@ -998,8 +1079,9 @@
       "order": 8,
       "price": 520,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_16",
@@ -1012,8 +1094,9 @@
       "order": 9,
       "price": 520,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_10",
@@ -1026,8 +1109,9 @@
       "order": 10,
       "price": 1040,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_17",
@@ -1040,8 +1124,9 @@
       "order": 11,
       "price": 1040,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "staff_18",
@@ -1054,8 +1139,9 @@
       "order": 12,
       "price": 1040,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_13",
@@ -1066,10 +1152,13 @@
       "status": "active",
       "image": "assets/equipment/07_ロッド/01_火術師のロッド.png",
       "order": 1,
-      "price": 45,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 80,
+      "stats": {
+        "attack": 5
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "rod_14",
@@ -1082,8 +1171,9 @@
       "order": 2,
       "price": 45,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_03",
@@ -1096,8 +1186,9 @@
       "order": 3,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_15",
@@ -1110,8 +1201,9 @@
       "order": 4,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_16",
@@ -1124,8 +1216,9 @@
       "order": 5,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_17",
@@ -1138,8 +1231,9 @@
       "order": 6,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_18",
@@ -1152,8 +1246,9 @@
       "order": 7,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_19",
@@ -1166,8 +1261,9 @@
       "order": 8,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_20",
@@ -1180,8 +1276,9 @@
       "order": 9,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_21",
@@ -1194,8 +1291,9 @@
       "order": 10,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_22",
@@ -1208,8 +1306,9 @@
       "order": 11,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "rod_23",
@@ -1222,8 +1321,9 @@
       "order": 12,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_01",
@@ -1236,8 +1336,9 @@
       "order": 1,
       "price": 40,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_02",
@@ -1250,8 +1351,9 @@
       "order": 2,
       "price": 40,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_03",
@@ -1264,8 +1366,9 @@
       "order": 3,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_04",
@@ -1278,8 +1381,9 @@
       "order": 4,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_05",
@@ -1292,8 +1396,9 @@
       "order": 5,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_06",
@@ -1306,8 +1411,9 @@
       "order": 6,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_07",
@@ -1320,8 +1426,9 @@
       "order": 7,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_08",
@@ -1334,8 +1441,9 @@
       "order": 8,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_09",
@@ -1348,8 +1456,9 @@
       "order": 9,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spear_10",
@@ -1362,8 +1471,9 @@
       "order": 10,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_01",
@@ -1374,10 +1484,13 @@
       "status": "active",
       "image": "assets/equipment/09_ナイフ/01_果物ナイフ.png",
       "order": 1,
-      "price": 25,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 30,
+      "stats": {
+        "attack": 3
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "knife_02",
@@ -1388,10 +1501,13 @@
       "status": "active",
       "image": "assets/equipment/09_ナイフ/02_石のナイフ.png",
       "order": 2,
-      "price": 25,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 50,
+      "stats": {
+        "attack": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "knife_03",
@@ -1402,10 +1518,13 @@
       "status": "active",
       "image": "assets/equipment/09_ナイフ/03_銅の短剣.png",
       "order": 3,
-      "price": 50,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 80,
+      "stats": {
+        "attack": 5
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "knife_04",
@@ -1418,8 +1537,9 @@
       "order": 4,
       "price": 50,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_05",
@@ -1432,8 +1552,9 @@
       "order": 5,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_06",
@@ -1446,8 +1567,9 @@
       "order": 6,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_07",
@@ -1460,8 +1582,9 @@
       "order": 7,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_08",
@@ -1474,8 +1597,9 @@
       "order": 8,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_09",
@@ -1488,8 +1612,9 @@
       "order": 9,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "knife_10",
@@ -1502,8 +1627,9 @@
       "order": 10,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_01",
@@ -1514,10 +1640,13 @@
       "status": "active",
       "image": "assets/equipment/10_盾/01_木の盾.png",
       "order": 1,
-      "price": 35,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 45,
+      "stats": {
+        "defense": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "shield_11",
@@ -1528,10 +1657,13 @@
       "status": "active",
       "image": "assets/equipment/10_盾/02_補強木盾.png",
       "order": 2,
-      "price": 35,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 70,
+      "stats": {
+        "defense": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "shield_12",
@@ -1544,8 +1676,9 @@
       "order": 3,
       "price": 70,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_04",
@@ -1558,8 +1691,9 @@
       "order": 4,
       "price": 70,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_13",
@@ -1572,8 +1706,9 @@
       "order": 5,
       "price": 140,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_14",
@@ -1586,8 +1721,9 @@
       "order": 6,
       "price": 140,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_07",
@@ -1600,8 +1736,9 @@
       "order": 7,
       "price": 280,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_08",
@@ -1614,8 +1751,9 @@
       "order": 8,
       "price": 280,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_15",
@@ -1628,8 +1766,9 @@
       "order": 9,
       "price": 560,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "shield_16",
@@ -1642,8 +1781,9 @@
       "order": 10,
       "price": 560,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_11",
@@ -1654,10 +1794,13 @@
       "status": "active",
       "image": "assets/equipment/11_矢/01_木の矢筒.png",
       "order": 1,
-      "price": 20,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 30,
+      "stats": {
+        "attack": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "arrow_12",
@@ -1668,10 +1811,13 @@
       "status": "active",
       "image": "assets/equipment/11_矢/02_革の矢筒.png",
       "order": 2,
-      "price": 20,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 30,
+      "stats": {
+        "attack": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "arrow_13",
@@ -1684,8 +1830,9 @@
       "order": 3,
       "price": 40,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_14",
@@ -1698,8 +1845,9 @@
       "order": 4,
       "price": 40,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_15",
@@ -1712,8 +1860,9 @@
       "order": 5,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_16",
@@ -1726,8 +1875,9 @@
       "order": 6,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_17",
@@ -1740,8 +1890,9 @@
       "order": 7,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_18",
@@ -1754,8 +1905,9 @@
       "order": 8,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_19",
@@ -1768,8 +1920,9 @@
       "order": 9,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "arrow_20",
@@ -1782,8 +1935,9 @@
       "order": 10,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_13",
@@ -1796,8 +1950,9 @@
       "order": 1,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_14",
@@ -1810,8 +1965,9 @@
       "order": 2,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_15",
@@ -1824,8 +1980,9 @@
       "order": 3,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_16",
@@ -1838,8 +1995,9 @@
       "order": 4,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_17",
@@ -1852,8 +2010,9 @@
       "order": 5,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_18",
@@ -1866,8 +2025,9 @@
       "order": 6,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_19",
@@ -1878,10 +2038,13 @@
       "status": "active",
       "image": "assets/equipment/12_魔導書/07_風術師の魔導書.png",
       "order": 7,
-      "price": 240,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 200,
+      "stats": {
+        "attack": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "spellbook_20",
@@ -1894,8 +2057,9 @@
       "order": 8,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_21",
@@ -1908,8 +2072,9 @@
       "order": 9,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_22",
@@ -1922,8 +2087,9 @@
       "order": 10,
       "price": 960,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_23",
@@ -1936,8 +2102,9 @@
       "order": 11,
       "price": 960,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "spellbook_24",
@@ -1950,8 +2117,9 @@
       "order": 12,
       "price": 960,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_03",
@@ -1962,10 +2130,14 @@
       "status": "active",
       "image": "assets/equipment/13_頭_重装備/01_鉄の兜.png",
       "order": 1,
-      "price": 45,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 120,
+      "stats": {
+        "hp": 5,
+        "defense": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "head_heavy_04",
@@ -1978,8 +2150,9 @@
       "order": 2,
       "price": 45,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_11",
@@ -1992,8 +2165,9 @@
       "order": 3,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_12",
@@ -2006,8 +2180,9 @@
       "order": 4,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_13",
@@ -2020,8 +2195,9 @@
       "order": 5,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_05",
@@ -2034,8 +2210,9 @@
       "order": 6,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_14",
@@ -2048,8 +2225,9 @@
       "order": 7,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_15",
@@ -2062,8 +2240,9 @@
       "order": 8,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_16",
@@ -2076,8 +2255,9 @@
       "order": 9,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_heavy_17",
@@ -2090,8 +2270,9 @@
       "order": 10,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_11",
@@ -2102,10 +2283,14 @@
       "status": "active",
       "image": "assets/equipment/14_頭_軽装備/01_革のフード.png",
       "order": 1,
-      "price": 25,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 50,
+      "stats": {
+        "hp": 2,
+        "defense": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "head_light_12",
@@ -2116,10 +2301,14 @@
       "status": "active",
       "image": "assets/equipment/14_頭_軽装備/02_ゴーグル付き革帽.png",
       "order": 2,
-      "price": 25,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 65,
+      "stats": {
+        "hp": 3,
+        "defense": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "head_light_13",
@@ -2132,8 +2321,9 @@
       "order": 3,
       "price": 50,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_14",
@@ -2146,8 +2336,9 @@
       "order": 4,
       "price": 50,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_15",
@@ -2160,8 +2351,9 @@
       "order": 5,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_02",
@@ -2174,8 +2366,9 @@
       "order": 6,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_16",
@@ -2188,8 +2381,9 @@
       "order": 7,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_17",
@@ -2202,8 +2396,9 @@
       "order": 8,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_18",
@@ -2216,8 +2411,9 @@
       "order": 9,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_light_19",
@@ -2230,8 +2426,9 @@
       "order": 10,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_11",
@@ -2242,10 +2439,14 @@
       "status": "active",
       "image": "assets/equipment/15_頭_服/01_見習い魔術師の帽子.png",
       "order": 1,
-      "price": 30,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 50,
+      "stats": {
+        "hp": 2,
+        "defense": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "head_cloth_12",
@@ -2258,8 +2459,9 @@
       "order": 2,
       "price": 30,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_13",
@@ -2272,8 +2474,9 @@
       "order": 3,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_14",
@@ -2286,8 +2489,9 @@
       "order": 4,
       "price": 60,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_15",
@@ -2300,8 +2504,9 @@
       "order": 5,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_16",
@@ -2314,8 +2519,9 @@
       "order": 6,
       "price": 120,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_17",
@@ -2328,8 +2534,9 @@
       "order": 7,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_18",
@@ -2342,8 +2549,9 @@
       "order": 8,
       "price": 240,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_19",
@@ -2356,8 +2564,9 @@
       "order": 9,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "head_cloth_20",
@@ -2370,8 +2579,9 @@
       "order": 10,
       "price": 480,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_02",
@@ -2383,9 +2593,13 @@
       "image": "assets/equipment/16_体_重装備/01_鉄の鎧.png",
       "order": 1,
       "price": 75,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "stats": {
+        "hp": 6,
+        "defense": 3
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "body_heavy_03",
@@ -2398,8 +2612,9 @@
       "order": 2,
       "price": 75,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_11",
@@ -2412,8 +2627,9 @@
       "order": 3,
       "price": 150,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_12",
@@ -2426,8 +2642,9 @@
       "order": 4,
       "price": 150,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_13",
@@ -2440,8 +2657,9 @@
       "order": 5,
       "price": 300,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_14",
@@ -2454,8 +2672,9 @@
       "order": 6,
       "price": 300,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_07",
@@ -2468,8 +2687,9 @@
       "order": 7,
       "price": 600,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_15",
@@ -2482,8 +2702,9 @@
       "order": 8,
       "price": 600,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_16",
@@ -2496,8 +2717,9 @@
       "order": 9,
       "price": 1200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_heavy_17",
@@ -2510,8 +2732,9 @@
       "order": 10,
       "price": 1200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_01",
@@ -2522,10 +2745,14 @@
       "status": "active",
       "image": "assets/equipment/17_体_軽装備/01_革の服.png",
       "order": 1,
-      "price": 50,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 60,
+      "stats": {
+        "hp": 2,
+        "defense": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "body_light_11",
@@ -2536,10 +2763,14 @@
       "status": "active",
       "image": "assets/equipment/17_体_軽装備/02_傭兵の軽鎧.png",
       "order": 2,
-      "price": 50,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 80,
+      "stats": {
+        "hp": 3,
+        "defense": 3
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "body_light_12",
@@ -2552,8 +2783,9 @@
       "order": 3,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_13",
@@ -2566,8 +2798,9 @@
       "order": 4,
       "price": 100,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_14",
@@ -2580,8 +2813,9 @@
       "order": 5,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_15",
@@ -2594,8 +2828,9 @@
       "order": 6,
       "price": 200,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_16",
@@ -2608,8 +2843,9 @@
       "order": 7,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_17",
@@ -2622,8 +2858,9 @@
       "order": 8,
       "price": 400,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_18",
@@ -2636,8 +2873,9 @@
       "order": 9,
       "price": 800,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_light_19",
@@ -2650,8 +2888,9 @@
       "order": 10,
       "price": 800,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_03",
@@ -2663,9 +2902,13 @@
       "image": "assets/equipment/18_体_服/01_見習いのローブ.png",
       "order": 1,
       "price": 45,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "stats": {
+        "hp": 1,
+        "defense": 2
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "body_cloth_06",
@@ -2676,10 +2919,14 @@
       "status": "active",
       "image": "assets/equipment/18_体_服/02_学者のローブ.png",
       "order": 2,
-      "price": 45,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 80,
+      "stats": {
+        "hp": 1,
+        "defense": 4
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "body_cloth_11",
@@ -2692,8 +2939,9 @@
       "order": 3,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_12",
@@ -2706,8 +2954,9 @@
       "order": 4,
       "price": 90,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_13",
@@ -2720,8 +2969,9 @@
       "order": 5,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_14",
@@ -2734,8 +2984,9 @@
       "order": 6,
       "price": 180,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_15",
@@ -2748,8 +2999,9 @@
       "order": 7,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_09",
@@ -2762,8 +3014,9 @@
       "order": 8,
       "price": 360,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_16",
@@ -2776,8 +3029,9 @@
       "order": 9,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "body_cloth_17",
@@ -2790,8 +3044,9 @@
       "order": 10,
       "price": 720,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_01",
@@ -2804,8 +3059,9 @@
       "order": 1,
       "price": 40,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_02",
@@ -2816,10 +3072,13 @@
       "status": "active",
       "image": "assets/equipment/19_装飾品/02_蒼翼の指輪.png",
       "order": 2,
-      "price": 40,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 60,
+      "stats": {
+        "hp": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "accessory_03",
@@ -2830,10 +3089,13 @@
       "status": "active",
       "image": "assets/equipment/19_装飾品/03_翠葉の指輪.png",
       "order": 3,
-      "price": 40,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 60,
+      "stats": {
+        "attack": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "accessory_04",
@@ -2844,10 +3106,13 @@
       "status": "active",
       "image": "assets/equipment/19_装飾品/04_紫晶の指輪.png",
       "order": 4,
-      "price": 40,
-      "stats": null,
-      "durability": null,
-      "effect": null
+      "price": 60,
+      "stats": {
+        "defense": 1
+      },
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 0
     },
     {
       "id": "accessory_05",
@@ -2860,8 +3125,9 @@
       "order": 5,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_06",
@@ -2874,8 +3140,9 @@
       "order": 6,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_07",
@@ -2888,8 +3155,9 @@
       "order": 7,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_08",
@@ -2902,8 +3170,9 @@
       "order": 8,
       "price": 80,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_09",
@@ -2916,8 +3185,9 @@
       "order": 9,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_10",
@@ -2930,8 +3200,9 @@
       "order": 10,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_11",
@@ -2944,8 +3215,9 @@
       "order": 11,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_12",
@@ -2958,8 +3230,9 @@
       "order": 12,
       "price": 160,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_13",
@@ -2972,8 +3245,9 @@
       "order": 13,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_14",
@@ -2986,8 +3260,9 @@
       "order": 14,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_15",
@@ -3000,8 +3275,9 @@
       "order": 15,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_16",
@@ -3014,8 +3290,9 @@
       "order": 16,
       "price": 320,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_17",
@@ -3028,8 +3305,9 @@
       "order": 17,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_18",
@@ -3042,8 +3320,9 @@
       "order": 18,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_19",
@@ -3056,8 +3335,9 @@
       "order": 19,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     },
     {
       "id": "accessory_20",
@@ -3070,8 +3350,9 @@
       "order": 20,
       "price": 640,
       "stats": null,
-      "durability": null,
-      "effect": null
+      "durability": 10,
+      "effect": null,
+      "unlockChapter": 9
     }
   ],
   "migration": {

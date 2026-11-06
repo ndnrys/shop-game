@@ -192,6 +192,7 @@
     {
       "id": "one_hand_sword_01",
       "name": "木剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -205,6 +206,7 @@
     {
       "id": "one_hand_sword_02",
       "name": "銅の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -218,6 +220,7 @@
     {
       "id": "one_hand_sword_03",
       "name": "鉄の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -231,6 +234,7 @@
     {
       "id": "one_hand_sword_04",
       "name": "鋼の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -244,6 +248,7 @@
     {
       "id": "one_hand_sword_05",
       "name": "騎士の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -257,6 +262,7 @@
     {
       "id": "one_hand_sword_06",
       "name": "銀の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -270,6 +276,7 @@
     {
       "id": "one_hand_sword_07",
       "name": "ミスリルソード",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -283,6 +290,7 @@
     {
       "id": "one_hand_sword_08",
       "name": "王国の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -296,6 +304,7 @@
     {
       "id": "one_hand_sword_09",
       "name": "近衛騎士の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -309,6 +318,7 @@
     {
       "id": "one_hand_sword_10",
       "name": "英雄の剣",
+      "description": null,
       "typeId": "one_hand_sword",
       "element": "none",
       "status": "active",
@@ -322,6 +332,7 @@
     {
       "id": "one_hand_mace_01",
       "name": "木の棍棒",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -335,6 +346,7 @@
     {
       "id": "one_hand_mace_02",
       "name": "石の棍棒",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -348,6 +360,7 @@
     {
       "id": "one_hand_mace_03",
       "name": "銅のメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -361,6 +374,7 @@
     {
       "id": "one_hand_mace_04",
       "name": "鉄のメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -374,6 +388,7 @@
     {
       "id": "one_hand_mace_05",
       "name": "鋼のメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -387,6 +402,7 @@
     {
       "id": "one_hand_mace_06",
       "name": "スパイクメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -400,6 +416,7 @@
     {
       "id": "one_hand_mace_07",
       "name": "ウォーハンマー",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -413,6 +430,7 @@
     {
       "id": "one_hand_mace_08",
       "name": "銀のメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -426,6 +444,7 @@
     {
       "id": "one_hand_mace_09",
       "name": "ミスリルメイス",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -439,6 +458,7 @@
     {
       "id": "one_hand_mace_10",
       "name": "王国の戦鎚",
+      "description": null,
       "typeId": "one_hand_mace",
       "element": "none",
       "status": "active",
@@ -452,6 +472,7 @@
     {
       "id": "two_hand_sword_01",
       "name": "錆びた大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -465,6 +486,7 @@
     {
       "id": "two_hand_sword_02",
       "name": "鉄の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -478,6 +500,7 @@
     {
       "id": "two_hand_sword_03",
       "name": "鋼の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -491,6 +514,7 @@
     {
       "id": "two_hand_sword_04",
       "name": "傭兵の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -504,6 +528,7 @@
     {
       "id": "two_hand_sword_05",
       "name": "バスタードソード",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -517,6 +542,7 @@
     {
       "id": "two_hand_sword_06",
       "name": "クレイモア",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -530,6 +556,7 @@
     {
       "id": "two_hand_sword_07",
       "name": "銀の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -543,6 +570,7 @@
     {
       "id": "two_hand_sword_08",
       "name": "ミスリル大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -556,6 +584,7 @@
     {
       "id": "two_hand_sword_09",
       "name": "王国の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -569,6 +598,7 @@
     {
       "id": "two_hand_sword_10",
       "name": "覇王の大剣",
+      "description": null,
       "typeId": "two_hand_sword",
       "element": "none",
       "status": "active",
@@ -582,6 +612,7 @@
     {
       "id": "two_hand_axe_01",
       "name": "木こりの斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -595,6 +626,7 @@
     {
       "id": "two_hand_axe_02",
       "name": "石斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -608,6 +640,7 @@
     {
       "id": "two_hand_axe_03",
       "name": "鉄の大斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -621,6 +654,7 @@
     {
       "id": "two_hand_axe_04",
       "name": "鋼の大斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -634,6 +668,7 @@
     {
       "id": "two_hand_axe_05",
       "name": "戦士の大斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -647,6 +682,7 @@
     {
       "id": "two_hand_axe_06",
       "name": "処刑人の斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -660,6 +696,7 @@
     {
       "id": "two_hand_axe_07",
       "name": "銀の大斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -673,6 +710,7 @@
     {
       "id": "two_hand_axe_08",
       "name": "ミスリルアックス",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -686,6 +724,7 @@
     {
       "id": "two_hand_axe_09",
       "name": "狂戦士の斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -699,6 +738,7 @@
     {
       "id": "two_hand_axe_10",
       "name": "覇王の戦斧",
+      "description": null,
       "typeId": "two_hand_axe",
       "element": "none",
       "status": "active",
@@ -712,6 +752,7 @@
     {
       "id": "bow_01",
       "name": "木の弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -725,6 +766,7 @@
     {
       "id": "bow_02",
       "name": "狩人の弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -738,6 +780,7 @@
     {
       "id": "bow_03",
       "name": "短弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -751,6 +794,7 @@
     {
       "id": "bow_04",
       "name": "長弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -764,6 +808,7 @@
     {
       "id": "bow_05",
       "name": "複合弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -777,6 +822,7 @@
     {
       "id": "bow_06",
       "name": "エルフの弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -790,6 +836,7 @@
     {
       "id": "bow_07",
       "name": "銀の弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -803,6 +850,7 @@
     {
       "id": "bow_08",
       "name": "ミスリルボウ",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -816,6 +864,7 @@
     {
       "id": "bow_09",
       "name": "王国の長弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -829,6 +878,7 @@
     {
       "id": "bow_10",
       "name": "英雄の弓",
+      "description": null,
       "typeId": "bow",
       "element": "none",
       "status": "active",
@@ -842,6 +892,7 @@
     {
       "id": "staff_01",
       "name": "火術師の杖",
+      "description": null,
       "typeId": "staff",
       "element": "fire",
       "status": "active",
@@ -855,6 +906,7 @@
     {
       "id": "staff_02",
       "name": "炎帝の杖",
+      "description": null,
       "typeId": "staff",
       "element": "fire",
       "status": "active",
@@ -868,6 +920,7 @@
     {
       "id": "staff_03",
       "name": "火竜の杖",
+      "description": null,
       "typeId": "staff",
       "element": "fire",
       "status": "active",
@@ -881,6 +934,7 @@
     {
       "id": "staff_04",
       "name": "水術師の杖",
+      "description": null,
       "typeId": "staff",
       "element": "water",
       "status": "active",
@@ -894,6 +948,7 @@
     {
       "id": "staff_13",
       "name": "水精の杖",
+      "description": null,
       "typeId": "staff",
       "element": "water",
       "status": "active",
@@ -907,6 +962,7 @@
     {
       "id": "staff_14",
       "name": "水龍の杖",
+      "description": null,
       "typeId": "staff",
       "element": "water",
       "status": "active",
@@ -920,6 +976,7 @@
     {
       "id": "staff_07",
       "name": "風術師の杖",
+      "description": null,
       "typeId": "staff",
       "element": "wind",
       "status": "active",
@@ -933,6 +990,7 @@
     {
       "id": "staff_15",
       "name": "風精の杖",
+      "description": null,
       "typeId": "staff",
       "element": "wind",
       "status": "active",
@@ -946,6 +1004,7 @@
     {
       "id": "staff_16",
       "name": "風王の杖",
+      "description": null,
       "typeId": "staff",
       "element": "wind",
       "status": "active",
@@ -959,6 +1018,7 @@
     {
       "id": "staff_10",
       "name": "土術師の杖",
+      "description": null,
       "typeId": "staff",
       "element": "earth",
       "status": "active",
@@ -972,6 +1032,7 @@
     {
       "id": "staff_17",
       "name": "地霊の杖",
+      "description": null,
       "typeId": "staff",
       "element": "earth",
       "status": "active",
@@ -985,6 +1046,7 @@
     {
       "id": "staff_18",
       "name": "大地王の杖",
+      "description": null,
       "typeId": "staff",
       "element": "earth",
       "status": "active",
@@ -998,6 +1060,7 @@
     {
       "id": "rod_13",
       "name": "火術師のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "fire",
       "status": "active",
@@ -1011,6 +1074,7 @@
     {
       "id": "rod_14",
       "name": "炎帝のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "fire",
       "status": "active",
@@ -1024,6 +1088,7 @@
     {
       "id": "rod_03",
       "name": "火竜のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "fire",
       "status": "active",
@@ -1037,6 +1102,7 @@
     {
       "id": "rod_15",
       "name": "水術師のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "water",
       "status": "active",
@@ -1050,6 +1116,7 @@
     {
       "id": "rod_16",
       "name": "水精のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "water",
       "status": "active",
@@ -1063,6 +1130,7 @@
     {
       "id": "rod_17",
       "name": "水龍のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "water",
       "status": "active",
@@ -1076,6 +1144,7 @@
     {
       "id": "rod_18",
       "name": "風術師のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "wind",
       "status": "active",
@@ -1089,6 +1158,7 @@
     {
       "id": "rod_19",
       "name": "風精のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "wind",
       "status": "active",
@@ -1102,6 +1172,7 @@
     {
       "id": "rod_20",
       "name": "風王のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "wind",
       "status": "active",
@@ -1115,6 +1186,7 @@
     {
       "id": "rod_21",
       "name": "土術師のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "earth",
       "status": "active",
@@ -1128,6 +1200,7 @@
     {
       "id": "rod_22",
       "name": "地霊のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "earth",
       "status": "active",
@@ -1141,6 +1214,7 @@
     {
       "id": "rod_23",
       "name": "大地王のロッド",
+      "description": null,
       "typeId": "rod",
       "element": "earth",
       "status": "active",
@@ -1154,6 +1228,7 @@
     {
       "id": "spear_01",
       "name": "木の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1167,6 +1242,7 @@
     {
       "id": "spear_02",
       "name": "竹槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1180,6 +1256,7 @@
     {
       "id": "spear_03",
       "name": "銅の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1193,6 +1270,7 @@
     {
       "id": "spear_04",
       "name": "鉄の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1206,6 +1284,7 @@
     {
       "id": "spear_05",
       "name": "鋼の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1219,6 +1298,7 @@
     {
       "id": "spear_06",
       "name": "騎兵の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1232,6 +1312,7 @@
     {
       "id": "spear_07",
       "name": "銀の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1245,6 +1326,7 @@
     {
       "id": "spear_08",
       "name": "ミスリルスピア",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1258,6 +1340,7 @@
     {
       "id": "spear_09",
       "name": "王国の長槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1271,6 +1354,7 @@
     {
       "id": "spear_10",
       "name": "英雄の槍",
+      "description": null,
       "typeId": "spear",
       "element": "none",
       "status": "active",
@@ -1284,6 +1368,7 @@
     {
       "id": "knife_01",
       "name": "果物ナイフ",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1297,6 +1382,7 @@
     {
       "id": "knife_02",
       "name": "石のナイフ",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1310,6 +1396,7 @@
     {
       "id": "knife_03",
       "name": "銅の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1323,6 +1410,7 @@
     {
       "id": "knife_04",
       "name": "鉄の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1336,6 +1424,7 @@
     {
       "id": "knife_05",
       "name": "鋼の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1349,6 +1438,7 @@
     {
       "id": "knife_06",
       "name": "盗賊の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1362,6 +1452,7 @@
     {
       "id": "knife_07",
       "name": "銀の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1375,6 +1466,7 @@
     {
       "id": "knife_08",
       "name": "ミスリルダガー",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1388,6 +1480,7 @@
     {
       "id": "knife_09",
       "name": "暗殺者の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1401,6 +1494,7 @@
     {
       "id": "knife_10",
       "name": "王家の短剣",
+      "description": null,
       "typeId": "knife",
       "element": "none",
       "status": "active",
@@ -1414,6 +1508,7 @@
     {
       "id": "shield_01",
       "name": "木の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1427,6 +1522,7 @@
     {
       "id": "shield_11",
       "name": "補強木盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1440,6 +1536,7 @@
     {
       "id": "shield_12",
       "name": "紋章の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1453,6 +1550,7 @@
     {
       "id": "shield_04",
       "name": "鉄の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1466,6 +1564,7 @@
     {
       "id": "shield_13",
       "name": "宝玉の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1479,6 +1578,7 @@
     {
       "id": "shield_14",
       "name": "鷲紋の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1492,6 +1592,7 @@
     {
       "id": "shield_07",
       "name": "銀の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1505,6 +1606,7 @@
     {
       "id": "shield_08",
       "name": "ミスリルシールド",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1518,6 +1620,7 @@
     {
       "id": "shield_15",
       "name": "竜紋の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1531,6 +1634,7 @@
     {
       "id": "shield_16",
       "name": "王家の盾",
+      "description": null,
       "typeId": "shield",
       "element": "none",
       "status": "active",
@@ -1544,6 +1648,7 @@
     {
       "id": "arrow_11",
       "name": "木の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1557,6 +1662,7 @@
     {
       "id": "arrow_12",
       "name": "革の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1570,6 +1676,7 @@
     {
       "id": "arrow_13",
       "name": "騎士の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1583,6 +1690,7 @@
     {
       "id": "arrow_14",
       "name": "銀装飾の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1596,6 +1704,7 @@
     {
       "id": "arrow_15",
       "name": "王家の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1609,6 +1718,7 @@
     {
       "id": "arrow_16",
       "name": "影狩りの矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1622,6 +1732,7 @@
     {
       "id": "arrow_17",
       "name": "銀の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1635,6 +1746,7 @@
     {
       "id": "arrow_18",
       "name": "ミスリルの矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1648,6 +1760,7 @@
     {
       "id": "arrow_19",
       "name": "竜狩りの矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1661,6 +1774,7 @@
     {
       "id": "arrow_20",
       "name": "英雄の矢筒",
+      "description": null,
       "typeId": "arrow",
       "element": "none",
       "status": "active",
@@ -1674,6 +1788,7 @@
     {
       "id": "spellbook_13",
       "name": "火術師の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "fire",
       "status": "active",
@@ -1687,6 +1802,7 @@
     {
       "id": "spellbook_14",
       "name": "炎帝の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "fire",
       "status": "active",
@@ -1700,6 +1816,7 @@
     {
       "id": "spellbook_15",
       "name": "火竜の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "fire",
       "status": "active",
@@ -1713,6 +1830,7 @@
     {
       "id": "spellbook_16",
       "name": "水術師の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "water",
       "status": "active",
@@ -1726,6 +1844,7 @@
     {
       "id": "spellbook_17",
       "name": "水精の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "water",
       "status": "active",
@@ -1739,6 +1858,7 @@
     {
       "id": "spellbook_18",
       "name": "水龍の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "water",
       "status": "active",
@@ -1752,6 +1872,7 @@
     {
       "id": "spellbook_19",
       "name": "風術師の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "wind",
       "status": "active",
@@ -1765,6 +1886,7 @@
     {
       "id": "spellbook_20",
       "name": "風精の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "wind",
       "status": "active",
@@ -1778,6 +1900,7 @@
     {
       "id": "spellbook_21",
       "name": "風王の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "wind",
       "status": "active",
@@ -1791,6 +1914,7 @@
     {
       "id": "spellbook_22",
       "name": "土術師の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "earth",
       "status": "active",
@@ -1804,6 +1928,7 @@
     {
       "id": "spellbook_23",
       "name": "地霊の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "earth",
       "status": "active",
@@ -1817,6 +1942,7 @@
     {
       "id": "spellbook_24",
       "name": "大地王の魔導書",
+      "description": null,
       "typeId": "spellbook",
       "element": "earth",
       "status": "active",
@@ -1830,6 +1956,7 @@
     {
       "id": "head_heavy_03",
       "name": "鉄の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1843,6 +1970,7 @@
     {
       "id": "head_heavy_04",
       "name": "鋼の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1856,6 +1984,7 @@
     {
       "id": "head_heavy_11",
       "name": "翼飾りの兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1869,6 +1998,7 @@
     {
       "id": "head_heavy_12",
       "name": "角付きの兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1882,6 +2012,7 @@
     {
       "id": "head_heavy_13",
       "name": "近衛騎士の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1895,6 +2026,7 @@
     {
       "id": "head_heavy_05",
       "name": "騎士の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1908,6 +2040,7 @@
     {
       "id": "head_heavy_14",
       "name": "竜鱗の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1921,6 +2054,7 @@
     {
       "id": "head_heavy_15",
       "name": "聖騎士の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1934,6 +2068,7 @@
     {
       "id": "head_heavy_16",
       "name": "魔将の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1947,6 +2082,7 @@
     {
       "id": "head_heavy_17",
       "name": "王家の兜",
+      "description": null,
       "typeId": "head_heavy",
       "element": "none",
       "status": "active",
@@ -1960,6 +2096,7 @@
     {
       "id": "head_light_11",
       "name": "革のフード",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -1973,6 +2110,7 @@
     {
       "id": "head_light_12",
       "name": "ゴーグル付き革帽",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -1986,6 +2124,7 @@
     {
       "id": "head_light_13",
       "name": "羽根飾りの帽子",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -1999,6 +2138,7 @@
     {
       "id": "head_light_14",
       "name": "旅人のバンダナ",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2012,6 +2152,7 @@
     {
       "id": "head_light_15",
       "name": "宝石飾りのターバン",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2025,6 +2166,7 @@
     {
       "id": "head_light_02",
       "name": "狩人の帽子",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2038,6 +2180,7 @@
     {
       "id": "head_light_16",
       "name": "月影の魔女帽",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2051,6 +2194,7 @@
     {
       "id": "head_light_17",
       "name": "錬金術師の帽子",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2064,6 +2208,7 @@
     {
       "id": "head_light_18",
       "name": "翼飾りのサークレット",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2077,6 +2222,7 @@
     {
       "id": "head_light_19",
       "name": "王家のサークレット",
+      "description": null,
       "typeId": "head_light",
       "element": "none",
       "status": "active",
@@ -2090,6 +2236,7 @@
     {
       "id": "head_cloth_11",
       "name": "見習い魔術師の帽子",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2103,6 +2250,7 @@
     {
       "id": "head_cloth_12",
       "name": "星詠みの帽子",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2116,6 +2264,7 @@
     {
       "id": "head_cloth_13",
       "name": "神官のフード",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2129,6 +2278,7 @@
     {
       "id": "head_cloth_14",
       "name": "森のフード",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2142,6 +2292,7 @@
     {
       "id": "head_cloth_15",
       "name": "旅のフード",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2155,6 +2306,7 @@
     {
       "id": "head_cloth_16",
       "name": "賢者のヴェール",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2168,6 +2320,7 @@
     {
       "id": "head_cloth_17",
       "name": "花冠のヴェール",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2181,6 +2334,7 @@
     {
       "id": "head_cloth_18",
       "name": "吟遊詩人の帽子",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2194,6 +2348,7 @@
     {
       "id": "head_cloth_19",
       "name": "リボンの帽子",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2207,6 +2362,7 @@
     {
       "id": "head_cloth_20",
       "name": "王家のヴェール",
+      "description": null,
       "typeId": "head_cloth",
       "element": "none",
       "status": "active",
@@ -2220,6 +2376,7 @@
     {
       "id": "body_heavy_02",
       "name": "鉄の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2233,6 +2390,7 @@
     {
       "id": "body_heavy_03",
       "name": "鋼の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2246,6 +2404,7 @@
     {
       "id": "body_heavy_11",
       "name": "獅子紋の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2259,6 +2418,7 @@
     {
       "id": "body_heavy_12",
       "name": "戦士の重鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2272,6 +2432,7 @@
     {
       "id": "body_heavy_13",
       "name": "近衛騎士の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2285,6 +2446,7 @@
     {
       "id": "body_heavy_14",
       "name": "竜鱗の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2298,6 +2460,7 @@
     {
       "id": "body_heavy_07",
       "name": "ミスリルアーマー",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2311,6 +2474,7 @@
     {
       "id": "body_heavy_15",
       "name": "魔将の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2324,6 +2488,7 @@
     {
       "id": "body_heavy_16",
       "name": "聖騎士の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2337,6 +2502,7 @@
     {
       "id": "body_heavy_17",
       "name": "王家の鎧",
+      "description": null,
       "typeId": "body_heavy",
       "element": "none",
       "status": "active",
@@ -2350,6 +2516,7 @@
     {
       "id": "body_light_01",
       "name": "革の服",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2363,6 +2530,7 @@
     {
       "id": "body_light_11",
       "name": "傭兵の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2376,6 +2544,7 @@
     {
       "id": "body_light_12",
       "name": "森番の服",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2389,6 +2558,7 @@
     {
       "id": "body_light_13",
       "name": "旅人の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2402,6 +2572,7 @@
     {
       "id": "body_light_14",
       "name": "騎士見習いの軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2415,6 +2586,7 @@
     {
       "id": "body_light_15",
       "name": "影歩きの軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2428,6 +2600,7 @@
     {
       "id": "body_light_16",
       "name": "狩人の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2441,6 +2614,7 @@
     {
       "id": "body_light_17",
       "name": "錬金術師の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2454,6 +2628,7 @@
     {
       "id": "body_light_18",
       "name": "魔法戦士の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2467,6 +2642,7 @@
     {
       "id": "body_light_19",
       "name": "王国の軽鎧",
+      "description": null,
       "typeId": "body_light",
       "element": "none",
       "status": "active",
@@ -2480,6 +2656,7 @@
     {
       "id": "body_cloth_03",
       "name": "見習いのローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2493,6 +2670,7 @@
     {
       "id": "body_cloth_06",
       "name": "学者のローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2506,6 +2684,7 @@
     {
       "id": "body_cloth_11",
       "name": "神官の法衣",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2519,6 +2698,7 @@
     {
       "id": "body_cloth_12",
       "name": "森のローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2532,6 +2712,7 @@
     {
       "id": "body_cloth_13",
       "name": "旅のローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2545,6 +2726,7 @@
     {
       "id": "body_cloth_14",
       "name": "星詠みのローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2558,6 +2740,7 @@
     {
       "id": "body_cloth_15",
       "name": "錬金術師のローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2571,6 +2754,7 @@
     {
       "id": "body_cloth_09",
       "name": "賢者のローブ",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2584,6 +2768,7 @@
     {
       "id": "body_cloth_16",
       "name": "花の祭服",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2597,6 +2782,7 @@
     {
       "id": "body_cloth_17",
       "name": "王家の法衣",
+      "description": null,
       "typeId": "body_cloth",
       "element": "none",
       "status": "active",
@@ -2610,6 +2796,7 @@
     {
       "id": "accessory_01",
       "name": "紅玉の指輪",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2623,6 +2810,7 @@
     {
       "id": "accessory_02",
       "name": "蒼翼の指輪",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2636,6 +2824,7 @@
     {
       "id": "accessory_03",
       "name": "翠葉の指輪",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2649,6 +2838,7 @@
     {
       "id": "accessory_04",
       "name": "紫晶の指輪",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2662,6 +2852,7 @@
     {
       "id": "accessory_05",
       "name": "竜牙の指輪",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2675,6 +2866,7 @@
     {
       "id": "accessory_06",
       "name": "水滴の首飾り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2688,6 +2880,7 @@
     {
       "id": "accessory_07",
       "name": "炎石の首飾り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2701,6 +2894,7 @@
     {
       "id": "accessory_08",
       "name": "水流の首飾り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2714,6 +2908,7 @@
     {
       "id": "accessory_09",
       "name": "若葉のお守り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2727,6 +2922,7 @@
     {
       "id": "accessory_10",
       "name": "太陽の首飾り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2740,6 +2936,7 @@
     {
       "id": "accessory_11",
       "name": "天翼のお守り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2753,6 +2950,7 @@
     {
       "id": "accessory_12",
       "name": "月星の首飾り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2766,6 +2964,7 @@
     {
       "id": "accessory_13",
       "name": "氷晶のブローチ",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2779,6 +2978,7 @@
     {
       "id": "accessory_14",
       "name": "幸運の四つ葉",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2792,6 +2992,7 @@
     {
       "id": "accessory_15",
       "name": "紅薔薇のブローチ",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2805,6 +3006,7 @@
     {
       "id": "accessory_16",
       "name": "獅子紋のお守り",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2818,6 +3020,7 @@
     {
       "id": "accessory_17",
       "name": "旅立ちの護符",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2831,6 +3034,7 @@
     {
       "id": "accessory_18",
       "name": "生命の小瓶",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2844,6 +3048,7 @@
     {
       "id": "accessory_19",
       "name": "導きの羅針盤",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",
@@ -2857,6 +3062,7 @@
     {
       "id": "accessory_20",
       "name": "星術の小魔導書",
+      "description": null,
       "typeId": "accessory",
       "element": "none",
       "status": "active",

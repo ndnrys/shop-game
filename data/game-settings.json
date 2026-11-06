@@ -21,14 +21,7 @@
     "salePrice": 200,
     "buybackPrice": 20,
     "shelfCapacity": 8,
-    "initialItemIds": [
-      "one_hand_sword_03",
-      "shield_01",
-      "body_heavy_02",
-      "spear_01",
-      "staff_01",
-      "head_light_11"
-    ],
+    "initialItemIds": [],
     "prologueMerchantCosts": [
       50,
       50,

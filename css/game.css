@@ -170,5 +170,5 @@
 
 /* 帰還報告：仲間の画像と状態を横並びで表示 */
 .return-member{display:flex;align-items:center;gap:8px}
-.return-member-art{width:40px;height:44px;object-fit:contain;flex-shrink:0}
+.return-member-art{width:24px;height:28px;max-width:24px;max-height:28px;object-fit:contain;flex:0 0 24px}
 .return-member>div{min-width:0}

@@ -231,12 +231,24 @@ function stocking(){
  return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+shelfSection+stockSection+next('仲間の支援へ');
 }
 
+const supplyTypes=[{name:'支給食料',price:100,effect:'生存力＋1'},{name:'防具整備具',price:150,effect:'防御力＋1'},{name:'冒険者の薬草',price:200,effect:'回復日数−1日'}];
+let supplies=Array.from({length:3},()=>[0,0,0]);
+const supplyCost=items=>items.reduce((sum,n,i)=>sum+n*supplyTypes[i].price,0);
+function changeSupply(index,delta){
+ if(partyAway(party))return;
+ const next=[...supplies[party]];next[index]=Math.max(0,Math.min(3,next[index]+delta));
+ if(supplyCost(next)>gold)return;
+ supplies[party]=next;render();
+}
 function support(routine=false){
- const funding=card(`<div class="row"><h2>第${party+1}パーティの支度金</h2><b>${money(funds[party])}</b></div><div class="actions funding-controls">${[10,100,1000].map(n=>btn('＋'+n,`if(!partyAway(party)&&funds[party]+${n}<=gold)funds[party]+=${n};render()`,'mini touch-target',`支度金を${n}G加算`)).join('')}${btn('取消',`if(!partyAway(party))funds[party]=0;render()`,'mini touch-target','支度金の予定額を取り消す')}</div>${note('派遣時に消費。パーティごとに管理。')}`);
+ const items=supplies[party],cost=supplyCost(items);
+ const supplyPanel=card('<h2>第'+(party+1)+'パーティの遠征物資</h2>'+supplyTypes.map((item,i)=>
+  '<div class="row"><span>'+item.name+' <small>'+item.price+'G · '+item.effect+' / 個</small></span><span class="actions">'+btn('−',`changeSupply(${i},-1)`,'mini touch-target')+' <b>'+items[i]+'</b> '+btn('＋',`changeSupply(${i},1)`,'mini touch-target')+'</span></div>'
+ ).join('')+row('出発時の消費',money(cost))+note('各種最大3個。パーティ全員に遠征1回限りの効果。'));
  if(partyRosterOpen)return title('パーティ編成')+btn('‹ 支援画面へ戻る','partyRosterOpen=false;render()','mini')+partyFormation();
  return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+btn('教会 · 治療','openResidentService(0)','mini touch-target')+
- (routine?destinationView()+funding+partyFormation()+next('今日のお店を開ける'):
- destinationView()+funding+partyFormation()+`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`);
+ (routine?destinationView()+supplyPanel+partyFormation()+next('今日のお店を開ける'):
+ destinationView()+supplyPanel+partyFormation()+`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`);
 }
 function broker(){const rumors=tradingState.rumors.filter(r=>r.startDay<=day&&day<r.endDay);return title('情報屋')+card('<h2>お店の噂</h2>'+note(rumors.map(r=>esc(tradingConfig.rumors.find(d=>d.id===r.id)?.name||r.id)+' · あと'+(r.endDay-day)+'日').join(' ／ ')||'現在の噂はありません。'))}
 function records(){return title('記録')+card(`<h2>経営帳簿</h2><p>日別の収支とダンジョン攻略履歴を確認します。</p><br>${btn('帳簿を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}
@@ -264,7 +276,7 @@ function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board={w
 
 
 function storeItem(instance){const position=ItemCore.findSpace(instance,stock,types,warehouseSize);if(!position)return false;Object.assign(instance,position);stock.push(instance);return true}
-function reset(persistReset=true){salesShown=0;salesDay=0;if(salesTimer){clearTimeout(salesTimer);salesTimer=null}ledgerHistory=[];shopPanelOpen=false;warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=1;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:10,maxDurability:10};if(!storeItem(item))pending.push(item)}go('home')};
+function reset(persistReset=true){salesShown=0;salesDay=0;if(salesTimer){clearTimeout(salesTimer);salesTimer=null}ledgerHistory=[];shopPanelOpen=false;warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=1;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];supplies=Array.from({length:3},()=>[0,0,0]);party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:10,maxDurability:10};if(!storeItem(item))pending.push(item)}go('home')};
 function itemList(items,fn){const size=pending.length?Math.min(2,config.ui.pageSize):config.ui.pageSize;page=Math.min(page,Math.max(0,Math.ceil(items.length/size)-1));return `<div class="list">${items.slice(page*size,page*size+size).map((item,i)=>`<button class="item ${selected===page*size+i?'active':''}" onclick="${fn.replaceAll('INDEX',page*size+i)}"><span><b>${esc(itemName(item))}</b><small class="block">${esc(itemMeta(item))}</small></span><span class="item-mini">${shape(def(item))}</span></button>`).join('')||note('商品はありません')}</div>`+pager(items.length,size)};
 function pager(length,size){const pages=Math.max(1,Math.ceil(length/size));return `<div class="page"><button class="mini" ${page===0?'disabled':''} onclick="page--;render()">‹</button><small>${page+1} / ${pages} ページ · ${length}件</small><button class="mini" ${page===pages-1?'disabled':''} onclick="page++;render()">›</button></div>`}
 function openCatalog(origin){catalogOrigin=origin;catalogDetail=false;page=0;screen='catalog';render()}

@@ -167,3 +167,8 @@
 .party-slots{align-items:stretch}
 .party-slots>button{min-height:calc(80px + 28px)}
 @media(max-height:700px){.party-slots>button{min-height:calc(40px + 28px)}main:has(.funding-controls) .party-slots>button{min-height:calc(32px + 28px)}}
+
+/* 帰還報告：仲間の画像と状態を横並びで表示 */
+.return-member{display:flex;align-items:center;gap:8px}
+.return-member-art{width:40px;height:44px;object-fit:contain;flex-shrink:0}
+.return-member>div{min-width:0}

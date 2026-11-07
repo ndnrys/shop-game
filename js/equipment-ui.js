@@ -122,7 +122,9 @@ function resolveExpeditions(){
    const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
    for(const result of broken){brokenTargets[id][result.slot]=result.itemId;member.events.push(`${definitions[result.itemId]?.name||result.itemId}が破損`)}
    for(const item of before){const record=EncyclopediaCore.acquire(encyclopedia,item.itemId);if(!record.usedInstances.includes(item.uid))record.usedInstances.push(item.uid);record.expeditions++}
-   if(!member.events.length)member.events.push('装備耐久 −1');
+   for(const item of before){
+    if(item.durability>0&&item.durability<3)member.events.push(`${definitions[item.itemId]?.name||item.itemId}の耐久度：${item.durability}`);
+   }
    group.members.push(member);
   }
   groupedReturnReport.push(group);

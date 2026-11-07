@@ -84,15 +84,11 @@ function expeditionPower(members,d){
  const favorable=Object.keys(d.recommendedAttributes).reduce((sum,key)=>sum+(attributes[key]||0),0);
  return {attack,attributes,bonus:favorable*d.attributeBonus};
 }
-function expeditionSafety(members,d){
+function expeditionSafetyLabel(id,d){
  const rules=config.adventurers.risk;
- return members.map(id=>{
-  const risk=AdventurerCore.risks(companionStats(id),d.danger,rules,chapter===rules.tutorialChapter);
-  const chance=risk.injury+risk.severe+risk.death;
-  const label=chance<0.10?'安全':chance<0.20?'注意':'危険';
-  const name=characters.find(c=>c.id===id)?.name||id;
-  return row(esc(name)+' · 防御 '+companionStats(id).defense,label);
- }).join('');
+ const risk=AdventurerCore.risks(companionStats(id),d.danger,rules,chapter===rules.tutorialChapter);
+ const chance=risk.injury+risk.severe+risk.death;
+ return chance<0.10?'安全':chance<0.20?'注意':'危険';
 }
 function destinationView(){
  const choices=config.dungeons.filter(d=>d.chapter===chapter);
@@ -101,7 +97,7 @@ function destinationView(){
  const members=parties[party].filter(id=>id&&companionStatus(id)==='waiting');
  const power=expeditionPower(members,d);
  const attrs=values=>Object.entries(values).map(([key,n])=>`${esc(catalog.elements[key]||key)} ${n}`).join('・')||'なし';
- return card(`<div class="actions">${choices.map(x=>btn(esc(x.name),`selectedDungeon='${x.id}';render()`,x.id===d.id?'active':'')).join('')}</div><h2>${esc(d.name)} · 翌朝帰還</h2>${row('攻略進度',`${Math.round((dungeonProgress[d.id]||0)/d.requiredProgress*100)}%${dungeonCleared(d.id)?' · クリア':''}`)}${row('凶悪度',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}。属性不足でも遠征可能。`)}${members.length?'<h3>冒険の安全度</h3>'+expeditionSafety(members,d):''}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}`);
+ return card(`<div class="actions">${choices.map(x=>btn(esc(x.name),`selectedDungeon='${x.id}';render()`,x.id===d.id?'active':'')).join('')}</div><h2>${esc(d.name)} · 翌朝帰還</h2>${row('攻略進度',`${Math.round((dungeonProgress[d.id]||0)/d.requiredProgress*100)}%${dungeonCleared(d.id)?' · クリア':''}`)}${row('凶悪度',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}。属性不足でも遠征可能。`)}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}`);
 }
 function depart(){
  if(phase!==4||(screen!=='home'&&screen!=='adventurers')||partyAway(party))return;

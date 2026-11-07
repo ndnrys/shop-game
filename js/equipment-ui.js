@@ -90,7 +90,7 @@ function destinationView(){
  const d=choices.find(d=>d.id===selectedDungeon);if(!d)return note('この章の遠征先は未設定です。');
  const power=expeditionPower(parties[party].filter(id=>id&&companionStatus(id)==='waiting'),d);
  const attrs=values=>Object.entries(values).map(([key,n])=>`${esc(catalog.elements[key]||key)} ${n}`).join('・')||'なし';
- return card(`<div class="actions">${choices.map(x=>btn(esc(x.name),`selectedDungeon='${x.id}';render()`,x.id===d.id?'active':'')).join('')}</div><h2>${esc(d.name)} · 翌朝帰還</h2>${row('攻略進度',`${dungeonProgress[d.id]||0} / ${d.requiredProgress}${dungeonCleared(d.id)?' · クリア':''}`)}${row('凶悪度',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}。属性不足でも遠征可能。`)}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}`);
+ return card(`<div class="actions">${choices.map(x=>btn(esc(x.name),`selectedDungeon='${x.id}';render()`,x.id===d.id?'active':'')).join('')}</div><h2>${esc(d.name)} · 翌朝帰還</h2>${row('攻略進度',`${Math.round((dungeonProgress[d.id]||0)/d.requiredProgress*100)}%${dungeonCleared(d.id)?' · クリア':''}`)}${row('凶悪度',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}。属性不足でも遠征可能。`)}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}`);
 }
 function depart(){
  if(phase!==4||screen!=='home'||partyAway(party))return;
@@ -112,7 +112,7 @@ function resolveExpeditions(){
    const d=destination,before=dungeonProgress[d.id]||0;
    dungeonProgress[d.id]=Math.min(d.requiredProgress,before+trip.power.attack+trip.power.bonus);
    grantExpeditionExperience(trip.members,dungeonProgress[d.id]-before);
-   group.progress=`攻略 +${dungeonProgress[d.id]-before}（${dungeonProgress[d.id]}/${d.requiredProgress}）${before<d.requiredProgress&&dungeonCleared(d.id)?'・クリア！':''}`;
+   group.progress=`攻略 +${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100)}%（累計 ${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)}%）${before<d.requiredProgress&&dungeonCleared(d.id)?'・クリア！':''}`;
   }
   applyExpeditionHealth(trip);
   for(const id of trip.members){

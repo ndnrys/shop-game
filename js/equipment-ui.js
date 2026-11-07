@@ -127,6 +127,9 @@ function resolveExpeditions(){
   for(const id of trip.members){
    const c=characters.find(c=>c.id===id);
    const member={name:c?.name||id,image:c?.images?.normal||'',events:[]};
+   const health=trip.health?.[id];
+   if(health?.status==='injured'||health?.status==='severe')member.events.push(`${health.status==='severe'?'重傷':'負傷'} · 回復まで${health.recoveryDays}日（${gameDate(day+health.recoveryDays)}朝）`);
+   else if(health?.status==='dead')member.events.push('死亡');
    const before=Object.values(gear(id)).filter(Boolean);
    const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
    for(const result of broken){brokenTargets[id][result.slot]=result.itemId;member.events.push(`${definitions[result.itemId]?.name||result.itemId}が破損`)}

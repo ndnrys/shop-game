@@ -98,7 +98,7 @@ function depart(){
  const members=parties[party].filter(id=>id&&companionStatus(id)==='waiting');if(!members.length)return info('派遣できません','パーティに仲間を編成してください。');
  if(members.some(isAway))return;
  if(funds[party]>gold)return info('所持金不足','支度金が所持金を超えています。');
- prepareEquipment(members);gold-=funds[party];funds[party]=0;
+ prepareEquipment(members);gold-=funds[party];ledgerMoney('funding',funds[party]);funds[party]=0;
  expeditions.push({party,members:[...members],returnDay:day+1,dungeonId:destination.id,power:expeditionPower(members,destination),health:expeditionHealth(members,destination)});away=true;render();
 }
 let groupedReturnReport=[];
@@ -113,7 +113,7 @@ function resolveExpeditions(){
    dungeonProgress[d.id]=Math.min(d.requiredProgress,before+trip.power.attack+trip.power.bonus);
    grantExpeditionExperience(trip.members,dungeonProgress[d.id]-before);
    group.progress=`攻略 +${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100)}%`;
-   group.totalProgress=Math.round(dungeonProgress[d.id]/d.requiredProgress*100);
+   group.totalProgress=Math.round(dungeonProgress[d.id]/d.requiredProgress*100);ledgerExpedition(d.id,trip.party,Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100),group.totalProgress);
    group.cleared=dungeonCleared(d.id);
   }
   applyExpeditionHealth(trip);
@@ -197,7 +197,7 @@ function growthView(id){
 }
 function saleValue(item){return type(item).slot?EquipmentCore.price(item,def(item).price??config.development.salePrice,balanceRuntime.minimumPriceRatio):(def(item).price??config.development.salePrice)}
 function buybackValue(item){return config.development.salePrice>0?Math.floor(saleValue(item)*config.development.buybackPrice/config.development.salePrice):0}
-function buybackIncoming(){const item=pending[0];if(!item||item.forged)return;gold+=buybackValue(item);pending.shift();render()}
-function buybackStock(){const item=stock[selected];if(!item)return;if(item.forged)return info('引取できません','鍛冶済み装備は手動装備または破棄してください。');gold+=buybackValue(item);stock.splice(selected,1);selected=0;render()}
+function buybackIncoming(){const item=pending[0];if(!item||item.forged)return;gold+=buybackValue(item);ledgerMoney('otherIncome',buybackValue(item));pending.shift();render()}
+function buybackStock(){const item=stock[selected];if(!item)return;if(item.forged)return info('引取できません','鍛冶済み装備は手動装備または破棄してください。');gold+=buybackValue(item);ledgerMoney('otherIncome',buybackValue(item));stock.splice(selected,1);selected=0;render()}
 function discardStock(){if(!stock[selected])return;stock.splice(selected,1);selected=0;render()}
 function finishDay(){if(phase!==5)return;advance()}

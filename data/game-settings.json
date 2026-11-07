@@ -82,7 +82,7 @@
       "id": "forest",
       "name": "周辺の森",
       "chapter": 0,
-      "requiredProgress": 60,
+      "requiredProgress": 200,
       "danger": 3,
       "requires": [],
       "recommendedAttributes": {
@@ -94,7 +94,7 @@
       "id": "camp",
       "name": "野営地",
       "chapter": 0,
-      "requiredProgress": 140,
+      "requiredProgress": 300,
       "danger": 5,
       "requires": [
         "forest"

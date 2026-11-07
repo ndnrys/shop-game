@@ -156,3 +156,9 @@
 .shop-product-transfer{position:absolute;right:4px;bottom:4px;z-index:2;display:grid;place-items:center;width:27px;height:27px;min-width:27px;min-height:27px;padding:0;border:1px solid var(--accent);border-radius:50%;background:var(--paper);color:var(--accent);font-size:20px;font-weight:700;line-height:1}
 .shop-product-transfer:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .shop-product-tile .shop-product-name{bottom:3%;padding-right:26px;box-sizing:border-box;text-align:left}
+
+/* 朝の帰還報告：派遣先 > パーティ > 個人 */
+.return-party{padding:10px 0 4px;border-top:1px solid var(--line)}
+.return-party h3{margin:0 0 6px}
+.return-member{margin:8px 0 8px 12px;padding:6px 10px;border-left:2px solid var(--line)}
+.return-member p{margin:3px 0 0}

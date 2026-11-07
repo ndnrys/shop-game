@@ -107,17 +107,19 @@ function resolveExpeditions(){
  const due=expeditions.filter(e=>e.returnDay<=day);
  for(const trip of due){
   const destination=config.dungeons.find(d=>d.id===trip.dungeonId);
-  const group={destination:destination?.name||'派遣先未記録',party:trip.party,members:[],progress:''};
+  const group={destination:destination?.name||'派遣先未記録',dungeonId:trip.dungeonId,party:trip.party,members:[],progress:'',totalProgress:0,cleared:false};
   if(destination){
    const d=destination,before=dungeonProgress[d.id]||0;
    dungeonProgress[d.id]=Math.min(d.requiredProgress,before+trip.power.attack+trip.power.bonus);
    grantExpeditionExperience(trip.members,dungeonProgress[d.id]-before);
-   group.progress=`攻略 +${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100)}%（累計 ${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)}%）${before<d.requiredProgress&&dungeonCleared(d.id)?'・クリア！':''}`;
+   group.progress=`攻略 +${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100)}%`;
+   group.totalProgress=Math.round(dungeonProgress[d.id]/d.requiredProgress*100);
+   group.cleared=dungeonCleared(d.id);
   }
   applyExpeditionHealth(trip);
   for(const id of trip.members){
    const c=characters.find(c=>c.id===id);
-   const member={name:c?.name||id,events:[]};
+   const member={name:c?.name||id,image:c?.images?.normal||'',events:[]};
    const before=Object.values(gear(id)).filter(Boolean);
    const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
    for(const result of broken){brokenTargets[id][result.slot]=result.itemId;member.events.push(`${definitions[result.itemId]?.name||result.itemId}が破損`)}

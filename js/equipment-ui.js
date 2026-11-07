@@ -6,8 +6,12 @@ const partyAway=index=>expeditions.some(e=>e.party===index);
 const isAway=id=>expeditions.some(e=>e.members.includes(id));
 function gear(id){return equipment[id]??={}}
 function canEquip(id,item){const c=characters.find(c=>c.id===id);return !!c&&config.adventurers.jobEquipment[c.initialJobId]?.includes(item.typeId)===true}
+function companionBaseStats(id){
+ const character=characters.find(c=>c.id===id);
+ return AdventurerCore.stats(character.initialStats,economyState.companions[id]?.growth);
+}
 function companionStats(id){
- const stats=AdventurerCore.stats(characters.find(c=>c.id===id).initialStats,economyState.companions[id]?.growth);
+ const stats=companionBaseStats(id);
  for(const item of Object.values(gear(id)).filter(Boolean)){
   if(item.durability<=0)continue;
   const bonus=definitions[item.itemId]?.stats;
@@ -203,14 +207,14 @@ function equipmentInventoryPage(direction){cancelEquipmentDrag();equipPage+=dire
 function equipmentView(){
  if(!availableCharacterIds.includes(equipCharacter))equipCharacter=availableCharacters()[0]?.id;
  if(!equipCharacter)return `<div class="heading"><h1>装備</h1>${btn('×','closeCharacterEquipment()')}</div>`+note('仲間がいません。');
- const id=equipCharacter,c=characters.find(c=>c.id===id),item=gear(id)[equipmentSlot],locked=isAway(id),all=availableCharacters(),index=all.findIndex(c=>c.id===id),stats=companionStats(id);
+ const id=equipCharacter,c=characters.find(c=>c.id===id),item=gear(id)[equipmentSlot],locked=isAway(id),all=availableCharacters(),index=all.findIndex(c=>c.id===id),stats=characterPanel==='growth'?companionBaseStats(id):companionStats(id);
  const candidates=stock.filter(i=>canEquip(id,i)),size=2,total=Math.max(1,Math.ceil(candidates.length/size));equipPage=Math.min(equipPage,total-1);
  const chosen=stock.find(i=>i.uid===equipmentSelectedUid);
  const cardStats=item=>item?warehouseItemStats(item):'能力値：−';
  const attributes=Object.entries(stats.attributes).map(([id,n])=>`${catalog.elements[id]||id}${n}`).join('・')||'なし';
  const heading=`<section class="character-equipment"><div class="heading"><h1>${characterPanel==='growth'?'育成':'装備'}</h1><div class="actions character-view-actions">${btn(characterPanel==='growth'?'装備へ':'育成へ',`selectCharacterPanel('${characterPanel==='growth'?'equipment':'growth'}')`,'mini')}<button class="gear-close" aria-label="装備画面を閉じる" onclick="closeCharacterEquipment()">×</button></div></div>
  <div class="character-switch"><button class="mini" aria-label="前のキャラクター" ${all.length<2?'disabled':''} onclick="moveEquipmentCharacter(-1)">‹ 前</button><div class="character-identity">${characterArt(c,'normal')}<div><h2>${esc(c.name)} · ${characterPanel==='growth'?'育成':'装備'}</h2><small>${esc(c.jobName)} · Lv.${companionLevel(id)}${{away:' · 遠征中',recovering:' · 療養中',dead:' · 死亡'}[companionStatus(id)]||''}</small></div></div><button class="mini" aria-label="次のキャラクター" ${all.length<2?'disabled':''} onclick="moveEquipmentCharacter(1)">次 ›</button></div>
- <div class="character-stats" aria-label="本人のステータス"><span>生存力 <b>${stats.hp}</b></span><span>攻撃 <b>${stats.attack}</b></span><span>防御 <b>${stats.defense}</b></span><small>固有属性 ${esc(attributes)}</small></div>
+ <div class="character-stats" aria-label="${characterPanel==='growth'?'装備補正を除いたステータス':'装備補正込みのステータス'}"><span>生存力 <b>${stats.hp}</b></span><span>攻撃 <b>${stats.attack}</b></span><span>防御 <b>${stats.defense}</b></span><small>固有属性 ${esc(attributes)}</small></div>
 `;
  if(characterPanel==='growth')return heading+growthView(id)+'</section>';
  return heading+`

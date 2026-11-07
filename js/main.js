@@ -64,7 +64,21 @@ function executeStockAction(){
 }
 
 function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();if(phase===1)return purchase();if(phase===2)return warehouse(true);if(phase===3)return stocking();if(phase===4)return support(true);return sales()}
-function report(){const size=3;page=Math.min(page,Math.max(0,Math.ceil(returnReport.length/size)-1));return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+(sub?card(`<h2>遠征の結果</h2>${returnReport.length?returnReport.slice(page*size,(page+1)*size).map(line=>`<p>${esc(line)}</p>`).join(''):note('帰還したパーティはありません。')}`)+(returnReport.length>size?pager(returnReport.length,size):''):card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+`<div class="bottom">${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;page=0;render()','primary')}${steps()}</div>`}
+function report(){
+ const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
+ const destinations=[...new Set(groups.map(g=>g.destination))];
+ const expeditionHtml=destinations.length?destinations.map(destination=>card(
+  '<h2>派遣先：'+esc(destination)+'</h2>'+
+  groups.filter(g=>g.destination===destination).map(g=>
+   '<div class="return-party"><h3>第'+(g.party+1)+'パーティ</h3>'+
+   (g.progress?'<p>'+esc(g.progress)+'</p>':'')+
+   g.members.map(m=>'<div class="return-member"><b>'+esc(m.name)+'</b><p>'+m.events.map(esc).join(' ／ ')+'</p></div>').join('')+
+   '</div>').join('')
+ )).join(''):card(note('帰還したパーティはありません。'));
+ return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+
+ (sub?expeditionHtml:card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+
+ `<div class="bottom">${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;page=0;render()','primary')}${steps()}</div>`;
+}
 function purchase(){let total=counts.reduce((a,n,i)=>a+n*merchantPrice(i),0);return title('今日の仕入れ',`${warehouseSize.width}×${warehouseSize.height} · 空き${warehouseSize.width*warehouseSize.height-warehouseUsed()}マス`)+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${merchantPrice(i)} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れを確定','finishPurchase()','primary touch-target')}${steps()}</div>`}
 // 店舗の棚は8×8マスに2×2で配置する。
 const SHOP_WIDTH=8,SHOP_HEIGHT=8,SHELF_SIDE=2;

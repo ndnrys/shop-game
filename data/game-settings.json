@@ -105,6 +105,28 @@
         "wind": 1
       },
       "attributeBonus": 1
+    },
+    {
+      "id": "eldia_road",
+      "name": "エルディア街道",
+      "chapter": 1,
+      "requiredProgress": 180,
+      "danger": 5,
+      "requires": [],
+      "recommendedAttributes": {},
+      "attributeBonus": 0
+    },
+    {
+      "id": "velk_blockade",
+      "name": "街道の封鎖陣・ヴェルク",
+      "chapter": 1,
+      "requiredProgress": 300,
+      "danger": 6,
+      "requires": [
+        "eldia_road"
+      ],
+      "recommendedAttributes": {},
+      "attributeBonus": 0
     }
   ],
   "adventurers": {
@@ -251,5 +273,15 @@
       900
     ],
     "legacySize": 8
+  },
+  "chapterProgression": {
+    "prologue": {
+      "name": "プロローグ・村",
+      "clearDungeonId": "camp",
+      "enemyName": "襲撃隊長 ガド",
+      "nextChapter": 1,
+      "nextName": "第1章・エルディアへの道",
+      "memberLimit": 1
+    }
   }
 }

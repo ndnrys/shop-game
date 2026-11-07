@@ -1,0 +1,30 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><title>村から第1章への移動検証</title><style>body{margin:0}iframe{border:0}pre{white-space:pre-wrap}</style><pre id="status">RUNNING</pre><iframe src="../index.html"></iframe><script>
+const p=new URLSearchParams(location.search),width=+(p.get('width')||360),height=+(p.get('height')||640),frame=document.querySelector('iframe');frame.style.width=width+'px';frame.style.height=height+'px';
+const previous=localStorage.getItem('shop-game-save');
+frame.onload=async()=>{const checks=[];try{
+ const w=frame.contentWindow,d=frame.contentDocument,run=s=>w.eval(s),assert=(ok,label)=>{if(!ok)throw Error(label);checks.push(label)};
+ while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
+ const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
+ run("reset();gold=10000;dungeonProgress={forest:60,camp:139};phase=4;go('home');selectedDungeon='camp';Math.random=()=>0.99;depart();phase=5;finishDay()");assert(run('villageCompletion().ready'),'野営地からの最終帰還で移動解放');
+ run('reset();gold=10000');assert(!run('villageCompletion().ready'),'未討伐は移動不可');
+ run("dungeonProgress={forest:60,camp:140};gold=clearFunds()-1;selectedCompanion='kyle';travelToNextChapter()");assert(run('chapter')===0,'資金不足を拒否');
+ run('gold=clearFunds();phase=4;travelToNextChapter()');assert(run('chapter')===0,'朝以外は移動不可');
+ run("phase=0;pending=[newItem('one_hand_sword_03')];travelToNextChapter()");assert(run('chapter')===0,'入荷未整理は移動不可');
+ run("pending=[];expeditions=[{party:0,members:['kyle'],returnDay:day+1}];travelToNextChapter()");assert(run('chapter')===0,'遠征中は移動不可');
+ run("expeditions=[];selectedCompanion='unknown';travelToNextChapter()");assert(run('chapter')===0,'不正同行者を拒否');
+ run("selectedCompanion='kyle';economyState.companions.kyle={dead:true};travelToNextChapter()");assert(run('chapter')===0,'死亡者は同行不可');
+ run("economyState.companions.kyle={level:3,growthPolicy:'attack',experience:5,growth:{hp:2,attack:4,defense:0},recoveryDay:day+2};gear('gares').weapon=newItem('one_hand_sword_03');globalThis.retained=JSON.stringify({gold,stock,shelf,warehouseSize,equipment,economyState,day,dungeonProgress});go('home')");layout('クリア後の朝の報告');
+ run("go('villageClear')");layout('同行者選択画面');assert(d.querySelectorAll('.departure-roster button').length===3,'同行候補3人');
+ d.querySelector('[onclick="selectedCompanion=\'kyle\';render()"]').click();d.querySelector('[onclick="travelToNextChapter()"]').click();assert(run('chapter')===1,'第1章へ移動');layout('第1章到着');
+ assert(run('JSON.stringify({gold,stock,shelf,warehouseSize,equipment,economyState,day,dungeonProgress})===retained'),'商品・装備・資金・育成・療養・店舗・日数の維持');
+ assert(run('availableCharacterIds.length===4&&parties[0].length===3&&parties[1][0]==="kyle"'),'新規3人と同行1人を編成');
+ run('globalThis.arrived=JSON.stringify(snapshot());travelToNextChapter()');assert(run('JSON.stringify(snapshot())===arrived'),'移動の二重実行を拒否');
+ run('applySave(JSON.parse(arrived))');assert(run('chapter===1&&availableCharacterIds.length===4'),'JSON復元');
+ run("phase=4;go('home');sub=2;render()");layout('第1章遠征画面');assert(run("selectedDungeon==='eldia_road'"),'村の遠征先を表示しない');
+ assert(run("!dungeonAvailable(config.dungeons.find(d=>d.id==='velk_blockade'))"),'街道攻略前は封鎖陣をロック');
+ run('Math.random=()=>0.99;depart()');assert(run('expeditions.length===1'),'第1章で派遣可能');
+ run('phase=5;finishDay()');assert(run('dungeonProgress.eldia_road>0&&expeditions.length===0'),'第1章帰還と進度加算');
+ run("dungeonProgress.eldia_road=180;phase=4;selectedDungeon='velk_blockade';go('home');sub=2;render()");assert(run("dungeonAvailable(config.dungeons.find(d=>d.id==='velk_blockade'))"),'街道攻略後に封鎖陣を解放');layout('封鎖陣の表示');
+ document.querySelector('#status').textContent=`PASS ${width}×${height} ${checks.length} checks`;
+ }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(previous===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',previous)}};
+</script></html>

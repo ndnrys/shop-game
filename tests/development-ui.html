@@ -1,0 +1,20 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><title>開発用タイミング切替検証</title><style>body{margin:0}iframe{border:0}pre{white-space:pre-wrap}</style><pre id="status">RUNNING</pre><iframe src="../index.html"></iframe><script>
+const p=new URLSearchParams(location.search),width=+(p.get('width')||360),height=+(p.get('height')||640),frame=document.querySelector('iframe');frame.style.width=width+'px';frame.style.height=height+'px';
+const previous=localStorage.getItem('shop-game-save');
+frame.onload=async()=>{const checks=[];try{
+ const w=frame.contentWindow,d=frame.contentDocument,run=s=>w.eval(s),assert=(ok,label)=>{if(!ok)throw Error(label);checks.push(label)};
+ while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
+ const layout=label=>{const nav=d.querySelector('nav').getBoundingClientRect(),view=d.querySelector('#view');assert(view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
+ const open=()=>{const menu=d.querySelector('.development-menu');menu.querySelector('summary').click();assert(menu.open,'メニューを開く');const r=menu.querySelector('.development-options').getBoundingClientRect();assert(r.left>=0&&r.right<=width&&r.top>=0&&r.bottom<=height,'開閉パネルの収まり');assert([...menu.querySelectorAll('button')].every(b=>b.getBoundingClientRect().height>=44),'切替ボタンのタップ領域');return menu};
+ let menu=open();menu.querySelector('summary').click();assert(!menu.open,'メニューを閉じる');
+ menu=open();menu.querySelector('[onclick="loadDevelopmentStage(\'prologueEnd\')"]').click();assert(!d.querySelector('.development-menu').open,'切替後に閉じる');assert(run("chapter===0&&phase===4&&dungeonProgress.camp===139&&dungeonProgress.forest===60&&selectedDungeon==='camp'&&gold>=clearFunds()"),'村終了間際の状態');layout('村終了間際の収まり');
+ run('Math.random=()=>0.99;depart();phase=5;finishDay()');assert(run('villageCompletion().ready'),'あと1回の遠征で村クリア');
+ menu=open();menu.querySelector('[onclick="loadDevelopmentStage(\'chapter1\')"]').click();assert(run("chapter===1&&screen==='chapterArrival'&&availableCharacterIds.length===4&&parties[1][0]==='kyle'&&expeditions.length===0"),'第1章開始の状態');layout('第1章到着の収まり');
+ run('globalThis.checkpoint=JSON.parse(localStorage.getItem(SAVE_KEY));applySave(checkpoint)');assert(run('chapter===1&&availableCharacterIds.length===4'),'第1章チェックポイントの保存復元');
+ run("go('home');phase=4;sub=2;render()");layout('第1章支援の収まり');
+ menu=open();menu.querySelector('[onclick="loadDevelopmentStage(\'prologue\')"]').click();assert(run('chapter===0&&phase===0&&day===2&&gold===config.development.initialGold&&Object.keys(dungeonProgress).length===0&&availableCharacterIds.length===3&&expeditions.length===0'),'プロローグ初期状態に戻る');layout('初期画面の収まり');
+ run('globalThis.before=JSON.stringify(snapshot());loadDevelopmentStage("unknown")');assert(run('JSON.stringify(snapshot())===before'),'不正指定は変更なし');
+ assert(d.querySelectorAll('nav>button').length===6,'常設6タブを維持');
+ document.querySelector('#status').textContent=`PASS ${width}×${height} ${checks.length} checks`;
+ }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(previous===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',previous)}};
+</script></html>

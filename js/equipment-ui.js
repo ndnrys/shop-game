@@ -51,6 +51,8 @@ function prepareEquipment(ids){for(const id of ids)for(const slot of Object.keys
  stock.splice(stock.indexOf(item),1);item.x=null;item.y=null;gear(id)[slot]=item;delete brokenTargets[id][slot];
 }}
 function validateDungeonConfig(){
+ const transition=config.chapterProgression?.prologue;
+ if(!transition||transition.nextChapter!==1||transition.memberLimit!==1||!config.dungeons?.some(d=>d.id===transition.clearDungeonId&&d.chapter===0)||!['name','nextName','enemyName'].every(k=>typeof transition[k]==='string'&&transition[k].length))throw Error('章の移動設定が不正です');
  if(!Array.isArray(config.dungeons)||!config.dungeons.length)throw Error('遠征先設定が必要です');
  const ids=new Set(config.dungeons.map(d=>d.id));
  if(ids.size!==config.dungeons.length)throw Error('遠征先IDが重複しています');

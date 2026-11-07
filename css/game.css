@@ -28,6 +28,11 @@
 
 .chapter-roster .party-character:not([onpointerdown]){cursor:pointer}
 
+/* Status badges keep formation height stable when companions cannot depart. */
+.party-character .character-status{position:absolute;top:3px;right:3px;padding:2px 4px;border-radius:4px;background:var(--soft);color:var(--ink);pointer-events:none}
+.departure-roster{gap:6px}.departure-roster>*{min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}.departure-roster button{min-height:44px;padding:6px}.departure-roster .character-art{height:72px}.departure-roster small{display:block}
+@media(max-height:700px){.departure-roster .character-art{height:48px}}
+
 /* Provided transparent equipment art; hit testing stays on the underlying cells. */
 .item-art{display:inline-flex;width:52px;height:52px;flex-shrink:0;align-items:center;justify-content:center;pointer-events:none}
 .item-art img{display:block;max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
@@ -48,3 +53,12 @@
 
 /* Primary purchasing and funding controls keep a finger-sized hit area. */
 .touch-target{min-width:44px;min-height:44px}.counter button.touch-target{width:44px;min-height:44px;padding:8px}.funding-controls .touch-target{padding:8px 4px;white-space:nowrap}
+
+nav{grid-template-columns:repeat(7,minmax(0,1fr));position:relative}
+.development-menu>summary{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;cursor:pointer;list-style:none;border-radius:8px}
+.development-menu>summary::-webkit-details-marker{display:none}
+.development-menu>summary span{font-size:17px}
+.development-menu>summary:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.development-menu[open]>summary{background:var(--soft)}
+.development-options{position:absolute;bottom:calc(100% + 6px);right:5px;left:5px;z-index:20;display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 3px 15px #0002}
+nav .development-options button{min-height:44px;padding:10px;font-size:13px;border:1px solid var(--line);background:var(--soft)}

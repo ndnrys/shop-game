@@ -183,7 +183,7 @@ function closeCharacterEquipment(){
  else go('adventurers');
 }
 function moveEquipmentCharacter(direction){
- const all=availableCharacters(),index=all.findIndex(c=>c.id===equipCharacter),next=all[index+direction];
+ const all=availableCharacters(),index=all.findIndex(c=>c.id===equipCharacter),next=all.length?all[(index+direction+all.length)%all.length]:null;
  if(!next)return;cancelEquipmentDrag();equipmentSelectedUid=null;equipmentSelectedSlot=null;equipmentUndo=null;equipCharacter=next.id;equipPage=0;render();
 }
 function selectEquipmentSlot(slot){
@@ -209,7 +209,7 @@ function equipmentView(){
  const cardStats=item=>item?warehouseItemStats(item):'能力値：−';
  const attributes=Object.entries(stats.attributes).map(([id,n])=>`${catalog.elements[id]||id}${n}`).join('・')||'なし';
  const heading=`<section class="character-equipment"><div class="heading"><h1>${characterPanel==='growth'?'育成':'装備'}</h1><div class="actions character-view-actions">${btn(characterPanel==='growth'?'装備へ':'育成へ',`selectCharacterPanel('${characterPanel==='growth'?'equipment':'growth'}')`,'mini')}<button class="gear-close" aria-label="装備画面を閉じる" onclick="closeCharacterEquipment()">×</button></div></div>
- <div class="character-switch"><button class="mini" aria-label="前のキャラクター" ${index===0?'disabled':''} onclick="moveEquipmentCharacter(-1)">‹ 前</button><div class="character-identity">${characterArt(c,'normal')}<div><h2>${esc(c.name)} · ${characterPanel==='growth'?'育成':'装備'}</h2><small>${esc(c.jobName)} · Lv.${companionLevel(id)}${{away:' · 遠征中',recovering:' · 療養中',dead:' · 死亡'}[companionStatus(id)]||''}</small></div></div><button class="mini" aria-label="次のキャラクター" ${index===all.length-1?'disabled':''} onclick="moveEquipmentCharacter(1)">次 ›</button></div>
+ <div class="character-switch"><button class="mini" aria-label="前のキャラクター" ${all.length<2?'disabled':''} onclick="moveEquipmentCharacter(-1)">‹ 前</button><div class="character-identity">${characterArt(c,'normal')}<div><h2>${esc(c.name)} · ${characterPanel==='growth'?'育成':'装備'}</h2><small>${esc(c.jobName)} · Lv.${companionLevel(id)}${{away:' · 遠征中',recovering:' · 療養中',dead:' · 死亡'}[companionStatus(id)]||''}</small></div></div><button class="mini" aria-label="次のキャラクター" ${all.length<2?'disabled':''} onclick="moveEquipmentCharacter(1)">次 ›</button></div>
  <div class="character-stats" aria-label="本人のステータス"><span>生存力 <b>${stats.hp}</b></span><span>攻撃 <b>${stats.attack}</b></span><span>防御 <b>${stats.defense}</b></span><small>固有属性 ${esc(attributes)}</small></div>
 `;
  if(characterPanel==='growth')return heading+growthView(id)+'</section>';

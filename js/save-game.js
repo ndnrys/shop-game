@@ -1,5 +1,5 @@
 const SAVE_KEY='shop-game-save';let saveError='',saveReady=false,catalogMigrationNotice='';
-function snapshot(){return {version:EquipmentCore.version,catalogVersion:catalog.contentVersion,day,phase,gold,warehouseSize,counts,pending,stock,shelf,funds,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,dungeonProgress,expeditions,returnReport,lastSales,encyclopedia,economyState,rescueState,donationState,tradingState,ledgerHistory}}
+function snapshot(){return {version:EquipmentCore.version,catalogVersion:catalog.contentVersion,day,phase,gold,warehouseSize,counts,pending,stock,shelf,funds,supplies,chapter,availableCharacterIds,parties,uid,equipment,autoEquip,brokenTargets,dungeonProgress,expeditions,returnReport,lastSales,encyclopedia,economyState,rescueState,donationState,tradingState,ledgerHistory}}
 function readStoredGame(){try{return typeof localStorage==='undefined'?null:JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(error){saveError='保存データを読めません。JSONのバックアップから復元してください。';return null}}
 function persist(){if(!saveReady||typeof localStorage==='undefined')return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()));saveError=''}catch(error){saveError='自動保存できません。JSONを書き出して保管してください。'}}
 function validateSave(raw){
@@ -21,6 +21,8 @@ function validateSave(raw){
  const integer=(n,min=0)=>Number.isSafeInteger(n)&&n>=min;
  if(!integer(s.day,1)||!integer(s.phase)||s.phase>5||!integer(s.gold)||!integer(s.chapter))fail();
  for(const k of ['counts','funds'])if(!Array.isArray(s[k])||s[k].length!==3||!s[k].every(n=>integer(n)))fail();
+ s.supplies??=Array.from({length:3},()=>[0,0,0]);
+ if(!Array.isArray(s.supplies)||s.supplies.length!==3||s.supplies.some(items=>!Array.isArray(items)||items.length!==3||items.some(n=>!integer(n)||n>3)))fail();
  const ids=new Set(characters.map(c=>c.id)),seen=new Set(),assigned=new Set();
  if(!Array.isArray(s.availableCharacterIds)||new Set(s.availableCharacterIds).size!==s.availableCharacterIds.length||s.availableCharacterIds.some(id=>!ids.has(id)))fail();
  if(!Array.isArray(s.parties)||s.parties.length!==3)fail();

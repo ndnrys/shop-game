@@ -19,14 +19,14 @@ function closeEconomyDay(){
  const bill={day,chapterId,shelfCount:economyState.shelfCount,companionCount:count,shop:rates.shopMaintenancePerShelf*economyState.shelfCount,companions:rates.companionMaintenancePerPerson*count,tax:day%balanceRuntime.taxPeriod===0?rates.seasonTax:0,status:'unpaid'};
  bill.total=bill.shop+bill.companions+bill.tax;economyState.bill=bill;settleEconomyBill();
 }
-function settleEconomyBill(){const bill=economyState.bill;if(!bill||bill.status!=='unpaid'||gold<bill.total)return false;gold-=bill.total;bill.status='paid';return true}
+function settleEconomyBill(){const bill=economyState.bill;if(!bill||bill.status!=='unpaid'||gold<bill.total)return false;gold-=bill.total;ledgerMoney('expenses',bill.total,bill.day);bill.status='paid';return true}
 // Bankruptcy integration reads this saved, unpaid bill. No substitute bankruptcy rule.
 function bankruptcyExpense(){const b=economyState.bill;return b?.status==='unpaid'?{day:b.day,amount:b.total,shortfall:Math.max(0,b.total-gold)}:null}
 function retryEconomyBill(){settleEconomyBill();render()}
 function economyReport(){return rescueReport()+economyBillReport()}
 function economyBillReport(){const b=economyState.bill;if(!b)return note('初回の朝は固定費の徴収なし。');return row('店舗管理費',money(b.shop))+row('仲間維持費',money(b.companions))+row('季節税',money(b.tax))+row(`${b.day}日分の固定費合計`,money(b.total))+(b.status==='paid'?note('支払済み'):note('所持金不足・未払い。支払いが済むまで経営を進められません。')+btn('支払いを再確認','retryEconomyBill()','mini'))}
-function healCompanion(id){if(!availableCharacterIds.includes(id)||companionStatus(id)!=='recovering')return;const cost=companionLevel(id)*economyConfig.healing.costPerLevel;if(gold<cost)return info('所持金不足','治療費が足りません。');gold-=cost;delete economyState.companions[id].recoveryDay;render()}
-function expandShelf(){const cost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost;if(cost==null)return info('増設できません','この章の増設費が未設定です。');if(gold<cost)return info('所持金不足','棚の増設費が足りません。');gold-=cost;economyState.shelfCount++;economyState.shelfLayout.push(null);render()}
+function healCompanion(id){if(!availableCharacterIds.includes(id)||companionStatus(id)!=='recovering')return;const cost=companionLevel(id)*economyConfig.healing.costPerLevel;if(gold<cost)return info('所持金不足','治療費が足りません。');gold-=cost;ledgerMoney('expenses',cost);delete economyState.companions[id].recoveryDay;render()}
+function expandShelf(){const cost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost;if(cost==null)return info('増設できません','この章の増設費が未設定です。');if(gold<cost)return info('所持金不足','棚の増設費が足りません。');gold-=cost;ledgerMoney('expenses',cost);economyState.shelfCount++;economyState.shelfLayout.push(null);render()}
 function validateWarehouseConfig(){
  const w=config.warehouseExpansion;
  if(!w||JSON.stringify(w.sizes)!=='[5,6,7,8]'||!Array.isArray(w.costs)||w.costs.length!==3||w.costs.some(n=>!Number.isSafeInteger(n)||n<0)||w.legacySize!==8||config.warehouse.width!==config.warehouse.height||!w.sizes.includes(config.warehouse.width))throw Error('倉庫拡張設定が不正です');
@@ -34,7 +34,7 @@ function validateWarehouseConfig(){
 function warehouseUpgrade(){const i=config.warehouseExpansion.sizes.indexOf(warehouseSize.width);return i>=0&&i<3?{size:config.warehouseExpansion.sizes[i+1],cost:config.warehouseExpansion.costs[i]}:null}
 function expandWarehouse(){
  const upgrade=warehouseUpgrade();if(!upgrade||gold<upgrade.cost)return;
- cancelEquipmentDrag();gold-=upgrade.cost;warehouseSize={width:upgrade.size,height:upgrade.size};render();
+ cancelEquipmentDrag();gold-=upgrade.cost;ledgerMoney('expenses',upgrade.cost);warehouseSize={width:upgrade.size,height:upgrade.size};render();
 }
 function carpenterView(){
  const cost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost,upgrade=warehouseUpgrade();

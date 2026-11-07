@@ -162,3 +162,8 @@
 .return-party h3{margin:0 0 6px}
 .return-member{margin:8px 0 8px 12px;padding:6px 10px;border-left:2px solid var(--line)}
 .return-member p{margin:3px 0 0}
+
+/* 空きパーティ枠も仲間がいる枠と同じ高さに揃える */
+.party-slots{align-items:stretch}
+.party-slots>button{min-height:calc(80px + 28px)}
+@media(max-height:700px){.party-slots>button{min-height:calc(40px + 28px)}main:has(.funding-controls) .party-slots>button{min-height:calc(32px + 28px)}}

@@ -12,7 +12,7 @@
     "入荷抽選は動作確認用の一様抽選。正式な抽選率は未設定。"
   ],
   "development": {
-    "initialGold": 500,
+    "initialGold": 1000,
     "merchantCosts": [
       150,
       150,
@@ -33,39 +33,39 @@
     "maxClearFundsMultiplier": 2,
     "chapters": {
       "prologue": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_1": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_2": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_3": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_4": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_5": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_6": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "chapter_7": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       },
       "finale": {
-        "baseClearFunds": 2000,
+        "baseClearFunds": 5000,
         "loanAmount": 1000
       }
     }

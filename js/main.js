@@ -67,14 +67,17 @@ function home(){if(economyState.bill?.status==='unpaid')return report();if(phase
 function report(){
  const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
  const destinations=[...new Set(groups.map(g=>g.destination))];
- const expeditionHtml=destinations.length?destinations.map(destination=>card(
-  '<h2>派遣先：'+esc(destination)+'</h2>'+
-  groups.filter(g=>g.destination===destination).map(g=>
-   '<div class="return-party"><h3>第'+(g.party+1)+'パーティ</h3>'+
-   (g.progress?'<p>'+esc(g.progress)+'</p>':'')+
-   g.members.map(m=>'<div class="return-member"><b>'+esc(m.name)+'</b><p>'+m.events.map(esc).join(' ／ ')+'</p></div>').join('')+
-   '</div>').join('')
- )).join(''):card(note('帰還したパーティはありません。'));
+ const expeditionHtml=destinations.length?destinations.map(destination=>{
+  const destinationGroups=groups.filter(g=>g.destination===destination);
+  const latest=destinationGroups[destinationGroups.length-1];
+  return card(
+   '<h2>派遣先：'+esc(destination)+' · 攻略 '+latest.totalProgress+'%'+(latest.cleared?' · クリア！':'')+'</h2>'+
+   destinationGroups.map(g=>
+    '<div class="return-party"><h3>第'+(g.party+1)+'パーティ · '+esc(g.progress)+'</h3>'+
+    g.members.map(m=>'<div class="return-member"><img class="return-member-art" src="'+esc(m.image)+'" alt=""><div><b>'+esc(m.name)+'</b>'+(m.events.length?'<p>'+m.events.map(esc).join(' ／ ')+'</p>':'')+'</div></div>').join('')+
+    '</div>').join('')
+  );
+ }).join(''):card(note('帰還したパーティはありません。'));
  return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+
  (sub?expeditionHtml:card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+
  `<div class="bottom">${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;page=0;render()','primary')}${steps()}</div>`;

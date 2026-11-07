@@ -292,7 +292,7 @@ function warehouseItemPanel(){
  return `<section class="card warehouse-item-panel">${header}${choose}${info}${actions}</section>`;
 }
 function combinedWarehouse(routine=true){return warehouseWorkspace(routine)}
-function trade(){return combinedWarehouse(true)};
+function trade(){return stageNavigation()+combinedWarehouse(true)};
 function warehouse(routine=false){return (pending.length||routine&&phase===2)?combinedWarehouse(true):warehouseWorkspace(routine)};
 
 // Pointer-based drag and drop supports touch and mouse with the same rules.

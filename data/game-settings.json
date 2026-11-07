@@ -224,7 +224,7 @@
           "hp": 1
         },
         "hp": {
-          "name": "HP重視",
+          "name": "生存力重視",
           "attack": 0,
           "defense": 1,
           "hp": 2

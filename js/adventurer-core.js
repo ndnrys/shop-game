@@ -1,8 +1,8 @@
 // Individual expedition risks. All tuning values are supplied by settings.
 const AdventurerCore=(()=>{
- function risks(stats,danger,rules,tutorial){
+ function risks(stats,danger,rules,tutorial,partySize=3){
   const injury=rules.injuryRate*danger/(danger+stats.defense+rules.denominatorOffset);
-  const severe=injury*rules.severeRate*danger/(danger+stats.hp+rules.denominatorOffset);
+  const severe=injury*rules.severeRate*(3/Math.max(1,partySize))*danger/(danger+stats.hp+rules.denominatorOffset);
   const rawDeath=rules.deathRate*danger/(danger+stats.defense+stats.hp+rules.denominatorOffset);
   const death=tutorial?Math.min(rawDeath,rules.tutorialDeathCap):rawDeath;
   const days=multiplier=>Math.max(rules.minRecoveryDays,Math.min(rules.maxRecoveryDays,Math.ceil(danger*multiplier/(stats.hp+rules.denominatorOffset))));

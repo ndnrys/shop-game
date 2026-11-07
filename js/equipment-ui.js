@@ -101,23 +101,32 @@ function depart(){
  prepareEquipment(members);gold-=funds[party];funds[party]=0;
  expeditions.push({party,members:[...members],returnDay:day+1,dungeonId:destination.id,power:expeditionPower(members,destination),health:expeditionHealth(members,destination)});away=true;render();
 }
+let groupedReturnReport=[];
 function resolveExpeditions(){
- returnReport=[];
+ returnReport=[];groupedReturnReport=[];
  const due=expeditions.filter(e=>e.returnDay<=day);
  for(const trip of due){
-  // Legacy trips have no destination: preserve their original durability-only return.
-  if(trip.dungeonId){const d=config.dungeons.find(d=>d.id===trip.dungeonId),before=dungeonProgress[d.id]||0;
+  const destination=config.dungeons.find(d=>d.id===trip.dungeonId);
+  const group={destination:destination?.name||'派遣先未記録',party:trip.party,members:[],progress:''};
+  if(destination){
+   const d=destination,before=dungeonProgress[d.id]||0;
    dungeonProgress[d.id]=Math.min(d.requiredProgress,before+trip.power.attack+trip.power.bonus);
    grantExpeditionExperience(trip.members,dungeonProgress[d.id]-before);
-   returnReport.push(`${d.name}：攻略 +${dungeonProgress[d.id]-before}（${dungeonProgress[d.id]}/${d.requiredProgress}）${before<d.requiredProgress&&dungeonCleared(d.id)?'・クリア！':''}`);
+   group.progress=`攻略 +${dungeonProgress[d.id]-before}（${dungeonProgress[d.id]}/${d.requiredProgress}）${before<d.requiredProgress&&dungeonCleared(d.id)?'・クリア！':''}`;
   }
   applyExpeditionHealth(trip);
-  let count=0;for(const id of trip.members){
-  const before=Object.values(gear(id)).filter(Boolean);
-  const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
-  for(const result of broken){brokenTargets[id][result.slot]=result.itemId;count++;returnReport.push(`${characters.find(c=>c.id===id).name}：${definitions[result.itemId].name}が破損`)}
-  for(const item of before){const record=EncyclopediaCore.acquire(encyclopedia,item.itemId);if(!record.usedInstances.includes(item.uid))record.usedInstances.push(item.uid);record.expeditions++}
- }returnReport.unshift(`第${trip.party+1}パーティ帰還・装備耐久−1・破損${count}点`)}
+  for(const id of trip.members){
+   const c=characters.find(c=>c.id===id);
+   const member={name:c?.name||id,events:[]};
+   const before=Object.values(gear(id)).filter(Boolean);
+   const broken=EquipmentCore.wear(gear(id),balanceRuntime.expeditionWear);brokenTargets[id]??={};
+   for(const result of broken){brokenTargets[id][result.slot]=result.itemId;member.events.push(`${definitions[result.itemId]?.name||result.itemId}が破損`)}
+   for(const item of before){const record=EncyclopediaCore.acquire(encyclopedia,item.itemId);if(!record.usedInstances.includes(item.uid))record.usedInstances.push(item.uid);record.expeditions++}
+   if(!member.events.length)member.events.push('装備耐久 −1');
+   group.members.push(member);
+  }
+  groupedReturnReport.push(group);
+ }
  expeditions=expeditions.filter(e=>e.returnDay>day);away=expeditions.length>0;
 }
 function changeEquipment(uid=null,slot=equipmentSlot,quiet=false){

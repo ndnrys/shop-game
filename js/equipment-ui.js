@@ -123,7 +123,7 @@ function resolveExpeditions(){
    for(const result of broken){brokenTargets[id][result.slot]=result.itemId;member.events.push(`${definitions[result.itemId]?.name||result.itemId}が破損`)}
    for(const item of before){const record=EncyclopediaCore.acquire(encyclopedia,item.itemId);if(!record.usedInstances.includes(item.uid))record.usedInstances.push(item.uid);record.expeditions++}
    for(const item of before){
-    if(item.durability>0&&item.durability<3)member.events.push(`${definitions[item.itemId]?.name||item.itemId}の耐久度：${item.durability}`);
+    if(item.durability>=1&&item.durability<=3){const status={3:'摩耗しています',2:'損傷しています',1:'激しく損傷しています'}[item.durability];member.events.push(`${definitions[item.itemId]?.name||item.itemId}が${status}`)}
    }
    group.members.push(member);
   }

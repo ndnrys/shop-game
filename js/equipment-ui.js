@@ -42,9 +42,14 @@ function validateAdventurerConfig(){
  for(const p of Object.values(g.policies))if(typeof p.name!=='string'||!['attack','defense','hp'].every(k=>Number.isSafeInteger(p[k])&&p[k]>=0)||p.attack+p.defense+p.hp!==g.pointsPerLevel)throw Error('育成配分は合計3ポイントにしてください');
  for(const c of characters){const allowed=a.jobEquipment?.[c.initialJobId];if(!Array.isArray(allowed)||allowed.some(id=>!catalog.types.some(t=>t.id===id)))throw Error('職業の装備制限が未設定です')}
 }
-function expeditionHealth(members,d,random=Math.random){
+function expeditionHealth(members,d,random=Math.random,items=supplies[party]){
  const rules=config.adventurers.risk;
- return Object.fromEntries(members.map(id=>[id,AdventurerCore.outcome(AdventurerCore.risks(companionStats(id),d.danger,rules,chapter===rules.tutorialChapter),random)]));
+ return Object.fromEntries(members.map(id=>{
+  const stats={...companionStats(id)};stats.hp+=items[0];stats.defense+=items[1];
+  const result=AdventurerCore.outcome(AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter),random);
+  if(['injured','severe'].includes(result.status))result.recoveryDays=Math.max(1,result.recoveryDays-items[2]);
+  return [id,result];
+ }));
 }
 function applyExpeditionHealth(trip){
  for(const [id,result] of Object.entries(trip.health||{})){
@@ -86,7 +91,8 @@ function expeditionPower(members,d){
 }
 function expeditionSafetyLabel(id,d){
  const rules=config.adventurers.risk;
- const risk=AdventurerCore.risks(companionStats(id),d.danger,rules,chapter===rules.tutorialChapter);
+ const stats={...companionStats(id)};stats.hp+=supplies[party][0];stats.defense+=supplies[party][1];
+ const risk=AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter);
  const chance=risk.injury+risk.severe+risk.death;
  return chance<0.10?'安全':chance<0.20?'注意':'危険';
 }
@@ -104,9 +110,10 @@ function depart(){
  const destination=config.dungeons.find(d=>d.id===selectedDungeon);if(!destination||!dungeonAvailable(destination))return;
  const members=parties[party].filter(id=>id&&companionStatus(id)==='waiting');if(!members.length)return info('派遣できません','パーティに仲間を編成してください。');
  if(members.some(isAway))return;
- if(funds[party]>gold)return info('所持金不足','支度金が所持金を超えています。');
- prepareEquipment(members);gold-=funds[party];ledgerMoney('funding',funds[party]);funds[party]=0;
- expeditions.push({party,members:[...members],returnDay:day+1,dungeonId:destination.id,power:expeditionPower(members,destination),health:expeditionHealth(members,destination)});away=true;render();
+ const cost=supplyCost(supplies[party]);
+ if(cost>gold)return info('所持金不足','遠征物資の費用が所持金を超えています。');
+ prepareEquipment(members);gold-=cost;ledgerMoney('funding',cost);
+ expeditions.push({party,members:[...members],returnDay:day+1,dungeonId:destination.id,power:expeditionPower(members,destination),health:expeditionHealth(members,destination)});supplies[party]=[0,0,0];away=true;render();
 }
 let groupedReturnReport=[];
 function resolveExpeditions(){

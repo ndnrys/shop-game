@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
   "notes": [
-    "顧客・章・噂の数値は動作確認用の暫定値。正式な価格・客層は未設定。"
+    "顧客・章・噂の数値は動作確認用の暫定値。正式な価格・客層は未設定。",
+    "弓使い・魔法使い・僧侶・盗賊・旅人を暫定客層として追加。購入傾向・所持金は調整用の仮値。"
   ],
   "effects": {
     "set": {
@@ -40,13 +41,69 @@
         "one_hand_sword": 0.7,
         "shield": 0.7
       }
+    },
+    {
+      "id": "archer",
+      "name": "弓使い",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "bow": 0.8,
+        "arrow": 0.85,
+        "body_light": 0.65
+      }
+    },
+    {
+      "id": "mage",
+      "name": "魔法使い",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "staff": 0.8,
+        "rod": 0.8,
+        "spellbook": 0.85,
+        "body_cloth": 0.65
+      }
+    },
+    {
+      "id": "priest",
+      "name": "僧侶",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "one_hand_mace": 0.75,
+        "staff": 0.7,
+        "body_cloth": 0.7
+      }
+    },
+    {
+      "id": "rogue",
+      "name": "盗賊",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "knife": 0.85,
+        "body_light": 0.75,
+        "head_light": 0.65
+      }
+    },
+    {
+      "id": "traveler",
+      "name": "旅人",
+      "probability": 0.5,
+      "items": {},
+      "categories": {
+        "accessory": 0.75,
+        "head_cloth": 0.65,
+        "body_cloth": 0.65
+      }
     }
   ],
   "chapters": {
     "prologue": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -60,6 +117,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -68,7 +160,7 @@
     "chapter_1": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -82,6 +174,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -90,7 +217,7 @@
     "chapter_2": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -104,6 +231,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -112,7 +274,7 @@
     "chapter_3": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -126,6 +288,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -134,7 +331,7 @@
     "chapter_4": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -148,6 +345,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -156,7 +388,7 @@
     "chapter_5": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -170,6 +402,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -178,7 +445,7 @@
     "chapter_6": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -192,6 +459,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -200,7 +502,7 @@
     "chapter_7": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -214,6 +516,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }
@@ -222,7 +559,7 @@
     "finale": {
       "visitors": {
         "min": 1,
-        "max": 3
+        "max": 8
       },
       "customers": {
         "villager": {
@@ -236,6 +573,41 @@
           "money": {
             "min": 200,
             "max": 600
+          },
+          "weight": 1
+        },
+        "archer": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "mage": {
+          "money": {
+            "min": 180,
+            "max": 500
+          },
+          "weight": 1
+        },
+        "priest": {
+          "money": {
+            "min": 150,
+            "max": 450
+          },
+          "weight": 1
+        },
+        "rogue": {
+          "money": {
+            "min": 120,
+            "max": 400
+          },
+          "weight": 1
+        },
+        "traveler": {
+          "money": {
+            "min": 100,
+            "max": 350
           },
           "weight": 1
         }

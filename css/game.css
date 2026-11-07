@@ -37,7 +37,7 @@
 .item-art{display:inline-flex;width:52px;height:52px;flex-shrink:0;align-items:center;justify-content:center;pointer-events:none}
 .item-art img{display:block;max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
 .item-mini .item-art{width:32px;height:32px}.catalog-list .item-art{width:42px;height:42px}
-.real-board{position:relative}.warehouse-art{position:absolute;pointer-events:none;z-index:1;overflow:hidden}.warehouse-art img{position:absolute;left:50%;top:50%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none}.real-board button{position:relative}.real-board button.drop-preview{box-shadow:inset 0 0 0 2px var(--ink)}
+.real-board{position:relative;gap:0}.real-board button{border-radius:0}.warehouse-art{position:absolute;pointer-events:none;z-index:1;overflow:hidden}.warehouse-art img{position:absolute;left:50%;top:50%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none}.real-board button{position:relative}.real-board button.drop-preview{box-shadow:inset 0 0 0 2px var(--ink)}
 @media(max-height:600px){.catalog-list .item-art{height:32px;width:36px}.item-art{height:40px;width:40px}}
 
 .gear-item-art .item-art{width:28px;height:28px}
@@ -54,7 +54,142 @@
 /* Primary purchasing and funding controls keep a finger-sized hit area. */
 .touch-target{min-width:44px;min-height:44px}.counter button.touch-target{width:44px;min-height:44px;padding:8px}.funding-controls .touch-target{padding:8px 4px;white-space:nowrap}
 
-nav{grid-template-columns:repeat(7,minmax(0,1fr));position:relative}
+/* Keep warehouse item actions at the bottom of the screen. */
+.warehouse-footer{margin-top:auto;display:flex;flex-direction:column;gap:8px}.warehouse-controls{display:flex;flex-direction:column;gap:10px}.warehouse-footer .bottom{margin-top:0}
+
+/* Warehouse: show the board grid, with a separate outline around the selected item. */
+.real-board{border:1px solid var(--line)}
+.real-board button,.real-board button.filled,.real-board button.selected{border:0;border-radius:0;background:transparent;box-shadow:inset -1px -1px 0 var(--line)}
+.real-board .warehouse-art.is-selected{outline:2px solid var(--accent);outline-offset:-2px}
+.real-board button.drop-preview{background:color-mix(in srgb,var(--accent) 25%,transparent);box-shadow:inset 0 0 0 2px var(--ink)}
+
+/* During warehouse dragging, preview the item itself and only its outer footprint. */
+.real-board .warehouse-drag-preview{position:absolute;z-index:3;pointer-events:none;overflow:hidden;outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb,var(--accent) 10%,transparent);opacity:.6}
+.real-board .warehouse-drag-preview[hidden]{display:none}
+.real-board .warehouse-drag-preview img{position:absolute;left:50%;top:50%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.real-board .warehouse-art.drag-source{opacity:.2}
+
+/* Reserve the upper warehouse space for future artwork; align the board immediately above the controls. */
+.warehouse-board-area{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.warehouse-board-area .real-board{flex-shrink:0}
+.warehouse-board-area+.warehouse-footer{margin-top:0}
+
+/* Fixed 8x8 warehouse display; cells outside the unlocked size are inactive. */
+/* Unavailable cells have a strong, patterned fill; warehouse matches the item-info card width. */
+.warehouse-board-area{width:100%}
+.warehouse-board-area .real-board{align-self:stretch;flex:0 0 auto;width:100%;max-width:none;min-width:100%;height:auto;margin:0;aspect-ratio:1 / 1;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}.warehouse-board-area .real-board>button{width:100%;height:100%;aspect-ratio:auto}
+.real-board button.warehouse-locked,.real-board button.warehouse-locked:disabled{background:repeating-linear-gradient(135deg,#aab2ae 0px,#aab2ae 7px,#c2c9c5 7px,#c2c9c5 14px);opacity:1;cursor:not-allowed;box-shadow:inset -1px -1px 0 #89938d}
+.real-board button.warehouse-locked:focus-visible{outline:none}
+
+/* Reserved warehouse page navigation; only page one exists for now. */
+.warehouse-pagination{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;padding:5px 0;font-size:12px;color:var(--muted)}
+.warehouse-pagination button{min-width:34px;min-height:28px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-size:20px;line-height:1}
+.warehouse-pagination button:disabled{opacity:.35;cursor:default}
+
+/* Slide the navigation into view while keeping the game area unchanged. */
+.shell{position:relative;grid-template-rows:26px 57px minmax(0,1fr)}
+#nav{position:absolute;left:env(safe-area-inset-left);right:env(safe-area-inset-right);bottom:calc(env(safe-area-inset-bottom) - 65px);height:57px;z-index:20;display:grid;background:#e9ecef;box-shadow:none;transition:bottom .2s ease-in-out;pointer-events:none}
+#nav.is-open{bottom:env(safe-area-inset-bottom);pointer-events:auto}
+#nav::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100px + env(safe-area-inset-bottom));background:#e9ecef;pointer-events:none}
+#menuToggle{position:absolute;right:calc(env(safe-area-inset-right) + 10px);bottom:calc(env(safe-area-inset-bottom) - 8px);width:52px;height:44px;padding:19px 4px 3px;z-index:21;clip-path:polygon(50% 0,100% 100%,0 100%);border:0;border-radius:0;background:#e9ecef;font-size:10px;line-height:1;font-weight:600;transition:bottom .2s ease-in-out}
+#nav.is-open+#menuToggle{bottom:calc(57px + env(safe-area-inset-bottom))}
+@media(max-height:700px){.shell{grid-template-rows:22px 48px minmax(0,1fr)}#nav{height:48px;bottom:calc(env(safe-area-inset-bottom) - 56px)}#nav.is-open{bottom:env(safe-area-inset-bottom)}#nav.is-open+#menuToggle{bottom:calc(48px + env(safe-area-inset-bottom))}}
+
+/* Shared item panel for incoming stock and warehouse selection. */
+.warehouse-item-panel{display:flex;flex-direction:column;gap:6px;padding:10px}
+.warehouse-item-panel h2{margin:0;font-size:12px}
+.warehouse-item-panel .row{min-width:0}
+.warehouse-item-panel .row>div{min-width:0}
+.warehouse-item-panel .actions{display:flex;flex-wrap:wrap;gap:6px}
+.warehouse-item-panel .incoming-draggable{touch-action:none;cursor:grab}
+@media(max-height:700px){.warehouse-item-panel{padding:6px;gap:4px}}
+
+/* 店舗レイアウト：固定8×6グリッド、2×2の棚。 */
+.shop-layout-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));width:100%;aspect-ratio:1/1;border:1px solid var(--line);margin:6px 0}
+.shop-layout-grid .shop-cell{min-width:0;min-height:0;padding:0;border:0;border-radius:0;box-shadow:inset -1px -1px 0 var(--line);background:var(--paper);font-size:11px;color:var(--ink)}
+.shop-layout-grid .shop-cell.occupied{background:var(--soft);box-shadow:inset -1px -1px 0 var(--line)}
+.shop-layout-grid .shop-cell.chosen{background:color-mix(in srgb,var(--accent) 28%,var(--paper));box-shadow:inset -1px -1px 0 var(--accent)}
+.shop-layout-grid .shop-cell:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* Shelf drag: prevent touch scrolling on the grid while holding a shelf. */
+.shop-layout-grid .shop-cell{touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* 店舗の商品選択：棚・倉庫で共通のカード表示 */
+.shop-product-list{display:grid;gap:6px}
+.shop-product-card{display:flex;align-items:center;gap:9px;width:100%;min-width:0;padding:9px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.shop-product-card.active{border-color:var(--accent);background:var(--soft)}
+.shop-product-mark{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border:1px solid var(--accent);border-radius:5px;color:var(--accent)}
+.shop-product-info{display:flex;flex-direction:column;min-width:0;gap:3px}
+.shop-product-info b{font-size:12px}
+.shop-product-info small{font-size:10px;overflow-wrap:anywhere}
+@media(max-height:700px){.shop-product-card{padding:5px 7px}.shop-product-list{gap:4px}}
+
+.shop-product-list{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,auto)}
+.shop-product-card{position:relative;display:block;aspect-ratio:1/1;height:auto;min-height:0;padding:0;border-radius:4px;overflow:hidden}
+.shop-product-image{position:absolute;inset:5% 5% 22%;width:90%;height:73%;max-width:90%;max-height:73%;object-fit:contain;image-rendering:auto}
+.shop-product-name{position:absolute;bottom:3%;left:4%;width:92%;font-size:10px;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shop-product-card.active{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* 商品管理：フォルダ見出し型のタブと、2列の正方形カード */
+.shop-folder-tabs{display:flex;gap:4px;align-items:flex-end;margin-bottom:-1px;position:relative;z-index:1}
+.shop-folder-tabs button{flex:1;min-width:0;padding:9px 3px;border:1px solid var(--line);border-radius:8px 8px 0 0;background:var(--soft);font-size:11px}
+.shop-folder-tabs button.active{background:var(--paper);border-bottom-color:var(--paper);box-shadow:none}
+.shop-folder-content{border-radius:0 0 var(--radius) var(--radius)}
+.shop-folder-content .shop-product-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.shop-folder-content .page{margin-top:14px}
+.shop-folder-content .actions{margin-top:14px}
+.shop-folder-content .shop-product-card{max-height:155px}
+@media(max-height:700px){.shop-folder-content .shop-product-card{max-height:110px}.shop-folder-content .shop-product-list{gap:7px;margin-top:8px}.shop-folder-content .page,.shop-folder-content .actions{margin-top:10px}}
+
+/* 商品タイルの情報ボタンは複数選択とは独立 */
+.shop-product-tile{position:relative;min-width:0;aspect-ratio:1}
+.shop-product-tile .shop-product-card{height:100%;max-height:none}
+.shop-product-tile .shop-product-detail{position:absolute;top:4px;right:4px;z-index:1;width:23px;height:23px;min-width:23px;min-height:23px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);font-size:12px;font-weight:700;line-height:1}
+.shop-folder-content .shop-product-tile{max-height:155px}
+@media(max-height:700px){.shop-folder-content .shop-product-tile{max-height:110px}}
+
+/* 棚の商品4枠と倉庫補充を同じ画面に表示 */
+.shop-shelf-section .shop-product-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.shop-shelf-section .shop-product-tile,.shop-shelf-section .shop-empty-slot{min-width:0;aspect-ratio:1}
+.shop-empty-slot{display:grid;place-items:center;border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-size:18px}
+.shop-shelf-section .shop-product-name{font-size:9px}
+.shop-stock-section .shop-product-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.shop-shelf-section,.shop-stock-section{margin-top:8px}
+.shop-shelf-section .actions,.shop-stock-section .actions{margin-top:8px}
+
+/* 商品ごとの棚補充・倉庫返却 */
+.shop-product-transfer{position:absolute;right:4px;bottom:4px;z-index:2;display:grid;place-items:center;width:27px;height:27px;min-width:27px;min-height:27px;padding:0;border:1px solid var(--accent);border-radius:50%;background:var(--paper);color:var(--accent);font-size:20px;font-weight:700;line-height:1}
+.shop-product-transfer:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shop-product-tile .shop-product-name{bottom:3%;padding-right:26px;box-sizing:border-box;text-align:left}
+
+/* 朝の帰還報告：派遣先 > パーティ > 個人 */
+.return-party{padding:10px 0 4px;border-top:1px solid var(--line)}
+.return-party h3{margin:0 0 6px}
+.return-member{margin:8px 0 8px 12px;padding:6px 10px;border-left:2px solid var(--line)}
+.return-member p{margin:3px 0 0}
+
+/* 空きパーティ枠も仲間がいる枠と同じ高さに揃える */
+.party-slots{align-items:stretch}
+.party-slots>button{min-height:calc(80px + 28px)}
+@media(max-height:700px){.party-slots>button{min-height:calc(40px + 28px)}main:has(.funding-controls) .party-slots>button{min-height:calc(32px + 28px)}}
+
+/* 帰還報告：仲間の画像と状態を横並びで表示 */
+.return-member{display:flex;align-items:center;gap:8px}
+.return-member-art{width:24px;height:28px;max-width:24px;max-height:28px;object-fit:contain;flex:0 0 24px}
+.return-member>div{min-width:0}
+
+/* 営業中：お客さんの購入履歴が下から一行ずつ入る */
+.sales-visits{display:flex;flex-direction:column;gap:7px;max-height:calc(100dvh - 325px);min-height:80px;overflow-y:auto;padding:6px 2px 12px;scrollbar-width:thin}
+.sales-visit{display:flex;align-items:center;gap:9px;padding:9px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);flex-shrink:0}
+.sales-character{font-size:27px;flex:0 0 36px;text-align:center}
+.sales-visit-text{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.sales-visit-text small{color:var(--muted)}
+.sales-visit-text span{overflow-wrap:anywhere}
+.sales-price{white-space:nowrap;align-self:center}
+.sales-visit-enter{animation:sales-rise .5s ease-out both}
+@keyframes sales-rise{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.sales-visit-enter{animation:none}}
+
 .development-menu>summary{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;cursor:pointer;list-style:none;border-radius:8px}
 .development-menu>summary::-webkit-details-marker{display:none}
 .development-menu>summary span{font-size:17px}
@@ -62,3 +197,5 @@ nav{grid-template-columns:repeat(7,minmax(0,1fr));position:relative}
 .development-menu[open]>summary{background:var(--soft)}
 .development-options{position:absolute;bottom:calc(100% + 6px);right:5px;left:5px;z-index:20;display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 3px 15px #0002}
 nav .development-options button{min-height:44px;padding:10px;font-size:13px;border:1px solid var(--line);background:var(--soft)}
+
+#nav{grid-template-columns:repeat(6,minmax(0,1fr))}

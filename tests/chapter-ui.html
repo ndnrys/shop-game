@@ -4,10 +4,11 @@ const previous=localStorage.getItem('shop-game-save');
 frame.onload=async()=>{const checks=[];try{
  const w=frame.contentWindow,d=frame.contentDocument,run=s=>w.eval(s),assert=(ok,label)=>{if(!ok)throw Error(label);checks.push(label)};
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
+ const style=d.createElement("style");style.textContent="#nav,#menuToggle{transition:none!important}";d.head.append(style);
  const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].every(e=>{const r=e.getBoundingClientRect();return !r.height||r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
- run("reset();gold=10000;dungeonProgress={forest:60,camp:139};phase=4;go('home');selectedDungeon='camp';Math.random=()=>0.99;depart();phase=5;finishDay()");assert(run('villageCompletion().ready'),'野営地からの最終帰還で移動解放');
+ run("reset();gold=10000;dungeonProgress={forest:config.dungeons.find(d=>d.id==='forest').requiredProgress,camp:config.dungeons.find(d=>d.id==='camp').requiredProgress-1};phase=4;go('home');selectedDungeon='camp';Math.random=()=>0.99;depart();phase=5;go(`home`);salesShown=tradingState.report.visits.length;finishDay()");assert(run('villageCompletion().ready'),'野営地からの最終帰還で移動解放');
  run('reset();gold=10000');assert(!run('villageCompletion().ready'),'未討伐は移動不可');
- run("dungeonProgress={forest:60,camp:140};gold=clearFunds()-1;selectedCompanion='kyle';travelToNextChapter()");assert(run('chapter')===0,'資金不足を拒否');
+ run("dungeonProgress={forest:config.dungeons.find(d=>d.id==='forest').requiredProgress,camp:config.dungeons.find(d=>d.id==='camp').requiredProgress};gold=clearFunds()-1;selectedCompanion='kyle';travelToNextChapter()");assert(run('chapter')===0,'資金不足を拒否');
  run('gold=clearFunds();phase=4;travelToNextChapter()');assert(run('chapter')===0,'朝以外は移動不可');
  run("phase=0;pending=[newItem('one_hand_sword_03')];travelToNextChapter()");assert(run('chapter')===0,'入荷未整理は移動不可');
  run("pending=[];expeditions=[{party:0,members:['kyle'],returnDay:day+1}];travelToNextChapter()");assert(run('chapter')===0,'遠征中は移動不可');
@@ -23,7 +24,7 @@ frame.onload=async()=>{const checks=[];try{
  run("phase=4;go('home');sub=2;render()");layout('第1章遠征画面');assert(run("selectedDungeon==='eldia_road'"),'村の遠征先を表示しない');
  assert(run("!dungeonAvailable(config.dungeons.find(d=>d.id==='velk_blockade'))"),'街道攻略前は封鎖陣をロック');
  run('Math.random=()=>0.99;depart()');assert(run('expeditions.length===1'),'第1章で派遣可能');
- run('phase=5;finishDay()');assert(run('dungeonProgress.eldia_road>0&&expeditions.length===0'),'第1章帰還と進度加算');
+ run('phase=5;go(`home`);salesShown=tradingState.report.visits.length;finishDay()');assert(run('dungeonProgress.eldia_road>0&&expeditions.length===0'),'第1章帰還と進度加算');
  run("dungeonProgress.eldia_road=180;phase=4;selectedDungeon='velk_blockade';go('home');sub=2;render()");assert(run("dungeonAvailable(config.dungeons.find(d=>d.id==='velk_blockade'))"),'街道攻略後に封鎖陣を解放');layout('封鎖陣の表示');
  document.querySelector('#status').textContent=`PASS ${width}×${height} ${checks.length} checks`;
  }catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(previous===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',previous)}};

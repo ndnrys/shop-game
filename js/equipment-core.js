@@ -1,7 +1,7 @@
 // Individual equipment rules; independent of UI and item definitions.
 const EquipmentCore = (() => {
  const version=2;
- function roll(random=Math.random){const n=random();return n<.1?8:n<.3?9:n<.7?10:n<.9?11:12}
+ function roll(random=Math.random){const n=random();return n<.1?3:n<.3?4:n<.7?5:n<.9?6:7}
  function normalize(item){
   const copy={...item};
   if(copy.maxDurability===undefined&&copy.durability===undefined){copy.maxDurability=10;copy.durability=copy.used?5:10}

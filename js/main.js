@@ -1,6 +1,7 @@
 
-const $=s=>document.querySelector(s);const phases=['報告','仕入れ','倉庫整理','陳列','支援','営業'];const navs=[['home','⌂','経営'],['warehouse','▦','倉庫'],['residents','♧','住人'],['adventurers','♙','仲間'],['records','≡','記録'],['settings','⚙','設定']];
-let day=2,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=[0,0,0],away=false;const prices=[];let characters=[];const villageCharacters=()=>characters.filter(c=>c.joinChapter===0);
+const $=s=>document.querySelector(s);const phases=['報告','仕入れ','倉庫整理','陳列','探索','営業'];const navs=[['home','⌂','経営'],['encyclopedia','▤','図鑑'],['journal','≡','経営帳簿'],['broker','♧','情報屋'],['settings','⚙','設定']];
+let day=1,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=[0,0,0],away=false;const prices=[];
+const merchantPrice=index=>chapter===0?config.development.prologueMerchantCosts[index]:prices[index];let characters=[];const villageCharacters=()=>characters.filter(c=>c.joinChapter===0);
 let chapter=0,availableCharacterIds=[],parties=[[],[],[]],partySlot=0,rosterPage=0;
 const availableCharacters=()=>characters.filter(c=>availableCharacterIds.includes(c.id));
 const partyNumber=id=>parties.findIndex(members=>members.includes(id))+1;
@@ -34,15 +35,44 @@ function characterArt(c,kind='icon'){
  const status=companionStatus(c.id),state=status==='recovering'?'resting':status==='away'?'battle':status==='dead'?'dead':kind;
  return `<img class="character-art" src="${esc(c.images[state]||c.images.normal)}" alt="" draggable="false">`;
 }
+let partyRosterOpen=false;
 function partyFormation(){
  const members=parties[party],all=availableCharacters(),size=3,total=Math.max(1,Math.ceil(all.length/size));rosterPage=Math.min(rosterPage,total-1);
- const characterButton=(c,slot=null)=>btn(`${slot===null?`<span class="party-badge">${partyNumber(c.id)||'−'}</span>`:''}${characterArt(c)}<span class="character-name">${esc(c.name)}</span>${companionStatus(c.id)==='waiting'?'':`<small class="character-status">${{recovering:'療養中',dead:'死亡',away:'遠征中'}[companionStatus(c.id)]||''}</small>`}`,`openCharacterEquipment('${c.id}')`,'party-character',`${c.name}の装備を開く`).replace('<button ',`<button ${slot!==null?`data-party-slot="${slot}" `:''}${canAssignCharacter(c.id)?`onpointerdown="startPartyDrag(event,'${c.id}')" `:''}`);
- return card(`<div class="row"><h2>第${party+1}パーティ · 3人枠</h2><div class="actions">${[0,1,2].map(i=>btn(String(i+1),`switchParty(${i})`,party===i?'mini active':'mini')).join('')}</div></div><div class="actions party-slots">${Array.from({length:3},(_,i)=>{const c=characters.find(c=>c.id===members[i]);return c?characterButton(c,i):`<button data-party-slot="${i}" aria-label="パーティ枠${i+1} · 空き">空き枠</button>`}).join('')}</div>${note(partyAway(party)?'遠征中は編成できません。キャラをタップで装備を確認。':'ドラッグで編成 ／ キャラをタップで装備。')}`)+card(`<h2>この章で使える仲間 · ${all.length}人</h2><div class="actions chapter-roster">${all.slice(rosterPage*size,(rosterPage+1)*size).map(c=>characterButton(c)).join('')}</div>${note('数字は所属パーティ。枠からこの一覧へドラッグで外す。')}${total>1?`<div class="page">${btn('‹','rosterPage=Math.max(0,rosterPage-1);render()')}<small>${rosterPage+1} / ${total}</small>${btn('›',`rosterPage=Math.min(${total-1},rosterPage+1);render()`)}</div>`:''}`).replace('<section ', '<section data-party-roster="true" ')
+ const characterButton=(c,slot=null)=>btn(`${slot===null?`<span class="party-badge">${partyNumber(c.id)||'−'}</span>`:''}${characterArt(c)}<span class="character-name">${esc(c.name)}</span>${companionStatus(c.id)==='waiting'?'':`<small class="character-status">${{recovering:'療養中',dead:'死亡',away:'遠征中'}[companionStatus(c.id)]||''}</small>`}${slot!==null&&config.dungeons.find(d=>d.id===selectedDungeon&&d.chapter===chapter)?`<small class="party-safety">${expeditionSafetyLabel(c.id,config.dungeons.find(d=>d.id===selectedDungeon))}</small>`:''}`,`openCharacterEquipment('${c.id}')`,'party-character',`${c.name}の装備を開く`).replace('<button ',`<button ${slot!==null?`data-party-slot="${slot}" `:''}${canAssignCharacter(c.id)?`onpointerdown="startPartyDrag(event,'${c.id}')" `:''}`);
+ return card(`<div class="row"><h2>第${party+1}パーティ · 3人枠</h2><div class="actions">${[0,1,2].map(i=>btn(String(i+1),`switchParty(${i})`,party===i?'mini active':'mini')).join('')}</div></div><div class="actions party-slots">${Array.from({length:3},(_,i)=>{const c=characters.find(c=>c.id===members[i]);return c?characterButton(c,i):`<button data-party-slot="${i}" aria-label="パーティ枠${i+1} · 空き">空き枠</button>`}).join('')}</div>${note(partyAway(party)?'遠征中です。':'キャラをタップで装備を確認。')}<div class="actions">${(partyRosterOpen?'':btn('編成','partyRosterOpen=true;render()','mini'))}${!partyRosterOpen&&phase===4&&(screen==='home'||screen==='adventurers')?(parties[party].some(id=>id&&companionStatus(id)==='waiting')&&!partyAway(party)?btn('このパーティを派遣','depart()','primary'):'<button class="primary" disabled>このパーティを派遣</button>'):''}</div>`)+(partyRosterOpen?card(`<h2>この章で使える仲間 · ${all.length}人</h2><div class="actions chapter-roster">${all.slice(rosterPage*size,(rosterPage+1)*size).map(c=>characterButton(c)).join('')}</div>${note('数字は所属パーティ。枠からこの一覧へドラッグで外す。')}${total>1?`<div class="page">${btn('‹','rosterPage=Math.max(0,rosterPage-1);render()')}<small>${rosterPage+1} / ${total}</small>${btn('›',`rosterPage=Math.min(${total-1},rosterPage+1);render()`)}</div>`:''}`).replace('<section ', '<section data-party-roster="true" '):'')
 }
-function characterInfo(id){const c=characters.find(c=>c.id===id),s=companionStats(id);const attrs=Object.entries(s.attributes).map(([id,n])=>({fire:'炎',water:'水',wind:'風',earth:'土'}[id]||id)+n).join('・')||'なし';info(c.name,`${c.jobName} / Lv.${companionLevel(id)} / HP ${s.hp} / 攻撃 ${s.attack} / 防御 ${s.defense} / 固有属性 ${attrs}`)}
-const title=(a,b='')=>`<div class="heading"><h1>${a}</h1>${b?`<span class="tag">${b}</span>`:''}</div>`;const btn=(s,fn,cl='',label='')=>`<button ${label?`aria-label="${esc(label)}" `:''}class="${cl}" onclick="${fn.replaceAll('"','&quot;')}">${s}</button>`;const card=s=>`<section class="card">${s}</section>`;const steps=()=>`<div class="steps">${phases.map((p,i)=>`<span class="${phase===i?'current':''}">${p}</span>`).join('')}</div>`;const next=(label='次へ')=>`<div class="bottom"><div class="actions">${phase>0&&phase<5?btn('前の工程',`phase--;go('home')`):''}${btn(label,'advance()','primary')}</div>${steps()}</div>`;const row=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;const note=s=>`<p class="muted">${s}</p>`;const money=n=>n.toLocaleString()+' G';
-function go(id){cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(pending.length){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){resolveTradingDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions()}else phase++;go('home')}
+function characterInfo(id){const c=characters.find(c=>c.id===id),s=companionStats(id);const attrs=Object.entries(s.attributes).map(([id,n])=>({fire:'炎',water:'水',wind:'風',earth:'土'}[id]||id)+n).join('・')||'なし';info(c.name,`${c.jobName} / Lv.${companionLevel(id)} / 生存力 ${s.hp} / 攻撃 ${s.attack} / 防御 ${s.defense} / 固有属性 ${attrs}`)}
+const title=()=>'';const btn=(s,fn,cl='',label='')=>`<button ${label?`aria-label="${esc(label)}" `:''}class="${cl}" onclick="${fn.replaceAll('"','&quot;')}">${s}</button>`;const card=s=>`<section class="card">${s}</section>`;const steps=()=>'';const next=()=>`<div class="bottom">${dayActions()}${steps()}</div>`;const dayActions=()=>`<div class="actions">${btn('報告を確認','reviewDailyReport()')}${btn('今日のお店を開ける','openShop()','primary')}</div>`;const row=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;const note=s=>`<p class="muted">${s}</p>`;const money=n=>n.toLocaleString()+' G';
+function gameDate(n=day){const seasons=['春','夏','秋','冬'],year=Math.floor((n-1)/20)+1,season=seasons[Math.floor(((n-1)%20)/5)],date=(n-1)%5+1;return `${year}年 ${season}${date}日`}
+
+function toggleMenu(){const nav=$('#nav'),toggle=$('#menuToggle');const opening=nav.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(opening))}
+function go(id){partyRosterOpen=false;shopPanelOpen=false;shopSelectedShelf.clear();shopSelectedStock.clear();cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(phase===4){if(pending.length)return confirmUnsortedItems();phase=5;go('home');return}if(pending.length&&phase!==2){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){if(tradingState.report?.day!==day||salesShown<tradingState.report.visits.length)return;ledgerDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions()}else phase++;go('home')}
+function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
+function openShop(){if(pending.length)return confirmUnsortedItems();phase=5;go('home')}
+function goStage(target){if(phase<1||phase>5||target<1||target>5)return;if(target===5&&pending.length)return confirmUnsortedItems();phase=target;go('home')}
+function openResidentService(tab){go('residents');sub=tab;render()}
+function stageNavigation(){return '<div class="actions">'+[1,2,3,4].map(n=>btn(['','仕入れ','倉庫','陳列','探索'][n],'goStage('+n+')',phase===n?'mini active':'mini')).join('')+'</div>'}
+function confirmUnsortedItems(){document.querySelector('#confirmUnsortedDialog').showModal()}
+function acceptUnsortedItems(){document.querySelector('#confirmUnsortedDialog').close();const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false;phase=5;go('home')}
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}
+let pendingStockAction=null;
+function confirmStockAction(action){
+ const item=stock[selected];if(!item)return;
+ if(action==='buyback'&&item.forged)return info('引取できません','鍛冶済み装備は手動装備または破棄してください。');
+ pendingStockAction={action,uid:item.uid};
+ $('#confirmStockTitle').textContent=action==='buyback'?'商人へ引き取ってもらいますか？':'商品を破棄しますか？';
+ $('#confirmStockBody').textContent=action==='buyback'?itemName(item)+'を '+money(buybackValue(item))+' で引き取ってもらいます。':itemName(item)+'を破棄します。この操作は取り消せません。';
+ $('#confirmStockDialog').showModal();
+}
+function executeStockAction(){
+ const pendingAction=pendingStockAction;pendingStockAction=null;
+ $('#confirmStockDialog').close();
+ if(!pendingAction)return;
+ const index=stock.findIndex(item=>item.uid===pendingAction.uid);if(index<0)return;
+ selected=index;
+ if(pendingAction.action==='buyback')buybackStock();else if(pendingAction.action==='discard')discardStock();
+}
+
 function villageCompletion(){
  const rules=config.chapterProgression.prologue;
  const conquered=dungeonCleared(rules.clearDungeonId),funded=gold>=clearFunds();
@@ -62,7 +92,7 @@ function travelToNextChapter(){
  if(!recruits.length)return;
  cancelEquipmentDrag();equipmentSelectedUid=null;
  chapter=rules.nextChapter;availableCharacterIds=[selectedCompanion,...recruits];
- parties=[recruits.slice(0,3),[selectedCompanion],[]];funds=[0,0,0];counts=[0,0,0];
+ parties=[recruits.slice(0,3),[selectedCompanion],[]];funds=[0,0,0];counts=[0,0,0];supplies=Array.from({length:3},()=>[0,0,0]);
  party=0;partySlot=0;rosterPage=0;selectedDungeon=config.dungeons.find(d=>d.chapter===chapter)?.id;
  equipCharacter=null;equipmentOrigin=null;selectedCompanion=null;go('chapterArrival');
 }
@@ -72,18 +102,12 @@ function chapterArrival(){
  return title(esc(rules.nextName),'新しい旅')+card(`<h2>新たな仲間との出会い</h2><div class="actions departure-roster">${recruits.map(c=>`<div>${characterArt(c)}<b>${esc(c.name)}</b><small>${esc(c.jobName)}</small></div>`).join('')}</div>`)+card(`<h2>新しい土地でお店を開こう</h2>${note('仲間タブで編成を整え、経営の支援工程から遠征に出発しましょう。')}${row('同行者',esc(availableCharacters().filter(c=>c.joinChapter!==chapter).map(c=>c.name).join('・')))}${row('所持金',money(gold))}`)+`<div class="bottom">${btn('この土地で経営を始める',"go('home')",'primary')}</div>`;
 }
 
-function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();if(phase===1)return purchase();if(phase===2)return warehouse(true);if(phase===3)return stocking();if(phase===4)return support(true);return sales()}
-function report(){const size=3;page=Math.min(page,Math.max(0,Math.ceil(returnReport.length/size)-1));return title(sub?'仲間の帰還報告':'朝の営業報告',`春 ${day}日`)+(sub?card(`<h2>遠征の結果</h2>${returnReport.length?returnReport.slice(page*size,(page+1)*size).map(line=>`<p>${esc(line)}</p>`).join(''):note('帰還したパーティはありません。')}`)+(returnReport.length>size?pager(returnReport.length,size):''):card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport())+note(`遠征は翌朝に帰還し、参加者の各装備を${balanceRuntime.expeditionWear}消耗します。`))+`<div class="bottom"><div class="actions">${chapter===0&&villageCompletion().conquered?btn('村クリア・次の旅へ',"go('villageClear')",'primary'):''}${btn(sub?'確認して仕入れへ':'次へ · 帰還報告',sub?'advance()':'sub=1;page=0;render()','primary')}</div>${steps()}</div>`}
-function purchase(){let total=counts.reduce((a,n,i)=>a+n*prices[i],0);return title('今日の仕入れ',`${warehouseSize.width}×${warehouseSize.height} · 空き${warehouseSize.width*warehouseSize.height-warehouseUsed()}マス`)+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${prices[i]} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れて入荷品を確認','buy()','primary touch-target')} ${btn('今日は仕入れない','phase=2;go("home")','mini touch-target')}${steps()}</div>`}
-function stocking(){return title('店舗の陳列','04 / 06')+`<div class="tabs">${btn('商品の補充','sub=0;render()',!sub?'active':'')}${btn('棚・設備の配置','sub=1;render()',sub?'active':'')}</div>`+(!sub?shelfSelector()+card(row('補充済み',shelfItems().length+' 点 / '+config.development.shelfCapacity+' 点')+note(esc(shelfSummary())))+itemList(stock,'selected=INDEX;render()')+`<div class="actions">${btn('選んだ商品を補充','replenish()','primary')}${btn('1点を倉庫へ戻す','returnShelf()')}</div>`:card(`<h2>店舗の棚</h2>${row('設置済み',economyState.shelfCount+' 棚')}${row('陳列上限',shelfCapacity()+' 点')}${row('棚の日額管理費',money(economyState.shelfCount*economyConfig.chapters[economyChapterId(chapter)].shopMaintenancePerShelf))}${btn('大工へ棚増設を依頼',"go('residents');sub=1;render()",'mini')}`))+note('商品と棚は翌日も維持。棚1つの容量は開発設定で管理。')+next('仲間の支援へ')}
-function support(routine=false){return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+`<div class="tabs">${[['編成',0],...(routine?[['目的地',2]]:[])].map(([label,index])=>btn(label,`sub=${index};render()`,sub===index?'active':'')).join('')}</div>`+(sub!==2?(routine?card(`<div class="row"><h2>第${party+1}パーティの支度金</h2><b>${money(funds[party])}</b></div><div class="actions funding-controls">${[10,100,1000].map(n=>btn('＋'+n,`if(!partyAway(party)&&funds[party]+${n}<=gold)funds[party]+=${n};render()`,'mini touch-target',`支度金を${n}G加算`)).join('')}${btn('取消',`if(!partyAway(party))funds[party]=0;render()`,'mini touch-target','支度金の予定額を取り消す')}</div>${note('派遣時に消費。パーティごとに管理。')}`):'')+partyFormation():destinationView())+(routine?next('今日のお店を開ける'):`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`)}
-function records(){return title('記録')+card(`<h2>日誌</h2><p>日々の商売や冒険の出来事を振り返ります。</p><br>${btn('日誌を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}
-function journal(){let days=['春 2日','春 1日'];return title('店主の日誌')+`<div class="page">${btn('‹','page=0;render()')}<b>${days[page]}</b>${btn('›','page=1;render()')}</div>`+card(`<div class="ledger">${row('商売','売上 480 G')}${row('仕入れ','300 G')}${row('仲間への支援','支度金 100 G')}${row('遠征','周辺の森へ出発')}${row('現金収支','＋80 G')}</div>`)+note('日付ごとに短い記録を表示。会話全文は重ねない。')+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`}
 function developmentMenu(){
  return `<details class="development-menu"><summary><span>⚒</span>開発用</summary><div class="development-options"><b>確認するタイミング</b>${btn('プロローグの最初から',"loadDevelopmentStage('prologue')")}${btn('プロローグ終了間際',"loadDevelopmentStage('prologueEnd')")}${btn('1章はじめから',"loadDevelopmentStage('chapter1')")}${note('現在の進行を置き換えて自動保存します。残す場合は設定からJSONを書き出してください。')}</div></details>`;
 }
 function loadDevelopmentStage(stage){
  if(!['prologue','prologueEnd','chapter1'].includes(stage))return;
+ $('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');
  // Build the complete checkpoint before allowing any automatic save.
  saveReady=false;reset(false);
  if(stage!=='prologue'){
@@ -98,7 +122,197 @@ function loadDevelopmentStage(stage){
  if(stage==='chapter1'){selectedCompanion=villageCharacters()[0].id;travelToNextChapter()}
  else {go('home');if(stage==='prologueEnd'){sub=2;render()}}
 }
-function renderBase(){ $('#date').textContent=`${chapter===0?'村':chapter+'章'} · 春${day}日 · ${phases[phase]}`;$('#gold').textContent=money(gold);$('#nav').innerHTML=navs.map(([id,icon,s])=>`<button class="${screen===id||screen==='equipment'&&equipmentOrigin?.screen===id||id==='home'&&screen==='trade'||id==='records'&&['journal','encyclopedia'].includes(screen)?'active':''}" onclick="go('${id}')"><span>${icon}</span>${s}</button>`).join('')+developmentMenu();$('#view').innerHTML=({home,villageClear:villageClearView,chapterArrival,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();$('#flow').innerHTML=phases.map((x,i)=>btn(String(i+1).padStart(2,'0')+'　'+x,`if(pending.length){go('trade')}else if(!economyState.bill||economyState.bill.status!=='unpaid'){phase=${i};go('home')}`,phase===i?'active':'')).join('');}
+
+function dailyReport(){return report(true)}
+function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();return stageNavigation()+(phase===1?purchase():phase===2?warehouse(true):phase===3?stocking():phase===4?support(true):sales())}
+function report(review=false){
+ const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
+ const destinations=[...new Set(groups.map(g=>g.destination))];
+ const expeditionHtml=destinations.length?destinations.map(destination=>{
+  const destinationGroups=groups.filter(g=>g.destination===destination);
+  const latest=destinationGroups[destinationGroups.length-1];
+  return card(
+   '<h2>派遣先：'+esc(destination)+' · 攻略 '+latest.totalProgress+'%'+(latest.cleared?' · クリア！':'')+'</h2>'+
+   destinationGroups.map(g=>
+    '<div class="return-party"><h3>第'+(g.party+1)+'パーティ · '+esc(g.progress)+'</h3>'+
+    g.members.map(m=>'<div class="return-member"><img class="return-member-art" src="'+esc(m.image)+'" alt=""><div><b>'+esc(m.name)+'</b>'+(m.events.length?'<p>'+m.events.map(esc).join(' ／ ')+'</p>':'')+'</div></div>').join('')+
+    '</div>').join('')
+  );
+ }).join(''):card(note('帰還したパーティはありません。'));
+ return title(sub?'仲間の帰還報告':'朝の営業報告',gameDate())+
+ (sub?expeditionHtml:card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+
+ `<div class="bottom">${chapter===0&&villageCompletion().conquered?btn('村クリア・次の旅へ',"go('villageClear')",'primary'):''}${btn(sub?(review?'準備に戻る':'仕入れへ'):'報告を確認',sub?(review?"go('home')":'advance()'):'sub=1;page=0;render()','primary')}${steps()}</div>`;
+}
+function shelfOverview(){const capacity=config.development.shelfCapacity;return title('棚の中身')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`))+Array.from({length:economyState.shelfCount},(_,index)=>{const items=shelf.filter(item=>item.shelfId===index);return card('<h2>棚 '+(index+1)+' · '+items.length+' / '+capacity+' 点</h2>'+(items.length?items.map(item=>row(esc(itemName(item)),money(saleValue(item)))).join(''):note('商品なし')))}).join('')+`<div class="bottom">${btn('仕入れへ戻る',"go('home')",'primary')}</div>`}
+function purchase(){let total=counts.reduce((a,n,i)=>a+n*merchantPrice(i),0);return title('今日の仕入れ')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`)+btn('棚の中身を確認',"go('shelfOverview')",'mini touch-target'))+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${merchantPrice(i)} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れを確定','finishPurchase()','touch-target')+dayActions()}${steps()}</div>`}
+// 店舗の棚は8×8マスに2×2で配置する。
+const SHOP_WIDTH=8,SHOP_HEIGHT=8,SHELF_SIDE=2;
+let shopMoveShelf=false,shopDragSuppressClick=0,shopPanelOpen=false,shopInventoryTab=0,shopSelectedShelf=new Set(),shopSelectedStock=new Set();
+function shopLayout(){return economyState.shelfLayout}
+function shopShelfAt(x,y){return shopLayout().findIndex(p=>p&&x>=p.x&&x<p.x+SHELF_SIDE&&y>=p.y&&y<p.y+SHELF_SIDE)}
+function shopCanPlace(index,x,y){
+ if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x+SHELF_SIDE>SHOP_WIDTH||y+SHELF_SIDE>SHOP_HEIGHT)return false;
+ return shopLayout().every((p,i)=>i===index||!p||x+SHELF_SIDE<=p.x||p.x+SHELF_SIDE<=x||y+SHELF_SIDE<=p.y||p.y+SHELF_SIDE<=y);
+}
+function shopPlaceAt(x,y){
+ const hit=shopShelfAt(x,y);
+ if(hit>=0&&!shopMoveShelf){selectedShelf=hit;shopPanelOpen=true;shopInventoryTab=0;shopSelectedShelf.clear();shopSelectedStock.clear();page=0;render();return}
+ const index=shopMoveShelf?selectedShelf:shopLayout().findIndex(p=>p===null);
+ if(index<0||index>=economyState.shelfCount)return;
+ if(!shopCanPlace(index,x,y))return;
+ shopLayout()[index]={x,y};selectedShelf=index;shopMoveShelf=false;render();
+}
+
+function startShopDrag(event,x,y){
+ if(event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0))return;
+ const index=shopShelfAt(x,y);if(index<0)return;
+ const origin=shopLayout()[index],pointerId=event.pointerId;
+ const offsetX=x-origin.x,offsetY=y-origin.y;
+ const sx=event.clientX,sy=event.clientY;
+ let active=false,done=false;
+ const timer=setTimeout(()=>{if(!done)active=true},100);
+ function cleanup(){done=true;clearTimeout(timer);window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel)}
+ function move(e){if(e.pointerId!==pointerId)return;if(!active&&Math.hypot(e.clientX-sx,e.clientY-sy)>8)cleanup();if(active)e.preventDefault()}
+ function up(e){
+  if(e.pointerId!==pointerId)return;
+  const dragging=active;cleanup();if(!dragging)return;
+  shopDragSuppressClick=Date.now()+500;
+  const cell=document.elementFromPoint(e.clientX,e.clientY)?.closest('.shop-layout-grid .shop-cell');
+  if(cell){
+   const nx=Number(cell.dataset.shopX)-offsetX,ny=Number(cell.dataset.shopY)-offsetY;
+   if(shopCanPlace(index,nx,ny))shopLayout()[index]={x:nx,y:ny};
+  }
+  selectedShelf=index;render();
+ }
+ function cancel(){if(active)shopDragSuppressClick=Date.now()+500;cleanup()}
+ window.addEventListener('pointermove',move,{passive:false});
+ window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);
+}
+function shopLayoutView(){
+ const layout=shopLayout(),unplaced=layout.filter(p=>!p).length;
+ const cells=Array.from({length:SHOP_WIDTH*SHOP_HEIGHT},(_,i)=>{
+  const x=i%SHOP_WIDTH,y=Math.floor(i/SHOP_WIDTH),hit=shopShelfAt(x,y),position=layout[hit];
+  const label=hit<0?'空きマス':`棚${hit+1}`;
+  const origin=hit>=0&&position.x===x&&position.y===y;
+  return `<button type="button" data-shop-x="${x}" data-shop-y="${y}" class="shop-cell ${hit>=0?'occupied':''} ${hit===selectedShelf?'chosen':''}" aria-label="${label} ${x+1}列${y+1}行" onpointerdown="startShopDrag(event,${x},${y})" onclick="if(Date.now()>shopDragSuppressClick)shopPlaceAt(${x},${y})">${origin?'棚'+(hit+1):''}</button>`;
+ }).join('');
+ return card(`<div class="row"><h2>店舗レイアウト</h2><small>8×8マス · 棚${layout.length-unplaced}/${economyState.shelfCount}</small></div><div class="shop-layout-grid">${cells}</div>`
+ +note(unplaced?'空きマスをタップして棚を設置。長押しドラッグで移動できます。':'棚をタップして商品管理。長押しドラッグで移動できます。')
+ +note('位置は自動保存されます。'));
+}
+function shopToggleSelection(source,id){
+ const set=source==='shelf'?shopSelectedShelf:shopSelectedStock;
+ if(set.has(id))set.delete(id);else set.add(id);
+ render();
+}
+function shopBulkStock(){
+ if(selectedShelf<0||selectedShelf>=economyState.shelfCount)return;
+ const available=stock.filter(i=>shopSelectedStock.has(i.uid)&&!i.forged);
+ const free=config.development.shelfCapacity-shelfItems().length;
+ if(available.length>free)return info('補充できません','棚の空き容量が不足しています。');
+ if(!available.length)return;
+ const ids=new Set(available.map(i=>i.uid));
+ stock=stock.filter(i=>!ids.has(i.uid));
+ for(const item of available){item.shelfId=selectedShelf;shelf.push(item)}
+ shopSelectedStock.clear();discoverShelfSets();render();
+}
+function shopBulkReturn(){
+ const chosen=shelfItems().filter(i=>shopSelectedShelf.has(i.uid));
+ if(!chosen.length)return;
+ const positions=[],temporary=stock.slice();
+ for(const item of chosen){
+  const position=ItemCore.findSpace(item,temporary,types,warehouseSize);
+  if(!position)return info('倉庫に入りません','選択した商品すべてを収納できる空きがありません。');
+  positions.push({item,position});temporary.push({...item,...position});
+ }
+ const ids=new Set(chosen.map(i=>i.uid));
+ shelf=shelf.filter(i=>!ids.has(i.uid));
+ for(const {item,position} of positions){Object.assign(item,position);delete item.shelfId;stock.push(item)}
+ shopSelectedShelf.clear();discoverShelfSets();render();
+}
+function shopProductInfo(uid,source){
+ const item=(source==='shelf'?shelf:stock).find(i=>i.uid===uid);
+ if(!item)return;
+ const d=def(item),t=type(item);
+ info(d.name,[d.description||'説明未設定','種類：'+t.label,'属性：'+catalog.elements[d.element],
+ '販売価格：'+saleValue(item)+' G','基礎価格：'+(d.price==null?'未設定':d.price+' G'),
+ '能力：'+(d.stats==null?'未設定':JSON.stringify(d.stats))].join('\n'));
+}
+function shopTransferItem(uid,source){
+ if(source==='shelf'){
+  const item=shelfItems().find(i=>i.uid===uid);if(!item)return;
+  const position=ItemCore.findSpace(item,stock,types,warehouseSize);
+  if(!position)return info('倉庫に入りません','倉庫に空きがありません。');
+  shelf=shelf.filter(i=>i.uid!==uid);Object.assign(item,position);delete item.shelfId;stock.push(item);
+ }else{
+  if(selectedShelf<0||selectedShelf>=economyState.shelfCount)return;
+  const item=stock.find(i=>i.uid===uid&&!i.forged);if(!item)return;
+  if(shelfItems().length>=config.development.shelfCapacity)return info('補充できません','棚に空きがありません。');
+  stock=stock.filter(i=>i.uid!==uid);item.shelfId=selectedShelf;shelf.push(item);
+ }
+ shopSelectedShelf.clear();shopSelectedStock.clear();discoverShelfSets();render();
+}
+function shopItemCard(item,source){
+ const isShelf=source==='shelf',label=isShelf?'倉庫へ戻す':'棚に補充';
+ return '<div class="shop-product-tile"><div class="shop-product-card">'+
+ '<img class="shop-product-image" src="'+esc(def(item).image)+'" alt="" loading="lazy" draggable="false">'+
+ '<span class="shop-product-name">'+esc(itemName(item))+'</span></div>'+
+ '<button type="button" class="shop-product-detail" aria-label="'+esc(itemName(item))+'の情報" onclick="shopProductInfo('+item.uid+',&quot;'+source+'&quot;)">i</button>'+
+ '<button type="button" class="shop-product-transfer" aria-label="'+esc(itemName(item))+'を'+label+'" onclick="shopTransferItem('+item.uid+',&quot;'+source+'&quot;)">'+(isShelf?'×':'＋')+'</button></div>';
+}
+function switchShopShelf(direction){const count=economyState.shelfCount;if(!count)return;selectedShelf=(selectedShelf+direction+count)%count;shopInventoryTab=0;shopSelectedShelf.clear();shopSelectedStock.clear();page=0;render()}
+function stocking(){
+ // 旧セーブの未配置棚も、レイアウト画面を経由せず補充可能にする。
+ shopPanelOpen=true;
+ selectedShelf=Math.max(0,Math.min(selectedShelf,economyState.shelfCount-1));
+ const items=shelfItems(),capacity=config.development.shelfCapacity;
+ const totalValue=items.reduce((sum,item)=>sum+saleValue(item),0);
+ const stockItems=stock.filter(i=>!i.forged);
+ const perPage=8,pages=Math.max(1,Math.ceil(stockItems.length/perPage));page=Math.max(0,Math.min(page,pages-1));
+ const visibleStock=stockItems.slice(page*perPage,(page+1)*perPage);
+ const pager=pages>1?'<div class="page">'+btn('‹','page=Math.max(0,page-1);render()','mini')+'<small>'+(page+1)+' / '+pages+'</small>'+btn('›','page=Math.min('+(pages-1)+',page+1);render()','mini')+'</div>':'';
+ const details=card('<div class="row"><div class="actions">'+btn('‹','switchShopShelf(-1)','mini touch-target','前の棚へ')+'<h2>棚 '+(selectedShelf+1)+'</h2>'+btn('›','switchShopShelf(1)','mini touch-target','次の棚へ')+'</div><b>'+items.length+' / '+capacity+' 点</b></div>'+
+ row('棚の商品総額',money(totalValue))+note(esc(shelfSummary())));
+ const shelfSection='<div class="card shop-folder-content shop-shelf-section"><div class="row"><h2>棚の商品</h2><small>×で倉庫へ戻す</small></div>'+
+ '<div class="shop-product-list">'+items.map(i=>shopItemCard(i,'shelf')).join('')+
+ Array.from({length:Math.max(0,capacity-items.length)},()=>'<div class="shop-empty-slot" aria-label="空き枠">＋</div>').join('')+'</div>'+
+ '</div>';
+ const stockSection='<div class="card shop-folder-content shop-stock-section"><div class="row"><h2>倉庫から補充 ('+stockItems.length+')</h2><small>＋で棚に補充</small></div>'+
+ (visibleStock.length?'<div class="shop-product-list">'+visibleStock.map(i=>shopItemCard(i,'stock')).join('')+'</div>':note('商品がありません。'))+
+ pager+'</div>';
+ return title('棚補充','04 / 06')+details+shelfSection+stockSection+next('探索へ');
+}
+
+const supplyTypes=[{name:'支給食料',price:100,effect:'生存力＋1'},{name:'防具整備具',price:150,effect:'防御力＋1'},{name:'冒険者の薬草',price:200,effect:'回復日数−1日'}];
+let supplies=Array.from({length:3},()=>[0,0,0]);
+const supplyCost=items=>items.reduce((sum,n,i)=>sum+n*supplyTypes[i].price,0);
+function changeSupply(index,delta){
+ if(partyAway(party))return;
+ const next=[...supplies[party]];next[index]=Math.max(0,Math.min(3,next[index]+delta));
+ if(supplyCost(next)>gold)return;
+ supplies[party]=next;render();
+}
+let assistanceOpen=false;
+function support(routine=false){
+ const items=supplies[party],cost=supplyCost(items);
+ const supplyPanel=card('<h2>第'+(party+1)+'パーティの遠征物資</h2>'+supplyTypes.map((item,i)=>
+  '<div class="row"><span>'+item.name+' <small>'+item.price+'G · '+item.effect+' / 個</small></span><span class="actions">'+btn('−',`changeSupply(${i},-1)`,'mini touch-target')+' <b>'+items[i]+'</b> '+btn('＋',`changeSupply(${i},1)`,'mini touch-target')+'</span></div>'
+ ).join('')+row('出発時の消費',money(cost))+note('各種最大3個。パーティ全員に遠征1回限りの効果。'));
+ if(partyRosterOpen)return title('パーティ編成')+btn('‹ 探索画面へ戻る','partyRosterOpen=false;render()','mini')+partyFormation();
+ const assistance=card(btn('支援 '+(assistanceOpen?'▲':'▼'),'assistanceOpen=!assistanceOpen;render()','mini touch-target')+(assistanceOpen?btn('教会 · 治療','openResidentService(0)','mini touch-target')+supplyPanel:''));
+ return title('探索',away?'遠征中':'活動可能')+
+ (routine?destinationView()+assistance+partyFormation()+next('今日のお店を開ける'):
+ destinationView()+assistance+partyFormation()+`<div class="bottom">${note('目的地の選択・出発は経営の探索工程で行います。')}</div>`);
+}
+function broker(){const rumors=tradingState.rumors.filter(r=>r.startDay<=day&&day<r.endDay);return title('情報屋')+card('<h2>お店の噂</h2>'+note(rumors.map(r=>esc(tradingConfig.rumors.find(d=>d.id===r.id)?.name||r.id)+' · あと'+(r.endDay-day)+'日').join(' ／ ')||'現在の噂はありません。'))}
+function records(){return title('記録')+card(`<h2>経営帳簿</h2><p>日別の収支とダンジョン攻略履歴を確認します。</p><br>${btn('帳簿を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}
+let ledgerHistory=[];
+function ledgerDay(n=day){let entry=ledgerHistory.find(e=>e.day===n);if(!entry){entry={day:n,sales:0,purchases:0,funding:0,expenses:0,otherIncome:0,expeditions:[]};ledgerHistory.push(entry);ledgerHistory.sort((a,b)=>a.day-b.day)}return entry}
+function ledgerMoney(kind,amount,n=day){if(amount>0)ledgerDay(n)[kind]+=amount}
+function ledgerExpedition(dungeonId,partyId,gain,total,members=[]){ledgerDay().expeditions.push({dungeonId,party:partyId,gain,total,members:[...members]})}
+function journal(){const entries=ledgerHistory.slice().sort((a,b)=>b.day-a.day),size=1,total=Math.max(1,entries.length);page=Math.min(page,total-1);const e=entries[page];if(!e)return title('経営帳簿')+card(note('まだ経営・攻略の記録はありません。'))+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`;const income=e.sales+e.otherIncome,out=e.purchases+e.funding+e.expenses,balance=income-out;const format=n=>(n>=0?'＋':'−')+money(Math.abs(n));const expeditionHtml=e.expeditions.length?e.expeditions.map(x=>{const d=config.dungeons.find(d=>d.id===x.dungeonId);return row(esc(d?.name||x.dungeonId)+' · '+esc(x.members?.length?x.members.map(id=>characters.find(c=>c.id===id)?.name||id).join('・'):'第'+(x.party+1)+'パーティ'),`＋${x.gain}%（累計 ${x.total}%）`)}).join(''):note('この日の攻略記録はありません。');const recent=entries.slice(0,7).reverse(),maxSales=Math.max(1,...recent.map(x=>x.sales)),trend=card('<h2>直近7日間の売上</h2><div style="display:flex;align-items:end;gap:6px;height:74px">'+recent.map(x=>'<div title="春'+x.day+'日 '+x.sales+'G" style="flex:1;min-width:0;text-align:center;font-size:10px"><div style="height:'+Math.max(2,Math.round(x.sales/maxSales*45))+'px;background:var(--accent);border-radius:3px 3px 0 0"></div>'+x.day+'日</div>').join('')+'</div>');return title('経営帳簿')+`<div class="page">${btn('‹','page=Math.min(page+1,ledgerHistory.length-1);render()','mini')}<b>${gameDate(e.day)}</b>${btn('›','page=Math.max(0,page-1);render()','mini')}</div>`+card('<h2>収支</h2>'+row('売上',money(e.sales))+row('その他収入',money(e.otherIncome))+row('仕入れ', '−'+money(e.purchases))+row('支度金','−'+money(e.funding))+row('その他支出','−'+money(e.expenses))+row('収支合計',format(balance)))+card('<h2>ダンジョン攻略</h2>'+expeditionHtml)+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`}
+
+function renderBase(){ $('#date').textContent=`${gameDate()} · ${phases[phase]}`;$('#gold').textContent=money(gold);$('#nav').innerHTML=navs.map(([id,icon,s])=>`<button class="${screen===id||screen==='equipment'&&equipmentOrigin?.screen===id||id==='home'&&screen==='trade'||id==='encyclopedia'&&screen==='encyclopedia'||id==='journal'&&screen==='journal'?'active':''}" ${id==='broker'?'disabled title="今後追加予定"':`onclick="go('${id}')"`}><span>${icon}</span>${s}</button>`).join('')+developmentMenu();$('#view').innerHTML=({home,villageClear:villageClearView,chapterArrival,dailyReport,broker,shelfOverview,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();}
 
 // JSON-driven item definitions and current game screens.
 let balanceRuntime={...Balance.runtimeDefaults};
@@ -112,37 +326,70 @@ function newItem(id){EncyclopediaCore.acquire(encyclopedia,id);const maxDurabili
 function itemName(instance){return def(instance).name}
 function itemMeta(instance){const d=def(instance),t=type(instance);return `${t.label} · ${t.width?`${t.width}×${t.height}`:'寸法未設定'} · ${catalog.elements[d.element]} · 販売 ${saleValue(instance)} G${t.slot?` · 耐久 ${instance.durability}/${instance.maxDurability}${instance.forged?' · 鍛冶済み':''}`:''}` }
 function shape(d){return `<span class="item-art"><img src="${esc(d.image)}" alt="" loading="lazy" decoding="async" draggable="false"></span>`}
-function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board=warehouseSize,rotated=item.rotation%2;return `<span class="warehouse-art" style="left:calc(${item.x/board.width*100}% + ${item.x/board.width*3}px);top:calc(${item.y/board.height*100}% + ${item.y/board.height*3}px);width:calc(${d.width/board.width*100}% - ${3-d.width/board.width*3}px);height:calc(${d.height/board.height*100}% - ${3-d.height/board.height*3}px)"><img src="${esc(def(item).image)}" alt="" draggable="false" style="width:${rotated?d.height/d.width*100:100}%;height:${rotated?d.width/d.height*100:100}%;transform:translate(-50%,-50%) rotate(${rotated?90:0}deg)"></span>`}
+function warehouseArtwork(item){const d=ItemCore.dimensions(item,types),board={width:8,height:8},rotated=item.rotation%2;return `<span class="warehouse-art ${stock[selected]===item?'is-selected':''}" style="left:${item.x/board.width*100}%;top:${item.y/board.height*100}%;width:${d.width/board.width*100}%;height:${d.height/board.height*100}%"><img src="${esc(def(item).image)}" alt="" draggable="false" style="width:${rotated?d.height/d.width*100:100}%;height:${rotated?d.width/d.height*100:100}%;transform:translate(-50%,-50%) rotate(${rotated?90:0}deg)"></span>`}
 
 
 function storeItem(instance){const position=ItemCore.findSpace(instance,stock,types,warehouseSize);if(!position)return false;Object.assign(instance,position);stock.push(instance);return true}
-function reset(persistReset=true){selectedCompanion=null;warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=2;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:10,maxDurability:10};if(!storeItem(item))pending.push(item)}go('home')};
+function reset(persistReset=true){selectedCompanion=null;groupedReturnReport=[];salesShown=0;salesDay=0;if(salesTimer){clearTimeout(salesTimer);salesTimer=null}ledgerHistory=[];shopPanelOpen=false;warehouseSize={...config.warehouse};cancelEquipmentDrag();equipmentSelectedUid=null;selectedShelf=0;tradingState={rumors:[],report:null};resetRescue();resetEconomy();if(persistReset)saveReady=true;dungeonProgress={};selectedDungeon=config.dungeons[0].id;equipment={};autoEquip={};brokenTargets={};expeditions=[];returnReport=[];lastSales=0;equipCharacter=null;equipmentOrigin=null;characterPanel="equipment";equipmentSlot="weapon";equipPage=0;day=1;phase=0;gold=config.development.initialGold;counts=[0,0,0];pending=[];stock=[];shelf=[];funds=[0,0,0];supplies=Array.from({length:3},()=>[0,0,0]);party=0;partySlot=0;rosterPage=0;chapter=0;availableCharacterIds=characters.filter(c=>c.joinChapter===chapter).map(c=>c.id);parties=[availableCharacterIds.slice(0,3),[],[]];away=false;selected=0;page=0;uid=0;encyclopedia=EncyclopediaCore.create();encyclopediaSelection=null;for(const id of config.development.initialItemIds){if(!fitsWarehouse(definitions[id]))continue;const item={...newItem(id),durability:5,maxDurability:5};if(!storeItem(item))pending.push(item)}go('home')};
 function itemList(items,fn){const size=pending.length?Math.min(2,config.ui.pageSize):config.ui.pageSize;page=Math.min(page,Math.max(0,Math.ceil(items.length/size)-1));return `<div class="list">${items.slice(page*size,page*size+size).map((item,i)=>`<button class="item ${selected===page*size+i?'active':''}" onclick="${fn.replaceAll('INDEX',page*size+i)}"><span><b>${esc(itemName(item))}</b><small class="block">${esc(itemMeta(item))}</small></span><span class="item-mini">${shape(def(item))}</span></button>`).join('')||note('商品はありません')}</div>`+pager(items.length,size)};
 function pager(length,size){const pages=Math.max(1,Math.ceil(length/size));return `<div class="page"><button class="mini" ${page===0?'disabled':''} onclick="page--;render()">‹</button><small>${page+1} / ${pages} ページ · ${length}件</small><button class="mini" ${page===pages-1?'disabled':''} onclick="page++;render()">›</button></div>`}
 function openCatalog(origin){catalogOrigin=origin;catalogDetail=false;page=0;screen='catalog';render()}
 function filteredItems(){return catalog.items.filter(d=>(!catalogSlot||types[d.typeId].slot===catalogSlot)&&(!catalogFilter||d.typeId===catalogFilter)&&(!catalogQuery||d.name.includes(catalogQuery)))}
-function catalogView(){if(catalogDetail)return catalogItemView();const items=filteredItems();return title('アイテム設定一覧',`${catalog.items.length}種類`)+`<div class="catalog-filters"><select aria-label="装備枠" onchange="catalogSlot=this.value;catalogFilter='';page=0;render()"><option value="">すべての枠</option>${Object.entries(catalog.slots).map(([id,name])=>`<option value="${id}" ${catalogSlot===id?'selected':''}>${name}</option>`).join('')}</select><select aria-label="装備種類" onchange="catalogFilter=this.value;page=0;render()"><option value="">すべての種類</option>${catalog.types.filter(t=>!catalogSlot||t.slot===catalogSlot).map(t=>`<option value="${t.id}" ${catalogFilter===t.id?'selected':''}>${esc(t.label)}</option>`).join('')}</select></div><form class="actions" onsubmit="event.preventDefault();catalogQuery=this.elements.query.value.trim();page=0;render()"><input name="query" aria-label="アイテム名検索" placeholder="アイテム名を検索" value="${esc(catalogQuery)}"><button class="mini">検索</button></form><div class="catalog-list">${items.slice(page*config.ui.pageSize,(page+1)*config.ui.pageSize).map(d=>`<button class="item" onclick="catalogItemId='${d.id}';catalogDetail=true;render()"><span><b>${esc(d.name)}</b><small class="block">${esc(types[d.typeId].label)} · ${catalog.elements[d.element]}</small></span>${shape(d)}</button>`).join('')||note('一致するアイテムはありません')}</div>${pager(items.length,config.ui.pageSize)}<div class="bottom">${note('正式価格・能力は未設定。装備の耐久度は個体ごとに管理。')}${btn('戻る',`go('${catalogOrigin}')`)}</div>`}
-function catalogItemView(){const d=definitions[catalogItemId],t=types[d.typeId];return title('アイテム詳細','登録済み')+card(`<div class="row"><div><h2>${esc(d.name)}</h2><small>${esc(t.label)}</small></div>${shape(d)}</div><div class="ledger">${row('装備枠',t.slot?catalog.slots[t.slot]:'装備不可')}${row('寸法（横×縦）',t.width?`${t.width} × ${t.height}`:'未設定')}${row('形状の指定',esc(t.shapeLabel||'未設定'))}${row('属性',catalog.elements[d.element])}${row('価格',d.price===null?'未設定':esc(d.price)+' G')}${row('能力',d.stats===null?'未設定':esc(JSON.stringify(d.stats)))}${row('耐久',t.slot?'基準10（仕入れ時8〜12）':'装備対象外')}</div>`)+(d.effect?card(`<h2>素材の用途</h2><p>${catalog.elements[d.effect.element]}属性付与</p>${note('付与量・費用・対象・消費ルールは未設定。')}`):'')+note('ID: '+d.id)+`<div class="bottom">${btn('一覧へ戻る','catalogDetail=false;render()','primary')}</div>`}
-function warehouseCell(x,y){const hit=stock.find(item=>{const d=ItemCore.dimensions(item,types);return d&&x>=item.x&&x<item.x+d.width&&y>=item.y&&y<item.y+d.height});if(hit){const index=stock.indexOf(hit);if(selected===index){rotateSelected();return}selected=index;render();return}const item=stock[selected];if(!item)return;const position=ItemCore.findNearby(item,x,y,item.rotation,stock,types,warehouseSize);if(!position)return;Object.assign(item,position);render()}
+function catalogView(){if(catalogDetail)return catalogItemView();const items=filteredItems();return title('アイテム設定一覧',`${catalog.items.length}種類`)+`<div class="catalog-filters"><select aria-label="装備枠" onchange="catalogSlot=this.value;catalogFilter='';page=0;render()"><option value="">すべての枠</option>${Object.entries(catalog.slots).map(([id,name])=>`<option value="${id}" ${catalogSlot===id?'selected':''}>${name}</option>`).join('')}</select><select aria-label="装備種類" onchange="catalogFilter=this.value;page=0;render()"><option value="">すべての種類</option>${catalog.types.filter(t=>!catalogSlot||t.slot===catalogSlot).map(t=>`<option value="${t.id}" ${catalogFilter===t.id?'selected':''}>${esc(t.label)}</option>`).join('')}</select></div><form class="actions" onsubmit="event.preventDefault();catalogQuery=this.elements.query.value.trim();page=0;render()"><input name="query" aria-label="アイテム名検索" placeholder="アイテム名を検索" value="${esc(catalogQuery)}"><button class="mini">検索</button></form><div class="catalog-list">${items.slice(page*config.ui.pageSize,(page+1)*config.ui.pageSize).map(d=>`<button class="item" onclick="catalogItemId='${d.id}';catalogDetail=true;render()"><span><b>${esc(d.name)}</b><small class="block">${esc(types[d.typeId].label)} · ${catalog.elements[d.element]} · ${d.price==null?'価格未設定':d.price+' G'}</small><small class="block">${esc(d.description||'説明未設定')}</small></span>${shape(d)}</button>`).join('')||note('一致するアイテムはありません')}</div>${pager(items.length,config.ui.pageSize)}<div class="bottom">${note('正式価格・能力は未設定。装備の耐久度は個体ごとに管理。')}${btn('戻る',`go('${catalogOrigin}')`)}</div>`}
+function catalogItemView(){const d=definitions[catalogItemId],t=types[d.typeId];return title('アイテム詳細','登録済み')+card(`<div class="row"><div><h2>${esc(d.name)}</h2><small>${esc(t.label)}</small></div>${shape(d)}</div><div class="ledger">${row('装備枠',t.slot?catalog.slots[t.slot]:'装備不可')}${row('寸法（横×縦）',t.width?`${t.width} × ${t.height}`:'未設定')}${row('形状の指定',esc(t.shapeLabel||'未設定'))}${row('属性',catalog.elements[d.element])}${row('価格',d.price===null?'未設定':esc(d.price)+' G')+row('商品説明',esc(d.description||'未設定'))}${row('能力',d.stats===null?'未設定':esc(JSON.stringify(d.stats)))}${row('耐久',t.slot?'基準5（仕入れ時3〜7）':'装備対象外')}</div>`)+(d.effect?card(`<h2>素材の用途</h2><p>${catalog.elements[d.effect.element]}属性付与</p>${note('付与量・費用・対象・消費ルールは未設定。')}`):'')+note('ID: '+d.id)+`<div class="bottom">${btn('一覧へ戻る','catalogDetail=false;render()','primary')}</div>`}
+let warehouseShowStock=false;
+function showIncomingWarehouseItem(){warehouseShowStock=false;render()}
+function warehouseCell(x,y){const hit=stock.find(item=>{const d=ItemCore.dimensions(item,types);return d&&x>=item.x&&x<item.x+d.width&&y>=item.y&&y<item.y+d.height});if(hit){const index=stock.indexOf(hit);if(selected===index){warehouseShowStock=true;rotateSelected();render();return}selected=index;warehouseShowStock=true;render();return}const item=stock[selected];if(!item)return;const position=ItemCore.findNearby(item,x,y,item.rotation,stock,types,warehouseSize);if(!position)return;Object.assign(item,position);render()}
 function rotateSelected(){const item=stock[selected];if(!item)return;const rotation=(item.rotation+1)%2;const position=ItemCore.findNearby(item,item.x,item.y,rotation,stock,types,warehouseSize,true);if(!position)return;Object.assign(item,position);render()}
 function warehouseUsed(){return stock.reduce((sum,item)=>{const d=ItemCore.dimensions(item,types);return sum+d.width*d.height},0)}
 function warehouseSummary(){return `${warehouseSize.width}×${warehouseSize.height} · ${warehouseUsed()}/${warehouseSize.width*warehouseSize.height}マス`}
-function warehouseWorkspace(routine=false){selected=Math.min(selected,Math.max(0,stock.length-1));const item=stock[selected],board=warehouseSize;let grid=`<div class="grid real-board" style="grid-template-columns:repeat(${board.width},1fr);--board-rows:${board.height}">`;for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++){const index=stock.findIndex(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});grid+=`<button class="${index>=0?'filled':''} ${index===selected?'selected':''}" data-x="${x}" data-y="${y}" onclick="warehouseCell(${x},${y})" aria-label="${x+1}列${y+1}行 ${index>=0?esc(itemName(stock[index])):'空き'}">${index>=0?index+1:''}</button>`}grid+=stock.map(warehouseArtwork).join('')+'</div>';return title('倉庫',warehouseSummary())+`<div class="tabs">${btn('配置','sub=0;render()',sub===0?'active':'')}${btn('商品一覧','sub=1;render()',sub===1?'active':'')}${btn('種類一覧',`openCatalog('warehouse')`)}</div>`+(sub?itemList(stock,'selected=INDEX;render()'):grid)+card(`<div class="row"><div><h2>${item?esc(itemName(item)):'商品なし'}</h2><small>${item?esc(itemMeta(item)):'入荷した商品を収納してください。'}</small></div>${btn('↻ 回転','rotateSelected()','mini')}</div><div class="actions">${btn(item?'商人へ引取 '+money(buybackValue(item)):'商人へ引取','buybackStock()','mini')}${btn('破棄','discardStock()','mini')}</div>`)+note('クリックで選択／選択中は回転／長押しでドラッグ。')+(routine?next(phase===2?'陳列へ':'経営の次の工程へ'):`<div class="bottom">${pending.length?btn('取引へ戻る',`go('trade')`,'primary'):''}</div>`)};
-function buy(){if(pending.length){phase=2;go('trade');return}const total=counts.reduce((a,n,i)=>a+n*prices[i],0);if(!counts.some(n=>n>0))return info('回数を選択','商人の＋で回数を選んでください。');if(total>gold)return info('所持金不足','仕入れ回数を減らしてください。');const pools=[['weapon'],['offhand','head','body'],['accessory']].map(slots=>catalog.items.filter(d=>d.status==='active'&&slots.includes(types[d.typeId].slot)&&fitsWarehouse(d)));if(counts.some((n,i)=>n>0&&!pools[i].length))return info('仕入れできません','現在の倉庫サイズに合う商品がありません。');pending=counts.flatMap((n,i)=>Array.from({length:n*balanceRuntime.itemsPerPurchase},()=>newItem(pools[i][Math.floor(Math.random()*pools[i].length)].id)));gold-=total;counts=[0,0,0];phase=2;go('trade')};
-function receive(){if(!pending.length)return;if(!storeItem(pending[0]))return;selected=stock.length-1;pending.shift();render()}
-function replenish(){if(!stock.length||shelfItems().length>=config.development.shelfCapacity)return info('補充できません','在庫と棚の空きを確認してください。');if(stock[selected]?.forged)return info('陳列できません','鍛冶済み装備は手動装備または破棄してください。');if(!stock[selected])return;const item=stock.splice(selected,1)[0];item.shelfId=selectedShelf;shelf.push(item);selected=0;page=0;discoverShelfSets();render()};
+function warehouseItemStats(item){const stats=def(item).stats;if(!stats||typeof stats!=='object')return '能力値：未設定';const labels={attack:'攻撃',defense:'防御',hp:'生存力'};const values=Object.entries(stats).filter(([key,value])=>Object.hasOwn(labels,key)&&typeof value==='number').map(([key,value])=>`${labels[key]}${value>=0?'＋':''}${value}`);return values.length?values.join(' ／ '):'能力値：未設定'}
+function warehouseWorkspace(routine=false){selected=Math.min(selected,Math.max(0,stock.length-1));const item=stock[selected],board={width:8,height:8};let grid=`<div class="grid real-board" style="grid-template-columns:repeat(${board.width},1fr);--board-rows:${board.height}">`;for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++){const locked=x>=warehouseSize.width||y>=warehouseSize.height;const index=locked?-1:stock.findIndex(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});grid+=`<button class="${locked?'warehouse-locked ':''}${index>=0?'filled':''} ${index===selected?'selected':''}" data-x="${x}" data-y="${y}" ${locked?'disabled':`onclick="warehouseCell(${x},${y})"`} aria-label="${locked?'未開放':`${x+1}列${y+1}行 ${index>=0?esc(itemName(stock[index])):'空き'}`}"></button>`}grid+=stock.map(warehouseArtwork).join('')+'</div>';return warehouseItemPanel()+`<div class="warehouse-board-area"><div class="warehouse-pagination" aria-label="倉庫ページ"><button type="button" disabled aria-label="前の倉庫ページ">‹</button><span>1 / 1</span><button type="button" disabled aria-label="次の倉庫ページ">›</button></div>`+grid+`</div><div class="warehouse-footer">${btn('大工 · 倉庫拡張','openResidentService(1)','mini touch-target')}`+(routine?next(phase===2?'陳列へ':'経営の次の工程へ'):(pending.length?`<div class="bottom">${btn('取引へ戻る',`go('trade')`,'primary')}</div>`:''))+`</div>`};
+function finishPurchase(){if(counts.some(n=>n>0))buy();else goStage(2)}
+function buy(){if(pending.length){phase=2;go('trade');return}const total=counts.reduce((a,n,i)=>a+n*merchantPrice(i),0);if(!counts.some(n=>n>0))return info('回数を選択','商人の＋で回数を選んでください。');if(total>gold)return info('所持金不足','仕入れ回数を減らしてください。');const pools=[['weapon'],['offhand','head','body'],['accessory']].map(slots=>catalog.items.filter(d=>d.status==='active'&&Number.isInteger(d.unlockChapter)&&d.unlockChapter<=chapter&&slots.includes(types[d.typeId].slot)&&fitsWarehouse(d)));if(counts.some((n,i)=>n>0&&!pools[i].length))return info('仕入れできません','現在の倉庫サイズに合う商品がありません。');pending=counts.flatMap((n,i)=>Array.from({length:n*balanceRuntime.itemsPerPurchase},()=>newItem(pools[i][Math.floor(Math.random()*pools[i].length)].id)));warehouseShowStock=false;gold-=total;ledgerMoney('purchases',total);counts=[0,0,0];phase=2;go('trade')};
+function receive(){if(!pending.length)return;if(!storeItem(pending[0]))return;selected=stock.length-1;pending.shift();warehouseShowStock=false;render()}
+function replenish(){if(selectedShelf<0||selectedShelf>=economyState.shelfCount)return;if(!stock.length||shelfItems().length>=config.development.shelfCapacity)return info('補充できません','在庫と棚の空きを確認してください。');if(stock[selected]?.forged)return info('陳列できません','鍛冶済み装備は手動装備または破棄してください。');if(!stock[selected])return;const item=stock.splice(selected,1)[0];item.shelfId=selectedShelf;shelf.push(item);selected=0;page=0;discoverShelfSets();render()};
 function returnShelf(){const item=shelfItems().at(-1);if(!item)return;if(!storeItem(item))return info('倉庫に入りません','倉庫を整理してください。');shelf.splice(shelf.indexOf(item),1);delete item.shelfId;render()}
-function sales(){const ch=tradingChapter(),rumors=tradingState.rumors.filter(r=>r.startDay<=day&&day<r.endDay);return title('本日の営業','06 / 06')+card(row('本日の来店予定',`${ch.visitors.min}〜${ch.visitors.max}人`)+row('陳列中',shelf.length+'品')+note('翌日へ進むと購入を判定します。売れ残りは持ち越します。'))+card(`<h2>お店の噂</h2>${note(rumors.map(r=>esc(tradingConfig.rumors.find(d=>d.id===r.id).name)+' · あと'+(r.endDay-day)+'日').join(' ／ ')||'現在の噂はありません。')}`)+note('固定価格で販売。客層・所持金・購入率は開発用の仮設定。')+`<div class="bottom">${btn('翌日へ · 朝の報告','finishDay()','primary')}${steps()}</div>`};
+let salesShown=0,salesTimer=null,salesDay=0;
+const customerIcons={villager:'🧑',warrior:'⚔️',archer:'🏹',mage:'🧙',priest:'⛪',rogue:'🥷',traveler:'🎒'};
+function sales(){
+ if(tradingState.report?.day!==day)resolveTradingDay();
+ const visits=tradingState.report.visits;
+ if(salesDay!==day){salesDay=day;salesShown=0}
+ if(salesShown<visits.length&&!salesTimer){
+  salesTimer=setTimeout(()=>{salesTimer=null;if(phase!==5||screen!=='home')return;salesShown++;render()},850);
+ }
+ const shown=visits.slice(0,salesShown);
+ const lines=shown.map((visit,index)=>{
+  const customer=tradingConfig.customers.find(c=>c.id===visit.customerId);
+  const purchased=visit.itemIds.length>0;
+  const speech=purchased?'いい買い物ができた！':'今日は見送ろうかな';
+  const products=purchased?visit.itemIds.map(id=>esc(definitions[id].name)).join(' ＋ '):'購入なし';
+  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customerIcons[visit.customerId]||'🧑')+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
+ }).join('');
+ const finished=salesShown>=visits.length;
+ return title('本日の営業','06 / 06')+
+ card(row('来店',salesShown+' / '+visits.length+' 人')+row('本日の売上',money(shown.reduce((sum,v)=>sum+v.price,0))))+
+ '<div class="sales-visits" aria-live="polite">'+(lines||note('お客さんを待っています…'))+'</div>'+
+ (finished?`<div class="bottom">${btn('営業終了 · 翌日へ','finishDay()','primary')}</div>`:note('接客中…'));
+}
 
 function downloadConfig(kind){const data=kind==='items'?catalog:config;const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=kind==='items'?'item-catalog.json':'game-settings.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function settings(){return title('設定')+card(`<h2>進行データ</h2><div class="actions">${btn('JSON書き出し','exportGame()')}${btn('JSON読み込み',"document.querySelector('#saveInput').click()")}</div><input id="saveInput" type="file" accept="application/json,.json" hidden onchange="importGame(this.files[0])">${note(catalogMigrationNotice||saveError||'操作ごとにこのブラウザへ自動保存します。')}`)+card(`<h2>表示スキン</h2><div class="actions">${[['','標準'],['paper','紙'],['night','夜']].map(([id,s])=>btn(s,`document.documentElement.dataset.skin='${id}';render()`)).join('')}</div>`)+card(`<h2>アイテム設定 · ${catalog.items.length}種類</h2>${btn('設定されたアイテムを確認',`openCatalog('settings')`)}<br>${note('JSONを編集して再読み込みすると反映されます。')}`)+card(`<h2>設定JSONの書き出し</h2><div class="actions">${btn('アイテム定義',`downloadConfig('items')`)}${btn('確認用設定',`downloadConfig('settings')`)}</div>`)+note('正式価格・能力は未設定。耐久度は個体ごとに管理。')+`<div class="bottom">${btn('経営に戻る',`go('home')`,'primary')}</div>`};
-function render(){rescueUnpaidBill();renderBase();persist()}
+function render(){rescueUnpaidBill();renderBase();if(phase===5&&screen==='home'){const list=$('.sales-visits');if(list)list.scrollTop=list.scrollHeight}persist()}
 async function loadItemSettings(){try{const responses=await Promise.all(['data/item-catalog.json','data/game-settings.json','data/encyclopedia.json','data/characters.json','data/economy.json','data/trading.json'].map(path=>fetch(path,{cache:'no-store'})));if(responses.some(r=>!r.ok))throw Error('設定ファイルが読み込めません');[catalog,config,encyclopediaDefinitions,characters,economyConfig,tradingConfig]=await Promise.all(responses.map(r=>r.json()));initializeBalance();ItemCore.validate(catalog,config);validateEconomyConfig(economyConfig);validateRescueConfig();validateDungeonConfig();validateAdventurerConfig();validateWarehouseConfig();types=Object.fromEntries(catalog.types.map(t=>[t.id,t]));definitions=Object.fromEntries(catalog.items.map(d=>[d.id,d]));validateTradingConfig();prices.splice(0,prices.length,...config.development.merchantCosts);const saved=readStoredGame();saveReady=false;reset(false);if(saved){try{applySave(saved);saveReady=true;go('home')}catch(error){info('保存データを読み込めません',error.message)}}else{saveReady=!saveError;persist()}}catch(error){$('#view').innerHTML=title('設定の読み込みエラー')+note(esc(error.message))+note('HTTPプレビューから開いてください。JSONを修正した場合は構文とIDを確認してください。')+btn('再読み込み','location.reload()')}}
 
 // Procurement results and warehouse organisation share one workspace.
-function intakePanel(){const item=pending[0];return `<section class="card intake"><div class="row"><h2>仕入れ結果 · 残り${pending.length}品</h2>${item?`<small>${type(item).slot?`耐久 ${item.durability}/${item.maxDurability}`:esc(itemMeta(item))}</small>`:''}</div>${item?`<div class="row"><b class="incoming-draggable" data-drag-incoming="true" title="倉庫へドラッグ">↕ ${esc(itemName(item))}</b><div class="actions">${btn(ItemCore.findSpace(item,stock,types,warehouseSize)?'収納':'収納不可','receive()','primary mini').replace('<button ',ItemCore.findSpace(item,stock,types,warehouseSize)?'<button ':'<button disabled ')}${btn('引取 '+money(buybackValue(item)),'buybackIncoming()','mini')}</div></div>`:note('入荷品の振り分け完了。倉庫の配置を調整できます。')}</section>`}
-function combinedWarehouse(routine=true){let content=warehouseWorkspace(routine);content=content.replace(title('倉庫',warehouseSummary()),title('仕入れ結果・倉庫整理',`${warehouseSize.width}×${warehouseSize.height} · ${stock.length}点`));content=content.replace('<div class="tabs">',intakePanel()+'<div class="tabs">');if(pending.length)content=content.replace('onclick="advance()"','disabled onclick="advance()"');return content}
-function trade(){return combinedWarehouse(true)};
+function warehouseItemPanel(){
+ const incoming=pending.length&&!warehouseShowStock,item=incoming?pending[0]:stock[selected];
+ const header=pending.length?`<div class="row"><h2>商品情報</h2><small>仕入れ結果 · 残り${pending.length}品</small></div>`:'<h2>商品情報</h2>';
+ const choose=pending.length&&warehouseShowStock?btn('未収納の商品を見る','showIncomingWarehouseItem()','mini'):'';
+ const info=item?`<div class="row"><div><b ${incoming?'class="incoming-draggable" data-drag-incoming="true" title="倉庫へドラッグ"':''}>${incoming?'↕ ':''}${esc(itemName(item))}</b><small class="block">${incoming?esc(itemMeta(item))+' ／ ':''}${esc(warehouseItemStats(item))}</small></div>${incoming?'':btn('↻ 回転','rotateSelected()','mini')}</div>`:note('商品がありません');
+ const actions=incoming?(()=>{const canStore=!!ItemCore.findSpace(item,stock,types,warehouseSize);return `<div class="actions">${btn(canStore?'収納':'収納不可','receive()','primary mini').replace('<button ',canStore?'<button ':'<button disabled ')}${btn('引取 '+money(buybackValue(item)),'buybackIncoming()','mini')}</div>`})():item?`<div class="actions">${btn('商人へ引取 '+money(buybackValue(item)),"confirmStockAction('buyback')",'mini')}${btn('破棄',"confirmStockAction('discard')",'mini')}</div>`:'';
+ return `<section class="card warehouse-item-panel">${header}${choose}${info}${actions}</section>`;
+}
+function combinedWarehouse(routine=true){return warehouseWorkspace(routine)}
+function trade(){return stageNavigation()+combinedWarehouse(true)};
 function warehouse(routine=false){return (pending.length||routine&&phase===2)?combinedWarehouse(true):warehouseWorkspace(routine)};
 
 // Pointer-based drag and drop supports touch and mouse with the same rules.
@@ -150,26 +397,28 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
  const root=document.querySelector('#view');
  let drag=null,suppressClickUntil=0;
  function clearPreview(){root.querySelectorAll('.drop-preview').forEach(cell=>cell.classList.remove('drop-preview'));}
- function cleanup(){if(!drag)return;const pointer=drag.pointerId;clearTimeout(drag.holdTimer);drag.ghost?.remove();clearPreview();drag=null;root.classList.remove('dragging');if(root.hasPointerCapture?.(pointer))root.releasePointerCapture(pointer);}
+ function cleanup(){if(!drag)return;const pointer=drag.pointerId;clearTimeout(drag.holdTimer);drag.ghost?.remove();drag.preview?.remove();drag.sourceArt?.classList.remove('drag-source');clearPreview();drag=null;root.classList.remove('dragging');if(root.hasPointerCapture?.(pointer))root.releasePointerCapture(pointer);}
  function targetAt(event){
   const board=root.querySelector('.real-board');if(!board)return null;
   const bounds=board.getBoundingClientRect();
   if(event.clientX<bounds.left||event.clientX>=bounds.right||event.clientY<bounds.top||event.clientY>=bounds.bottom)return null;
   const cells=board.querySelectorAll('button'),first=cells[0].getBoundingClientRect();
-  const stepX=warehouseSize.width>1?cells[1].getBoundingClientRect().left-first.left:first.width;
-  const stepY=warehouseSize.height>1?cells[warehouseSize.width].getBoundingClientRect().top-first.top:first.height;
+  const stepX=cells[1].getBoundingClientRect().left-first.left;
+  const stepY=cells[8].getBoundingClientRect().top-first.top;
   const x=Math.floor((event.clientX-first.left)/stepX)-drag.offsetX;
   const y=Math.floor((event.clientY-first.top)/stepY)-drag.offsetY;
   return ItemCore.findNearby(drag.item,x,y,drag.item.rotation,stock,types,warehouseSize);
  }
  function update(event){
   clearPreview();drag.position=targetAt(event);
-  drag.ghost.style.left=event.clientX+12+'px';drag.ghost.style.top=event.clientY+12+'px';
-  drag.ghost.classList.toggle('invalid',!drag.position);
+  const board=root.querySelector('.real-board');
+  if(!drag.preview||!board)return;
+  drag.preview.hidden=!drag.position;
   if(!drag.position)return;
   const d=ItemCore.dimensions(drag.item,types),p=drag.position;
-  root.querySelectorAll('.real-board button').forEach(cell=>{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);if(x>=p.x&&x<p.x+d.width&&y>=p.y&&y<p.y+d.height)cell.classList.add('drop-preview');});
+  Object.assign(drag.preview.style,{left:p.x/8*100+'%',top:p.y/8*100+'%',width:d.width/8*100+'%',height:d.height/8*100+'%'});
  }
+
  root.addEventListener('pointerdown',event=>{
   if(event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0)||drag)return;
   const incoming=event.target.closest('[data-drag-incoming]');
@@ -179,8 +428,15 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   if(incoming)item=pending[0];
   else{const x=Number(cell.dataset.x),y=Number(cell.dataset.y);item=stock.find(i=>{const d=ItemCore.dimensions(i,types);return x>=i.x&&x<i.x+d.width&&y>=i.y&&y<i.y+d.height});if(item){offsetX=x-item.x;offsetY=y-item.y;}}
   if(!item)return;
-  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,ghost:null,holdTimer:null,lastPoint:{clientX:event.clientX,clientY:event.clientY}};
-  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');drag.ghost=document.createElement('div');drag.ghost.className='drag-ghost';drag.ghost.textContent=itemName(drag.item);document.body.append(drag.ghost);update(drag.lastPoint);},100);
+  drag={item,incoming:Boolean(incoming),pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,offsetX,offsetY,active:false,position:null,preview:null,holdTimer:null,lastPoint:{clientX:event.clientX,clientY:event.clientY}};
+  drag.holdTimer=setTimeout(()=>{if(!drag)return;drag.active=true;root.setPointerCapture?.(drag.pointerId);root.classList.add('dragging');const board=root.querySelector('.real-board');if(!board){cleanup();return;}
+  drag.preview=document.createElement('span');drag.preview.className='warehouse-drag-preview';
+  const d=ItemCore.dimensions(drag.item,types),rotated=drag.item.rotation%2;
+  const img=document.createElement('img');img.src=def(drag.item).image;img.alt='';img.draggable=false;
+  Object.assign(img.style,{width:(rotated?d.height/d.width*100:100)+'%',height:(rotated?d.width/d.height*100:100)+'%',transform:'translate(-50%,-50%) rotate('+(rotated?90:0)+'deg)'});
+  drag.preview.append(img);board.append(drag.preview);
+  if(!drag.incoming){const art=[...board.querySelectorAll('.warehouse-art')].find(el=>el.style.left===drag.item.x/8*100+'%'&&el.style.top===drag.item.y/8*100+'%');if(art){drag.sourceArt=art;art.classList.add('drag-source');}}
+  update(drag.lastPoint);},100);
  });
  root.addEventListener('pointermove',event=>{
   if(!drag||event.pointerId!==drag.pointerId)return;
@@ -196,6 +452,7 @@ function warehouse(routine=false){return (pending.length||routine&&phase===2)?co
   const {item,position,incoming}=drag;suppressClickUntil=Date.now()+400;
   cleanup();
   if(position){Object.assign(item,position);if(incoming){if(pending[0]!==item)return;pending.shift();stock.push(item);}selected=stock.indexOf(item);}
+  if(!incoming){selected=stock.indexOf(item);warehouseShowStock=true;}
   render();
  });
  root.addEventListener('click',event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);

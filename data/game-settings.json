@@ -33,39 +33,39 @@
     "maxClearFundsMultiplier": 2,
     "chapters": {
       "prologue": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_1": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_2": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_3": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_4": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_5": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_6": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "chapter_7": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       },
       "finale": {
-        "baseClearFunds": 3500,
+        "baseClearFunds": 2000,
         "loanAmount": 1000
       }
     }

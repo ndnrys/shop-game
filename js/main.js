@@ -1,5 +1,5 @@
 
-const $=s=>document.querySelector(s);const phases=['報告','仕入れ','倉庫整理','陳列','支援','営業'];const navs=[['home','⌂','経営'],['encyclopedia','▤','図鑑'],['journal','≡','経営帳簿'],['broker','♧','情報屋'],['settings','⚙','設定']];
+const $=s=>document.querySelector(s);const phases=['報告','仕入れ','倉庫整理','陳列','探索','営業'];const navs=[['home','⌂','経営'],['encyclopedia','▤','図鑑'],['journal','≡','経営帳簿'],['broker','♧','情報屋'],['settings','⚙','設定']];
 let day=1,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=[0,0,0],away=false;const prices=[];
 const merchantPrice=index=>chapter===0?config.development.prologueMerchantCosts[index]:prices[index];let characters=[];const villageCharacters=()=>characters.filter(c=>c.joinChapter===0);
 let chapter=0,availableCharacterIds=[],parties=[[],[],[]],partySlot=0,rosterPage=0;
@@ -50,7 +50,7 @@ function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
 function openShop(){if(pending.length)return confirmUnsortedItems();phase=5;go('home')}
 function goStage(target){if(phase<1||phase>5||target<1||target>5)return;if(target===5&&pending.length)return confirmUnsortedItems();phase=target;go('home')}
 function openResidentService(tab){go('residents');sub=tab;render()}
-function stageNavigation(){return '<div class="actions">'+[1,2,3,4].map(n=>btn(['','仕入れ','倉庫','陳列','支援'][n],'goStage('+n+')',phase===n?'mini active':'mini')).join('')+'</div>'}
+function stageNavigation(){return '<div class="actions">'+[1,2,3,4].map(n=>btn(['','仕入れ','倉庫','陳列','探索'][n],'goStage('+n+')',phase===n?'mini active':'mini')).join('')+'</div>'}
 function confirmUnsortedItems(){document.querySelector('#confirmUnsortedDialog').showModal()}
 function acceptUnsortedItems(){document.querySelector('#confirmUnsortedDialog').close();const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false;phase=5;go('home')}
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}
@@ -212,7 +212,7 @@ function shopItemCard(item,source){
 function switchShopShelf(direction){const placed=shopLayout().map((position,index)=>position?index:-1).filter(index=>index>=0);if(!placed.length)return;const current=placed.indexOf(selectedShelf);selectedShelf=placed[(current+direction+placed.length)%placed.length];shopInventoryTab=0;shopSelectedShelf.clear();shopSelectedStock.clear();page=0;render()}
 function stocking(){
  if(!shopPanelOpen)return title('店舗の陳列','04 / 06')+shopLayoutView()+
- card(row('棚の設置数',economyState.shelfCount+' 棚')+btn('大工へ棚増設を依頼','openResidentService(1)','mini'))+next('仲間の支援へ');
+ card(row('棚の設置数',economyState.shelfCount+' 棚')+btn('大工へ棚増設を依頼','openResidentService(1)','mini'))+next('探索へ');
  const items=shelfItems(),capacity=config.development.shelfCapacity;
  const totalValue=items.reduce((sum,item)=>sum+saleValue(item),0);
  const stockItems=stock.filter(i=>!i.forged);
@@ -228,7 +228,7 @@ function stocking(){
  const stockSection='<div class="card shop-folder-content shop-stock-section"><div class="row"><h2>倉庫から補充 ('+stockItems.length+')</h2><small>＋で棚に補充</small></div>'+
  (visibleStock.length?'<div class="shop-product-list">'+visibleStock.map(i=>shopItemCard(i,'stock')).join('')+'</div>':note('商品がありません。'))+
  pager+'</div>';
- return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+shelfSection+stockSection+next('仲間の支援へ');
+ return title('店舗の陳列','04 / 06')+btn('‹ 店舗レイアウトへ戻る','shopPanelOpen=false;page=0;render()','mini')+details+shelfSection+stockSection+next('探索へ');
 }
 
 const supplyTypes=[{name:'支給食料',price:100,effect:'生存力＋1'},{name:'防具整備具',price:150,effect:'防御力＋1'},{name:'冒険者の薬草',price:200,effect:'回復日数−1日'}];
@@ -240,15 +240,17 @@ function changeSupply(index,delta){
  if(supplyCost(next)>gold)return;
  supplies[party]=next;render();
 }
+let assistanceOpen=false;
 function support(routine=false){
  const items=supplies[party],cost=supplyCost(items);
  const supplyPanel=card('<h2>第'+(party+1)+'パーティの遠征物資</h2>'+supplyTypes.map((item,i)=>
   '<div class="row"><span>'+item.name+' <small>'+item.price+'G · '+item.effect+' / 個</small></span><span class="actions">'+btn('−',`changeSupply(${i},-1)`,'mini touch-target')+' <b>'+items[i]+'</b> '+btn('＋',`changeSupply(${i},1)`,'mini touch-target')+'</span></div>'
  ).join('')+row('出発時の消費',money(cost))+note('各種最大3個。パーティ全員に遠征1回限りの効果。'));
- if(partyRosterOpen)return title('パーティ編成')+btn('‹ 支援画面へ戻る','partyRosterOpen=false;render()','mini')+partyFormation();
- return title(routine?'仲間への支援':'仲間',away?'遠征中':'活動可能')+btn('教会 · 治療','openResidentService(0)','mini touch-target')+
- (routine?destinationView()+supplyPanel+partyFormation()+next('今日のお店を開ける'):
- destinationView()+supplyPanel+partyFormation()+`<div class="bottom">${note('目的地の選択・出発は経営の支援工程で行います。')}</div>`);
+ if(partyRosterOpen)return title('パーティ編成')+btn('‹ 探索画面へ戻る','partyRosterOpen=false;render()','mini')+partyFormation();
+ const assistance=card(btn('支援 '+(assistanceOpen?'▲':'▼'),'assistanceOpen=!assistanceOpen;render()','mini touch-target')+(assistanceOpen?btn('教会 · 治療','openResidentService(0)','mini touch-target')+supplyPanel:''));
+ return title('探索',away?'遠征中':'活動可能')+
+ (routine?destinationView()+assistance+partyFormation()+next('今日のお店を開ける'):
+ destinationView()+assistance+partyFormation()+`<div class="bottom">${note('目的地の選択・出発は経営の探索工程で行います。')}</div>`);
 }
 function broker(){const rumors=tradingState.rumors.filter(r=>r.startDay<=day&&day<r.endDay);return title('情報屋')+card('<h2>お店の噂</h2>'+note(rumors.map(r=>esc(tradingConfig.rumors.find(d=>d.id===r.id)?.name||r.id)+' · あと'+(r.endDay-day)+'日').join(' ／ ')||'現在の噂はありません。'))}
 function records(){return title('記録')+card(`<h2>経営帳簿</h2><p>日別の収支とダンジョン攻略履歴を確認します。</p><br>${btn('帳簿を開く',"go('journal')",'primary')}`)+card(`<h2>図鑑</h2><p>発見した商品・セット装備・人物を確認します。</p><br>${btn('図鑑を開く','openEncyclopedia()','primary')}`)}

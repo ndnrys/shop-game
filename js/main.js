@@ -207,6 +207,7 @@ function shopItemCard(item,source){
  '<button type="button" class="shop-product-detail" aria-label="'+esc(itemName(item))+'の情報" onclick="shopProductInfo('+item.uid+',&quot;'+source+'&quot;)">i</button>'+
  '<button type="button" class="shop-product-transfer" aria-label="'+esc(itemName(item))+'を'+label+'" onclick="shopTransferItem('+item.uid+',&quot;'+source+'&quot;)">'+(isShelf?'×':'＋')+'</button></div>';
 }
+function switchShopShelf(direction){const placed=shopLayout().map((position,index)=>position?index:-1).filter(index=>index>=0);if(!placed.length)return;const current=placed.indexOf(selectedShelf);selectedShelf=placed[(current+direction+placed.length)%placed.length];shopInventoryTab=0;shopSelectedShelf.clear();shopSelectedStock.clear();page=0;render()}
 function stocking(){
  if(!shopPanelOpen)return title('店舗の陳列','04 / 06')+shopLayoutView()+
  card(row('棚の設置数',economyState.shelfCount+' 棚')+btn('大工へ棚増設を依頼','openResidentService(1)','mini'))+next('仲間の支援へ');
@@ -216,7 +217,7 @@ function stocking(){
  const perPage=8,pages=Math.max(1,Math.ceil(stockItems.length/perPage));page=Math.max(0,Math.min(page,pages-1));
  const visibleStock=stockItems.slice(page*perPage,(page+1)*perPage);
  const pager=pages>1?'<div class="page">'+btn('‹','page=Math.max(0,page-1);render()','mini')+'<small>'+(page+1)+' / '+pages+'</small>'+btn('›','page=Math.min('+(pages-1)+',page+1);render()','mini')+'</div>':'';
- const details=card('<div class="row"><h2>棚 '+(selectedShelf+1)+'</h2><b>'+items.length+' / '+capacity+' 点</b></div>'+
+ const details=card('<div class="row"><div class="actions">'+btn('‹','switchShopShelf(-1)','mini touch-target','前の棚へ')+'<h2>棚 '+(selectedShelf+1)+'</h2>'+btn('›','switchShopShelf(1)','mini touch-target','次の棚へ')+'</div><b>'+items.length+' / '+capacity+' 点</b></div>'+
  row('棚の商品総額',money(totalValue))+note(esc(shelfSummary())));
  const shelfSection='<div class="card shop-folder-content shop-shelf-section"><div class="row"><h2>棚の商品</h2><small>×で倉庫へ戻す</small></div>'+
  '<div class="shop-product-list">'+items.map(i=>shopItemCard(i,'shelf')).join('')+

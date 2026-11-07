@@ -46,7 +46,7 @@ function expeditionHealth(members,d,random=Math.random,items=supplies[party]){
  const rules=config.adventurers.risk;
  return Object.fromEntries(members.map(id=>{
   const stats={...companionStats(id)};stats.hp+=items[0];stats.defense+=items[1];
-  const result=AdventurerCore.outcome(AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter),random);
+  const result=AdventurerCore.outcome(AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter,members.length),random);
   if(['injured','severe'].includes(result.status))result.recoveryDays=Math.max(1,result.recoveryDays-items[2]);
   return [id,result];
  }));
@@ -92,7 +92,8 @@ function expeditionPower(members,d){
 function expeditionSafetyLabel(id,d){
  const rules=config.adventurers.risk;
  const stats={...companionStats(id)};stats.hp+=supplies[party][0];stats.defense+=supplies[party][1];
- const risk=AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter);
+ const partySize=parties[party].filter(memberId=>memberId&&companionStatus(memberId)==='waiting').length;
+ const risk=AdventurerCore.risks(stats,d.danger,rules,chapter===rules.tutorialChapter,partySize);
  const chance=risk.injury+risk.severe+risk.death;
  return chance<0.10?'安全':chance<0.20?'注意':'危険';
 }

@@ -6,7 +6,7 @@ function validateEconomyConfig(data){
  if(!data?.chapters||!valid(data.healing?.costPerLevel))throw Error('治療単価が未設定または不正です');
  for(const values of Object.values(data.chapters))for(const key of ['seasonTax','shopMaintenancePerShelf','companionMaintenancePerPerson','shelfExpansionCost'])if(!valid(values[key]))throw Error('経済設定が未設定または不正です');
 }
-function resetEconomy(){economyState={version:1,shelfCount:1,companions:{},bill:null,shelfLayout:[null]}}
+function resetEconomy(){economyState={version:1,shelfCount:2,companions:{},bill:null,shelfLayout:[null,null]}}
 function shelfCapacity(){return config.development.shelfCapacity*economyState.shelfCount}
 function companionStatus(id){const state=economyState.companions[id];return state?.dead?'dead':isAway(id)?'away':state?.recoveryDay>day?'recovering':'waiting'}
 function companionLevel(id){return economyState.companions[id]?.level??characters.find(c=>c.id===id).initialLevel}

@@ -108,7 +108,7 @@
   "adventurers": {
     "status": "provisional",
     "risk": {
-      "injuryRate": 0.06,
+      "injuryRate": 0.5,
       "severeRate": 0.35,
       "deathRate": 0.003,
       "tutorialChapter": 0,

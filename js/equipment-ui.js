@@ -113,7 +113,7 @@ function resolveExpeditions(){
    dungeonProgress[d.id]=Math.min(d.requiredProgress,before+trip.power.attack+trip.power.bonus);
    grantExpeditionExperience(trip.members,dungeonProgress[d.id]-before);
    group.progress=`攻略 +${Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100)}%`;
-   group.totalProgress=Math.round(dungeonProgress[d.id]/d.requiredProgress*100);ledgerExpedition(d.id,trip.party,Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100),group.totalProgress);
+   group.totalProgress=Math.round(dungeonProgress[d.id]/d.requiredProgress*100);ledgerExpedition(d.id,trip.party,Math.round(dungeonProgress[d.id]/d.requiredProgress*100)-Math.round(before/d.requiredProgress*100),group.totalProgress,trip.members);
    group.cleared=dungeonCleared(d.id);
   }
   applyExpeditionHealth(trip);

@@ -6,7 +6,7 @@ function discoverShelfSets(){for(let n=0;n<economyState.shelfCount;n++)Encyclope
 function activateRumor(id){const d=tradingConfig.rumors.find(r=>r.id===id);if(!d)return false;tradingState.rumors=tradingState.rumors.filter(r=>r.id!==id);tradingState.rumors.push({id,startDay:day,endDay:day+d.duration});persist();return true}
 function resolveTradingDay(random=Math.random){
  const result=TradingCore.simulate({items:shelf,sets:encyclopediaDefinitions.sets,definitions,types,settings:tradingConfig,chapter:tradingChapter(),rumors:tradingState.rumors,day,price:saleValue,random});
- shelf=result.remaining;lastSales=result.revenue;gold+=lastSales;
+ shelf=result.remaining;lastSales=result.revenue;gold+=lastSales;ledgerMoney('sales',lastSales);
  for(const visit of result.visits)for(const id of visit.itemIds)EncyclopediaCore.sold(encyclopedia,id);
  tradingState.report={day,revenue:result.revenue,visits:result.visits};
  tradingState.rumors=tradingState.rumors.filter(r=>r.endDay>day+1);

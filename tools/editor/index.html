@@ -76,6 +76,104 @@ function render(){
  $('form').querySelectorAll('[data-path]').forEach(el=>el.addEventListener('change',()=>update(el,item)));
  $('dirty').textContent=changed().length+'ファイル変更';
 }
+
+const FIELD_HELP={
+    schemaVersion:'データ形式のバージョン。通常は変更しません。',
+    status:'設定データの状態（暫定値など）。',notes:'開発上の注意書き。',
+    width:'倉庫の横幅（マス）。',height:'倉庫の縦幅（マス）。',pageSize:'一覧の1ページの表示件数。',
+    initialGold:'ゲーム開始時の所持金（G）。',merchantCosts:'仕入れ費用の候補（G）の配列。',
+    prologueMerchantCosts:'村での仕入れ費用候補（G）の配列。',
+    salePrice:'正式価格がない商品の仮販売価格（G）。',buybackPrice:'商人引取の計算に使う仮価格（G）。',
+    shelfCapacity:'棚1つに置ける商品数。',initialItemIds:'初期所持商品のID一覧。',
+    clearFundsMultiplier:'破産救済の必要資金に対する累計借入の倍率。',
+    maxClearFundsMultiplier:'破産救済の必要資金倍率の上限。',
+    baseClearFunds:'章ごとの救済判定の基本必要資金（G）。',
+    loanAmount:'救済1口あたりの借入額（G）。',
+    itemsPerAd:'報酬広告1回あたりの入荷品数。',
+    dailyAdLimit:'1日あたりの報酬広告の上限回数。',
+    resetTimeZone:'広告回数リセットの基準タイムゾーン。',
+    resetHour:'広告回数をリセットする時刻（時）。',
+    rewardPool:'広告報酬の抽選対象。',
+    requiredProgress:'ダンジョン攻略に必要な進行値。',
+    danger:'ダンジョンの危険度。',requires:'攻略前提となるダンジョンID。',
+    recommendedAttributes:'攻略で推奨される属性と値。',
+    attributeBonus:'推奨属性による攻略補正。',
+    injuryRate:'負傷判定の基準確率（0〜1）。',
+    severeRate:'重傷判定の基準確率（0〜1）。',
+    deathRate:'死亡判定の基準確率（0〜1）。',
+    tutorialChapter:'チュートリアル扱いの章番号。',
+    tutorialDeathCap:'チュートリアルでの死亡確率の上限（0〜1）。',
+    denominatorOffset:'負傷・死亡判定の計算に使う分母補正。',
+    injuryRecoveryFactor:'通常負傷の回復日数係数。',
+    severeRecoveryFactor:'重傷の回復日数係数。',
+    minRecoveryDays:'回復に必要な最短日数。',
+    maxRecoveryDays:'回復に必要な最長日数。',
+    defaultPolicy:'レベルアップ時の標準成長方針ID。',
+    pointsPerLevel:'レベルアップ時の能力上昇ポイント数。',
+    baseRequired:'レベルアップに必要な基本経験値。',
+    perLevel:'レベルごとの必要経験値増分。',
+    sizes:'倉庫拡張で選べるサイズ（マス）の一覧。',
+    costs:'倉庫拡張に必要な費用（G）の一覧。',
+    legacySize:'旧セーブデータの倉庫サイズ。',
+    clearDungeonId:'章クリア判定の対象ダンジョンID。',
+    enemyName:'章クリア時の敵の表示名。',
+    nextChapter:'次の章番号。',nextName:'次の章の表示名。',
+    memberLimit:'次章へ連れていける仲間の人数上限。',
+    seasonTax:'定期的に支払う税金（G）。',
+    shopMaintenancePerShelf:'棚1つあたりの維持費（G）。',
+    companionMaintenancePerPerson:'仲間1人あたりの維持費（G）。',
+    shelfExpansionCost:'棚を増設する費用（G）。',
+    costPerLevel:'治療費のレベルあたり単価（G）。',
+    bonus:'購入確率に加える補正（0.3なら30パーセントポイント）。',
+    minimum:'効果の発動に必要な最低商品数。',
+    minProbability:'購入確率の下限（0〜1）。',
+    maxProbability:'購入確率の上限（0〜1）。',
+    setPriority:'セット販売を優先する順序。',
+    selection:'商品候補の選択方式。',
+    allowUsedInSets:'中古品をセット販売に含めるか。',
+    probability:'買い物客の商品の購入傾向の基準確率（0〜1）。',
+    visitors:'来店人数の設定。',weight:'客層の出現比率に使う重み。',
+    id:'内部識別子。参照関係があるため原則変更しません。',
+    name:'ゲーム内の表示名。',chapter:'対象の章番号。',
+    joinChapter:'仲間が加入する章番号。',
+    initialJobId:'仲間の初期職業ID。',
+    initialLevel:'仲間の初期レベル。',
+    nameKey:'名前の翻訳キー。',descriptionKey:'説明文の翻訳キー。',
+    initialEquipment:'初期装備の設定。',
+    jobName:'職業の表示名。',
+    hp:'HPの初期値または成長配分。',
+    attack:'攻撃力の初期値または成長配分。',
+    defense:'防御力の初期値または成長配分。'
+  };
+const FIELD_NAMES={seasonTax:'季節ごとの税金',shopMaintenancePerShelf:'棚1つあたりの維持費',companionMaintenancePerPerson:'仲間1人あたりの維持費',shelfExpansionCost:'棚の増設費',initialGold:'初期所持金',salePrice:'仮販売価格',buybackPrice:'仮引取価格',width:'横幅',height:'縦幅',pageSize:'1ページの表示件数',hp:'HP',attack:'攻撃力',defense:'防御力',name:'名前',id:'ID',nameKey:'名前の翻訳キー',descriptionKey:'説明の翻訳キー',initialLevel:'初期レベル',initialJobId:'初期職業',joinChapter:'加入する章',schemaVersion:'データ形式バージョン',status:'状態',notes:'注意書き',probability:'購入確率',min:'最小値',max:'最大値',weight:'出現重み',bonus:'補正値',minimum:'最低必要数'};
+function japanesePathPart(p){
+ if(typeof p==='number')return (p+1)+'番目';
+ if(/^chapter_(\d+)$/.test(p))return '第'+p.slice(8)+'章';
+ if(p==='prologue')return '序章';
+ if(p==='chapters')return '章別設定';
+ if(p==='initialStats')return '初期能力';
+ if(p==='images')return '画像';
+ if(p==='normal')return '通常';
+ if(p==='development')return '開発用の仮設定';
+ if(p==='warehouse')return '倉庫';
+ if(p==='ui')return '画面';
+ if(p==='ja')return '日本語';
+ if(p==='en')return '英語';
+ return FIELD_NAMES[p]||p;
+}
+function fieldDescription(path){
+ const k=path[path.length-1],parent=path[path.length-2];
+ if(state.category==='translations')return '表示文言の翻訳です。キーは変えずに翻訳文を編集してください。';
+ if(state.category==='characters'&&path.includes('images'))return 'キャラクター画像のファイルパスです。実際の画像ファイルと一致させてください。';
+ if(state.category==='trading'){
+  if(path.includes('money'))return '客層の所持金'+(k==='min'?'の下限':k==='max'?'の上限':'')+'（G）。';
+  if(path.includes('categories')||path.includes('items'))return '対象カテゴリ・商品の購入傾向（0〜1）。';
+  if(k==='weight')return '客層「'+parent+'」の出現比率に使う重み。';
+ }
+ if(typeof k==='number')return '配列の'+(k+1)+'番目の値。';
+ return FIELD_HELP[k]||'この項目の詳細な説明は未登録です。内部キーを確認して編集してください。';
+}
+
 function fields(item){
  const rows=[];
  function add(value,path,depth=0){
@@ -89,7 +187,7 @@ function fields(item){
  return rows.join('')||'<p class="muted">編集可能な項目はありません。</p>';
 }
 function field(path,value,type,readonly){
- const key=JSON.stringify(path),label=path.length?path.join(' › '):'値';
+ const key=JSON.stringify(path),label=path.length?path.map(japanesePathPart).join(' › '):'値';
  const original=state.category==='translations'?{ja:state.original.ja, en:state.original.en}:state.original[state.category==='items'?'items':state.category];
  let base;
  if(state.category==='translations'){base=state.original[path[0]]?.[entries()[state.selected]?.id]}
@@ -100,7 +198,7 @@ function field(path,value,type,readonly){
  if(type==='boolean')input='<input type="checkbox" '+attrs+' '+(value?'checked':'')+'>';
  else if(type==='number')input='<input type="number" step="any" '+attrs+' value="'+esc(value)+'">';
  else input='<textarea rows="2" '+attrs+'>'+esc(value)+'</textarea>';
- return '<div class="field '+(diff?'changed':'')+'"><label>'+esc(label)+'</label>'+input+(readonly?'<small>この値はJSON構造のため編集対象外です。</small>':'')+'</div>';
+ return '<div class="field '+(diff?'changed':'')+'"><label>'+esc(label)+'</label><small>'+esc(fieldDescription(path))+'</small><small>内部キー：'+esc(path.join(' › '))+'</small>'+input+(readonly?'<small>この値はJSON構造のため編集対象外です。</small>':'')+'</div>';
 }
 function update(el,item){
  const path=JSON.parse(el.dataset.path),type=el.dataset.type;

@@ -1,0 +1,252 @@
+[
+  {
+    "id": "tenin_1",
+    "role": "tenin",
+    "image": "assets/villagers/tenin_1.png"
+  },
+  {
+    "id": "murabito_1",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_1.png"
+  },
+  {
+    "id": "ryorinin_1",
+    "role": "ryorinin",
+    "image": "assets/villagers/ryorinin_1.png"
+  },
+  {
+    "id": "murabito_2",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_2.png"
+  },
+  {
+    "id": "kajishi_1",
+    "role": "kajishi",
+    "image": "assets/villagers/kajishi_1.png"
+  },
+  {
+    "id": "tenin_2",
+    "role": "tenin",
+    "image": "assets/villagers/tenin_2.png"
+  },
+  {
+    "id": "nouka_1",
+    "role": "nouka",
+    "image": "assets/villagers/nouka_1.png"
+  },
+  {
+    "id": "nouka_2",
+    "role": "nouka",
+    "image": "assets/villagers/nouka_2.png"
+  },
+  {
+    "id": "daiku_1",
+    "role": "daiku",
+    "image": "assets/villagers/daiku_1.png"
+  },
+  {
+    "id": "murabito_3",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_3.png"
+  },
+  {
+    "id": "murabito_4",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_4.png"
+  },
+  {
+    "id": "madoushi_1",
+    "role": "madoushi",
+    "image": "assets/villagers/madoushi_1.png"
+  },
+  {
+    "id": "shinkan_1",
+    "role": "shinkan",
+    "image": "assets/villagers/shinkan_1.png"
+  },
+  {
+    "id": "gakusha_1",
+    "role": "gakusha",
+    "image": "assets/villagers/gakusha_1.png"
+  },
+  {
+    "id": "majo_1",
+    "role": "majo",
+    "image": "assets/villagers/majo_1.png"
+  },
+  {
+    "id": "kenja_1",
+    "role": "kenja",
+    "image": "assets/villagers/kenja_1.png"
+  },
+  {
+    "id": "boukenka_1",
+    "role": "boukenka",
+    "image": "assets/villagers/boukenka_1.png"
+  },
+  {
+    "id": "senshi_1",
+    "role": "senshi",
+    "image": "assets/villagers/senshi_1.png"
+  },
+  {
+    "id": "eihei_1",
+    "role": "eihei",
+    "image": "assets/villagers/eihei_1.png"
+  },
+  {
+    "id": "eihei_2",
+    "role": "eihei",
+    "image": "assets/villagers/eihei_2.png"
+  },
+  {
+    "id": "kishi_1",
+    "role": "kishi",
+    "image": "assets/villagers/kishi_1.png"
+  },
+  {
+    "id": "senshi_2",
+    "role": "senshi",
+    "image": "assets/villagers/senshi_2.png"
+  },
+  {
+    "id": "murabito_5",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_5.png"
+  },
+  {
+    "id": "murabito_6",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_6.png"
+  },
+  {
+    "id": "murabito_7",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_7.png"
+  },
+  {
+    "id": "murabito_8",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_8.png"
+  },
+  {
+    "id": "shounin_1",
+    "role": "shounin",
+    "image": "assets/villagers/shounin_1.png"
+  },
+  {
+    "id": "kizoku_1",
+    "role": "kizoku",
+    "image": "assets/villagers/kizoku_1.png"
+  },
+  {
+    "id": "sonchou_1",
+    "role": "sonchou",
+    "image": "assets/villagers/sonchou_1.png"
+  },
+  {
+    "id": "pan_ya_1",
+    "role": "pan_ya",
+    "image": "assets/villagers/pan_ya_1.png"
+  },
+  {
+    "id": "ryoushi_1",
+    "role": "ryoushi",
+    "image": "assets/villagers/ryoushi_1.png"
+  },
+  {
+    "id": "funanori_1",
+    "role": "funanori",
+    "image": "assets/villagers/funanori_1.png"
+  },
+  {
+    "id": "ryoushi_2",
+    "role": "ryoushi",
+    "image": "assets/villagers/ryoushi_2.png"
+  },
+  {
+    "id": "boukenka_2",
+    "role": "boukenka",
+    "image": "assets/villagers/boukenka_2.png"
+  },
+  {
+    "id": "kariudo_1",
+    "role": "kariudo",
+    "image": "assets/villagers/kariudo_1.png"
+  },
+  {
+    "id": "boukenka_3",
+    "role": "boukenka",
+    "image": "assets/villagers/boukenka_3.png"
+  },
+  {
+    "id": "murabito_9",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_9.png"
+  },
+  {
+    "id": "murabito_10",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_10.png"
+  },
+  {
+    "id": "tenin_3",
+    "role": "tenin",
+    "image": "assets/villagers/tenin_3.png"
+  },
+  {
+    "id": "murabito_11",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_11.png"
+  },
+  {
+    "id": "senshi_3",
+    "role": "senshi",
+    "image": "assets/villagers/senshi_3.png"
+  },
+  {
+    "id": "murabito_12",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_12.png"
+  },
+  {
+    "id": "mahou_tsukai_1",
+    "role": "mahou_tsukai",
+    "image": "assets/villagers/mahou_tsukai_1.png"
+  },
+  {
+    "id": "shinobi_1",
+    "role": "shinobi",
+    "image": "assets/villagers/shinobi_1.png"
+  },
+  {
+    "id": "murabito_13",
+    "role": "murabito",
+    "image": "assets/villagers/murabito_13.png"
+  },
+  {
+    "id": "gikoushi_1",
+    "role": "gikoushi",
+    "image": "assets/villagers/gikoushi_1.png"
+  },
+  {
+    "id": "ryorinin_2",
+    "role": "ryorinin",
+    "image": "assets/villagers/ryorinin_2.png"
+  },
+  {
+    "id": "sakaba_1",
+    "role": "sakaba",
+    "image": "assets/villagers/sakaba_1.png"
+  },
+  {
+    "id": "gakusha_2",
+    "role": "gakusha",
+    "image": "assets/villagers/gakusha_2.png"
+  },
+  {
+    "id": "madoushi_2",
+    "role": "madoushi",
+    "image": "assets/villagers/madoushi_2.png"
+  }
+]

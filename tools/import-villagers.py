@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "assets" / "villagers"
 CATALOG = ROOT / "data" / "villagers.json"
-NAME = re.compile(r"^[a-z][a-z0-9_]*_[0-9]+\\.png$")
+NAME = re.compile(r"^[a-z][a-z0-9_]*_[0-9]+\.png$")
 
 
 def main(zip_path):
@@ -24,7 +24,7 @@ def main(zip_path):
         images = {}
         for name in names:
             data = archive.read(name)
-            if not data.startswith(b"\x89PNG\r\n\x1a\\n"):
+            if not data.startswith(bytes([137, 80, 78, 71, 13, 10, 26, 10])):
                 raise ValueError(f"PNGではありません: {name}")
             images[name] = data
 
@@ -39,7 +39,7 @@ def main(zip_path):
         }
         for row in rows
     ]
-    CATALOG.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    CATALOG.write_text(json.dumps(records, ensure_ascii=False, indent=2) + chr(10), encoding="utf-8")
     print(f"{len(records)}人を取り込みました: {TARGET.relative_to(ROOT)} / {CATALOG.relative_to(ROOT)}")
 
 

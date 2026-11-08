@@ -53,12 +53,12 @@ test('main entry references only existing scripts and CSS',()=>{
  assert(!html.includes('design-previews'));
 });
 
-test('206 unique pictured items in 19 categories with fixed magic elements',()=>{
+test('210 unique pictured items in 19 categories with fixed magic elements',()=>{
  assert(rules.validate(catalog,settings));
- assert.equal(catalog.items.length,206);
- assert.equal(new Set(catalog.items.map(i=>i.id)).size,206);
+ assert.equal(catalog.items.length,210);
+ assert.equal(new Set(catalog.items.map(i=>i.id)).size,210);
  assert.equal(catalog.items.filter(i=>i.status==='planned').length,0);
- const counts={weapon:94,offhand:32,head:30,body:30,accessory:20};
+ const counts={weapon:94,offhand:36,head:30,body:30,accessory:20};
  for(const [slot,count] of Object.entries(counts))assert.equal(catalog.items.filter(i=>types[i.typeId].slot===slot).length,count);
  for(const id of ['staff','rod','spellbook'])for(const element of ['fire','water','wind','earth'])assert.equal(catalog.items.filter(i=>i.typeId===id&&i.element===element).length,3);
 });
@@ -349,9 +349,9 @@ test('clicking a roster character in another party or on an expedition opens rea
  g.run('changeEquipment(1)');assert.equal(g.run('gear("kyle").weapon??null'),null);
 });
 
-test('all 206 images are unique transparent PNGs and category dimensions match the specification',()=>{
+test('all 210 images are unique transparent PNGs and category dimensions match the specification',()=>{
  assert.equal(catalog.types.length,19);
- assert.equal(new Set(catalog.items.map(i=>i.image)).size,206);
+ assert.equal(new Set(catalog.items.map(i=>i.image)).size,210);
  for(const item of catalog.items){
   const image=readFileSync(resolve(root,item.image));
   assert.equal(image.subarray(1,4).toString(),'PNG');

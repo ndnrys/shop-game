@@ -6,7 +6,8 @@
 const SHOP = {repo:'ndnrys/shop-game',branch:'development',files:{
   'game-settings':'data/game-settings.json',
   'economy':'data/economy.json',
-  'trading':'data/trading.json'
+  'trading':'data/trading.json',
+  'characters':'data/characters.json'
 }};
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('ゲーム管理')
@@ -33,7 +34,7 @@ function shopApi_(path,method,body) {
 function shopDecode_(s) {return Utilities.newBlob(Utilities.base64Decode(s.replace(/\s/g,''))).getDataAsString('UTF-8')}
 function shopEncode_(s) {return Utilities.base64Encode(Utilities.newBlob(s,'application/json').getBytes())}
 function shopFlatten_(value,path,rows) {
-  if(value&&typeof value==='object'&&!Array.isArray(value)) {
+  if(value&&typeof value==='object') {
     for(const k of Object.keys(value))shopFlatten_(value[k],path.concat(k),rows);
   }else rows.push([JSON.stringify(path),JSON.stringify(value)]);
 }
@@ -92,11 +93,12 @@ function shopSave() {
         let v;
         try{v=JSON.parse(String(rawValue))}catch(e){throw Error(name+': JSON形式が不正: '+p)}
         const old=JSON.parse(byPath.get(p));
-        if(old===null ? v!==null&&typeof v!=='number'&&typeof v!=='string' : Array.isArray(old)?!Array.isArray(v):typeof v!==typeof old)
+        if(old===null ? v!==null&&typeof v!=='number'&&typeof v!=='string' : typeof v!==typeof old)
           throw Error(name+': 値の型が不正: '+p);
         if(typeof v==='number'&&!Number.isFinite(v))throw Error(name+': 数値が不正: '+p);
         shopAssign_(original,JSON.parse(p),v);
       }
+      if(name==='characters') { const ids=original.map(c=>c.id); if(ids.some(id=>typeof id!=='string')||new Set(ids).size!==ids.length)throw Error('characters: IDが不正または重複しています'); }
       changes.push({name,path,sha:remote.sha,content:JSON.stringify(original,null,2)+'\n'});
     }
     if(ui.alert('確認','developmentブランチの設定JSONを更新します。よろしいですか？',ui.ButtonSet.OK_CANCEL)!==ui.Button.OK)return;

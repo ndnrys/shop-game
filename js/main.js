@@ -5,6 +5,25 @@ const t=(key,fallback='')=>translations[language]?.[key]??translations.ja?.[key]
 function changeLanguage(next){if(next!=='ja'&&next!=='en')return;language=next;localStorage.setItem('shop-game-language',next);render()}
 const characterName=c=>t(c.nameKey,c.name||c.id);
 const characterJob=c=>t('jobs.'+c.initialJobId+'.name',c.jobName||c.initialJobId);
+const customerName=c=>t('customers.'+c.id+'.name',c.name||c.id);
+function translateVisibleText(){
+  if(language!=='en')return;
+  const root=document.body;if(!root)return;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  let node;while((node=walker.nextNode())){
+    if(!node.parentElement||node.parentElement.closest('script,style,textarea,input'))continue;
+    const original=node.nodeValue,trimmed=original.trim();if(!trimmed)continue;
+    const translated=t('text.'+trimmed,null);
+    if(translated!==null)node.nodeValue=original.replace(trimmed,translated);
+  }
+  for(const el of root.querySelectorAll('[title],[aria-label],[placeholder]')){
+    for(const attr of ['title','aria-label','placeholder']){
+      const value=el.getAttribute(attr);if(!value)continue;
+      const translated=t('text.'+value,null);if(translated!==null)el.setAttribute(attr,translated);
+    }
+  }
+}
+
 const phases=['報告','仕入れ','倉庫整理','陳列','探索','営業'];const navs=[['home','⌂','経営'],['encyclopedia','▤','図鑑'],['journal','≡','経営帳簿'],['broker','♧','情報屋'],['settings','⚙','設定']];
 let day=1,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=[0,0,0],away=false;const prices=[];
 const merchantPrice=index=>chapter===0?config.development.prologueMerchantCosts[index]:prices[index];let characters=[];const villageCharacters=()=>characters.filter(c=>c.joinChapter===0);
@@ -318,7 +337,7 @@ function ledgerMoney(kind,amount,n=day){if(amount>0)ledgerDay(n)[kind]+=amount}
 function ledgerExpedition(dungeonId,partyId,gain,total,members=[]){ledgerDay().expeditions.push({dungeonId,party:partyId,gain,total,members:[...members]})}
 function journal(){const entries=ledgerHistory.slice().sort((a,b)=>b.day-a.day),size=1,total=Math.max(1,entries.length);page=Math.min(page,total-1);const e=entries[page];if(!e)return title('経営帳簿')+card(note('まだ経営・攻略の記録はありません。'))+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`;const income=e.sales+e.otherIncome,out=e.purchases+e.funding+e.expenses,balance=income-out;const format=n=>(n>=0?'＋':'−')+money(Math.abs(n));const expeditionHtml=e.expeditions.length?e.expeditions.map(x=>{const d=config.dungeons.find(d=>d.id===x.dungeonId);return row(esc(d?.name||x.dungeonId)+' · '+esc(x.members?.length?x.members.map(id=>characters.find(c=>c.id===id)?.name||id).join('・'):'第'+(x.party+1)+'パーティ'),`＋${x.gain}%（累計 ${x.total}%）`)}).join(''):note('この日の攻略記録はありません。');const recent=entries.slice(0,7).reverse(),maxSales=Math.max(1,...recent.map(x=>x.sales)),trend=card('<h2>直近7日間の売上</h2><div style="display:flex;align-items:end;gap:6px;height:74px">'+recent.map(x=>'<div title="春'+x.day+'日 '+x.sales+'G" style="flex:1;min-width:0;text-align:center;font-size:10px"><div style="height:'+Math.max(2,Math.round(x.sales/maxSales*45))+'px;background:var(--accent);border-radius:3px 3px 0 0"></div>'+x.day+'日</div>').join('')+'</div>');return title('経営帳簿')+`<div class="page">${btn('‹','page=Math.min(page+1,ledgerHistory.length-1);render()','mini')}<b>${gameDate(e.day)}</b>${btn('›','page=Math.max(0,page-1);render()','mini')}</div>`+card('<h2>収支</h2>'+row('売上',money(e.sales))+row('その他収入',money(e.otherIncome))+row('仕入れ', '−'+money(e.purchases))+row('支度金','−'+money(e.funding))+row('その他支出','−'+money(e.expenses))+row('収支合計',format(balance)))+card('<h2>ダンジョン攻略</h2>'+expeditionHtml)+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`}
 
-function renderBase(){ $('#date').textContent=`${gameDate()} · ${phases[phase]}`;$('#gold').textContent=money(gold);$('#nav').innerHTML=navs.map(([id,icon,s])=>`<button class="${screen===id||screen==='equipment'&&equipmentOrigin?.screen===id||id==='home'&&screen==='trade'||id==='encyclopedia'&&screen==='encyclopedia'||id==='journal'&&screen==='journal'?'active':''}" ${id==='broker'?'disabled title="今後追加予定"':`onclick="go('${id}')"`}><span>${icon}</span>${t('nav.'+id,s)}</button>`).join('')+developmentMenu();$('#view').innerHTML=({home,villageClear:villageClearView,chapterArrival,dailyReport,broker,shelfOverview,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();}
+function renderBase(){ $('#date').textContent=`${gameDate()} · ${phases[phase]}`;$('#gold').textContent=money(gold);$('#nav').innerHTML=navs.map(([id,icon,s])=>`<button class="${screen===id||screen==='equipment'&&equipmentOrigin?.screen===id||id==='home'&&screen==='trade'||id==='encyclopedia'&&screen==='encyclopedia'||id==='journal'&&screen==='journal'?'active':''}" ${id==='broker'?'disabled title="今後追加予定"':`onclick="go('${id}')"`}><span>${icon}</span>${t('nav.'+id,s)}</button>`).join('')+developmentMenu();$('#view').innerHTML=({home,villageClear:villageClearView,chapterArrival,dailyReport,broker,shelfOverview,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();translateVisibleText();}
 
 // JSON-driven item definitions and current game screens.
 let balanceRuntime={...Balance.runtimeDefaults};

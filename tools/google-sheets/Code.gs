@@ -7,7 +7,9 @@ const SHOP = {repo:'ndnrys/shop-game',branch:'development',files:{
   'game-settings':'data/game-settings.json',
   'economy':'data/economy.json',
   'trading':'data/trading.json',
-  'characters':'data/characters.json'
+  'characters':'data/characters.json',
+  'locale-ja':'data/locales/ja.json',
+  'locale-en':'data/locales/en.json'
 }};
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('ゲーム管理')
@@ -47,6 +49,7 @@ function shopGet_(root,path) {return path.reduce((o,k)=>o[k],root)}
 
 /** C列の説明は表示専用。GitHubへの送信対象には含めない。 */
 function shopDescription_(name,rawPath) {
+  if(name==='locale-ja'||name==='locale-en')return '表示文言の翻訳。キーは変更せず、B列の文字列を編集してください。';
   const p=JSON.parse(rawPath), k=p[p.length-1], parent=p[p.length-2];
   const labels={
     schemaVersion:'データ形式のバージョン。通常は変更しません。',

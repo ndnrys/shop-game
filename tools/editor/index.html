@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>shop-game 設定エディター</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#243247;background:#f3f5f9}*{box-sizing:border-box}body{margin:0}header{background:#1d304b;color:white;padding:18px max(20px,calc((100vw - 1200px)/2))}h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:13px;color:#c5d5e9}main{max-width:1200px;margin:auto;padding:20px;display:grid;gap:16px}section{background:white;border:1px solid #d9e0e9;border-radius:12px;padding:18px}label{font-weight:600;font-size:13px;display:block;margin-bottom:5px}input,select,textarea,button{font:inherit}input,select,textarea{border:1px solid #c8d2df;border-radius:7px;padding:9px;width:100%;background:white;color:#243247}textarea{min-height:85px;resize:vertical}button{border:1px solid #b8c8db;border-radius:8px;padding:9px 13px;background:#f6f9fc;color:#243247;cursor:pointer}button.primary{background:#2458b7;color:white;border-color:#2458b7}button:disabled{opacity:.5;cursor:not-allowed}.controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.controls>div{flex:1;min-width:180px}.muted{color:#64748b;font-size:13px}.status{white-space:pre-wrap;font-size:13px}.error{color:#b42318}.ok{color:#147d49}.layout{display:grid;grid-template-columns:minmax(210px,290px) 1fr;gap:16px}.list{max-height:62vh;overflow:auto;border:1px solid #d9e0e9;border-radius:8px}.list button{display:block;text-align:left;border:0;border-bottom:1px solid #e8edf3;border-radius:0;width:100%;background:white}.list button.selected{background:#e7f0ff;font-weight:bold}.field{margin-bottom:13px}.field small{display:block;color:#64748b;margin:4px 0}.field.changed input,.field.changed textarea,.field.changed select{border-color:#e69a2e;background:#fffcf2}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{border-radius:20px;background:#e9eef5;padding:4px 9px;font-size:12px}#form{max-height:65vh;overflow:auto;padding-right:8px}#preview{max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all;background:#f5f7fa;padding:12px;border-radius:8px;font-size:12px}input[type=checkbox]{width:auto;transform:scale(1.3);margin:9px}.hidden{display:none!important}@media(max-width:740px){main{padding:10px}.layout{grid-template-columns:1fr}.list{max-height:180px}.grid{grid-template-columns:1fr}#form{max-height:none}}
+</style>
+</head>
+<body>
+<header><h1>shop-game 設定エディター</h1><p>GitHub / ndnrys/shop-game / development 専用 · サーバー側にトークンを保存しません</p></header>
+<main>
+<section>
+ <div class="controls"><div><label for="token">GitHub Personal Access Token</label><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Contents: Read and write"></div><button id="load" class="primary">GitHubから読み込む</button><button id="save" disabled>変更を確認して保存</button></div>
+ <p class="muted">トークンはこの画面を開いている間だけメモリに保持します。ブラウザやファイルには保存しません。送信先は development ブランチのみです。</p>
+ <div id="status" class="status" role="status">未読み込み</div>
+</section>
+<section id="workspace" class="hidden">
+ <div class="controls"><div><label for="category">管理対象</label><select id="category"></select></div><div><label for="search">検索（ID・日本語名）</label><input id="search" placeholder="絞り込み"></div><span class="pill" id="dirty">変更なし</span></div>
+ <p class="muted">値を編集すると未保存の変更として記録します。JSON記号の入力は不要です。複雑な配列・オブジェクトは項目単位で編集できます。</p>
+ <div class="layout"><div id="entries" class="list"></div><div><h2 id="heading">項目を選択</h2><div id="form"></div></div></div>
+</section>
+<section id="review" class="hidden"><h2>保存内容の確認</h2><p class="muted">更新前にGitHubの最新SHAを再確認します。変更のあったファイルのみコミットします。複数ファイルの更新は一括トランザクションではありません。</p><div id="preview"></div><div class="controls" style="margin-top:12px"><button id="confirm" class="primary">developmentへコミット</button><button id="cancel">戻る</button></div></section>
+</main>
+<script>
+'use strict';
+const REPO='ndnrys/shop-game',BRANCH='development';
+const PATHS={'characters':'data/characters.json','items':'data/item-catalog.json','game-settings':'data/game-settings.json','economy':'data/economy.json','trading':'data/trading.json','ja':'data/locales/ja.json','en':'data/locales/en.json'};
+const TITLES={'characters':'キャラクター','items':'商品','game-settings':'ゲーム設定','economy':'経済','trading':'取引','translations':'翻訳（日・英）'};
+const $=id=>document.getElementById(id);
+const state={data:{},original:{},sha:{},category:'characters',selected:0};
+const clone=v=>JSON.parse(JSON.stringify(v));
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function status(message,error=false){$('status').textContent=message;$('status').className='status '+(error?'error':'ok')}
+function token(){const t=$('token').value.trim();if(!t)throw Error('GitHubトークンを入力してください');return t}
+async function api(path,method='GET',body=null){
+ const response=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path+(method==='GET'?'?ref='+BRANCH:''),{method,headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+token(),'X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ if(!response.ok)throw Error(path+'：GitHub API '+response.status+' '+(await response.text()).slice(0,180));
+ return response.json();
+}
+function decodeBase64(s){const bytes=Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function encodeBase64(s){const bytes=new TextEncoder().encode(s);let binary='';for(const b of bytes)binary+=String.fromCharCode(b);return btoa(binary)}
+async function load(){
+ $('load').disabled=true;$('save').disabled=true;$('review').classList.add('hidden');
+ try{
+  token();if(changed().length&&!confirm('未保存の変更を破棄して再読み込みしますか？'))return;
+  status('GitHubから設定を取得中…');
+  const results=await Promise.all(Object.entries(PATHS).map(async([key,path])=>{const result=await api(path);return [key,result]}));
+  for(const [key,result] of results){state.data[key]=JSON.parse(decodeBase64(result.content));state.sha[key]=result.sha}
+  state.original=clone(state.data);
+  $('workspace').classList.remove('hidden');$('save').disabled=false;state.selected=0;
+  $('category').innerHTML=Object.entries(TITLES).map(([key,title])=>'<option value="'+key+'">'+title+'</option>').join('');
+  $('category').value=state.category;render();status('読み込み完了。変更内容は保存ボタンから確認できます。');
+ }catch(e){status(e.message,true)}finally{$('load').disabled=false}
+}
+function changed(){return Object.keys(PATHS).filter(k=>!same(state.data[k],state.original[k]))}
+function entries(){
+ const d=state.data;
+ switch(state.category){
+ case 'characters':return d.characters.map((v,i)=>({id:v.id,label:v.name||v.id,index:i,value:v}));
+ case 'items':return d.items.items.map((v,i)=>({id:v.id,label:v.name||v.id,index:i,value:v}));
+ case 'translations':return Object.keys({...d.ja,...d.en}).sort().map((key,i)=>({id:key,label:d.ja[key]||key,index:i,value:{ja:d.ja[key]??'',en:d.en[key]??''}}));
+ default:return [{id:state.category,label:'設定項目',index:0,value:d[state.category]}];
+ }
+}
+function render(){
+ const all=entries(),query=$('search').value.trim().toLowerCase();
+ const filtered=all.filter(e=>(e.id+' '+e.label).toLowerCase().includes(query));
+ if(!filtered.some(e=>e.index===state.selected))state.selected=filtered[0]?.index??0;
+ $('entries').innerHTML=filtered.map(e=>'<button data-index="'+e.index+'" class="'+(e.index===state.selected?'selected':'')+'">'+esc(e.label)+'<small class="muted"> · '+esc(e.id)+'</small></button>').join('')||'<p class="muted">該当なし</p>';
+ $('entries').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.index);render()});
+ const item=all.find(e=>e.index===state.selected);
+ $('heading').textContent=item?item.label:'項目を選択';
+ $('form').innerHTML=item?fields(item):'';
+ $('form').querySelectorAll('[data-path]').forEach(el=>el.addEventListener('change',()=>update(el,item)));
+ $('dirty').textContent=changed().length+'ファイル変更';
+}
+
+const FIELD_HELP={
+    schemaVersion:'データ形式のバージョン。通常は変更しません。',
+    status:'設定データの状態（暫定値など）。',notes:'開発上の注意書き。',
+    width:'倉庫の横幅（マス）。',height:'倉庫の縦幅（マス）。',pageSize:'一覧の1ページの表示件数。',
+    initialGold:'ゲーム開始時の所持金（G）。',merchantCosts:'仕入れ費用の候補（G）の配列。',
+    prologueMerchantCosts:'村での仕入れ費用候補（G）の配列。',
+    salePrice:'正式価格がない商品の仮販売価格（G）。',buybackPrice:'商人引取の計算に使う仮価格（G）。',
+    shelfCapacity:'棚1つに置ける商品数。',initialItemIds:'初期所持商品のID一覧。',
+    clearFundsMultiplier:'破産救済の必要資金に対する累計借入の倍率。',
+    maxClearFundsMultiplier:'破産救済の必要資金倍率の上限。',
+    baseClearFunds:'章ごとの救済判定の基本必要資金（G）。',
+    loanAmount:'救済1口あたりの借入額（G）。',
+    itemsPerAd:'報酬広告1回あたりの入荷品数。',
+    dailyAdLimit:'1日あたりの報酬広告の上限回数。',
+    resetTimeZone:'広告回数リセットの基準タイムゾーン。',
+    resetHour:'広告回数をリセットする時刻（時）。',
+    rewardPool:'広告報酬の抽選対象。',
+    requiredProgress:'ダンジョン攻略に必要な進行値。',
+    danger:'ダンジョンの危険度。',requires:'攻略前提となるダンジョンID。',
+    recommendedAttributes:'攻略で推奨される属性と値。',
+    attributeBonus:'推奨属性による攻略補正。',
+    injuryRate:'負傷判定の基準確率（0〜1）。',
+    severeRate:'重傷判定の基準確率（0〜1）。',
+    deathRate:'死亡判定の基準確率（0〜1）。',
+    tutorialChapter:'チュートリアル扱いの章番号。',
+    tutorialDeathCap:'チュートリアルでの死亡確率の上限（0〜1）。',
+    denominatorOffset:'負傷・死亡判定の計算に使う分母補正。',
+    injuryRecoveryFactor:'通常負傷の回復日数係数。',
+    severeRecoveryFactor:'重傷の回復日数係数。',
+    minRecoveryDays:'回復に必要な最短日数。',
+    maxRecoveryDays:'回復に必要な最長日数。',
+    defaultPolicy:'レベルアップ時の標準成長方針ID。',
+    pointsPerLevel:'レベルアップ時の能力上昇ポイント数。',
+    baseRequired:'レベルアップに必要な基本経験値。',
+    perLevel:'レベルごとの必要経験値増分。',
+    sizes:'倉庫拡張で選べるサイズ（マス）の一覧。',
+    costs:'倉庫拡張に必要な費用（G）の一覧。',
+    legacySize:'旧セーブデータの倉庫サイズ。',
+    clearDungeonId:'章クリア判定の対象ダンジョンID。',
+    enemyName:'章クリア時の敵の表示名。',
+    nextChapter:'次の章番号。',nextName:'次の章の表示名。',
+    memberLimit:'次章へ連れていける仲間の人数上限。',
+    seasonTax:'定期的に支払う税金（G）。',
+    shopMaintenancePerShelf:'棚1つあたりの維持費（G）。',
+    companionMaintenancePerPerson:'仲間1人あたりの維持費（G）。',
+    shelfExpansionCost:'棚を増設する費用（G）。',
+    costPerLevel:'治療費のレベルあたり単価（G）。',
+    bonus:'購入確率に加える補正（0.3なら30パーセントポイント）。',
+    minimum:'効果の発動に必要な最低商品数。',
+    minProbability:'購入確率の下限（0〜1）。',
+    maxProbability:'購入確率の上限（0〜1）。',
+    setPriority:'セット販売を優先する順序。',
+    selection:'商品候補の選択方式。',
+    allowUsedInSets:'中古品をセット販売に含めるか。',
+    probability:'買い物客の商品の購入傾向の基準確率（0〜1）。',
+    visitors:'来店人数の設定。',weight:'客層の出現比率に使う重み。',
+    id:'内部識別子。参照関係があるため原則変更しません。',
+    name:'ゲーム内の表示名。',chapter:'対象の章番号。',
+    joinChapter:'仲間が加入する章番号。',
+    initialJobId:'仲間の初期職業ID。',
+    initialLevel:'仲間の初期レベル。',
+    nameKey:'名前の翻訳キー。',descriptionKey:'説明文の翻訳キー。',
+    initialEquipment:'初期装備の設定。',
+    jobName:'職業の表示名。',
+    hp:'HPの初期値または成長配分。',
+    attack:'攻撃力の初期値または成長配分。',
+    defense:'防御力の初期値または成長配分。'
+  };
+const FIELD_NAMES={seasonTax:'季節ごとの税金',shopMaintenancePerShelf:'棚1つあたりの維持費',companionMaintenancePerPerson:'仲間1人あたりの維持費',shelfExpansionCost:'棚の増設費',initialGold:'初期所持金',salePrice:'仮販売価格',buybackPrice:'仮引取価格',width:'横幅',height:'縦幅',pageSize:'1ページの表示件数',hp:'HP',attack:'攻撃力',defense:'防御力',name:'名前',id:'ID',nameKey:'名前の翻訳キー',descriptionKey:'説明の翻訳キー',initialLevel:'初期レベル',initialJobId:'初期職業',joinChapter:'加入する章',schemaVersion:'データ形式バージョン',status:'状態',notes:'注意書き',probability:'購入確率',min:'最小値',max:'最大値',weight:'出現重み',bonus:'補正値',minimum:'最低必要数'};
+function japanesePathPart(p){
+ if(typeof p==='number')return (p+1)+'番目';
+ if(/^chapter_(\d+)$/.test(p))return '第'+p.slice(8)+'章';
+ if(p==='prologue')return '序章';
+ if(p==='chapters')return '章別設定';
+ if(p==='initialStats')return '初期能力';
+ if(p==='images')return '画像';
+ if(p==='normal')return '通常';
+ if(p==='development')return '開発用の仮設定';
+ if(p==='warehouse')return '倉庫';
+ if(p==='ui')return '画面';
+ if(p==='ja')return '日本語';
+ if(p==='en')return '英語';
+ return FIELD_NAMES[p]||p;
+}
+function fieldDescription(path){
+ const k=path[path.length-1],parent=path[path.length-2];
+ if(state.category==='translations')return '表示文言の翻訳です。キーは変えずに翻訳文を編集してください。';
+ if(state.category==='characters'&&path.includes('images'))return 'キャラクター画像のファイルパスです。実際の画像ファイルと一致させてください。';
+ if(state.category==='trading'){
+  if(path.includes('money'))return '客層の所持金'+(k==='min'?'の下限':k==='max'?'の上限':'')+'（G）。';
+  if(path.includes('categories')||path.includes('items'))return '対象カテゴリ・商品の購入傾向（0〜1）。';
+  if(k==='weight')return '客層「'+parent+'」の出現比率に使う重み。';
+ }
+ if(typeof k==='number')return '配列の'+(k+1)+'番目の値。';
+ return FIELD_HELP[k]||'この項目の詳細な説明は未登録です。内部キーを確認して編集してください。';
+}
+
+function fields(item){
+ const rows=[];
+ function add(value,path,depth=0){
+  if(depth>9)return;
+  if(value===null){rows.push(field(path,'null','null',true));return}
+  if(Array.isArray(value)){value.forEach((v,i)=>add(v,[...path,i],depth+1));if(!value.length)rows.push(field(path,'[]','empty',true));return}
+  if(typeof value==='object'){for(const [key,v] of Object.entries(value))add(v,[...path,key],depth+1);if(!Object.keys(value).length)rows.push(field(path,'{}','empty',true));return}
+  rows.push(field(path,value,typeof value,false));
+ }
+ add(item.value,[]);
+ return rows.join('')||'<p class="muted">編集可能な項目はありません。</p>';
+}
+function field(path,value,type,readonly){
+ const key=JSON.stringify(path),label=path.length?path.map(japanesePathPart).join(' › '):'値';
+ const original=state.category==='translations'?{ja:state.original.ja, en:state.original.en}:state.original[state.category==='items'?'items':state.category];
+ let base;
+ if(state.category==='translations'){base=state.original[path[0]]?.[entries()[state.selected]?.id]}
+ else{base=state.category==='characters'?original[state.selected]:state.category==='items'?original.items[state.selected]:original;for(const p of path)base=base?.[p]}
+ const diff=!same(value,base);
+ const attrs='data-path="'+esc(key)+'" data-type="'+type+'" '+(readonly?'disabled':'');
+ let input;
+ if(type==='boolean')input='<input type="checkbox" '+attrs+' '+(value?'checked':'')+'>';
+ else if(type==='number')input='<input type="number" step="any" '+attrs+' value="'+esc(value)+'">';
+ else input='<textarea rows="2" '+attrs+'>'+esc(value)+'</textarea>';
+ return '<div class="field '+(diff?'changed':'')+'"><label>'+esc(label)+'</label><small>'+esc(fieldDescription(path))+'</small><small>内部キー：'+esc(path.join(' › '))+'</small>'+input+(readonly?'<small>この値はJSON構造のため編集対象外です。</small>':'')+'</div>';
+}
+function update(el,item){
+ const path=JSON.parse(el.dataset.path),type=el.dataset.type;
+ let value;
+ if(type==='boolean')value=el.checked;
+ else if(type==='number'){if(el.value.trim()===''||!Number.isFinite(Number(el.value))){status('数値を入力してください',true);render();return}value=Number(el.value)}
+ else value=el.value;
+ if(state.category==='translations'){
+  const key=item.id,lang=path[0];if(!lang||!['ja','en'].includes(lang))return;
+  state.data[lang][key]=value;
+ }else{
+  let root=state.category==='characters'?state.data.characters[item.index]:state.category==='items'?state.data.items.items[item.index]:state.data[state.category];
+  let target=root;for(let i=0;i<path.length-1;i++)target=target[path[i]];
+  if(path.length)target[path[path.length-1]]=value;
+ }
+ render();status('編集中（未保存）');
+}
+function preview(){
+ const files=changed();if(!files.length){status('変更はありません');return}
+ $('preview').textContent=files.map(k=>PATHS[k]+'\n  '+JSON.stringify(state.original[k]).length+' → '+JSON.stringify(state.data[k]).length+' 文字').join('\n');
+ $('review').classList.remove('hidden');$('review').scrollIntoView({behavior:'smooth'});
+}
+async function save(){
+ const files=changed();if(!files.length)return;
+ $('confirm').disabled=true;$('save').disabled=true;
+ const saved=[];
+ try{
+  status('GitHub上の更新競合を確認中…');
+  for(const k of files){const current=await api(PATHS[k]);if(current.sha!==state.sha[k])throw Error(PATHS[k]+' が他の操作で更新されています。再読み込みして確認してください。')}
+  for(const k of files){
+   status('保存中：'+PATHS[k]);
+   const json=JSON.stringify(state.data[k],null,2)+'\n';
+   const result=await api(PATHS[k],'PUT',{message:'設定エディター: '+PATHS[k]+' を更新',content:encodeBase64(json),sha:state.sha[k],branch:BRANCH});
+   state.sha[k]=result.content.sha;state.original[k]=clone(state.data[k]);saved.push(PATHS[k]);
+  }
+  status('保存完了：'+saved.join('、'));$('review').classList.add('hidden');render();
+ }catch(e){status('保存処理が停止しました。\n保存済み：'+(saved.join('、')||'なし')+'\n'+e.message,true)}
+ finally{$('confirm').disabled=false;$('save').disabled=false}
+}
+$('load').onclick=load;$('save').onclick=preview;$('confirm').onclick=save;$('cancel').onclick=()=>$('review').classList.add('hidden');
+$('category').onchange=()=>{state.category=$('category').value;state.selected=0;$('search').value='';render()};
+$('search').oninput=()=>{state.selected=0;render()};
+</script>
+</body></html>

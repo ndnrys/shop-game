@@ -31,6 +31,8 @@
 /* Status badges keep formation height stable when companions cannot depart. */
 .party-character .character-status{position:absolute;top:3px;right:3px;padding:2px 4px;border-radius:4px;background:var(--soft);color:var(--ink);pointer-events:none}
 .departure-roster{gap:6px}.departure-roster>*{min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}.departure-roster button{min-height:44px;padding:6px}.departure-roster .character-art{height:72px}.departure-roster small{display:block}
+.clerk-dialogue{display:flex;align-items:center;gap:10px;min-height:0}.clerk-dialogue>img{width:110px;height:160px;object-fit:contain;flex-shrink:0}.clerk-dialogue>.card{min-width:0;flex:1}.clerk-dialogue p{line-height:1.6}.chapter-transition #nav,.chapter-transition #menuToggle{display:none}
+@media(max-height:700px){.clerk-dialogue{gap:6px}.clerk-dialogue>img{width:84px;height:112px}.clerk-dialogue>.card{padding:8px}.clerk-dialogue p{font-size:12px}}
 @media(max-height:700px){.departure-roster .character-art{height:48px}}
 
 /* Provided transparent equipment art; hit testing stays on the underlying cells. */

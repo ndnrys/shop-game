@@ -105,10 +105,14 @@ function villageCompletion(){
  return {rules,conquered,funded,ready};
 }
 function villageClearView(){
- const {rules,conquered,funded,ready}=villageCompletion();
+ const {rules}=villageCompletion();
  const candidates=availableCharacters().filter(c=>companionStatus(c.id)!=='dead');
  if(!candidates.some(c=>c.id===selectedCompanion))selectedCompanion=null;
- return title(conquered?'村を守り抜いた！':'村から次の旅へ')+card(`<h2>${esc(rules.name)}</h2>${row(esc(rules.enemyName),conquered?'討伐完了':'未討伐')}${row('旅立ちの必要資金',money(clearFunds()))}${row('現在の所持金',money(gold))}${note(funded?'必要資金を確保しました。':'村で商売を続け、旅立ちの資金を集めましょう。')}`)+card(`<h2>同行する仲間を${rules.memberLimit}人選ぶ</h2><div class="actions departure-roster">${candidates.map(c=>btn(characterArt(c)+`<span>${esc(characterName(c))}</span>`,`selectedCompanion='${c.id}';render()`,selectedCompanion===c.id?'active':'')).join('')}</div>${note('残る仲間の装備と育成状態は本人に保持します。')}`)+note('所持金・商品・倉庫・棚を引き継ぎます。必要資金は消費しません。')+`<div class="bottom"><button class="primary" onclick="travelToNextChapter()" ${!ready||!selectedCompanion?'disabled':''}>${esc(rules.nextName)}へ</button>${!ready?note('朝の報告で、資金確保・入荷品の整理・全遠征の帰還後に出発できます。'):''}${btn('村で商売を続ける',"go('home')")}</div>`;
+ if(!sub)return title('プロローグクリア！')+clerkDialogue(`店長！ ${rules.enemyName}を倒して、村に平和が戻りました！ 旅の資金も集まりましたね。次はエルディアへ向かいましょう！`)+card(row('攻略',esc(rules.enemyName)+' 討伐完了')+row('必要資金',money(clearFunds())+' 達成'))+`<div class="bottom">${btn('同行する仲間を選ぶ','sub=1;render()','primary')}</div>`;
+ return title('次の旅へ')+clerkDialogue(`一緒に旅をする仲間を${rules.memberLimit}人選んでください。残る仲間には、村をお願いしますね。`)+card(`<h2>同行する仲間を${rules.memberLimit}人選ぶ</h2><div class="actions departure-roster">${candidates.map(c=>btn(characterArt(c)+`<span>${esc(characterName(c))}</span>`,`selectedCompanion='${c.id}';render()`,selectedCompanion===c.id?'active':'')).join('')}</div>`)+note('所持金・商品・倉庫・棚を引き継ぎます。必要資金は消費しません。残る仲間の装備と育成状態も保持します。')+`<div class="bottom"><button class="primary" onclick="travelToNextChapter()" ${!selectedCompanion?'disabled':''}>${esc(rules.nextName)}へ出発</button></div>`;
+}
+function clerkDialogue(message){
+ return `<section class="clerk-dialogue" aria-label="店員からの案内"><img src="assets/villagers/tenin_2.png" alt="案内役の店員の女の子"><div class="card"><h2>店員</h2><p>${esc(message)}</p></div></section>`;
 }
 function travelToNextChapter(){
  const {rules,ready}=villageCompletion();
@@ -124,7 +128,7 @@ function travelToNextChapter(){
 function chapterArrival(){
  const rules=config.chapterProgression.prologue;
  const recruits=characters.filter(c=>c.joinChapter===chapter);
- return title(esc(rules.nextName),'新しい旅')+card(`<h2>新たな仲間との出会い</h2><div class="actions departure-roster">${recruits.map(c=>`<div>${characterArt(c)}<b>${esc(characterName(c))}</b><small>${esc(characterJob(c))}</small></div>`).join('')}</div>`)+card(`<h2>新しい土地でお店を開こう</h2>${note('仲間タブで編成を整え、経営の支援工程から遠征に出発しましょう。')}${row('同行者',esc(availableCharacters().filter(c=>c.joinChapter!==chapter).map(c=>characterName(c)).join('・')))}${row('所持金',money(gold))}`)+`<div class="bottom">${btn('この土地で経営を始める',"go('home')",'primary')}</div>`;
+ return title(esc(rules.nextName),'新しい旅')+clerkDialogue('店長、到着しました！ 新しい仲間と、この土地でお店を始めましょう！')+card(`<h2>新たな仲間との出会い</h2><div class="actions departure-roster">${recruits.map(c=>`<div>${characterArt(c)}<b>${esc(characterName(c))}</b><small>${esc(characterJob(c))}</small></div>`).join('')}</div>`)+note('編成を整えて、探索工程から仲間を派遣しましょう。')+`<div class="bottom">${btn('この土地で経営を始める',"go('home')",'primary')}</div>`;
 }
 
 function developmentMenu(){
@@ -166,7 +170,7 @@ function report(review=false){
  }).join(''):card(note('帰還したパーティはありません。'));
  return title(sub?'仲間の帰還報告':'朝の営業報告',gameDate())+
  (sub?expeditionHtml:card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+
- `<div class="bottom">${chapter===0&&villageCompletion().conquered?btn('村クリア・次の旅へ',"go('villageClear')",'primary'):''}${btn(sub?(review?'準備に戻る':'仕入れへ'):'報告を確認',sub?(review?"go('home')":'advance()'):'sub=1;page=0;render()','primary')}${steps()}</div>`;
+ `<div class="bottom">${btn(sub?(review?'準備に戻る':'仕入れへ'):'報告を確認',sub?(review?"go('home')":'advance()'):'sub=1;page=0;render()','primary')}${steps()}</div>`;
 }
 function shelfOverview(){const capacity=config.development.shelfCapacity;return title('棚の中身')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`))+Array.from({length:economyState.shelfCount},(_,index)=>{const items=shelf.filter(item=>item.shelfId===index);return card('<h2>棚 '+(index+1)+' · '+items.length+' / '+capacity+' 点</h2>'+(items.length?items.map(item=>row(esc(itemName(item)),money(saleValue(item)))).join(''):note('商品なし')))}).join('')+`<div class="bottom">${btn('仕入れへ戻る',"go('home')",'primary')}</div>`}
 function purchase(){let total=counts.reduce((a,n,i)=>a+n*merchantPrice(i),0);return title('今日の仕入れ')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`)+btn('棚の中身を確認',"go('shelfOverview')",'mini touch-target'))+note(`商人ごとに回数を選択。1回につき${balanceRuntime.itemsPerPurchase}品が入荷。`)+['武器商','防具商','道具商'].map((name,i)=>card(`<div class="merchant"><div><h2>${name}</h2><small>1回 ${merchantPrice(i)} G</small></div><div class="counter">${btn('−',`counts[${i}]=Math.max(0,counts[${i}]-1);render()`,'touch-target',name+'の仕入れを1回減らす')}<b>${counts[i]}</b>${btn('＋',`counts[${i}]++;render()`,'touch-target',name+'の仕入れを1回増やす')}</div></div>`)).join('')+card(row('合計 '+counts.reduce((a,n)=>a+n,0)*balanceRuntime.itemsPerPurchase+' 品',money(total)))+btn('村人からの寄付',"go('donation')",'mini touch-target')+`<div class="bottom">${btn('仕入れを確定','finishPurchase()','touch-target')+dayActions()}${steps()}</div>`}
@@ -401,7 +405,16 @@ function sales(){
 
 function downloadConfig(kind){const data=kind==='items'?catalog:config;const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=kind==='items'?'item-catalog.json':'game-settings.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function settings(){return title(t('nav.settings','設定'))+card(`<h2>${t('ui.language','言語')}</h2><div class="actions">${btn('日本語',"changeLanguage('ja')",language==='ja'?'active':'')}${btn('English',"changeLanguage('en')",language==='en'?'active':'')}</div>`)+card(`<h2>進行データ</h2><div class="actions">${btn('JSON書き出し','exportGame()')}${btn('JSON読み込み',"document.querySelector('#saveInput').click()")}</div><input id="saveInput" type="file" accept="application/json,.json" hidden onchange="importGame(this.files[0])">${note(catalogMigrationNotice||saveError||'操作ごとにこのブラウザへ自動保存します。')}`)+card(`<h2>表示スキン</h2><div class="actions">${[['','標準'],['paper','紙'],['night','夜']].map(([id,s])=>btn(s,`document.documentElement.dataset.skin='${id}';render()`)).join('')}</div>`)+card(`<h2>アイテム設定 · ${catalog.items.length}種類</h2>${btn('設定されたアイテムを確認',`openCatalog('settings')`)}<br>${note('JSONを編集して再読み込みすると反映されます。')}`)+card(`<h2>設定JSONの書き出し</h2><div class="actions">${btn('アイテム定義',`downloadConfig('items')`)}${btn('確認用設定',`downloadConfig('settings')`)}</div>`)+note('正式価格・能力は未設定。耐久度は個体ごとに管理。')+`<div class="bottom">${btn('経営に戻る',`go('home')`,'primary')}</div>`};
-function render(){rescueUnpaidBill();renderBase();if(phase===5&&screen==='home'){const list=$('.sales-visits');if(list)list.scrollTop=list.scrollHeight}persist()}
+function render(){
+ rescueUnpaidBill();
+ const clearReady=villageCompletion().ready;
+ if(clearReady&&screen!=='villageClear'){screen='villageClear';sub=0;page=0;selectedCompanion=null}
+ else if(!clearReady&&screen==='villageClear'){screen='home';sub=0}
+ const transitioning=screen==='villageClear'||screen==='chapterArrival';
+ $('.shell').classList.toggle('chapter-transition',transitioning);
+ if(transitioning){$('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false')}
+ renderBase();if(phase===5&&screen==='home'){const list=$('.sales-visits');if(list)list.scrollTop=list.scrollHeight}persist()
+}
 async function loadItemSettings(){try{const responses=await Promise.all(['data/item-catalog.json','data/game-settings.json','data/encyclopedia.json','data/characters.json','data/economy.json','data/trading.json','data/locales/ja.json','data/locales/en.json'].map(path=>fetch(path,{cache:'no-store'})));if(responses.some(r=>!r.ok))throw Error('設定ファイルが読み込めません');[catalog,config,encyclopediaDefinitions,characters,economyConfig,tradingConfig,translations.ja,translations.en]=await Promise.all(responses.map(r=>r.json()));initializeBalance();ItemCore.validate(catalog,config);validateEconomyConfig(economyConfig);validateRescueConfig();validateDungeonConfig();validateAdventurerConfig();validateWarehouseConfig();types=Object.fromEntries(catalog.types.map(t=>[t.id,t]));definitions=Object.fromEntries(catalog.items.map(d=>[d.id,d]));validateTradingConfig();prices.splice(0,prices.length,...config.development.merchantCosts);const saved=readStoredGame();saveReady=false;reset(false);if(saved){try{applySave(saved);saveReady=true;go('home')}catch(error){info('保存データを読み込めません',error.message)}}else{saveReady=!saveError;persist()}}catch(error){$('#view').innerHTML=title('設定の読み込みエラー')+note(esc(error.message))+note('HTTPプレビューから開いてください。JSONを修正した場合は構文とIDを確認してください。')+btn('再読み込み','location.reload()')}}
 
 // Procurement results and warehouse organisation share one workspace.

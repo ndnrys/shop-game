@@ -28,7 +28,7 @@ async function game(saved=null,boardSize=8){
  const elements={};
  const storage=new Map(saved?[["shop-game-save",JSON.stringify(saved)]]:[]);
  const context=vm.createContext({localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
-  document:{querySelector:key=>key==='#view'?view:elements[key]??(elements[key]={innerHTML:'',textContent:'',showModal(){throw Error('Unexpected alert');}}),documentElement:{dataset:{}},body:{append(){}},createElement:()=>({style:{},classList:{toggle(){}},remove(){}}),addEventListener(){}},
+  document:{querySelector:key=>key==='#view'?view:elements[key]??(elements[key]={innerHTML:'',textContent:'',classList:{toggle(){},remove(){}},setAttribute(){},showModal(){throw Error('Unexpected alert');}}),documentElement:{dataset:{}},body:{append(){}},createElement:()=>({style:{},classList:{toggle(){}},remove(){}}),addEventListener(){}},
   window:{addEventListener(){}},
   fetch:async path=>({ok:true,json:async()=>{const data=JSON.parse(read(path));if(path==='data/game-settings.json')data.warehouse={width:boardSize,height:boardSize};return data}}),
   setTimeout:(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;},clearTimeout:id=>timers.delete(id)

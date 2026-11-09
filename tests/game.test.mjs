@@ -49,7 +49,7 @@ async function game(saved=null,boardSize=8){
 
 test('main entry references only existing scripts and CSS',()=>{
  const html=read('index.html');
- for(const match of html.matchAll(/(?:src|href)="([^"#]+)"/g))assert(existsSync(resolve(root,match[1])),match[1]);
+ for(const match of html.matchAll(/(?:src|href)="([^"#]+)"/g))assert(existsSync(resolve(root,match[1].split('?')[0])),match[1]);
  assert(!html.includes('design-previews'));
 });
 

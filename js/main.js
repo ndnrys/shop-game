@@ -108,7 +108,7 @@ function villageClearView(){
  const {rules}=villageCompletion();
  const candidates=availableCharacters().filter(c=>companionStatus(c.id)!=='dead');
  if(!candidates.some(c=>c.id===selectedCompanion))selectedCompanion=null;
- if(!sub)return title('プロローグクリア！')+clerkDialogue(`店長！ ${rules.enemyName}を倒して、村に平和が戻りました！ 旅の資金も集まりましたね。次はエルディアへ向かいましょう！`)+card(row('攻略',esc(rules.enemyName)+' 討伐完了')+row('必要資金',money(clearFunds())+' 達成'))+`<div class="bottom">${btn('同行する仲間を選ぶ','sub=1;render()','primary')}</div>`;
+ if(!sub)return '<h1>プロローグクリア！</h1>'+clerkDialogue(`店長！ ${rules.enemyName}を倒して、村に平和が戻りました！ 旅の資金も集まりましたね。次はエルディアへ向かいましょう！`)+card(row('攻略',esc(rules.enemyName)+' 討伐完了')+row('必要資金',money(clearFunds())+' 達成'))+`<div class="bottom">${btn('同行する仲間を選ぶ','sub=1;render()','primary')}</div>`;
  return title('次の旅へ')+clerkDialogue(`一緒に旅をする仲間を${rules.memberLimit}人選んでください。残る仲間には、村をお願いしますね。`)+card(`<h2>同行する仲間を${rules.memberLimit}人選ぶ</h2><div class="actions departure-roster">${candidates.map(c=>btn(characterArt(c)+`<span>${esc(characterName(c))}</span>`,`selectedCompanion='${c.id}';render()`,selectedCompanion===c.id?'active':'')).join('')}</div>`)+note('所持金・商品・倉庫・棚を引き継ぎます。必要資金は消費しません。残る仲間の装備と育成状態も保持します。')+`<div class="bottom"><button class="primary" onclick="travelToNextChapter()" ${!selectedCompanion?'disabled':''}>${esc(rules.nextName)}へ出発</button></div>`;
 }
 function clerkDialogue(message){
@@ -128,14 +128,14 @@ function travelToNextChapter(){
 function chapterArrival(){
  const rules=config.chapterProgression.prologue;
  const recruits=characters.filter(c=>c.joinChapter===chapter);
- return title(esc(rules.nextName),'新しい旅')+clerkDialogue('店長、到着しました！ 新しい仲間と、この土地でお店を始めましょう！')+card(`<h2>新たな仲間との出会い</h2><div class="actions departure-roster">${recruits.map(c=>`<div>${characterArt(c)}<b>${esc(characterName(c))}</b><small>${esc(characterJob(c))}</small></div>`).join('')}</div>`)+note('編成を整えて、探索工程から仲間を派遣しましょう。')+`<div class="bottom">${btn('この土地で経営を始める',"go('home')",'primary')}</div>`;
+ return `<h1>${esc(rules.nextName)}</h1>`+clerkDialogue('店長、到着しました！ 新しい仲間と、この土地でお店を始めましょう！')+card(`<h2>新たな仲間との出会い</h2><div class="actions departure-roster">${recruits.map(c=>`<div>${characterArt(c)}<b>${esc(characterName(c))}</b><small>${esc(characterJob(c))}</small></div>`).join('')}</div>`)+note('編成を整えて、探索工程から仲間を派遣しましょう。')+`<div class="bottom">${btn('この土地で経営を始める',"go('home')",'primary')}</div>`;
 }
 
 function developmentMenu(){
- return `<details class="development-menu"><summary><span>⚒</span>開発用</summary><div class="development-options"><b>確認するタイミング</b>${btn('プロローグの最初から',"loadDevelopmentStage('prologue')")}${btn('プロローグ終了間際',"loadDevelopmentStage('prologueEnd')")}${btn('1章はじめから',"loadDevelopmentStage('chapter1')")}${note('現在の進行を置き換えて自動保存します。残す場合は設定からJSONを書き出してください。')}</div></details>`;
+ return `<details class="development-menu"><summary><span>⚒</span>開発用</summary><div class="development-options"><b>確認するタイミング</b>${btn('プロローグの最初から',"loadDevelopmentStage('prologue')")}${btn('プロローグ終了間際',"loadDevelopmentStage('prologueEnd')")}${btn('プロローグクリア直後',"loadDevelopmentStage('prologueClear')")}${btn('1章はじめから',"loadDevelopmentStage('chapter1')")}${note('現在の進行を置き換えて自動保存します。残す場合は設定からJSONを書き出してください。')}</div></details>`;
 }
 function loadDevelopmentStage(stage){
- if(!['prologue','prologueEnd','chapter1'].includes(stage))return;
+ if(!['prologue','prologueEnd','prologueClear','chapter1'].includes(stage))return;
  $('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');
  // Build the complete checkpoint before allowing any automatic save.
  saveReady=false;reset(false);

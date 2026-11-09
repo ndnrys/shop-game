@@ -28,7 +28,7 @@ const GameEffects=(()=>{
   function cut(kind){
    base(kind==='eyes'?'商談開始':'商談成立');const stage=document.createElement('div');stage.className='effect-cutins';
    for(const who of ['merchant','clerk']){
-    const panel=document.createElement('div');panel.className=`effect-cutin ${who}`;
+    const panel=document.createElement('div');panel.className=`effect-cutin effect-${who}`;
     const key=who==='merchant'?(kind==='eyes'?'merchantEyes':expression==='grin'?'merchantGrin':'merchantNeutral'):(kind==='eyes'?'clerkEyes':'clerkSurprised');
     if(artwork[key]){const img=document.createElement('img');img.src=artwork[key];img.alt=(who==='merchant'?'商人':'店員')+(kind==='eyes'?'の目元':'の口元');panel.append(img)}else{
      const label=document.createElement('small');label.textContent=who==='merchant'?'仕入先の商人':'店員';const face=document.createElement('span');face.className=`effect-face ${kind} ${key}`;face.textContent=kind==='eyes'?'◡ ◡':who==='clerk'?'○':expression==='grin'?'◡':'―';panel.append(label,face);

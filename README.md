@@ -255,3 +255,5 @@ GitHubのfine-grained PAT（対象リポジトリの Contents: Read and write）
 画像未作成のため顔は記号の仮表示、箱はCSS描画です。`GameEffects.artwork` の `merchantEyes` / `clerkEyes` / `merchantNeutral` / `merchantGrin` / `clerkSurprised` に画像パスを設定して差し替えます。横長画像を枠いっぱいに中央トリミングして表示します。商人口元は既定で無表情。`play('purchase', {items, expression:'grin'})` でニヤリを指定できます。表情に商品価値などの未確定条件は付けていません。OSの動きを減らす設定ではスライドを抑制します。
 
 `tests/effects-ui.html` は仕入れ演出の段階・重複防止・カードのページ切替・画面内への収まり・倉庫への復帰を確認します。
+
+演出は画面高さ・セーフエリアに合わせて縮小し、低い横向き画面でも操作ボタンと商品カードを枠内に配置します。共通ダイアログのボタン余白を継承せず、画像は残り高さに追従します。`tools/purchase-demo.html` で購入なしに共通演出を確認できます。

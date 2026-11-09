@@ -211,29 +211,23 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 .game-effect::backdrop{background:rgb(10 8 16 / 90%)}
 .game-effect h2,.game-effect p{margin:0}
 .game-effect button{min-height:44px;margin:0;width:auto;min-width:0;color:#211d2c;background:#f5dfb6;flex-shrink:0}
-.effect-cutins{flex:1;min-height:0;max-height:480px;margin-block:auto;display:flex;flex-direction:column;justify-content:center;gap:22px;overflow:hidden}
-.effect-cutin{height:clamp(60px,18dvh,140px);min-height:0;flex:0 1 140px;position:relative;background:linear-gradient(110deg,#7c4d31,#d7ac69);border-block:2px solid #f4dba7;overflow:hidden;animation:effect-from-left .45s ease-out both}
-.effect-cutin.effect-clerk{background:linear-gradient(110deg,#8ec2bb,#2e656e);animation-name:effect-from-right}
-.effect-cutin small{position:absolute;left:12px;top:6px;color:white}
-.effect-cutin img{width:100%;height:100%;object-fit:cover}
-.effect-face{display:block;font:80px/1.5 serif;letter-spacing:18px;color:#24191e}
-.effect-face.mouth{font-size:72px}
-.leaving .effect-merchant{animation:effect-to-left .45s ease-in both}
-.leaving .effect-clerk{animation:effect-to-right .45s ease-in both}
 .effect-box-scene{flex:1;min-height:0;max-height:480px;margin-block:auto;overflow:hidden;display:grid;place-items:center;background:radial-gradient(ellipse,#f7d78555,transparent 65%)}
-.effect-box{width:140px;height:100px;background:#a26c37;border:4px solid #e3b777;position:relative;margin-top:55px}
-.effect-box-lid{position:absolute;left:-8px;right:-8px;top:-20px;height:25px;background:#d39a51;border:3px solid #f0c989;transform-origin:left bottom;animation:effect-open .8s .15s ease-out both}
-.effect-box span{display:block;color:#ffe6a0;font-size:76px;animation:effect-spark .9s .2s both}
+.effect-box{width:100%;height:100%;max-width:437px;max-height:435px;min-height:0;object-fit:contain}
 .effect-products{flex:1;min-height:0;max-height:480px;margin-block:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:10px}
 .effect-products article{min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff12;border:1px solid #d2b47b;border-radius:10px;padding:8px;gap:4px}
 .effect-products img{width:100%;height:0;flex:1;min-height:0;object-fit:contain}
 .effect-products b{font-size:13px;overflow-wrap:anywhere}
 .effect-controls{flex-shrink:0;display:flex;justify-content:center;gap:12px}
-@media(max-height:450px){.game-effect[open]{gap:6px}.effect-cutins{gap:10px}.effect-products{gap:6px}.effect-products article{padding:4px}.effect-products b{font-size:11px;line-height:1.2}.effect-box{transform:scale(.65);margin-top:20px}.effect-face{font-size:50px;line-height:1.2}.effect-face.mouth{font-size:46px}}
-@keyframes effect-from-left{from{transform:translateX(-110%)}to{transform:translateX(0)}}
-@keyframes effect-from-right{from{transform:translateX(110%)}to{transform:translateX(0)}}
-@keyframes effect-to-left{to{transform:translateX(-110%)}}
-@keyframes effect-to-right{to{transform:translateX(110%)}}
-@keyframes effect-open{to{transform:translateY(-45px) rotate(-25deg)}}
-@keyframes effect-spark{from{opacity:0;transform:translateY(0) scale(.2)}to{opacity:1;transform:translateY(-60px) scale(1)}}
+@media(max-height:450px){.game-effect[open]{gap:6px}.effect-products{gap:6px}.effect-products article{padding:4px}.effect-products b{font-size:11px;line-height:1.2}}
 @media(prefers-reduced-motion:reduce){.game-effect *{animation-duration:1ms!important;animation-delay:0s!important}}
+
+/* Cropped merchant frames retain their native aspect ratio. */
+.merchant-label{display:flex;align-items:center;gap:8px;min-width:0}
+.merchant-label h2{white-space:nowrap}
+.merchant-icon{width:88px;height:56px;object-fit:contain;flex-shrink:0}
+.merchant-icon[hidden],.effect-merchant-portrait[hidden]{display:none}
+.effect-merchant-stage{flex:1;min-height:0;margin-block:auto;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.effect-merchant-portrait{width:100%;height:100%;max-width:480px;max-height:480px;object-fit:contain;animation:merchant-arrival 1.8s ease-in-out both}
+@keyframes merchant-arrival{0%{transform:translateX(-110%);opacity:0}25%,75%{transform:translateX(0);opacity:1}100%{transform:translateX(110%);opacity:0}}
+@media(max-width:380px){.merchant-label{gap:4px}.merchant .counter{gap:8px}.merchant-icon{width:80px}}
+@media(prefers-reduced-motion:reduce){.effect-merchant-portrait{animation:none!important}}

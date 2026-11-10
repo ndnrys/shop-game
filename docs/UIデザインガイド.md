@@ -23,7 +23,8 @@
 
 仲間・商人・商品は既存PNGを使っています。店員は `assets/shopkeeper/warm/` の新しい4表情に統一しています。店員の仕様・生成指示は同ディレクトリの `README.md` を参照してください。追加した背景は組み込みのimagegenで生成し、WebP品質88で書き出しています。約900KBの2画像を使用し、実行時依存は追加していません。
 
-- `assets/backgrounds/shop-interior.webp`：朝の報告と営業の店内。人物・UI文字は含めず、既存人物をHTMLで重ねます。
+- `assets/backgrounds/shop-interior-open.webp`：手前のカウンターを含まない店内。朝の報告と営業に使用します。人物・UI文字は含めません。
+- `assets/backgrounds/shop-counter.webp`：透過の前景カウンター。朝の報告で背景→店員→カウンター→吹き出しの順に重ねます。横幅に追従する3:1の表示枠で、人物の腰を手前から隠します。元の `shop-interior.webp` は生成時の参照元として保持しています。
 - `assets/backgrounds/expedition-map.webp`：探索の雰囲気用地図。章ごとの地形・正式な位置関係は表しません。目的地名・攻略進度はJSONと保存状態から描画します。
 
 生成プロンプト（店内）：

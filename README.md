@@ -311,3 +311,7 @@ GitHubのfine-grained PAT（対象リポジトリの Contents: Read and write）
 `assets/shopkeeper/warm/` の通常・会話・手を振る出発時・驚きの4表情を使用します。生成りのブラウス・深緑のエプロン・三つ編みのデザインで、朝の報告、章移動の案内、仕入れ演出を統一しました。旧画像は上書きしていません。報告の口パクは会話画像の口元だけを重ね、生成差分による全身のちらつきを防ぎます。動きを減らす設定では通常表情だけを表示します。
 
 [画像の仕様と生成指示](assets/shopkeeper/warm/README.md)を参照してください。
+
+### 店内とカウンターの分離
+
+朝の報告は、カウンターを描き込まない `assets/backgrounds/shop-interior-open.webp`、店員、独立した `assets/backgrounds/shop-counter.webp` の順に重ねています。カウンターは画面幅から大きさを決め、店員の前に置きます。旧来の背景内カウンターとCSSの細い帯を重ねる表示は廃止しました。カウンターは操作を遮りません。営業の店内背景もカウンターなしの画像へ切り替えました。[素材の仕様・生成指示](assets/backgrounds/README.md)を参照してください。

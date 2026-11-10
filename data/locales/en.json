@@ -200,5 +200,7 @@
   "text.装備中": "Equipped",
   "text.倉庫の装備": "Stored equipment",
   "text.編成へ戻る": "Back to party",
-  "text.固有属性 なし": "Innate affinity: none"
+  "text.固有属性 なし": "Innate affinity: none",
+  "text.支援": "Support",
+  "text.準備画面": "Preparation screens"
 }

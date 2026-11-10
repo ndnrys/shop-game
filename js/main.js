@@ -95,7 +95,7 @@ function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
 function openShop(){if(pending.length)return confirmUnsortedItems();phase=5;go('home')}
 function goStage(target){if(phase<1||phase>5||target<1||target>5)return;if(target===5&&pending.length)return confirmUnsortedItems();phase=target;go('home')}
 function openResidentService(tab){go('residents');sub=tab;render()}
-function stageNavigation(){return '<div class="actions">'+[1,2,3,4].map(n=>btn(['','仕入れ','倉庫','陳列','探索'][n],'goStage('+n+')',phase===n?'mini active':'mini')).join('')+'</div>'}
+function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-tabs" role="tablist" aria-label="準備画面">'+[1,2,3,4].map(n=>`<button type="button" role="tab" aria-selected="${current===n}" aria-controls="view" class="${current===n?'active':''}" onclick="goStage(${n})">${['','仕入れ','倉庫','陳列','支援'][n]}</button>`).join('')+'</div>'}
 function confirmUnsortedItems(){document.querySelector('#confirmUnsortedDialog').showModal()}
 function acceptUnsortedItems(){document.querySelector('#confirmUnsortedDialog').close();const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false;phase=5;go('home')}
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}
@@ -178,7 +178,7 @@ function customerImage(customer,visitIndex=0,reportDay=tradingState.report?.day?
  return images.length?images[((reportDay-1+visitIndex)%images.length+images.length)%images.length]:'';
 }
 function dailyReport(){return report(true)}
-function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();return stageNavigation()+(phase===1?purchase():phase===2?warehouse(true):phase===3?stocking():phase===4?support(true):sales())}
+function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();return (phase===1?purchase():phase===2?warehouse(true):phase===3?stocking():phase===4?support(true):sales())}
 function report(review=false){
  const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
  const bill=economyState.bill,visits=tradingState.report?.visits;
@@ -398,7 +398,7 @@ function ledgerMoney(kind,amount,n=day){if(amount>0)ledgerDay(n)[kind]+=amount}
 function ledgerExpedition(dungeonId,partyId,gain,total,members=[]){ledgerDay().expeditions.push({dungeonId,party:partyId,gain,total,members:[...members]})}
 function journal(){const entries=ledgerHistory.slice().sort((a,b)=>b.day-a.day),size=1,total=Math.max(1,entries.length);page=Math.min(page,total-1);const e=entries[page];if(!e)return title('経営帳簿')+card(note('まだ経営・攻略の記録はありません。'))+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`;const income=e.sales+e.otherIncome,out=e.purchases+e.funding+e.expenses,balance=income-out;const format=n=>(n>=0?'＋':'−')+money(Math.abs(n));const expeditionHtml=e.expeditions.length?e.expeditions.map(x=>{const d=config.dungeons.find(d=>d.id===x.dungeonId);return row(esc(d?.name||x.dungeonId)+' · '+esc(x.members?.length?x.members.map(id=>characters.find(c=>c.id===id)?.name||id).join('・'):'第'+(x.party+1)+'パーティ'),`＋${x.gain}%（累計 ${x.total}%）`)}).join(''):note('この日の攻略記録はありません。');const recent=entries.slice(0,7).reverse(),maxSales=Math.max(1,...recent.map(x=>x.sales)),trend=card('<h2>直近7日間の売上</h2><div style="display:flex;align-items:end;gap:6px;height:74px">'+recent.map(x=>'<div title="春'+x.day+'日 '+x.sales+'G" style="flex:1;min-width:0;text-align:center;font-size:10px"><div style="height:'+Math.max(2,Math.round(x.sales/maxSales*45))+'px;background:var(--accent);border-radius:3px 3px 0 0"></div>'+x.day+'日</div>').join('')+'</div>');return title('経営帳簿')+`<div class="page">${btn('‹','page=Math.min(page+1,ledgerHistory.length-1);render()','mini')}<b>${gameDate(e.day)}</b>${btn('›','page=Math.max(0,page-1);render()','mini')}</div>`+card('<h2>収支</h2>'+row('売上',money(e.sales))+row('その他収入',money(e.otherIncome))+row('仕入れ', '−'+money(e.purchases))+row('支度金','−'+money(e.funding))+row('その他支出','−'+money(e.expenses))+row('収支合計',format(balance)))+card('<h2>ダンジョン攻略</h2>'+expeditionHtml)+`<div class="bottom">${btn('記録に戻る',`go('records')`)}</div>`}
 
-function renderBase(){ renderHeader();$('#nav').innerHTML=renderNavigation();$('#view').dataset.screen=screen;$('#view').dataset.phase=phase;$('#view').dataset.formation=String(partyRosterOpen);$('#view').innerHTML=({home,villageClear:villageClearView,chapterArrival,dailyReport,broker,shelfOverview,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();translateVisibleText();}
+function renderBase(){ renderHeader();$('#nav').innerHTML=renderNavigation();$('#view').dataset.screen=screen;$('#view').dataset.phase=phase;$('#view').dataset.formation=String(partyRosterOpen);$('#view').innerHTML=((phase>=1&&phase<=4&&economyState.bill?.status!=='unpaid'&&['home','warehouse','trade','adventurers'].includes(screen))?stageNavigation():'')+({home,villageClear:villageClearView,chapterArrival,dailyReport,broker,shelfOverview,trade,tradingReport:tradingReportView,equipment:equipmentView,catalog:catalogView,encyclopedia:encyclopediaView,donation:donationView,warehouse:()=>warehouse(false),adventurers:()=>support(false),residents,records,journal,settings}[screen]||home)();translateVisibleText();}
 
 // JSON-driven item definitions and current game screens.
 let balanceRuntime={...Balance.runtimeDefaults};
@@ -485,7 +485,7 @@ function warehouseItemPanel(){
  return `<section class="card warehouse-item-panel"><div class="warehouse-selected-item">${item?shape(def(item)):''}<div><b ${incoming?'class="incoming-draggable" data-drag-incoming="true"':''}>${item?esc(itemName(item)):'商品を選択'}</b>${dimensions?`<small class="dimension-tag">${dimensions.width} × ${dimensions.height}</small>`:''}<small class="warehouse-item-stats">${item?esc(warehouseItemStats(item)):''}</small></div>${item&&!incoming?btn('↻ 回転','rotateSelected()','mini rotate-item'):''}</div>${actions}</section>`;
 }
 function combinedWarehouse(routine=true){return warehouseWorkspace(routine)}
-function trade(){return stageNavigation()+combinedWarehouse(true)};
+function trade(){return combinedWarehouse(true)};
 function warehouse(routine=false){return (pending.length||routine&&phase===2)?combinedWarehouse(true):warehouseWorkspace(routine)};
 
 // Pointer-based drag and drop supports touch and mouse with the same rules.

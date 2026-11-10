@@ -52,7 +52,7 @@ const GameEffects=(()=>{
    if(index>=merchants.length){clerk();return}
    const merchant=merchants[index],names=['武器商','防具商','道具商'],files=['weapon','armor','tool'];
    if(!files[merchant]){arrival(index+1);return}
-   character(names[merchant]+'からの仕入れ','assets/merchants/'+files[merchant]+'-portrait.png',names[merchant],false,()=>arrival(index+1));
+   character(names[merchant]+'からの仕入れ','assets/merchants/warm/'+files[merchant]+'-normal.webp',names[merchant],false,()=>arrival(index+1));
   }
   root.addEventListener('cancel',e=>{e.preventDefault();results()});arrival();return()=>clearTimeout(timer);
  });

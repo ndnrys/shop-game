@@ -37,3 +37,5 @@ Create a production blank UI header background inspired by the supplied referenc
 Create ONLY a blank footer navigation background inspired by the supplied reference. Match its pale warm ivory paper surface, extremely soft parchment fibers, faint warm edge shading, slim natural brown timber line along TOP EDGE only, hairline brown bottom/side outlines and modest rounded corners. Wide horizontal 3:1 panel, perfectly straight orthographic front view, full bleed with no surrounding margin. Remove ALL reference text, icons, symbols, dividers, buttons and writing. The central area must be one continuous plain light ivory paper surface with no compartments. No metallic ornament, no gold frame, no studs, no screws, no thick wooden side or bottom rails. Hand-painted restrained fantasy shop game aesthetic. ABSOLUTELY NO letters, numerals, text, logo, icons, pictograms or objects. Reusable empty backing panel for live HTML labels and SVG icons.
 
 ヘッダーの日付左右の縦線は表示しません。フッターは上端の木の線を画像の表示範囲から外し、上側の柔らかな影・細いハイライト・小さな角丸で段差を表現します。5項目が横幅を均等に使うよう、古い6列指定は除去しています。
+
+フッター背景の表示倍率は横104%・縦145%です。元画像の左右の枠線も表示範囲から外し、左右に不要な線が出ないようにしています。

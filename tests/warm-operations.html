@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><title>道具屋UIの操作検証</title><pre id="status">RUNNING</pre><iframe src="../index.html" style="border:0"></iframe>
+<script>
+const q=new URLSearchParams(location.search),width=+(q.get('width')||360),height=+(q.get('height')||640),f=document.querySelector('iframe');f.style=`width:${width}px;height:${height}px`;
+const saved=localStorage.getItem('shop-game-save'),checks=[];
+f.onload=async()=>{try{
+ const w=f.contentWindow,d=f.contentDocument,run=s=>w.eval(s),wait=n=>new Promise(r=>setTimeout(r,n));
+ while(!d.querySelector('#date').textContent)await wait(20);
+ const assert=(v,m)=>{if(!v)throw Error(m);checks.push(m)};
+ const fresh=()=>run('reset();saveReady=false;warehouseSize={width:8,height:8};stock=[];pending=[];uid=0;storeItem(newItem("one_hand_sword_01"));selected=-1;go("warehouse")');
+ const bounds=()=>{const v=d.querySelector('#view'),nav=d.querySelector('#nav').getBoundingClientRect();assert(v.scrollHeight<=v.clientHeight+1,'画面の高さ');assert([...v.children].every(el=>el.getBoundingClientRect().bottom<=nav.top+1),'操作部がメニューに重ならない')};
+ const source=()=>d.querySelector(`.real-board button[data-x="${run('stock[0].x')}"][data-y="${run('stock[0].y')}"]`);
+ const drag=async(pointerType,{cancel=false,outside=false}={})=>{
+  const root=d.querySelector('#view');root.setPointerCapture=()=>{};root.hasPointerCapture=()=>false;
+  const a=source().getBoundingClientRect(),b=d.querySelector('.real-board button[data-x="7"][data-y="7"]').getBoundingClientRect();
+  const event=(kind,x,y)=>new w.PointerEvent(kind,{bubbles:true,pointerId:81,pointerType,isPrimary:true,button:0,clientX:x,clientY:y,cancelable:true});
+  const before=run('JSON.stringify(snapshot())');source().dispatchEvent(event('pointerdown',a.left+a.width/2,a.top+a.height/2));await wait(130);
+  const x=outside?width-1:b.left+b.width/2,y=outside?2:b.top+b.height/2;
+  root.dispatchEvent(event('pointermove',x,y));assert(run('JSON.stringify(snapshot())')===before,pointerType+' プレビューは状態を変えない');
+  root.dispatchEvent(event(cancel?'pointercancel':'pointerup',x,y));return before;
+ };
+ for(const pointerType of ['mouse','touch']){
+  await wait(420);fresh();source().click();assert(run('selected')===0,pointerType+' 商品を選択');source().click();assert(run('stock[0].rotation')===1,pointerType+' 再クリックで回転');
+  fresh();await drag(pointerType);assert(run('stock[0].x>0&&stock[0].y>0&&ItemCore.canPlace(stock[0],stock[0].x,stock[0].y,stock[0].rotation,stock,types,warehouseSize)'),pointerType+' 端への移動補正');bounds();
+  fresh();const beforeCancel=await drag(pointerType,{cancel:true});assert(run('JSON.stringify(snapshot())')===beforeCancel,pointerType+' キャンセルで原状維持');
+  fresh();const beforeOutside=await drag(pointerType,{outside:true});assert(run('JSON.stringify(snapshot())')===beforeOutside,pointerType+' 枠外で原状維持');
+ }
+ fresh();run('storeItem(newItem("shield_01"));selected=0;render()');source().click();assert(run('stock.every(i=>ItemCore.canPlace(i,i.x,i.y,i.rotation,stock,types,warehouseSize))'),'他の商品と重ならない回転');
+ for(const pointerType of ['mouse','touch']){
+  fresh();run('openCharacterEquipment(availableCharacterIds[0]);equipmentSuppressClick=0');
+  const a=d.querySelector('[data-equipment-item]').getBoundingClientRect(),b=d.querySelector('[data-equipment-slot="weapon"]').getBoundingClientRect(),before=run('JSON.stringify(snapshot())');
+  const e=(kind,x,y)=>new w.PointerEvent(kind,{bubbles:true,pointerId:82,pointerType,isPrimary:true,button:0,clientX:x,clientY:y,cancelable:true});
+  d.querySelector('[data-equipment-item]').dispatchEvent(e('pointerdown',a.left+a.width/2,a.top+a.height/2));await wait(130);w.dispatchEvent(e('pointermove',b.left+b.width/2,b.top+b.height/2));assert(run('JSON.stringify(snapshot())')===before,pointerType+' 装備プレビューは保存しない');w.dispatchEvent(e('pointerup',b.left+b.width/2,b.top+b.height/2));assert(run('gear(equipCharacter).weapon?.uid===1'),pointerType+' 装備へドラッグ');bounds();
+ }
+ await wait(420);run(`phase=0;tradingState.report=null;groupedReturnReport=[{destination:'検証用の森',party:0,progress:'攻略 +10%',totalProgress:10,members:availableCharacters().slice(0,3).concat(availableCharacters().slice(0,1)).map((c,i)=>({name:c.name+i,image:c.images.normal,events:['無事に帰還しました。']}))}];go('home');sub=2;render()`);
+ for(let i=0;i<3;i++)d.querySelector('.report-clerk-speech .page button:last-child').click();assert(run('page')===3,'帰還報告の4人目までページ切替');bounds();
+ run('phase=3;go("home")');d.querySelector('[onclick="go(\'warehouse\')"]').click();assert(run('screen')==='warehouse','常設倉庫へ移動');run('toggleMenu()');assert(d.querySelector('.nav-more').getBoundingClientRect().top>=0,'メニューが画面内');
+ document.querySelector('#status').textContent=`PASS ${width}x${height} ${checks.length} checks\n`+checks.join('\n');
+}catch(e){document.querySelector('#status').textContent='FAIL '+e.stack}finally{if(saved===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',saved)}};
+</script>

@@ -111,7 +111,8 @@ function destinationView(){
  const members=parties[party].filter(id=>id&&companionStatus(id)==='waiting');
  const power=expeditionPower(members,d);
  const attrs=values=>Object.entries(values).map(([key,n])=>`${esc(catalog.elements[key]||key)} ${n}`).join('・')||'なし';
- return card(`<div class="actions">${choices.map(x=>btn(esc(x.name),`selectedDungeon='${x.id}';render()`,x.id===d.id?'active':'')).join('')}</div><h2>${esc(d.name)} · 翌朝帰還</h2>${row('攻略進度',`${dungeonProgressPercent(d)}%${dungeonCleared(d.id)?' · クリア':''}`)}${row('凶悪度',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}。属性不足でも遠征可能。`)}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}`);
+ return `<div class="destination-map" aria-label="遠征先のイメージ地図"><span>遠征の目的地</span></div><div class="destination-choices">${choices.map(x=>`<button class="destination-choice ${x.id===d.id?'active':''}" aria-pressed="${x.id===d.id}" onclick="selectedDungeon='${x.id}';render()"><b>${esc(x.name)}</b><div><small>${dungeonAvailable(x)?'攻略 '+dungeonProgressPercent(x)+'%':'未解放'}</small><progress aria-label="${esc(x.name)}の攻略進度" value="${dungeonProgressPercent(x)}" max="100"></progress></div></button>`).join('')}</div><div class="destination-info">${row('凶悪度 / 翌朝帰還',d.danger)}${note(`推奨属性：${attrs(d.recommendedAttributes)} ／ 装備合計：${attrs(power.attributes)}`)}${note(`攻撃 ${power.attack} ＋ 属性ボーナス ${power.bonus}`)}${dungeonAvailable(d)?'':note('前のダンジョンをクリアすると解放。')}</div>`;
+
 }
 function depart(){
  if(phase!==4||(screen!=='home'&&screen!=='adventurers')||partyAway(party))return;

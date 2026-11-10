@@ -23,7 +23,7 @@ function encyclopediaView(){
   }
   return heading+tabs+`<section class="encyclopedia-detail">${content}</section>`+`<div class="bottom">${btn(t.back,'encyclopediaSelection=null;render()')}</div>`;
  }
- // Fit the page to the viewport while keeping the navigation visible.
- const size=Math.max(2,Math.min(6,Math.floor(((window.innerHeight||568)-370)/65)));page=Math.min(page,Math.max(0,Math.ceil(entries.length/size)-1));
- return heading+tabs+`<div class="list">${entries.slice(page*size,(page+1)*size).map(d=>btn(`<span><b>${esc(records[d.id]?d.name:t.unknown)}</b><small class="block">${records[d.id]?t.discovered:t.undiscovered}</small></span><span aria-hidden="true">${records[d.id]&&encyclopediaTab==='items'?shape(d):'？'}</span>`,`encyclopediaSelection='${d.id}';render()`,'item')).join('')}</div>`+(entries.length?pager(entries.length,size):note('人物の遭遇処理は未実装です。登録対象の接続は保留中です。'))+`<div class="bottom">${note('装備・遠征・保存との連動は未実装です。再読み込みで記録は初期化されます。')}${btn('記録に戻る',"go('records')")}</div>`;
+ const size=window.innerHeight<700?6:9;page=Math.min(page,Math.max(0,Math.ceil(entries.length/size)-1));
+ const discovered=entries.filter(d=>records[d.id]).length;
+ return heading+`<progress aria-label="図鑑の発見率" value="${discovered}" max="${Math.max(1,entries.length)}"></progress>`+tabs+`<div class="encyclopedia-grid">${entries.slice(page*size,(page+1)*size).map(d=>btn(`${records[d.id]&&encyclopediaTab==='items'?shape(d):'<span class="unknown-art">？</span>'}<b>${esc(records[d.id]?d.name:t.unknown)}</b><small>${records[d.id]?t.discovered:t.undiscovered}</small>`,`encyclopediaSelection='${d.id}';render()`,'encyclopedia-tile')).join('')}</div>`+(entries.length?pager(entries.length,size):note('まだ出会った人物はいません。'))+`<div class="bottom">${btn('記録に戻る',"go('records')",'mini')}</div>`;
 }

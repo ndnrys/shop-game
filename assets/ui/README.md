@@ -2,7 +2,7 @@
 
 現在使う素材は `header-rustic.webp` と `footer-parchment.webp` です。`header-panel.webp` と `footer-panel.webp` は旧案として保持しています。すべて組み込みのimagegenで生成した文字なしの装飾素材です。各2172×724px、WebP品質90。文字・数字・アイコンを焼き込まず、店名・日付・所持金・ナビゲーション名はHTML、アイコンはSVGで重ねます。
 
-`css/game.css` の `header::before` は9スライスの `border-image`、`#nav::before` は中央を基準に縦125%の背景画像として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
+`css/game.css` の `header::before` は9スライスの `border-image`、`#nav::before` は中央を基準に縦145%の背景画像として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
 
 多言語の店名・ナビゲーション名は `data/locales/ja.json` と `en.json` の `ui.shopTitle`・`ui.nav.*` を参照します。英語から日本語への切替でも店名を描画し直します。画像に文言は含まれません。既存の本文や日付などには未翻訳箇所が残っています。
 
@@ -35,3 +35,5 @@ Create a production blank UI header background inspired by the supplied referenc
 ### 生成りのフッター
 
 Create ONLY a blank footer navigation background inspired by the supplied reference. Match its pale warm ivory paper surface, extremely soft parchment fibers, faint warm edge shading, slim natural brown timber line along TOP EDGE only, hairline brown bottom/side outlines and modest rounded corners. Wide horizontal 3:1 panel, perfectly straight orthographic front view, full bleed with no surrounding margin. Remove ALL reference text, icons, symbols, dividers, buttons and writing. The central area must be one continuous plain light ivory paper surface with no compartments. No metallic ornament, no gold frame, no studs, no screws, no thick wooden side or bottom rails. Hand-painted restrained fantasy shop game aesthetic. ABSOLUTELY NO letters, numerals, text, logo, icons, pictograms or objects. Reusable empty backing panel for live HTML labels and SVG icons.
+
+ヘッダーの日付左右の縦線は表示しません。フッターは上端の木の線を画像の表示範囲から外し、上側の柔らかな影・細いハイライト・小さな角丸で段差を表現します。5項目が横幅を均等に使うよう、古い6列指定は除去しています。

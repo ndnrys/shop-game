@@ -443,7 +443,7 @@ function sales(){
  const visits=tradingState.report.visits;
  if(salesDay!==day){salesDay=day;salesShown=0}
  if(salesShown<visits.length&&!salesTimer){
-  salesTimer=setTimeout(()=>{salesTimer=null;if(phase!==5||screen!=='home')return;salesShown++;page=Math.floor(Math.max(0,salesShown-1)/2);render()},850);
+  salesTimer=setTimeout(()=>{salesTimer=null;if(phase!==5||screen!=='home')return;salesShown++;page=Math.floor(Math.max(0,salesShown-1)/2);render()},salesShown===0?600:3200);
  }
  const shown=visits.slice(0,salesShown);
  const latest=shown.at(-1),guest=latest&&tradingConfig.customers.find(c=>c.id===latest.customerId);
@@ -453,7 +453,7 @@ function sales(){
   const purchased=visit.itemIds.length>0;
   const speech=purchased?'いい買い物ができた！':'今日は見送ろうかな';
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id].name)).join(' ＋ '):'購入なし';
-  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customer?.image?'<img src="'+esc(customerImage(customer,page*historySize+index))+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+(customerIcons[visit.customerId]||'🧑')+'</span>':(customerIcons[visit.customerId]||'🧑'))+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
+  return '<div class="sales-visit'+(page*historySize+index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customer?.image?'<img src="'+esc(customerImage(customer,page*historySize+index))+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+(customerIcons[visit.customerId]||'🧑')+'</span>':(customerIcons[visit.customerId]||'🧑'))+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
  }).join('');
  const finished=salesShown>=visits.length;
  return title('本日の営業','06 / 06')+

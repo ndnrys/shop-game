@@ -157,5 +157,9 @@
   "ui.nav.warehouse": "倉庫",
   "ui.nav.adventurers": "仲間",
   "ui.nav.records": "記録",
-  "ui.nav.menu": "メニュー"
+  "ui.nav.menu": "メニュー",
+  "ui.season.spring": "春",
+  "ui.season.summer": "夏",
+  "ui.season.autumn": "秋",
+  "ui.season.winter": "冬"
 }

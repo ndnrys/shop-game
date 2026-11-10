@@ -1,8 +1,8 @@
 # ヘッダー・フッターの装飾画像
 
-`header-panel.webp` と `footer-panel.webp` は、組み込みのimagegenで生成した文字なしの装飾素材です。各2172×724px、WebP品質90。文字・数字・アイコンを焼き込まず、店名・日付・所持金・ナビゲーション名はHTML、アイコンはSVGで重ねます。
+現在使う素材は `header-rustic.webp` と `footer-parchment.webp` です。`header-panel.webp` と `footer-panel.webp` は旧案として保持しています。すべて組み込みのimagegenで生成した文字なしの装飾素材です。各2172×724px、WebP品質90。文字・数字・アイコンを焼き込まず、店名・日付・所持金・ナビゲーション名はHTML、アイコンはSVGで重ねます。
 
-`css/game.css` の `header::before` と `#nav::before` に9スライスの `border-image` として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
+`css/game.css` の `header::before` は9スライスの `border-image`、`#nav::before` は中央を基準に縦125%の背景画像として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
 
 多言語の店名・ナビゲーション名は `data/locales/ja.json` と `en.json` の `ui.shopTitle`・`ui.nav.*` を参照します。英語から日本語への切替でも店名を描画し直します。画像に文言は含まれません。既存の本文や日付などには未翻訳箇所が残っています。
 
@@ -25,3 +25,13 @@ Use case: ui-mockup asset. ONLY a decorative blank horizontal footer navigation 
 生成指示：
 
 Use case: ui-mockup asset. A blank subtle ivory parchment panel surface for the interior cards and speech bubbles of a cozy Japanese fantasy shop game. Landscape 3:2, perfectly flat orthographic 2D, full bleed. Warm light cream handmade paper, restrained fine paper fibers, extremely faint natural mottling, softly aged honey beige edges. A delicate thin brown-gold double hairline frame very near the outer edge with tiny tasteful engraved leaf curls confined to the four corners. Keep the central 90 percent almost plain pale ivory with very low contrast for readable dark HTML text and numbers. Soft hand-painted storybook fantasy material, elegant gentle warm atmosphere, no dark stains, no ripped edges, no heavy scroll rolls, no objects, no wood frame, no shadows outside the canvas. ABSOLUTELY NO text, letters, numbers, logos, symbols, icons, runes, fake handwriting or UI content. Just one reusable blank paper panel background asset.
+
+## 見本に合わせた新しい素材の生成指示
+
+### 木製ヘッダー
+
+Create a production blank UI header background inspired by the supplied reference header. Preserve its restrained rustic shop sign look: deep brown horizontal wood grain in center, thin layered natural timber rails along top and bottom, gentle worn golden-beige highlights, simple straight edges. Wide landscape 3:1 panel, flat frontal orthographic view, full bleed with no surrounding margin. IMPORTANT: REMOVE AND DO NOT INCLUDE all writing, store icon, flower icon, coin icon, numerals, currency, vertical dividers and any other symbols from the reference. No screws, no rivets, no brass corner ornaments, no ornate gilded frame. This must be ONLY dark wood with slim timber edge trim and a plain uninterrupted dark central surface, suitable for placing live HTML text and SVG icons over it. Warm hand-painted fantasy game aesthetic matching reference. No text, no letters, no numbers, no logos, no icons, no objects, no scene.
+
+### 生成りのフッター
+
+Create ONLY a blank footer navigation background inspired by the supplied reference. Match its pale warm ivory paper surface, extremely soft parchment fibers, faint warm edge shading, slim natural brown timber line along TOP EDGE only, hairline brown bottom/side outlines and modest rounded corners. Wide horizontal 3:1 panel, perfectly straight orthographic front view, full bleed with no surrounding margin. Remove ALL reference text, icons, symbols, dividers, buttons and writing. The central area must be one continuous plain light ivory paper surface with no compartments. No metallic ornament, no gold frame, no studs, no screws, no thick wooden side or bottom rails. Hand-painted restrained fantasy shop game aesthetic. ABSOLUTELY NO letters, numerals, text, logo, icons, pictograms or objects. Reusable empty backing panel for live HTML labels and SVG icons.

@@ -157,5 +157,9 @@
   "ui.nav.warehouse": "Warehouse",
   "ui.nav.adventurers": "Companions",
   "ui.nav.records": "Records",
-  "ui.nav.menu": "Menu"
+  "ui.nav.menu": "Menu",
+  "ui.season.spring": "Spring",
+  "ui.season.summer": "Summer",
+  "ui.season.autumn": "Autumn",
+  "ui.season.winter": "Winter"
 }

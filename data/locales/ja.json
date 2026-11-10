@@ -151,5 +151,11 @@
   "text.魔法使い": "魔法使い",
   "text.僧侶": "僧侶",
   "text.盗賊": "盗賊",
-  "text.旅人": "旅人"
+  "text.旅人": "旅人",
+  "ui.shopTitle": "村のよろず屋",
+  "ui.nav.home": "お店",
+  "ui.nav.warehouse": "倉庫",
+  "ui.nav.adventurers": "仲間",
+  "ui.nav.records": "記録",
+  "ui.nav.menu": "メニュー"
 }

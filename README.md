@@ -317,3 +317,7 @@ GitHubのfine-grained PAT（対象リポジトリの Contents: Read and write）
 朝の報告は、カウンターを描き込まない `assets/backgrounds/shop-interior-open.webp`、店員、独立した `assets/backgrounds/shop-counter.webp` の順に重ねています。カウンターは画面幅から大きさを決め、店員の前に置きます。旧来の背景内カウンターとCSSの細い帯を重ねる表示は廃止しました。カウンターは操作を遮りません。営業の店内背景もカウンターなしの画像へ切り替えました。[素材の仕様・生成指示](assets/backgrounds/README.md)を参照してください。
 
 カウンターは下方へずらして前板を控えめに表示し、店員も少し上げています。エプロン・腕・腰が見えるバランスに調整しました。
+
+### ヘッダー・フッターの画像化
+
+文字なしの木製ヘッダーと、木枠・生成りのフッターを `assets/ui/` に追加しました。店名・日付・所持金・メニュー名はHTMLで重ね、アイコンもSVGのままです。新しい店名・メニュー名の翻訳キーは `ui.shopTitle`・`ui.nav.*`。英語から日本語へ戻した時の店名も描き直します。日本語・英語と標準・紙・夜の組み合わせを `tests/frame-ui.html` で確認します。[画像仕様・生成指示](assets/ui/README.md)を参照してください。

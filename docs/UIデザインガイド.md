@@ -14,6 +14,7 @@
 | `--accent` | 確定ボタン・選択枠 |
 | `--wood` / `--header-ink` | ヘッダーの木色・文字 |
 | `--gold` / `--nav` | 所持金・下部メニュー |
+| `--chrome-veil` | ヘッダー・フッターの画像へ重ねる夜スキンの暗色 |
 
 共通見出しは `title()`、ナビゲーションは `renderNavigation()`。画面の状態は `#view` の `data-screen`・`data-phase`・`data-formation` に出力します。スキンの変更で商品寸法や価格を変更しません。
 
@@ -48,3 +49,7 @@
 実機タッチは未検証です。Node.jsが環境にないため `node --test tests/game.test.mjs` は実行できません。
 
 既存の `tests/warehouse-ui.html` と `tests/equipment-ui.html` は初期在庫が5品ある前提ですが、現在の設定は初期在庫0品です。倉庫テストには現行の固定8×8表示とも異なる期待値があります。これらは変更せず、実データから検証用在庫を明示的に作る上記の操作検証を追加しました。
+
+## ヘッダー・フッター
+
+`assets/ui/header-panel.webp`・`footer-panel.webp` を9スライス表示します。翻訳文やアイコンを含めない装飾画像です。店名は `ui.shopTitle`、ナビゲーションは `ui.nav.*` で明示的に翻訳し、HTMLで描き直します。画像レイヤーはクリック・タップを遮りません。`tests/frame-ui.html` が言語・スキンごとの収まりを検証します。素材の詳細と生成指示は `assets/ui/README.md` を参照してください。

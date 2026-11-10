@@ -151,5 +151,11 @@
   "characters.mel.name": "Mel",
   "characters.oswald.name": "Oswald",
   "characters.vera.name": "Vera",
-  "characters.hakim.name": "Hakim"
+  "characters.hakim.name": "Hakim",
+  "ui.shopTitle": "Village General Store",
+  "ui.nav.home": "Shop",
+  "ui.nav.warehouse": "Warehouse",
+  "ui.nav.adventurers": "Companions",
+  "ui.nav.records": "Records",
+  "ui.nav.menu": "Menu"
 }

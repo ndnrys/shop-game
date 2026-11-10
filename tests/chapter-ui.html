@@ -9,7 +9,7 @@ frame.onload=async()=>{const checks=[];try{
  run("reset();gold=10000;dungeonProgress={forest:config.dungeons.find(d=>d.id==='forest').requiredProgress,camp:config.dungeons.find(d=>d.id==='camp').requiredProgress-1};phase=4;go('home');selectedDungeon='camp';Math.random=()=>0.99;depart();phase=5;go(`home`);salesShown=tradingState.report.visits.length;finishDay()");assert(run('villageCompletion().ready'),'野営地からの最終帰還で移動解放');
  assert(run("screen==='villageClear'&&sub===0"),'条件達成した朝に店員のクリア案内を自動表示');layout('店員のクリア案内');
  assert(d.querySelector('h1')?.textContent==='プロローグクリア！','クリア見出しを表示');
- assert(d.querySelector('.clerk-dialogue img')?.getAttribute('src')==='assets/villagers/tenin_2.png','女性店員の立ち絵を表示');
+ assert(d.querySelector('.clerk-dialogue img')?.getAttribute('src')==='assets/shopkeeper/warm/shopkeeper-normal.webp','女性店員の立ち絵を表示');
  assert(!d.querySelector('#view').textContent.includes('村で商売を続ける')&&!d.querySelector('#view').textContent.includes('出発の準備をする'),'村へ戻る選択肢なし');
  assert(w.getComputedStyle(d.querySelector('#menuToggle')).display==='none','クリア中は通常メニューを隠す');
  run('reset();gold=10000;render()');assert(!run('villageCompletion().ready'),'未討伐は移動不可');assert(run("screen==='home'"),'資金だけではクリアを表示しない');

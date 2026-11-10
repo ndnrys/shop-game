@@ -240,12 +240,13 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 @media(max-width:380px){.merchant-label{gap:4px}.merchant .counter{gap:8px}.merchant-icon{width:40px}}
 @media(prefers-reduced-motion:reduce){.effect-character-motion{animation:none!important}}
 
-/* Both expressions share one fixed frame, so only the mouth changes. */
+/* One portrait frame aligns expressions; the speaking overlay only reveals the mouth. */
 .report-clerk{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) 40%;align-items:end;gap:0;flex:1;min-height:0;min-width:0;background:linear-gradient(var(--paper),transparent 65%),url("../assets/backgrounds/shop-interior.webp") center bottom/cover;border-radius:12px;overflow:hidden}.report-clerk::after{content:"";position:absolute;bottom:0;left:0;right:0;height:22px;background:linear-gradient(#bd8c53,#986334 35%,#6e4729 40%,#94663b);border-top:2px solid #dfbe89;z-index:2}
 .report-clerk-art{position:relative;width:min(100%,360px);height:100%;min-height:0;margin:0 auto;background:transparent}
+.report-clerk-portrait{position:absolute;left:50%;bottom:-80%;height:200%;aspect-ratio:2/3;transform:translateX(-50%)}
 .report-clerk-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
 .report-clerk-art img[hidden]{display:none}
-.report-clerk-talking{animation:report-speaking .8s steps(1,end) 6;opacity:0}
+.report-clerk-talking{animation:report-speaking .8s steps(1,end) 6;opacity:0;clip-path:ellipse(5% 2% at 51% 21.5%)}
 .report-clerk-speech{position:relative;z-index:3;align-self:start;flex:0 0 auto;min-width:0;background:linear-gradient(135deg,#ffffff30,transparent),var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:0 3px 10px #49352609}.report-clerk-speech::after{content:"";position:absolute;left:calc(50% - 8px);bottom:-9px;width:16px;height:16px;background:var(--paper);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}.report-clerk-speech>p:first-child{margin-top:0}.report-clerk-speech strong{color:var(--accent);font-size:1.2em;font-variant-numeric:tabular-nums}
 .report-clerk-speech p{margin-top:8px;line-height:1.5}
 @keyframes report-speaking{0%,55%{opacity:1}35%,85%,100%{opacity:0}}

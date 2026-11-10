@@ -47,7 +47,7 @@ const GameEffects=(()=>{
    // Travel for 900ms, then remain at the destination for 500ms.
    timer=setTimeout(next,1400);
   }
-  function clerk(){character('店員が商品を受け取ります','assets/shopkeeper/shopkeeper-surprised-hq.png','驚く店員',true,box)}
+  function clerk(){character('店員が商品を受け取ります','assets/shopkeeper/warm/shopkeeper-surprised.webp','驚く店員',true,box)}
   function arrival(index=0){
    if(index>=merchants.length){clerk();return}
    const merchant=merchants[index],names=['武器商','防具商','道具商'],files=['weapon','armor','tool'];

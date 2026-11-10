@@ -270,11 +270,11 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 /* Morning ledger: real report values, with the same hierarchy as the concept. */
 .morning-ledger{font-weight:700;color:var(--ink)}
 .morning-sales{display:flex;gap:12px;align-items:center;padding:0 4px 9px}
-.morning-sales>svg{width:60px;height:66px;flex-shrink:0;color:#896345;transform:rotate(-10deg)}
+.morning-sales>svg{width:60px;height:66px;flex-shrink:0;color:#896345;transform:rotate(-7deg)}
 .morning-sales>div{flex:1;min-width:0;text-align:left}.morning-sales span{font-size:18px}
-.morning-sales strong{position:relative;isolation:isolate;display:block;width:fit-content;padding:0 14px;font-family:Georgia,serif;font-size:clamp(32px,9vw,48px);line-height:1.12;white-space:nowrap;color:#56330e}
+.morning-sales strong{position:relative;isolation:isolate;display:block;width:fit-content;max-width:100%;box-sizing:border-box;margin-left:auto;text-align:right;padding:0 5px 0 14px;font-family:Georgia,serif;font-size:clamp(32px,9vw,48px);line-height:1.12;white-space:nowrap;color:#56330e}
 .morning-sales strong::before{content:'';position:absolute;inset:4px -2px 0;z-index:-1;background:#edca795c;clip-path:polygon(3% 8%,20% 0,44% 5%,72% 0,97% 9%,95% 22%,100% 31%,97% 47%,100% 62%,95% 74%,98% 89%,75% 96%,42% 91%,16% 100%,0 87%,3% 69%,0 54%,4% 37%,0 23%)}
-.morning-entry{display:flex;align-items:center;gap:10px;min-height:36px;border-top:1px dashed var(--line);padding:3px 5px;font-size:17px}.morning-entry>svg{width:27px;height:29px;flex-shrink:0;color:#806447}.morning-entry>span{flex:1}.morning-entry>b{font-family:Georgia,serif;font-size:23px;white-space:nowrap;color:#694729}.morning-entry small{font-size:10px}
+.morning-entry{display:flex;align-items:center;gap:10px;min-height:36px;border-top:1px dashed var(--line);padding:3px 5px;font-size:17px}.morning-entry>svg{width:27px;height:29px;flex-shrink:0;color:#806447}.morning-entry>span{flex:1}.morning-entry>b{font-family:Georgia,serif;font-size:23px;white-space:nowrap;color:#694729}.morning-entry small{font-size:10px}.morning-ledger .ledger-unit{font-size:.6em;font-weight:700}
 .morning-net{border:0;border-radius:7px;margin-top:5px;background:linear-gradient(95deg,#b6bf7a33,#ced29577,#c4c88733)}.morning-net>b{color:#305127;font-size:28px}.morning-net>svg{color:#676440}.morning-net.is-negative>b{color:#934e36}
 .morning-greeting{margin-top:5px;font-size:11px;font-weight:400}.morning-greeting p{margin-top:3px;line-height:1.35}.morning-greeting strong{font-size:inherit}
 @media(max-height:700px){.morning-sales{padding-bottom:5px;gap:8px}.morning-sales>svg{width:44px;height:51px}.morning-sales span{font-size:16px}.morning-sales strong{font-size:34px}.morning-entry{min-height:28px;padding:2px 4px;font-size:15px}.morning-entry>svg{width:23px;height:24px}.morning-entry>b{font-size:21px}.morning-net>b{font-size:25px}.morning-greeting{font-size:10px}}

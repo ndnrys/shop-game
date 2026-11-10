@@ -443,7 +443,7 @@ function sales(){
  const visits=tradingState.report.visits;
  if(salesDay!==day){salesDay=day;salesShown=0}
  if(salesShown<visits.length&&!salesTimer){
-  salesTimer=setTimeout(()=>{salesTimer=null;if(phase!==5||screen!=='home')return;salesShown++;page=Math.floor(Math.max(0,salesShown-1)/2);render()},salesShown===0?600:3200);
+  salesTimer=setTimeout(()=>{salesTimer=null;if(phase!==5||screen!=='home')return;salesShown++;page=Math.floor(Math.max(0,salesShown-1)/2);render()},salesShown===0?600:1600);
  }
  const shown=visits.slice(0,salesShown);
  const latest=shown.at(-1),guest=latest&&tradingConfig.customers.find(c=>c.id===latest.customerId);

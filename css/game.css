@@ -238,3 +238,26 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 @keyframes clerk-travel{from{transform:translateX(-150%)}to{transform:translateX(0)}}
 @media(max-width:380px){.merchant-label{gap:4px}.merchant .counter{gap:8px}.merchant-icon{width:80px}}
 @media(prefers-reduced-motion:reduce){.effect-character-motion{animation:none!important}}
+
+/* Both expressions share one fixed frame, so only the mouth changes. */
+.report-clerk{display:grid;grid-template-rows:minmax(0,1fr) min(210px,28dvh);align-items:end;gap:10px;flex:1;min-height:0;min-width:0}
+.report-clerk-art{position:relative;width:150px;height:100%;min-height:0;margin-left:8px}
+.report-clerk-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.report-clerk-art img[hidden]{display:none}
+.report-clerk-talking{animation:report-speaking .8s steps(1,end) 6;opacity:0}
+.report-clerk-speech{flex:0 0 auto;min-width:0;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
+.report-clerk-speech p{margin-top:8px;line-height:1.5}
+@keyframes report-speaking{0%,55%{opacity:1}35%,85%,100%{opacity:0}}
+@media(max-height:700px){.report-clerk-art{width:120px}.report-clerk{grid-template-rows:minmax(0,1fr) 140px;gap:6px}.report-clerk-speech{padding:7px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.report-clerk-talking{animation:none}}
+
+.report-customer{display:flex;align-items:center;gap:8px;margin-top:10px;min-width:0}
+.report-customer-art{width:44px;flex-shrink:0;text-align:center;font-size:24px}
+.report-customer-art img{display:block;width:44px;height:52px;object-fit:contain}
+.report-customer-art img[hidden]{display:none}
+.report-customer>div:last-child{min-width:0;overflow-wrap:anywhere}
+.report-customer p{margin-top:2px}
+.report-voice-pages{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:10px}
+.report-voice-pages span{white-space:nowrap;font-size:11px}
+
+.report-clerk-art.report-clerk-farewell{margin-left:4px}

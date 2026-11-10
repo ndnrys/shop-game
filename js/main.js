@@ -168,9 +168,27 @@ function report(review=false){
     '</div>').join('')
   );
  }).join(''):card(note('帰還したパーティはありません。'));
- return title(sub?'仲間の帰還報告':'朝の営業報告',gameDate())+
- (sub?expeditionHtml:card(row('前日の売上',money(lastSales))+tradingReportSummary()+economyReport()))+
- `<div class="bottom">${btn(sub?(review?'準備に戻る':'仕入れへ'):'報告を確認',sub?(review?"go('home')":'advance()'):'sub=1;page=0;render()','primary')}${steps()}</div>`;
+ const bill=economyState.bill,visits=tradingState.report?.visits;
+ const buyers=visits?.filter(v=>v.uids.length).length||0;
+ const costDetails=bill?[['店舗管理費',bill.shop],['仲間維持費',bill.companions],['季節税',bill.tax]].filter(([,amount])=>amount>0).map(([label,amount])=>esc(label)+'：'+money(amount)).join('<br>'):'';
+ const salesSpeech=`<p>おはようございます。<br>前日の売上は<strong>${money(lastSales)}</strong>でした。</p>`+
+ (visits?`<p>${buyers?`${visits.length}人のお客様が来店され、${buyers}人がお買い上げくださいました。`:`${visits.length}人のお客様が来店されましたが、購入された方はいらっしゃいませんでした。`}</p>`:'')+
+ (bill?(bill.total>0?`<p>かかった金額は<strong>${money(bill.total)}</strong>です。<br>明細を読み上げますね。</p><p>固定費：${money(bill.total)}<br>${costDetails}</p>`:'')+
+ (bill.status==='paid'?'':'<p>所持金が足りず、まだお支払いができていません。</p>'+btn('支払いを再確認','retryEconomyBill()','mini')):'<p>初回の朝なので、固定費のお支払いはありません。</p>')+
+ (rescueState.last?.day===day?`<p>国から${money(rescueState.last.amount)}の資金提供を受け、固定費を支払いました。</p>`:'');
+ const voiceSize=2,voicePages=Math.max(1,Math.ceil((visits?.length||0)/voiceSize));
+ page=Math.max(0,Math.min(page,voicePages-1));
+ const voicesSpeech='<p>お客様からこんな声が届いています。</p>'+
+ (visits?.length?visits.slice(page*voiceSize,(page+1)*voiceSize).map(visit=>{
+  const customer=tradingConfig.customers.find(c=>c.id===visit.customerId),purchased=visit.uids.length>0;
+  const products=purchased?visit.itemIds.map(id=>esc(definitions[id]?.name||id)).join(' ＋ '):'購入なし';
+  return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customer.image)}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(customer?.name||visit.customerId)}</b><p>「${purchased?'いい買い物ができた！':'今日は見送ろうかな'}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
+ }).join('')+(voicePages>1?`<div class="report-voice-pages">${btn('前のお客様','page=Math.max(0,page-1);render()','mini')}<span>${page+1} / ${voicePages}</span>${btn('次のお客様',`page=Math.min(${voicePages-1},page+1);render()`,'mini')}</div>`:''):'<p>今回はお客様の声は届いていません。</p>');
+ const returnSpeech=destinations.length?'<p>続いて、仲間たちの帰還報告です。</p>'+expeditionHtml:'<p>今回は帰還したパーティはありません。仕入れの準備を進めましょう。</p>';
+ const reportPage=Math.min(3,Math.max(0,sub));
+ const clerk=`<section class="report-clerk" aria-label="店員からの報告"><div class="report-clerk-speech">${[salesSpeech,voicesSpeech,returnSpeech,'<p>今日も一日がんばりましょう！</p><p>仕入れにいってきまーす！</p>'][reportPage]}</div><div class="report-clerk-art${reportPage===3?' report-clerk-farewell':''}"><img src="assets/shopkeeper/shopkeeper-${reportPage===3?'oh':'normal'}.png?v=report-art-2" alt="${reportPage===3?'仕入れに向かう店員':'報告する店員'}" onerror="this.hidden=true"><img class="report-clerk-talking" ${reportPage===3?'hidden':''} src="assets/shopkeeper/shopkeeper-talking.png" alt="" onerror="this.hidden=true"></div></section>`;
+ return title(['朝の営業報告','お客様の声','パーティ報告','今日も一日'][reportPage],`${reportPage+1} / 4`)+clerk+
+ `<div class="bottom"><div class="actions">${reportPage?btn('前へ','sub--;page=0;render()','mini'):''}${btn(reportPage<3?'次のページ':review?'準備に戻る':'仕入れへ',reportPage<3?'sub++;page=0;render()':review?"go('home')":'advance()','primary')}</div>${steps()}</div>`;
 }
 function shelfOverview(){const capacity=config.development.shelfCapacity;return title('棚の中身')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`))+Array.from({length:economyState.shelfCount},(_,index)=>{const items=shelf.filter(item=>item.shelfId===index);return card('<h2>棚 '+(index+1)+' · '+items.length+' / '+capacity+' 点</h2>'+(items.length?items.map(item=>row(esc(itemName(item)),money(saleValue(item)))).join(''):note('商品なし')))}).join('')+`<div class="bottom">${btn('仕入れへ戻る',"go('home')",'primary')}</div>`}
 // Transient presentation state; never included in game saves.

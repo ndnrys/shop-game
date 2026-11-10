@@ -27,25 +27,32 @@ const GameEffects=(()=>{
   function box(){
    base('商品が届きました');const scene=document.createElement('div'),img=document.createElement('img');
    scene.className='effect-box-scene';img.className='effect-box';img.alt='宝箱が開いて商品が現れる';
-   // The fully open final frame starts at 1400ms; hold it for 500ms.
-   img.addEventListener('load',()=>{if(!root.contains(img))return;clearTimeout(timer);timer=setTimeout(results,1900)},{once:true});
+   // The fully open final frame starts at 1120ms; hold it for 800ms.
+   img.addEventListener('load',()=>{if(!root.contains(img))return;clearTimeout(timer);timer=setTimeout(results,1920)},{once:true});
    img.addEventListener('error',()=>{if(root.contains(img))results()},{once:true});
    scene.append(img);root.append(scene,button('商品を見る',results));
    timer=setTimeout(results,4000);
    // A fresh URL restarts the GIF for each purchase, including cached images.
    img.src='assets/effects/open_box.gif?play='+Date.now();
   }
+  function character(title,src,alt,clerk,next){
+   base(title);
+   const stage=document.createElement('div'),motion=document.createElement('div'),img=document.createElement('img');
+   stage.className='effect-merchant-stage'+(clerk?' effect-clerk-stage':'');
+   motion.className='effect-character-motion';
+   img.className=clerk?'effect-clerk-portrait':'effect-merchant-portrait';
+   img.src=src;img.alt=alt;
+   img.addEventListener('error',()=>{img.hidden=true},{once:true});
+   motion.append(img);stage.append(motion);root.append(stage,button('演出をスキップ',results));
+   // Travel for 900ms, then remain at the destination for 500ms.
+   timer=setTimeout(next,1400);
+  }
+  function clerk(){character('店員が商品を受け取ります','assets/shopkeeper/shopkeeper-surprised-hq.png','驚く店員',true,box)}
   function arrival(index=0){
-   if(index>=merchants.length){box();return}
+   if(index>=merchants.length){clerk();return}
    const merchant=merchants[index],names=['武器商','防具商','道具商'],files=['weapon','armor','tool'];
    if(!files[merchant]){arrival(index+1);return}
-   base(names[merchant]+'からの仕入れ');
-   const stage=document.createElement('div'),img=document.createElement('img');
-   stage.className='effect-merchant-stage';img.className='effect-merchant-portrait';
-   img.src='assets/merchants/'+files[merchant]+'-portrait.png';img.alt=names[merchant];
-   img.addEventListener('error',()=>{img.hidden=true},{once:true});
-   stage.append(img);root.append(stage,button('演出をスキップ',results));
-   timer=setTimeout(()=>arrival(index+1),1800);
+   character(names[merchant]+'からの仕入れ','assets/merchants/'+files[merchant]+'-portrait.png',names[merchant],false,()=>arrival(index+1));
   }
   root.addEventListener('cancel',e=>{e.preventDefault();results()});arrival();return()=>clearTimeout(timer);
  });

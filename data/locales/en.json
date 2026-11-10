@@ -161,5 +161,20 @@
   "ui.season.spring": "Spring",
   "ui.season.summer": "Summer",
   "ui.season.autumn": "Autumn",
-  "ui.season.winter": "Winter"
+  "ui.season.winter": "Winter",
+  "ui.effects.label": "Delivery",
+  "ui.effects.results": "Your delivery",
+  "ui.effects.received": "Items received",
+  "ui.effects.back": "Back",
+  "ui.effects.next": "Next",
+  "ui.effects.warehouse": "Arrange storage",
+  "ui.effects.skip": "Skip scene",
+  "ui.effects.unpack": "Let’s check the delivery",
+  "ui.effects.care": "A little care for every item.",
+  "ui.effects.show": "View items",
+  "ui.effects.clerk": "Shopkeeper",
+  "ui.effects.handoff": "Thank you. I’ll take it from here.",
+  "ui.effects.arrival0": "A delivery from the weapons merchant",
+  "ui.effects.arrival1": "A delivery from the armor merchant",
+  "ui.effects.arrival2": "A delivery from the tools merchant"
 }

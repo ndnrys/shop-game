@@ -161,5 +161,20 @@
   "ui.season.spring": "春",
   "ui.season.summer": "夏",
   "ui.season.autumn": "秋",
-  "ui.season.winter": "冬"
+  "ui.season.winter": "冬",
+  "ui.effects.label": "仕入れ演出",
+  "ui.effects.results": "仕入れた商品",
+  "ui.effects.received": "届いた品物",
+  "ui.effects.back": "前へ",
+  "ui.effects.next": "次へ",
+  "ui.effects.warehouse": "倉庫整理へ",
+  "ui.effects.skip": "演出をスキップ",
+  "ui.effects.unpack": "届いた品物を確かめましょう",
+  "ui.effects.care": "ひとつずつ、大切にお店へ。",
+  "ui.effects.show": "商品を見る",
+  "ui.effects.clerk": "店員",
+  "ui.effects.handoff": "ありがとうございます。お預かりします",
+  "ui.effects.arrival0": "武器商から品物が届きました",
+  "ui.effects.arrival1": "防具商から品物が届きました",
+  "ui.effects.arrival2": "道具商から品物が届きました"
 }

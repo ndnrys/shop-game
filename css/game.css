@@ -211,41 +211,37 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 
 
 /* Shared presentation layer, independent of #view rerenders. */
-.game-effect{box-sizing:border-box;position:fixed;inset:0;width:100%;height:100%;height:100dvh;max-width:100%;max-height:100%;margin:0;padding:max(16px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border:0;border-radius:0;box-shadow:none;background:transparent;color:#fff;overflow:hidden;text-align:center}
+.game-effect{box-sizing:border-box;position:fixed;inset:0;width:100%;height:100dvh;max-width:100%;max-height:100%;margin:0;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));border:0;border-radius:0;overflow:hidden;text-align:center;color:var(--ink);background:linear-gradient(#f3e6cced,#ead7b9c9),url('../assets/backgrounds/shop-interior-open.webp') center/cover}
 .game-effect[open]{display:flex;flex-direction:column;gap:12px;align-items:center}
 .game-effect>*{width:100%;max-width:640px;min-width:0}
-.game-effect>h2,.game-effect>p{flex-shrink:0}
+.game-effect>h2,.game-effect>p{flex-shrink:0;margin:0}
+.game-effect>h2{font-size:clamp(17px,3.8vw,24px);padding:14px 12px;background:var(--paper) url('../assets/ui/paper-panel.webp') center/100% 100%;border-radius:8px;box-shadow:0 4px 12px #49352620;box-sizing:border-box}
 .game-effect>button{width:min(100%,320px)}
-.game-effect::backdrop{background:rgb(10 8 16 / 90%)}
-.game-effect h2,.game-effect p{margin:0}
-.game-effect button{min-height:44px;margin:0;width:auto;min-width:0;color:#211d2c;background:#f5dfb6;flex-shrink:0}
-.effect-box-scene{flex:1;min-height:0;max-height:480px;margin-block:auto;overflow:hidden;display:grid;place-items:center;background:radial-gradient(ellipse,#f7d78555,transparent 65%)}
-.effect-box{width:100%;height:100%;max-width:437px;max-height:435px;min-height:0;object-fit:contain}
+.game-effect::backdrop{background:#49352699}
+.game-effect button{min-height:44px;margin:0;min-width:0;background:var(--accent);color:#fff4db;border:1px solid #658472;box-shadow:inset 0 1px #ffffff55,0 3px 5px #49352625;flex-shrink:0}
+.game-effect button:disabled{opacity:.45}
 .effect-products{flex:1;min-height:0;max-height:480px;margin-block:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:10px}
-.effect-products article{min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff12;border:1px solid #d2b47b;border-radius:10px;padding:8px;gap:4px}
+.effect-products article{min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--paper) url('../assets/ui/paper-panel.webp') center/100% 100%;border:1px solid var(--line);border-radius:8px;padding:10px;gap:4px;box-shadow:0 4px 10px #49352618;animation:goods-reveal .5s ease both}
 .effect-products img{width:100%;height:0;flex:1;min-height:0;object-fit:contain}
 .effect-products b{font-size:13px;overflow-wrap:anywhere}
 .effect-controls{flex-shrink:0;display:flex;justify-content:center;gap:12px}
-@media(max-height:450px){.game-effect[open]{gap:6px}.effect-products{gap:6px}.effect-products article{padding:4px}.effect-products b{font-size:11px;line-height:1.2}}
-@media(prefers-reduced-motion:reduce){.game-effect *{animation-duration:1ms!important;animation-delay:0s!important}}
-
-/* Cropped merchant frames retain their native aspect ratio. */
-.merchant-label{display:flex;align-items:center;gap:8px;min-width:0}
-.merchant-label h2{white-space:nowrap}
-
-.merchant-portrait[hidden],.effect-merchant-portrait[hidden]{display:none}
-.effect-merchant-stage{flex:1;min-height:0;max-height:480px;margin-block:auto;overflow:hidden;display:flex;align-items:center;justify-content:flex-start}
-.effect-clerk-stage{justify-content:flex-end}
-.effect-clerk-stage .effect-character-motion{width:56%}
-.effect-character-motion{width:72%;height:100%;min-height:0;animation:merchant-travel .9s cubic-bezier(.16,1,.3,1) both}
-.effect-merchant-portrait,.effect-clerk-portrait{display:block;width:100%;height:100%;max-height:480px;object-fit:contain}
-.effect-clerk-portrait{transform:scaleX(-1)}
-.effect-clerk-portrait[hidden]{display:none}
-.effect-clerk-stage .effect-character-motion{animation-name:clerk-travel}
-@keyframes merchant-travel{from{transform:translateX(150%)}to{transform:translateX(0)}}
-@keyframes clerk-travel{from{transform:translateX(-150%)}to{transform:translateX(0)}}
+.effect-controls button{flex:1;max-width:280px}
+.effect-merchant-stage{position:relative;isolation:isolate;flex:1;min-height:0;max-height:520px;margin-block:auto;overflow:hidden;border-radius:12px;background:url('../assets/backgrounds/shop-interior-open.webp') center/cover;box-shadow:inset 0 0 25px #49352638,0 4px 12px #49352620}
+.effect-merchant-stage::after{content:'';position:absolute;z-index:2;bottom:-6%;left:0;width:100%;height:24%;background:url('../assets/backgrounds/shop-counter.webp') center top/100% 100% no-repeat;pointer-events:none}
+.effect-character-motion{position:absolute;left:-3%;bottom:-8%;width:65%;height:112%;animation:merchant-travel .9s ease-out both}
+.effect-merchant-portrait,.effect-clerk-portrait,.effect-host{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.effect-host{position:absolute;right:-3%;bottom:-8%;width:65%;height:112%}
+.effect-clerk-stage .effect-character-motion{left:10%;width:80%;bottom:-10%;height:125%}
+.effect-box-scene{flex:1;min-height:0;max-height:480px;margin-block:auto;display:flex;align-items:center;justify-content:center;gap:8px;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:radial-gradient(ellipse,#fff6d6cc,transparent 70%),url('../assets/backgrounds/shop-counter.webp') center/cover;box-shadow:inset 0 0 35px #49352633}
+.effect-box-scene img{width:28%;height:70%;object-fit:contain;filter:drop-shadow(0 12px 8px #49352655);animation:goods-reveal .8s both;animation-delay:calc(var(--order)*.18s)}
+.effect-note{font-size:14px;color:var(--muted)}
+.merchant-label{display:flex;align-items:center;gap:8px;min-width:0}.merchant-label h2{white-space:nowrap}
+.merchant-portrait[hidden],.effect-merchant-portrait[hidden],.effect-clerk-portrait[hidden]{display:none}
+@keyframes merchant-travel{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes goods-reveal{from{opacity:0;transform:translateY(15px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-height:450px){.game-effect[open]{gap:6px;padding:8px 12px}.game-effect>h2{padding:8px;font-size:16px}.effect-products{gap:6px}.effect-products article{padding:4px}.effect-products b{font-size:11px;line-height:1.2}}
 @media(max-width:380px){.merchant-label{gap:4px}.merchant .counter{gap:8px}}
-@media(prefers-reduced-motion:reduce){.effect-character-motion{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.game-effect *{animation:none!important}}
 
 /* One portrait frame aligns expressions; the speaking overlay only reveals the mouth. */
 .report-clerk{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) 40%;align-items:end;gap:0;flex:1;min-height:0;min-width:0;background:linear-gradient(var(--paper),transparent 65%),url("../assets/backgrounds/shop-interior-open.webp") center bottom/cover;border-radius:12px;overflow:hidden}.report-clerk::after{content:"";position:absolute;bottom:0;left:0;right:0;aspect-ratio:3/1;background:url("../assets/backgrounds/shop-counter.webp") center bottom/100% 100% no-repeat;z-index:2;pointer-events:none;transform:translateY(42%)}

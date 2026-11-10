@@ -15,6 +15,8 @@
 | `--wood` / `--header-ink` | ヘッダーの木色・文字 |
 | `--gold` / `--nav` | 所持金・下部メニュー |
 | `--chrome-veil` | ヘッダー・フッターの画像へ重ねる夜スキンの暗色 |
+| `--surface-opacity` | 吹き出し・カードの紙画像の濃さ |
+| `--paper-wash` / `--bubble-tip` | 画面背景の紙の濃さ・吹き出し先端の色 |
 
 共通見出しは `title()`、ナビゲーションは `renderNavigation()`。画面の状態は `#view` の `data-screen`・`data-phase`・`data-formation` に出力します。スキンの変更で商品寸法や価格を変更しません。
 
@@ -53,3 +55,5 @@
 ## ヘッダー・フッター
 
 `assets/ui/header-panel.webp`・`footer-panel.webp` を9スライス表示します。翻訳文やアイコンを含めない装飾画像です。店名は `ui.shopTitle`、ナビゲーションは `ui.nav.*` で明示的に翻訳し、HTMLで描き直します。画像レイヤーはクリック・タップを遮りません。`tests/frame-ui.html` が言語・スキンごとの収まりを検証します。素材の詳細と生成指示は `assets/ui/README.md` を参照してください。
+
+吹き出し・カードの装飾は `assets/ui/paper-panel.webp` を9スライス表示します。共通の疑似要素を使い、表示内容と入力処理から分離しています。装飾の濃さはスキン変数で調整し、夜スキンでも文字のコントラストを保ちます。

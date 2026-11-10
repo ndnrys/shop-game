@@ -172,6 +172,11 @@ function loadDevelopmentStage(stage){
  else {go('home');if(stage==='prologueEnd'){sub=2;render()}}
 }
 
+// Appearance is stable for each visit and does not consume the game's random stream.
+function customerImage(customer,visitIndex=0,reportDay=tradingState.report?.day??day){
+ const images=customer?.images?.length?customer.images:customer?.image?[customer.image]:[];
+ return images.length?images[((reportDay-1+visitIndex)%images.length+images.length)%images.length]:'';
+}
 function dailyReport(){return report(true)}
 function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();return stageNavigation()+(phase===1?purchase():phase===2?warehouse(true):phase===3?stocking():phase===4?support(true):sales())}
 function report(review=false){
@@ -185,10 +190,10 @@ function report(review=false){
  const voiceSize=2,voicePages=Math.max(1,Math.ceil((visits?.length||0)/voiceSize));
  if(sub===1)page=Math.max(0,Math.min(page,voicePages-1));
  const voicesSpeech='<p>お客様からこんな声が届いています。</p>'+
- (visits?.length?visits.slice(page*voiceSize,(page+1)*voiceSize).map(visit=>{
+ (visits?.length?visits.slice(page*voiceSize,(page+1)*voiceSize).map((visit,index)=>{
   const customer=tradingConfig.customers.find(c=>c.id===visit.customerId),purchased=visit.uids.length>0;
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id]?.name||id)).join(' ＋ '):'購入なし';
-  return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customer.image)}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(customer?.name||visit.customerId)}</b><p>「${purchased?'いい買い物ができた！':'今日は見送ろうかな'}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
+  return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customerImage(customer,page*voiceSize+index))}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(customer?.name||visit.customerId)}</b><p>「${purchased?'いい買い物ができた！':'今日は見送ろうかな'}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
  }).join('')+(voicePages>1?`<div class="report-voice-pages">${btn('前のお客様','page=Math.max(0,page-1);render()','mini')}<span>${page+1} / ${voicePages}</span>${btn('次のお客様',`page=Math.min(${voicePages-1},page+1);render()`,'mini')}</div>`:''):'<p>今回はお客様の声は届いていません。</p>');
  const returnEntries=groups.flatMap(g=>g.members.map(member=>({...g,members:[member]})));
  const returnPages=Math.max(1,returnEntries.length);if(sub===2)page=Math.max(0,Math.min(page,returnPages-1));
@@ -448,11 +453,11 @@ function sales(){
   const purchased=visit.itemIds.length>0;
   const speech=purchased?'いい買い物ができた！':'今日は見送ろうかな';
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id].name)).join(' ＋ '):'購入なし';
-  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customer?.image?'<img src="'+esc(customer.image)+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+(customerIcons[visit.customerId]||'🧑')+'</span>':(customerIcons[visit.customerId]||'🧑'))+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
+  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customer?.image?'<img src="'+esc(customerImage(customer,page*historySize+index))+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+(customerIcons[visit.customerId]||'🧑')+'</span>':(customerIcons[visit.customerId]||'🧑'))+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
  }).join('');
  const finished=salesShown>=visits.length;
  return title('本日の営業','06 / 06')+
- `<div class="sales-scene"><div class="sales-bubble">${latest?(latest.itemIds.length?'いい買い物ができた！':'今日は見送ろうかな'):'いらっしゃいませ！'}</div>${guest?.image?`<img src="${esc(guest.image)}" alt="${esc(guest.name)}">`:''}</div>`+card(row('来店',salesShown+' / '+visits.length+' 人')+row('本日の売上',money(shown.reduce((sum,v)=>sum+v.price,0))))+
+ `<div class="sales-scene"><div class="sales-bubble">${latest?(latest.itemIds.length?'いい買い物ができた！':'今日は見送ろうかな'):'いらっしゃいませ！'}</div>${guest?.image?`<img src="${esc(customerImage(guest,shown.length-1))}" alt="${esc(guest.name)}">`:''}</div>`+card(row('来店',salesShown+' / '+visits.length+' 人')+row('本日の売上',money(shown.reduce((sum,v)=>sum+v.price,0))))+
  '<div class="sales-visits" aria-live="polite">'+(lines||note('お客さんを待っています…'))+'</div>'+ (historyPages>1?pager(shown.length,historySize):'')+
  (finished?`<div class="bottom">${btn('営業終了 · 翌日へ','finishDay()','primary')}</div>`:note('接客中…'));
 }

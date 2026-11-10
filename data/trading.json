@@ -31,7 +31,12 @@
       "probability": 0.5,
       "items": {},
       "categories": {},
-      "image": "assets/customers/warm/villager.webp"
+      "image": "assets/customers/warm/villager.webp",
+      "images": [
+        "assets/customers/warm/villager.webp",
+        "assets/customers/warm/villager-2.webp",
+        "assets/customers/warm/villager-3.webp"
+      ]
     },
     {
       "id": "warrior",
@@ -42,7 +47,12 @@
         "one_hand_sword": 0.7,
         "shield": 0.7
       },
-      "image": "assets/customers/warm/warrior.webp"
+      "image": "assets/customers/warm/warrior.webp",
+      "images": [
+        "assets/customers/warm/warrior.webp",
+        "assets/customers/warm/warrior-2.webp",
+        "assets/customers/warm/warrior-3.webp"
+      ]
     },
     {
       "id": "archer",
@@ -54,7 +64,12 @@
         "arrow": 0.85,
         "body_light": 0.65
       },
-      "image": "assets/customers/warm/archer.webp"
+      "image": "assets/customers/warm/archer.webp",
+      "images": [
+        "assets/customers/warm/archer.webp",
+        "assets/customers/warm/archer-2.webp",
+        "assets/customers/warm/archer-3.webp"
+      ]
     },
     {
       "id": "mage",
@@ -67,7 +82,12 @@
         "spellbook": 0.85,
         "body_cloth": 0.65
       },
-      "image": "assets/customers/warm/mage.webp"
+      "image": "assets/customers/warm/mage.webp",
+      "images": [
+        "assets/customers/warm/mage.webp",
+        "assets/customers/warm/mage-2.webp",
+        "assets/customers/warm/mage-3.webp"
+      ]
     },
     {
       "id": "priest",
@@ -79,7 +99,12 @@
         "staff": 0.7,
         "body_cloth": 0.7
       },
-      "image": "assets/customers/warm/priest.webp"
+      "image": "assets/customers/warm/priest.webp",
+      "images": [
+        "assets/customers/warm/priest.webp",
+        "assets/customers/warm/priest-2.webp",
+        "assets/customers/warm/priest-3.webp"
+      ]
     },
     {
       "id": "rogue",
@@ -91,7 +116,12 @@
         "body_light": 0.75,
         "head_light": 0.65
       },
-      "image": "assets/customers/warm/rogue.webp"
+      "image": "assets/customers/warm/rogue.webp",
+      "images": [
+        "assets/customers/warm/rogue.webp",
+        "assets/customers/warm/rogue-2.webp",
+        "assets/customers/warm/rogue-3.webp"
+      ]
     },
     {
       "id": "traveler",
@@ -103,7 +133,12 @@
         "head_cloth": 0.65,
         "body_cloth": 0.65
       },
-      "image": "assets/customers/warm/traveler.webp"
+      "image": "assets/customers/warm/traveler.webp",
+      "images": [
+        "assets/customers/warm/traveler.webp",
+        "assets/customers/warm/traveler-2.webp",
+        "assets/customers/warm/traveler-3.webp"
+      ]
     }
   ],
   "chapters": {

@@ -268,8 +268,17 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 .report-clerk-art.report-clerk-farewell{margin-inline:auto}
 
 /* Morning ledger: real report values, with the same hierarchy as the concept. */
-.morning-ledger>span{font-weight:700;font-size:16px;display:block;text-align:center}.morning-ledger>strong{display:block;text-align:center;font-family:Georgia,serif;font-size:44px;line-height:1.25;color:var(--ink);padding:3px 0 10px}.morning-ledger .row{padding:8px 0;border-top:1px dashed var(--line)}.morning-ledger>small{display:block;padding-top:5px}.morning-greeting{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-size:11px}.morning-greeting p{margin-top:3px;line-height:1.45}.morning-greeting strong{font-size:inherit}
-@media(max-height:700px){.morning-ledger>strong{font-size:32px;padding-bottom:4px}.morning-ledger .row{padding:4px 0}.morning-greeting{font-size:10px}.morning-greeting p{line-height:1.3}}
+.morning-ledger{font-weight:700;color:var(--ink)}
+.morning-sales{display:flex;gap:12px;align-items:center;padding:0 4px 9px}
+.morning-sales>svg{width:60px;height:66px;flex-shrink:0;color:#896345;transform:rotate(-10deg)}
+.morning-sales>div{flex:1;min-width:0;text-align:left}.morning-sales span{font-size:18px}
+.morning-sales strong{position:relative;isolation:isolate;display:block;width:fit-content;padding:0 14px;font-family:Georgia,serif;font-size:clamp(32px,9vw,48px);line-height:1.12;white-space:nowrap;color:#56330e}
+.morning-sales strong::before{content:'';position:absolute;inset:4px -2px 0;z-index:-1;background:#edca795c;clip-path:polygon(3% 8%,20% 0,44% 5%,72% 0,97% 9%,95% 22%,100% 31%,97% 47%,100% 62%,95% 74%,98% 89%,75% 96%,42% 91%,16% 100%,0 87%,3% 69%,0 54%,4% 37%,0 23%)}
+.morning-entry{display:flex;align-items:center;gap:10px;min-height:36px;border-top:1px dashed var(--line);padding:3px 5px;font-size:17px}.morning-entry>svg{width:27px;height:29px;flex-shrink:0;color:#806447}.morning-entry>span{flex:1}.morning-entry>b{font-family:Georgia,serif;font-size:23px;white-space:nowrap;color:#694729}.morning-entry small{font-size:10px}
+.morning-net{border:0;border-radius:7px;margin-top:5px;background:linear-gradient(95deg,#b6bf7a33,#ced29577,#c4c88733)}.morning-net>b{color:#305127;font-size:28px}.morning-net>svg{color:#676440}.morning-net.is-negative>b{color:#934e36}
+.morning-greeting{margin-top:5px;font-size:11px;font-weight:400}.morning-greeting p{margin-top:3px;line-height:1.35}.morning-greeting strong{font-size:inherit}
+@media(max-height:700px){.morning-sales{padding-bottom:5px;gap:8px}.morning-sales>svg{width:44px;height:51px}.morning-sales span{font-size:16px}.morning-sales strong{font-size:34px}.morning-entry{min-height:28px;padding:2px 4px;font-size:15px}.morning-entry>svg{width:23px;height:24px}.morning-entry>b{font-size:21px}.morning-net>b{font-size:25px}.morning-greeting{font-size:10px}}
+
 
 /* Screen compositions share the same paper, illustration, and green action hierarchy. */
 main>.heading{flex-shrink:0;min-height:31px}main>.heading h1{font-size:19px}main>.heading .tag{white-space:nowrap;font-size:10px}main>.bottom{flex-shrink:0}main>.bottom>.primary{min-height:44px}
@@ -291,6 +300,6 @@ main>.heading{flex-shrink:0;min-height:31px}main>.heading h1{font-size:19px}main
 /* Reusable paper decoration stays behind HTML content and never captures input. */
 .card::before,.report-clerk-speech::before,.sales-bubble::before{content:"";position:absolute;inset:0;z-index:-1;border:7px solid transparent;border-image:url("../assets/ui/paper-panel.webp") 120 fill / 7px / 0 stretch;border-radius:inherit;opacity:var(--surface-opacity);pointer-events:none}
 .tabs button.active,.shop-folder-tabs button.active{background:var(--accent);color:var(--paper);border-color:var(--accent);box-shadow:inset 0 0 0 1px #f4da9b55}
-.morning-ledger>.row:last-of-type{background:color-mix(in srgb,var(--accent) 7%,transparent);border-radius:5px}.morning-ledger>strong{text-shadow:0 1px 0 #fff7da66}.morning-ledger>small{padding-left:5px;border-left:2px solid var(--line)}
+
 
 @media(max-width:380px){header{padding-inline:9px;gap:6px}.shop-brand{gap:5px}.header-shop-icon svg{width:24px;height:24px}.header-date{padding-inline:6px;gap:3px}header small{font-size:11px}header #seasonIcon{font-size:13px}}

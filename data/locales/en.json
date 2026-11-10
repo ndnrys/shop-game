@@ -176,5 +176,10 @@
   "ui.effects.handoff": "Thank you. I’ll take it from here.",
   "ui.effects.arrival0": "A delivery from the weapons merchant",
   "ui.effects.arrival1": "A delivery from the armor merchant",
-  "ui.effects.arrival2": "A delivery from the tools merchant"
+  "ui.effects.arrival2": "A delivery from the tools merchant",
+  "ui.report.sales": "Yesterday’s sales",
+  "ui.report.purchase": "Purchases",
+  "ui.report.maintenance": "Upkeep",
+  "ui.report.unpaid": "Unpaid",
+  "ui.report.net": "Net balance"
 }

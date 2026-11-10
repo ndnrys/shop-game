@@ -176,5 +176,10 @@
   "ui.effects.handoff": "ありがとうございます。お預かりします",
   "ui.effects.arrival0": "武器商から品物が届きました",
   "ui.effects.arrival1": "防具商から品物が届きました",
-  "ui.effects.arrival2": "道具商から品物が届きました"
+  "ui.effects.arrival2": "道具商から品物が届きました",
+  "ui.report.sales": "昨日の売上",
+  "ui.report.purchase": "仕入れ",
+  "ui.report.maintenance": "維持費",
+  "ui.report.unpaid": "未払い",
+  "ui.report.net": "収支"
 }

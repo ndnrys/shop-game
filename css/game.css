@@ -248,8 +248,8 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 @media(prefers-reduced-motion:reduce){.report-clerk-talking{animation:none}}
 
 .report-customer{display:flex;align-items:center;gap:8px;margin-top:10px;min-width:0}
-.report-customer-art{width:44px;flex-shrink:0;text-align:center;font-size:24px}
-.report-customer-art img{display:block;width:44px;height:52px;object-fit:contain}
+.report-customer-art{position:relative;width:44px;height:52px;flex-shrink:0;overflow:hidden;text-align:center;font-size:24px}
+.report-customer-art img{position:absolute;display:block;width:120px;height:180px;max-width:none;left:50%;top:-8px;transform:translateX(-50%);object-fit:contain}.report-customer-art img[src*="mage"]{top:-28px}.report-customer-art img[src*="mage-2"]{top:-14px}.report-customer-art img[src*="villager-2"]{top:-12px}.report-customer-art img[src*="traveler-2"]{top:-12px}
 .report-customer-art img[hidden]{display:none}
 .report-customer>div:last-child{min-width:0;overflow-wrap:anywhere}
 .report-customer p{margin-top:2px}

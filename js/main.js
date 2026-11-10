@@ -408,7 +408,7 @@ function sales(){
   const purchased=visit.itemIds.length>0;
   const speech=purchased?'いい買い物ができた！':'今日は見送ろうかな';
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id].name)).join(' ＋ '):'購入なし';
-  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customerIcons[visit.customerId]||'🧑')+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
+  return '<div class="sales-visit'+(index===shown.length-1?' sales-visit-enter':'')+'"><span class="sales-character" aria-hidden="true">'+(customer?.image?'<img src="'+esc(customer.image)+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+(customerIcons[visit.customerId]||'🧑')+'</span>':(customerIcons[visit.customerId]||'🧑'))+'</span><div class="sales-visit-text"><b>'+esc(customer?.name||visit.customerId)+'</b><small>「'+speech+'」</small><span>'+products+'</span></div><b class="sales-price">'+money(visit.price)+'</b></div>';
  }).join('');
  const finished=salesShown>=visits.length;
  return title('本日の営業','06 / 06')+

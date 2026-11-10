@@ -30,7 +30,8 @@
       "name": "村人",
       "probability": 0.5,
       "items": {},
-      "categories": {}
+      "categories": {},
+      "image": "assets/villagers/murabito_1.png"
     },
     {
       "id": "warrior",
@@ -40,7 +41,8 @@
       "categories": {
         "one_hand_sword": 0.7,
         "shield": 0.7
-      }
+      },
+      "image": "assets/villagers/senshi_1.png"
     },
     {
       "id": "archer",
@@ -51,7 +53,8 @@
         "bow": 0.8,
         "arrow": 0.85,
         "body_light": 0.65
-      }
+      },
+      "image": "assets/villagers/shinkan_1.png"
     },
     {
       "id": "mage",
@@ -63,7 +66,8 @@
         "rod": 0.8,
         "spellbook": 0.85,
         "body_cloth": 0.65
-      }
+      },
+      "image": "assets/villagers/gakusha_1.png"
     },
     {
       "id": "priest",
@@ -74,7 +78,8 @@
         "one_hand_mace": 0.75,
         "staff": 0.7,
         "body_cloth": 0.7
-      }
+      },
+      "image": "assets/villagers/madoushi_1.png"
     },
     {
       "id": "rogue",
@@ -85,7 +90,8 @@
         "knife": 0.85,
         "body_light": 0.75,
         "head_light": 0.65
-      }
+      },
+      "image": "assets/villagers/funanori_1.png"
     },
     {
       "id": "traveler",
@@ -96,7 +102,8 @@
         "accessory": 0.75,
         "head_cloth": 0.65,
         "body_cloth": 0.65
-      }
+      },
+      "image": "assets/villagers/boukenka_1.png"
     }
   ],
   "chapters": {

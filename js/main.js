@@ -27,6 +27,7 @@ function translateVisibleText(){
 const phases=['報告','仕入れ','倉庫整理','陳列','探索','営業'];const navs=[['home','shop','お店'],['warehouse','box','倉庫'],['adventurers','party','仲間'],['records','book','記録']];
 function uiIcon(name){
  const art={
+ shelf:'<path d="M3 3h2v18H3zM19 3h2v18h-2zM5 9h14v2H5zM5 19h14v2H5zM7 3h3v5H7zM12 2h4v6h-4zM8 13h7v5H8z"/>',
  shop:'<path d="M4 12h4v7h8v-7h4v10H4z M5 3h3l-2 7H2z M9 3h3v7H7z M13 3h3l1 7h-4z M17 3h2l3 7h-4z"/>',
  box:'<g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l10-4 10 4v13l-10 3-10-3z M2 7l10 4 10-4 M12 11v12 M7 5l10 4 M3 12l8 3 M13 15l8-3 M3 16l8 3 M13 19l8-3"/></g>',
  party:'<circle cx="12" cy="6" r="3.3"/><circle cx="4.5" cy="8" r="2.7"/><circle cx="19.5" cy="8" r="2.7"/><path d="M7 22v-7a5 5 0 0 1 10 0v7z M0 21v-7a4.5 4.5 0 0 1 6-4c-1 2-1 5-1 7v4z M19 21v-4c0-2 0-5-1-7a4.5 4.5 0 0 1 6 4v7z"/>',
@@ -95,7 +96,7 @@ function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
 function openShop(){if(pending.length)return confirmUnsortedItems();phase=5;go('home')}
 function goStage(target){if(phase<1||phase>5||target<1||target>5)return;if(target===5&&pending.length)return confirmUnsortedItems();phase=target;go('home')}
 function openResidentService(tab){go('residents');sub=tab;render()}
-function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-tabs" role="tablist" aria-label="準備画面">'+[1,2,3,4].map(n=>`<button type="button" role="tab" aria-selected="${current===n}" aria-controls="view" class="${current===n?'active':''}" onclick="goStage(${n})">${['','仕入れ','倉庫','陳列','支援'][n]}</button>`).join('')+'</div>'}
+function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-nav" role="group" aria-label="準備画面">'+[1,2,3,4].map(n=>`<button type="button" aria-current="${current===n?'page':'false'}" class="${current===n?'active':''}" onclick="goStage(${n})">${uiIcon(['','shop','box','shelf','party'][n])}<span>${['','仕入れ','倉庫','陳列','支援'][n]}</span></button>`).join('')+'</div>'}
 function confirmUnsortedItems(){document.querySelector('#confirmUnsortedDialog').showModal()}
 function acceptUnsortedItems(){document.querySelector('#confirmUnsortedDialog').close();const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false;phase=5;go('home')}
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;$('#modal').showModal()}

@@ -9,14 +9,14 @@ frame.onload=async()=>{try{
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const assert=(v,label)=>{if(!v)throw Error(label);checks.push(label)};
  const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(view.scrollHeight<=view.clientHeight+1&&d.documentElement.scrollWidth<=width&&[...view.children].every(e=>{const r=e.getBoundingClientRect();return r.bottom<=nav.top+1&&r.left>=0&&r.right<=width+1}),label)};
- run('reset()');assert(run('warehouseSize.width')===5&&run('stock.length')===5&&run('pending.length')===0,'5x5と初期5品');run("pending=[newItem('spear_01')]");assert(run('pending[0].itemId')==='spear_01','既存の大型入荷品は維持');
- run("go('warehouse')");layout('初期入荷画面');assert(d.querySelectorAll('.real-board button').length===25,'25マス表示');assert([...d.querySelectorAll('button')].some(b=>b.disabled&&b.textContent==='収納不可'),'収納不可を表示');
- run("phase=1;go('home')");layout('容量付き仕入れ画面');assert(d.querySelector('#view').textContent.includes('5×5 · 空き'),'仕入れで容量表示');
+ run(`globalThis.resetWarehouseFixture=()=>{saveReady=false;reset(false);for(const id of ['one_hand_sword_01','shield_01','body_light_01','head_light_11','accessory_01'])storeItem(newItem(id))};resetWarehouseFixture()`);assert(run('warehouseSize.width')===5&&run('stock.length')===5&&run('pending.length')===0,'5x5と初期5品');run("pending=[newItem('spear_01')]");assert(run('pending[0].itemId')==='spear_01','既存の大型入荷品は維持');
+ run("go('warehouse')");layout('初期入荷画面');assert(d.querySelectorAll('.real-board button').length===64&&d.querySelectorAll('.warehouse-locked').length===39,'8x8盤面と5x5の利用枠');assert([...d.querySelectorAll('button')].some(b=>b.disabled&&b.textContent==='収納不可'),'収納不可を表示');
+ run("phase=1;go('home')");layout('容量付き仕入れ画面');assert(!d.querySelector('#view').textContent.includes('棚の空き')&&!d.querySelector('#view').textContent.includes('村人からの寄付'),'仕入れの不要リンクを削除');
  run("gold=2000;go('residents');sub=1;render();globalThis.originalStock=JSON.stringify(stock)");layout('大工画面');
- for(const size of [6,7,8]){d.querySelector('[onclick="expandWarehouse()"]').click();assert(run('warehouseSize.width')===size,`${size}x${size}拡張`);assert(run('JSON.stringify(stock)')===run('originalStock'),'在庫位置維持');run("go('warehouse')");assert(d.querySelectorAll('.real-board button').length===size*size,`${size}マス描画`);layout(`${size}x${size}倉庫`);run("go('residents');sub=1;render()")}
+ for(const size of [6,7,8]){d.querySelector('[onclick="expandWarehouse()"]').click();assert(run('warehouseSize.width')===size,`${size}x${size}拡張`);assert(run('JSON.stringify(stock)')===run('originalStock'),'在庫位置維持');run("go('warehouse')");assert(d.querySelectorAll('.real-board button').length===64&&d.querySelectorAll('.warehouse-locked').length===64-size*size,`${size}の利用枠を描画`);layout(`${size}x${size}倉庫`);run("go('residents');sub=1;render()")}
  assert(run('gold')===200&&!d.querySelector('[onclick="expandWarehouse()"]'),'費用と最大拡張');run('globalThis.saved=JSON.parse(JSON.stringify(snapshot()));delete saved.warehouseSize;applySave(saved)');assert(run('warehouseSize.width')===8,'旧セーブ8x8維持');
- run("reset();gold=299;go('residents');sub=1;render()");assert(d.querySelector('[onclick="expandWarehouse()"]').disabled,'資金不足は無効');
- run("reset();stock=[stock[0]];pending=[];selected=0;stock[0].x=0;stock[0].y=0;stock[0].rotation=0;go('warehouse')");
+ run("resetWarehouseFixture();gold=299;go('residents');sub=1;render()");assert(d.querySelector('[onclick="expandWarehouse()"]').disabled,'資金不足は無効');
+ run("resetWarehouseFixture();stock=[stock[0]];pending=[];selected=0;stock[0].x=0;stock[0].y=0;stock[0].rotation=0;go('warehouse')");
  // Synthetic events do not create native pointer capture; model capture while dispatching to the real workspace.
  d.querySelector('#view').setPointerCapture=()=>{};d.querySelector('#view').hasPointerCapture=()=>false;
  const drag=async(cancel=false,outside=false)=>{
@@ -30,6 +30,9 @@ frame.onload=async()=>{try{
  await drag();assert(run('stock[0].x')===4&&run('stock[0].y')===2,'タッチ相当ドラッグ補正');
  let before=run('JSON.stringify(stock)');await drag(true,true);assert(run('JSON.stringify(stock)')===before,'移動取消');await drag(false,true);assert(run('JSON.stringify(stock)')===before,'枠外ドロップ取消');
  run('rotateSelected()');assert(run('stock[0].rotation')===1&&run('ItemCore.canPlace(stock[0],stock[0].x,stock[0].y,1,stock,types,warehouseSize)'),'回転補正と重なりなし');layout('操作後の倉庫');
+ run(`pending=[newItem('shield_01'),newItem('accessory_01')];warehouseShowStock=false;go('warehouse');globalThis.dragIncomingUid=pending[1].uid;selectIncomingWarehouseItem(dragIncomingUid)`);
+ const incomingDrag=async cancel=>{const source=d.querySelector('.warehouse-selected-item [data-drag-incoming]'),target=d.querySelector('.real-board button[data-x="4"][data-y="4"]'),a=source.getBoundingClientRect(),b=target.getBoundingClientRect(),v=d.querySelector('#view');source.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,pointerId:58,pointerType:'touch',isPrimary:true,button:0,clientX:a.left+a.width/2,clientY:a.top+a.height/2}));await new Promise(r=>setTimeout(r,130));v.dispatchEvent(new w.PointerEvent('pointermove',{bubbles:true,pointerId:58,pointerType:'touch',clientX:b.left+b.width/2,clientY:b.top+b.height/2,cancelable:true}));v.dispatchEvent(new w.PointerEvent(cancel?'pointercancel':'pointerup',{bubbles:true,pointerId:58,pointerType:'touch',clientX:b.left+b.width/2,clientY:b.top+b.height/2,cancelable:true}))};
+ before=run('JSON.stringify({stock,pending})');await incomingDrag(true);assert(run('JSON.stringify({stock,pending})')===before,'任意の入荷品のドラッグ取消');await incomingDrag(false);assert(run('stock.some(i=>i.uid===dragIncomingUid)&&pending.length===1'),'2番目の入荷品をドラッグ収納');layout('タブなしの共通商品パネル');
  document.querySelector('#status').textContent=`PASS ${width}×${height} ${checks.length} checks\n`;
  }catch(error){document.querySelector('#status').textContent='FAIL '+error.stack}finally{if(prior===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',prior)}};
 </script>

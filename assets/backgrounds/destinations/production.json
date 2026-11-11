@@ -1,0 +1,11 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "assets/backgrounds/expedition-map.webp (style and palette only)",
+  "sharedPrompt": "Use case: stylized-concept. Destination backgrounds for the existing warm hand-painted fantasy shop game. Soft watercolor/gouache, delicate drawn contours, natural wood and foliage, earthy greens, warm cream sunlight, muted blue distant hills. Distinct environmental views, not an overview. Horizontal 1536x1024 opaque edge-to-edge. Main place-defining subject in the left 40%; right remains gently detailed scenery under UI. No text, numerals, icons, frames, markers, logos, modern items or characters. No isometric map.",
+  "scenes": {
+    "forest": "周辺の森: a lush green woodland with a winding earthen path, mossy rocks, tall broadleaf trees, ferns and dappled late-morning sun. No houses or tents. Clear trail and distinctive large trees on the left.",
+    "camp": "野営地: an adventurers' woodland camp in a clearing, two cream canvas tents, a stone-ring campfire with faint smoke, bedrolls and supply crates, quiet forest behind. Main tents and campfire on the left. No settlement buildings.",
+    "eldia_road": "エルディア街道: a broad old trade road of worn cobbles and packed earth winding between rolling grassy hills, wildflowers, a small stone arch bridge, distant village rooftops and blue hills. Road and bridge are on the left, no tents or barricades.",
+    "velk_blockade": "街道の封鎖陣・ヴェルク: a medieval road blockade, wooden palisade gate, angled log barricades, small watch platform and guard tents beside a mountain road. Distinctive timber gate and barricades on the left, rugged hills behind. Serious but not horror, no people or combat."
+  }
+}

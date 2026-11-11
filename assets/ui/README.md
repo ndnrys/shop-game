@@ -1,8 +1,8 @@
 # ヘッダー・フッターの装飾画像
 
-現在使う素材は `header-rustic.webp` と `footer-parchment.webp` です。`header-panel.webp` と `footer-panel.webp` は旧案として保持しています。すべて組み込みのimagegenで生成した文字なしの装飾素材です。各2172×724px、WebP品質90。文字・数字・アイコンを焼き込まず、店名・日付・所持金・ナビゲーション名はHTML、アイコンはSVGで重ねます。
+現在はヘッダー・フッター・操作ボタンに `header-rustic.webp`、通常背景に `pale-wood.png`、情報カードに `paper-panel.webp` を使います。`footer-parchment.webp` は旧案です。`header-panel.webp` と `footer-panel.webp` は旧案として保持しています。すべて組み込みのimagegenで生成した文字なしの装飾素材です。ヘッダー・旧フッターは2172×724pxのWebP、白木背景は1024×1536pxのPNGです。文字・数字・アイコンを焼き込まず、店名・日付・所持金・ナビゲーション名はHTML、アイコンはSVGで重ねます。
 
-`css/game.css` の `header::before` は9スライスの `border-image`、`#nav::before` は中央を基準に縦145%の背景画像として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
+`css/game.css` の `header::before` は9スライスの `border-image`、`#nav::before` は濃い木目を中央基準・縦350%の背景画像として指定しています。外枠を潰さず中央だけを引き伸ばし、画面幅に追従させます。夜スキンでは `--chrome-veil` を重ねて明度を下げます。画像レイヤーは `pointer-events:none` です。
 
 多言語の店名・ナビゲーション名は `data/locales/ja.json` と `en.json` の `ui.shopTitle`・`ui.nav.*` を参照します。英語から日本語への切替でも店名を描画し直します。画像に文言は含まれません。既存の本文や日付などには未翻訳箇所が残っています。
 
@@ -38,4 +38,22 @@ Create ONLY a blank footer navigation background inspired by the supplied refere
 
 ヘッダーの日付左右の縦線は表示しません。フッターは上端の木の線を画像の表示範囲から外し、上側の柔らかな影・細いハイライト・小さな角丸で段差を表現します。5項目が横幅を均等に使うよう、古い6列指定は除去しています。
 
-フッター背景の表示倍率は横104%・縦145%です。元画像の左右の枠線も表示範囲から外し、左右に不要な線が出ないようにしています。
+現在のフッターは濃い木目へ変更済みです。背景に側枠を描かず、上側の柔らかな影とハイライトで段差を表現します。
+
+## 白木背景（2026-11-11）
+
+`pale-wood.png` は組み込みの image_gen で新規作成。濃い木目を白く覆う処理をやめ、背景専用の暖かい白木テクスチャを直接表示します。文字はHTMLで重ね、画像に文字を含めません。
+
+生成指示：Use case: stylized-concept. Asset type: mobile fantasy shop game UI background texture. Flat evenly lit front-on pale warm ivory maple wood, subtle hand-painted watercolor/gouache matching a cozy Japanese fantasy game. Honey cream and warm off-white, not gray or parchment. Fine gently flowing vertical grain, a few very subtle elongated growth patterns, visible at mobile scale with low contrast for dark text. No dark knots, dramatic swirls, plank gaps, frames, borders, vignette, shadows, objects or text. Edge-to-edge continuous surface without focal point. Opaque vertical 1024x1536 texture.
+
+## 棚切り替え画像
+
+`shelf-four-cubbies.png` は組み込み image_gen で作成した透過PNGです。共通の空棚にHTMLで実際の商品画像を4区画に重ね、空・1/4・2/4・3/4・4/4の5状態を表示します。文字・番号・数量はHTMLで表示するため、多言語化に対応します。
+
+生成指示：A single compact near-square wooden cabinet viewed straight on. Central vertical divider and one horizontal shelf form exactly four equal empty cubbies in a 2x2 grid. Warm honey oak frame, dark brown interior panels, soft hand-painted Japanese watercolor/gouache fantasy style. Clear silhouette and restrained grain. Simple outer frame, no legs, handles or decoration. No objects, labels, numbers, text, symbols, floor, halo or surrounding scene. Genuine transparent background, square 1024x1024 PNG, shelf fills about 94% of canvas.
+
+## 漆喰背景
+
+現在の通常背景は `lime-plaster.png`。組み込み image_gen で生成した1024×1536の不透明PNGです。生成指示：Warm ivory shikkui lime plaster, smooth matte mineral texture with extremely faint hand-troweled cloud-like tonal variations. Flat front-on, evenly lit, nearly plain, warm off-white suitable for brown text and parchment cards. Hand-painted watercolor/gouache fantasy material. No wood grain, paper fibers, cracks, stains, seams, vignette, objects or text. Full-bleed vertical 1024x1536.
+
+- `parchment-fibers.webp`: built-in image_gen で生成した文字・枠なしの羊皮紙テクスチャ。装備・育成共通の内面へ360pxタイルで使用。プロンプト: light ivory warm parchment, watercolor subtle natural mottling and soft fibers, seamless full-bleed, low contrast, no borders, objects, text or symbols.

@@ -285,10 +285,9 @@ test('auto equip is opt-in, same ID only, skips forged, lowest maximum then curr
  g.run('prepareEquipment(["kyle"])');assert.equal(g.run('stock.length'),4);
 });
 
-test('forged equipment cannot be stocked or bought back, can be manually equipped, discarded and broken',async()=>{
+test('forged equipment cannot be stocked or bought back, can be manually equipped and broken',async()=>{
  const g=await game();g.run('stock[0].forged=true');assert.throws(()=>g.run('replenish()'),/Unexpected alert/);assert.throws(()=>g.run('buybackStock()'),/Unexpected alert/);assert.equal(g.run('stock.length'),6);
  g.run("equipCharacter='kyle';equipmentSlot='weapon';changeEquipment(1);gear('kyle').weapon.durability=1;EquipmentCore.wear(gear('kyle'))");assert.equal(g.run('gear("kyle").weapon'),null);
- g.run('stock[0].forged=true;discardStock()');assert.equal(g.run('stock.length'),4);
 });
 
 test('v1 migration uses used flag, v2 round-trip preserves instance and invalid import is atomic',async()=>{

@@ -8,9 +8,9 @@ frame.onload=async()=>{try{
  const w=frame.contentWindow,d=frame.contentDocument,run=code=>w.eval(code);
  while(!d.querySelector('#date').textContent)await new Promise(r=>setTimeout(r,20));
  const assert=(value,label)=>{if(!value)throw Error(label);checks.push(label)};
- const fresh=()=>run("globalThis.defaultWarehouse=config.warehouse;config.warehouse={width:8,height:8};reset();config.warehouse=defaultWarehouse;Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
+ const fresh=()=>run("globalThis.defaultWarehouse=config.warehouse;config.warehouse={width:8,height:8};saveReady=false;reset(false);for(const id of ['one_hand_sword_01','shield_01','body_light_01','one_hand_sword_03','accessory_01','head_light_11']){const item=newItem(id);item.durability=10;item.maxDurability=10;storeItem(item)};config.warehouse=defaultWarehouse;Math.random=()=>0.99;openCharacterEquipment('kyle');equipmentSuppressClick=0");
  const item=uid=>d.querySelector(`[data-equipment-item="${uid}"]`),slot=id=>d.querySelector(`[data-equipment-slot="${id}"]`);
- const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(d.documentElement.scrollWidth<=width&&view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().height).every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
+ const layout=label=>{const view=d.querySelector('#view'),nav=d.querySelector('nav').getBoundingClientRect();assert(d.documentElement.scrollWidth<=width&&view.scrollHeight<=view.clientHeight+1&&[...view.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().height&&!e.closest('.equipment-character-backdrop')).every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=width+1&&r.bottom<=nav.top+1}),label)};
  const drag=async(source,target,{cancel=false,pointerType='touch',during=()=>{}}={})=>{
   run('equipmentSuppressClick=0');
   const a=source.getBoundingClientRect(),b=target?.getBoundingClientRect(),x=a.left+a.width/2,y=a.top+a.height/2,tx=b?b.left+b.width/2:width-1,ty=b?b.top+b.height/2:2;
@@ -20,10 +20,10 @@ frame.onload=async()=>{try{
   during();
   w.dispatchEvent(new w.PointerEvent(cancel?'pointercancel':'pointerup',{pointerId:41,pointerType,isPrimary:true,clientX:tx,clientY:ty,cancelable:true}));
  };
- fresh();layout('初期装備画面');assert(d.querySelectorAll('[data-equipment-slot]').length===5,'5部位を維持');
+ fresh();layout('初期装備画面');const sheet=d.querySelector('.equipment-sheet').getBoundingClientRect();run("selectCharacterPanel('growth')");const growthSheet=d.querySelector('.equipment-sheet').getBoundingClientRect();assert(['x','y','width','height'].every(k=>Math.abs(sheet[k]-growthSheet[k])<1),'装備と育成の羊皮紙の位置と寸法を固定');layout('育成画面');run("selectCharacterPanel('equipment')");assert(d.querySelectorAll('[data-equipment-slot]').length===5,'5部位を維持');
  let before=run('JSON.stringify(snapshot())');item(1).click();assert(run('JSON.stringify(snapshot())')===before,'タップ選択では未確定');assert(slot('weapon').classList.contains('equipment-target'),'対応部位を強調');layout('商品選択中');
  slot('offhand').click();assert(run('JSON.stringify(snapshot())')===before,'不適合部位は維持');slot('weapon').click();assert(run("gear('kyle').weapon.uid")===1,'タップで装備確定');layout('タップ装備後');
- fresh();before=run('JSON.stringify(snapshot())');await drag(item(1),slot('weapon'),{during:()=>assert(run('JSON.stringify(snapshot())')===before,'プレビューを保存しない')});assert(run("gear('kyle').weapon.uid")===1,'タッチ相当ドラッグ装備');layout('ドラッグ装備後');
+ fresh();before=run('JSON.stringify(snapshot())');await drag(item(1),slot('weapon'),{during:()=>{assert(run('JSON.stringify(snapshot())')===before,'プレビューを保存しない');const ghost=d.querySelector('.equipment-card-drag');assert(ghost?.querySelector('img')&&ghost.querySelector('.gear-candidate-stats')&&Math.abs(ghost.getBoundingClientRect().width-item(1).getBoundingClientRect().width)<1,'カードの画像・数値・幅を維持してドラッグ')}});assert(run("gear('kyle').weapon.uid")===1,'タッチ相当ドラッグ装備');layout('ドラッグ装備後');
  await drag(slot('weapon'),d.querySelector('[data-equipment-warehouse]'));assert(run("gear('kyle').weapon")===null&&run('stock.some(i=>i.uid===1&&i.durability===10)'),'倉庫へ外して耐久保持');
  fresh();before=run('JSON.stringify(snapshot())');await drag(item(1),slot('body'));assert(run('JSON.stringify(snapshot())')===before,'不適合ドロップ維持');
  await drag(item(1),null);assert(run('JSON.stringify(snapshot())')===before,'枠外ドロップ維持');
@@ -33,7 +33,7 @@ frame.onload=async()=>{try{
  fresh();run("phase=4;screen='home';depart();openCharacterEquipment('kyle')");assert([...d.querySelectorAll('[data-equipment-item]')].every(e=>e.disabled),'遠征中は変更不可');layout('遠征中');
  fresh();run("moveEquipmentCharacter(2)");assert([...d.querySelectorAll('[data-equipment-item]')].every(e=>run(`canEquip(equipCharacter,stock.find(i=>i.uid===${Number(e.dataset.equipmentItem)}))`)),'職業制限');
  fresh();run('equipmentInventoryPage(1)');layout('在庫2ページ目');assert(run('equipPage')===1,'ページ切替');
- run("selectEquipmentItem(6);selectEquipmentSlot('head')");assert(run("gear('kyle').head.uid")===6,'頭装備もタップ装備');
+ run("equipPage=1;render();selectEquipmentItem(6);selectEquipmentSlot('head')");assert(run("gear('kyle').head.uid")===6,'頭装備もタップ装備');
  document.querySelector('#status').textContent=`PASS ${width}×${height} ${checks.length} checks\n`;
  }catch(error){document.querySelector('#status').textContent='FAIL '+error.stack}finally{if(prior===null)localStorage.removeItem('shop-game-save');else localStorage.setItem('shop-game-save',prior)}};
 </script>

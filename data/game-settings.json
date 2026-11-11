@@ -88,7 +88,8 @@
       "recommendedAttributes": {
         "fire": 1
       },
-      "attributeBonus": 1
+      "attributeBonus": 1,
+      "image": "assets/backgrounds/destinations/forest.png"
     },
     {
       "id": "camp",
@@ -102,7 +103,8 @@
       "recommendedAttributes": {
         "wind": 1
       },
-      "attributeBonus": 1
+      "attributeBonus": 1,
+      "image": "assets/backgrounds/destinations/camp.png"
     },
     {
       "id": "eldia_road",
@@ -112,7 +114,8 @@
       "danger": 5,
       "requires": [],
       "recommendedAttributes": {},
-      "attributeBonus": 0
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/eldia_road.png"
     },
     {
       "id": "velk_blockade",
@@ -124,7 +127,8 @@
         "eldia_road"
       ],
       "recommendedAttributes": {},
-      "attributeBonus": 0
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/velk_blockade.png"
     }
   ],
   "adventurers": {

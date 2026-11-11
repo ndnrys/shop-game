@@ -22,3 +22,7 @@ Reference image is STYLE AND MATERIAL reference only. Generate a standalone fore
 ## 確認
 
 360×640・1280×800の朝の報告4ページで、独立したカウンター画像・カウンターなしの背景・人物より前の重なり順・操作を遮らない指定を検証しました。390×844の実画面も目視確認しています。実機タッチは未確認です。
+
+## 派遣先ごとの背景
+
+`destinations/forest.png`（周辺の森）、`camp.png`（野営地）、`eldia_road.png`（街道）、`velk_blockade.png`（封鎖陣）を組み込み image_gen で生成。各1536×1024の文字なし画像です。右側の情報パネルを考慮し、場所を象徴する風景を左側へ置いています。派遣先定義の `image` から参照します。生成指示は `destinations/production.json` に記録しています。

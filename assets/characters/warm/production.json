@@ -111,5 +111,19 @@
       "47-year-old male genial archmage commander, dark brown skin, wide face, short greying curly beard, smiling deep-set dark eyes, white and indigo robes, staff and spellbook"
     ]
   ],
-  "fullBodyPrompt": "Extend the referenced adult character into a full-body standing portrait from head to boots with both feet visible. Preserve exact face, age, hair, outfit colors, neckline, body type and props. Complete lower garments and boots to match the role. Warm watercolor/gouache, vertical 1024x1536 transparent PNG, no background, floor, shadow, halo, repairs, modern items or chipped blades. Generate opaque character colors. Equipment and growth screens apply 22% opacity using CSS."
+  "fullBodyPrompt": "Extend the referenced adult character into a full-body standing portrait from head to boots with both feet visible. Preserve exact face, age, hair, outfit colors, neckline, body type and props. Complete lower garments and boots to match the role. Warm watercolor/gouache, vertical 1024x1536 transparent PNG, no background, floor, shadow, halo, repairs, modern items or chipped blades. Generate opaque character colors. Equipment and growth screens apply 22% opacity using CSS.",
+  "garethStyleCorrection": {
+    "tool": "built-in image_gen",
+    "references": [
+      "gareth.png (identity/outfit)",
+      "kyle.png and mira.png (style)"
+    ],
+    "prompt": "Redraw Gareth in the same gentle Japanese fantasy watercolor/anime style as Kyle and Mira. Preserve the distinctive 34-year-old broad male, short brown hair and beard, healed temple scar, green cloak/tree brooch, ivory shirt and intact brown leather cuirass. Simplify face planes, nose and beard, slightly larger expressive brown eyes, soft shading. No realistic pores or beard hair detail. Opaque character with genuine transparent background, 1024x1536 PNG. No modern items, patchwork, backdrop, halo, text or floor shadow.",
+    "variants": {
+      "normal": "Kind calm small smile, waist-up head to hips.",
+      "battle": "Same face and framing; determined confident dispatch expression.",
+      "resting": "Same face and framing; tired hurt expression, weary half-lidded eyes, no added bandages or gore.",
+      "full": "Same normal face and outfit, head to both boots, match original full-body proportions and margins."
+    }
+  }
 }

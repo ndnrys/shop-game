@@ -1,0 +1,2522 @@
+[
+  {
+    "id": "one_hand_sword_01",
+    "name": "木剣",
+    "description": "木剣。冒険で使う片手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/01_木剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_01.png"
+  },
+  {
+    "id": "one_hand_sword_02",
+    "name": "銅の剣",
+    "description": "銅の剣。冒険で使う片手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/02_銅の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_02.png"
+  },
+  {
+    "id": "one_hand_sword_03",
+    "name": "鉄の剣",
+    "description": "鉄の剣。冒険で使う片手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/03_鉄の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_03.png"
+  },
+  {
+    "id": "one_hand_sword_04",
+    "name": "鋼の剣",
+    "description": "鋼の剣。冒険で使う片手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/04_鋼の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_04.png"
+  },
+  {
+    "id": "one_hand_sword_05",
+    "name": "騎士の剣",
+    "description": "騎士の剣。冒険で使う片手剣。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/05_騎士の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_05.png"
+  },
+  {
+    "id": "one_hand_sword_06",
+    "name": "銀の剣",
+    "description": "銀の剣。冒険で使う片手剣。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/06_銀の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_06.png"
+  },
+  {
+    "id": "one_hand_sword_07",
+    "name": "ミスリルソード",
+    "description": "ミスリルソード。冒険で使う片手剣。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/07_ミスリルソード.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_07.png"
+  },
+  {
+    "id": "one_hand_sword_08",
+    "name": "王国の剣",
+    "description": "王国の剣。冒険で使う片手剣。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/08_王国の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_08.png"
+  },
+  {
+    "id": "one_hand_sword_09",
+    "name": "近衛騎士の剣",
+    "description": "近衛騎士の剣。冒険で使う片手剣。熟練の冒険者が求める逸品。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/09_近衛騎士の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_09.png"
+  },
+  {
+    "id": "one_hand_sword_10",
+    "name": "英雄の剣",
+    "description": "英雄の剣。冒険で使う片手剣。熟練の冒険者が求める逸品。",
+    "typeId": "one_hand_sword",
+    "source": "assets/equipment/01_片手剣/10_英雄の剣.png",
+    "size": [
+      512,
+      1536
+    ],
+    "output": "assets/equipment/warm/one_hand_sword_10.png"
+  },
+  {
+    "id": "one_hand_mace_01",
+    "name": "木の棍棒",
+    "description": "木の棍棒。冒険で使う片手メイス。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/01_木の棍棒.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_01.png"
+  },
+  {
+    "id": "one_hand_mace_02",
+    "name": "石の棍棒",
+    "description": "石の棍棒。冒険で使う片手メイス。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/02_石の棍棒.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_02.png"
+  },
+  {
+    "id": "one_hand_mace_03",
+    "name": "銅のメイス",
+    "description": "銅のメイス。冒険で使う片手メイス。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/03_銅のメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_03.png"
+  },
+  {
+    "id": "one_hand_mace_04",
+    "name": "鉄のメイス",
+    "description": "鉄のメイス。冒険で使う片手メイス。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/04_鉄のメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_04.png"
+  },
+  {
+    "id": "one_hand_mace_05",
+    "name": "鋼のメイス",
+    "description": "鋼のメイス。冒険で使う片手メイス。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/05_鋼のメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_05.png"
+  },
+  {
+    "id": "one_hand_mace_06",
+    "name": "スパイクメイス",
+    "description": "スパイクメイス。冒険で使う片手メイス。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/06_スパイクメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_06.png"
+  },
+  {
+    "id": "one_hand_mace_07",
+    "name": "ウォーハンマー",
+    "description": "ウォーハンマー。冒険で使う片手メイス。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/07_ウォーハンマー.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_07.png"
+  },
+  {
+    "id": "one_hand_mace_08",
+    "name": "銀のメイス",
+    "description": "銀のメイス。冒険で使う片手メイス。経験を積んだ冒険者向け。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/08_銀のメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_08.png"
+  },
+  {
+    "id": "one_hand_mace_09",
+    "name": "ミスリルメイス",
+    "description": "ミスリルメイス。冒険で使う片手メイス。熟練の冒険者が求める逸品。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/09_ミスリルメイス.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_09.png"
+  },
+  {
+    "id": "one_hand_mace_10",
+    "name": "王国の戦鎚",
+    "description": "王国の戦鎚。冒険で使う片手メイス。熟練の冒険者が求める逸品。",
+    "typeId": "one_hand_mace",
+    "source": "assets/equipment/02_片手メイス/10_王国の戦鎚.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/one_hand_mace_10.png"
+  },
+  {
+    "id": "two_hand_sword_01",
+    "name": "錆びた大剣",
+    "description": "錆びた大剣。冒険で使う両手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/01_錆びた大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_01.png"
+  },
+  {
+    "id": "two_hand_sword_02",
+    "name": "鉄の大剣",
+    "description": "鉄の大剣。冒険で使う両手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/02_鉄の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_02.png"
+  },
+  {
+    "id": "two_hand_sword_03",
+    "name": "鋼の大剣",
+    "description": "鋼の大剣。冒険で使う両手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/03_鋼の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_03.png"
+  },
+  {
+    "id": "two_hand_sword_04",
+    "name": "傭兵の大剣",
+    "description": "傭兵の大剣。冒険で使う両手剣。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/04_傭兵の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_04.png"
+  },
+  {
+    "id": "two_hand_sword_05",
+    "name": "バスタードソード",
+    "description": "バスタードソード。冒険で使う両手剣。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/05_バスタードソード.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_05.png"
+  },
+  {
+    "id": "two_hand_sword_06",
+    "name": "クレイモア",
+    "description": "クレイモア。冒険で使う両手剣。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/06_クレイモア.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_06.png"
+  },
+  {
+    "id": "two_hand_sword_07",
+    "name": "銀の大剣",
+    "description": "銀の大剣。冒険で使う両手剣。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/07_銀の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_07.png"
+  },
+  {
+    "id": "two_hand_sword_08",
+    "name": "ミスリル大剣",
+    "description": "ミスリル大剣。冒険で使う両手剣。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/08_ミスリル大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_08.png"
+  },
+  {
+    "id": "two_hand_sword_09",
+    "name": "王国の大剣",
+    "description": "王国の大剣。冒険で使う両手剣。熟練の冒険者が求める逸品。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/09_王国の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_09.png"
+  },
+  {
+    "id": "two_hand_sword_10",
+    "name": "覇王の大剣",
+    "description": "覇王の大剣。冒険で使う両手剣。熟練の冒険者が求める逸品。",
+    "typeId": "two_hand_sword",
+    "source": "assets/equipment/03_両手剣/10_覇王の大剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/two_hand_sword_10.png"
+  },
+  {
+    "id": "two_hand_axe_01",
+    "name": "木こりの斧",
+    "description": "木こりの斧。冒険で使う両手斧。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/01_木こりの斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_01.png"
+  },
+  {
+    "id": "two_hand_axe_02",
+    "name": "石斧",
+    "description": "石斧。冒険で使う両手斧。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/02_石斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_02.png"
+  },
+  {
+    "id": "two_hand_axe_03",
+    "name": "鉄の大斧",
+    "description": "鉄の大斧。冒険で使う両手斧。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/03_鉄の大斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_03.png"
+  },
+  {
+    "id": "two_hand_axe_04",
+    "name": "鋼の大斧",
+    "description": "鋼の大斧。冒険で使う両手斧。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/04_鋼の大斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_04.png"
+  },
+  {
+    "id": "two_hand_axe_05",
+    "name": "戦士の大斧",
+    "description": "戦士の大斧。冒険で使う両手斧。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/05_戦士の大斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_05.png"
+  },
+  {
+    "id": "two_hand_axe_06",
+    "name": "処刑人の斧",
+    "description": "処刑人の斧。冒険で使う両手斧。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/06_処刑人の斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_06.png"
+  },
+  {
+    "id": "two_hand_axe_07",
+    "name": "銀の大斧",
+    "description": "銀の大斧。冒険で使う両手斧。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/07_銀の大斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_07.png"
+  },
+  {
+    "id": "two_hand_axe_08",
+    "name": "ミスリルアックス",
+    "description": "ミスリルアックス。冒険で使う両手斧。経験を積んだ冒険者向け。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/08_ミスリルアックス.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_08.png"
+  },
+  {
+    "id": "two_hand_axe_09",
+    "name": "狂戦士の斧",
+    "description": "狂戦士の斧。冒険で使う両手斧。熟練の冒険者が求める逸品。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/09_狂戦士の斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_09.png"
+  },
+  {
+    "id": "two_hand_axe_10",
+    "name": "覇王の戦斧",
+    "description": "覇王の戦斧。冒険で使う両手斧。熟練の冒険者が求める逸品。",
+    "typeId": "two_hand_axe",
+    "source": "assets/equipment/04_両手斧/10_覇王の戦斧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/two_hand_axe_10.png"
+  },
+  {
+    "id": "bow_01",
+    "name": "木の弓",
+    "description": "木の弓。冒険で使う弓。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/01_木の弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_01.png"
+  },
+  {
+    "id": "bow_02",
+    "name": "狩人の弓",
+    "description": "狩人の弓。冒険で使う弓。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/02_狩人の弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_02.png"
+  },
+  {
+    "id": "bow_03",
+    "name": "短弓",
+    "description": "短弓。冒険で使う弓。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/03_短弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_03.png"
+  },
+  {
+    "id": "bow_04",
+    "name": "長弓",
+    "description": "長弓。冒険で使う弓。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/04_長弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_04.png"
+  },
+  {
+    "id": "bow_05",
+    "name": "複合弓",
+    "description": "複合弓。冒険で使う弓。経験を積んだ冒険者向け。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/05_複合弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_05.png"
+  },
+  {
+    "id": "bow_06",
+    "name": "エルフの弓",
+    "description": "エルフの弓。冒険で使う弓。経験を積んだ冒険者向け。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/06_エルフの弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_06.png"
+  },
+  {
+    "id": "bow_07",
+    "name": "銀の弓",
+    "description": "銀の弓。冒険で使う弓。経験を積んだ冒険者向け。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/07_銀の弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_07.png"
+  },
+  {
+    "id": "bow_08",
+    "name": "ミスリルボウ",
+    "description": "ミスリルボウ。冒険で使う弓。経験を積んだ冒険者向け。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/08_ミスリルボウ.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_08.png"
+  },
+  {
+    "id": "bow_09",
+    "name": "王国の長弓",
+    "description": "王国の長弓。冒険で使う弓。熟練の冒険者が求める逸品。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/09_王国の長弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_09.png"
+  },
+  {
+    "id": "bow_10",
+    "name": "英雄の弓",
+    "description": "英雄の弓。冒険で使う弓。熟練の冒険者が求める逸品。",
+    "typeId": "bow",
+    "source": "assets/equipment/05_弓/10_英雄の弓.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/bow_10.png"
+  },
+  {
+    "id": "staff_01",
+    "name": "火術師の杖",
+    "description": "火術師の杖。火の力を帯びた冒険で使う杖。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/01_火術師の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_01.png"
+  },
+  {
+    "id": "staff_02",
+    "name": "炎帝の杖",
+    "description": "炎帝の杖。火の力を帯びた冒険で使う杖。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/02_炎帝の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_02.png"
+  },
+  {
+    "id": "staff_03",
+    "name": "火竜の杖",
+    "description": "火竜の杖。火の力を帯びた冒険で使う杖。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/03_火竜の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_03.png"
+  },
+  {
+    "id": "staff_04",
+    "name": "水術師の杖",
+    "description": "水術師の杖。水の力を帯びた冒険で使う杖。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/04_水術師の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_04.png"
+  },
+  {
+    "id": "staff_13",
+    "name": "水精の杖",
+    "description": "水精の杖。水の力を帯びた冒険で使う杖。経験を積んだ冒険者向け。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/05_水精の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_13.png"
+  },
+  {
+    "id": "staff_14",
+    "name": "水龍の杖",
+    "description": "水龍の杖。水の力を帯びた冒険で使う杖。経験を積んだ冒険者向け。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/06_水龍の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_14.png"
+  },
+  {
+    "id": "staff_07",
+    "name": "風術師の杖",
+    "description": "風術師の杖。風の力を帯びた冒険で使う杖。経験を積んだ冒険者向け。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/01_風術師の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_07.png"
+  },
+  {
+    "id": "staff_15",
+    "name": "風精の杖",
+    "description": "風精の杖。風の力を帯びた冒険で使う杖。経験を積んだ冒険者向け。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/02_風精の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_15.png"
+  },
+  {
+    "id": "staff_16",
+    "name": "風王の杖",
+    "description": "風王の杖。風の力を帯びた冒険で使う杖。経験を積んだ冒険者向け。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/03_風王の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_16.png"
+  },
+  {
+    "id": "staff_10",
+    "name": "土術師の杖",
+    "description": "土術師の杖。土の力を帯びた冒険で使う杖。熟練の冒険者が求める逸品。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/10_土術師の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_10.png"
+  },
+  {
+    "id": "staff_17",
+    "name": "地霊の杖",
+    "description": "地霊の杖。土の力を帯びた冒険で使う杖。熟練の冒険者が求める逸品。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/11_地霊の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_17.png"
+  },
+  {
+    "id": "staff_18",
+    "name": "大地王の杖",
+    "description": "大地王の杖。土の力を帯びた冒険で使う杖。熟練の冒険者が求める逸品。",
+    "typeId": "staff",
+    "source": "assets/equipment/06_杖/12_大地王の杖.png",
+    "size": [
+      256,
+      1024
+    ],
+    "output": "assets/equipment/warm/staff_18.png"
+  },
+  {
+    "id": "rod_13",
+    "name": "火術師のロッド",
+    "description": "火術師のロッド。火の力を帯びた冒険で使うロッド。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/01_火術師のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_13.png"
+  },
+  {
+    "id": "rod_14",
+    "name": "炎帝のロッド",
+    "description": "炎帝のロッド。火の力を帯びた冒険で使うロッド。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/02_炎帝のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_14.png"
+  },
+  {
+    "id": "rod_03",
+    "name": "火竜のロッド",
+    "description": "火竜のロッド。火の力を帯びた冒険で使うロッド。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/03_火竜のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_03.png"
+  },
+  {
+    "id": "rod_15",
+    "name": "水術師のロッド",
+    "description": "水術師のロッド。水の力を帯びた冒険で使うロッド。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/04_水術師のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_15.png"
+  },
+  {
+    "id": "rod_16",
+    "name": "水精のロッド",
+    "description": "水精のロッド。水の力を帯びた冒険で使うロッド。経験を積んだ冒険者向け。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/05_水精のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_16.png"
+  },
+  {
+    "id": "rod_17",
+    "name": "水龍のロッド",
+    "description": "水龍のロッド。水の力を帯びた冒険で使うロッド。経験を積んだ冒険者向け。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/06_水龍のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_17.png"
+  },
+  {
+    "id": "rod_18",
+    "name": "風術師のロッド",
+    "description": "風術師のロッド。風の力を帯びた冒険で使うロッド。経験を積んだ冒険者向け。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/07_風術師のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_18.png"
+  },
+  {
+    "id": "rod_19",
+    "name": "風精のロッド",
+    "description": "風精のロッド。風の力を帯びた冒険で使うロッド。経験を積んだ冒険者向け。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/08_風精のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_19.png"
+  },
+  {
+    "id": "rod_20",
+    "name": "風王のロッド",
+    "description": "風王のロッド。風の力を帯びた冒険で使うロッド。経験を積んだ冒険者向け。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/09_風王のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_20.png"
+  },
+  {
+    "id": "rod_21",
+    "name": "土術師のロッド",
+    "description": "土術師のロッド。土の力を帯びた冒険で使うロッド。熟練の冒険者が求める逸品。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/10_土術師のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_21.png"
+  },
+  {
+    "id": "rod_22",
+    "name": "地霊のロッド",
+    "description": "地霊のロッド。土の力を帯びた冒険で使うロッド。熟練の冒険者が求める逸品。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/11_地霊のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_22.png"
+  },
+  {
+    "id": "rod_23",
+    "name": "大地王のロッド",
+    "description": "大地王のロッド。土の力を帯びた冒険で使うロッド。熟練の冒険者が求める逸品。",
+    "typeId": "rod",
+    "source": "assets/equipment/07_ロッド/12_大地王のロッド.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/rod_23.png"
+  },
+  {
+    "id": "spear_01",
+    "name": "木の槍",
+    "description": "木の槍。冒険で使う両手槍。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/01_木の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_01.png"
+  },
+  {
+    "id": "spear_02",
+    "name": "竹槍",
+    "description": "竹槍。冒険で使う両手槍。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/02_竹槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_02.png"
+  },
+  {
+    "id": "spear_03",
+    "name": "銅の槍",
+    "description": "銅の槍。冒険で使う両手槍。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/03_銅の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_03.png"
+  },
+  {
+    "id": "spear_04",
+    "name": "鉄の槍",
+    "description": "鉄の槍。冒険で使う両手槍。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/04_鉄の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_04.png"
+  },
+  {
+    "id": "spear_05",
+    "name": "鋼の槍",
+    "description": "鋼の槍。冒険で使う両手槍。経験を積んだ冒険者向け。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/05_鋼の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_05.png"
+  },
+  {
+    "id": "spear_06",
+    "name": "騎兵の槍",
+    "description": "騎兵の槍。冒険で使う両手槍。経験を積んだ冒険者向け。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/06_騎兵の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_06.png"
+  },
+  {
+    "id": "spear_07",
+    "name": "銀の槍",
+    "description": "銀の槍。冒険で使う両手槍。経験を積んだ冒険者向け。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/07_銀の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_07.png"
+  },
+  {
+    "id": "spear_08",
+    "name": "ミスリルスピア",
+    "description": "ミスリルスピア。冒険で使う両手槍。経験を積んだ冒険者向け。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/08_ミスリルスピア.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_08.png"
+  },
+  {
+    "id": "spear_09",
+    "name": "王国の長槍",
+    "description": "王国の長槍。冒険で使う両手槍。熟練の冒険者が求める逸品。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/09_王国の長槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_09.png"
+  },
+  {
+    "id": "spear_10",
+    "name": "英雄の槍",
+    "description": "英雄の槍。冒険で使う両手槍。熟練の冒険者が求める逸品。",
+    "typeId": "spear",
+    "source": "assets/equipment/08_両手槍/10_英雄の槍.png",
+    "size": [
+      256,
+      1792
+    ],
+    "output": "assets/equipment/warm/spear_10.png"
+  },
+  {
+    "id": "knife_01",
+    "name": "果物ナイフ",
+    "description": "果物ナイフ。冒険で使うナイフ。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/01_果物ナイフ.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_01.png"
+  },
+  {
+    "id": "knife_02",
+    "name": "石のナイフ",
+    "description": "石のナイフ。冒険で使うナイフ。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/02_石のナイフ.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_02.png"
+  },
+  {
+    "id": "knife_03",
+    "name": "銅の短剣",
+    "description": "銅の短剣。冒険で使うナイフ。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/03_銅の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_03.png"
+  },
+  {
+    "id": "knife_04",
+    "name": "鉄の短剣",
+    "description": "鉄の短剣。冒険で使うナイフ。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/04_鉄の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_04.png"
+  },
+  {
+    "id": "knife_05",
+    "name": "鋼の短剣",
+    "description": "鋼の短剣。冒険で使うナイフ。経験を積んだ冒険者向け。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/05_鋼の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_05.png"
+  },
+  {
+    "id": "knife_06",
+    "name": "盗賊の短剣",
+    "description": "盗賊の短剣。冒険で使うナイフ。経験を積んだ冒険者向け。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/06_盗賊の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_06.png"
+  },
+  {
+    "id": "knife_07",
+    "name": "銀の短剣",
+    "description": "銀の短剣。冒険で使うナイフ。経験を積んだ冒険者向け。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/07_銀の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_07.png"
+  },
+  {
+    "id": "knife_08",
+    "name": "ミスリルダガー",
+    "description": "ミスリルダガー。冒険で使うナイフ。経験を積んだ冒険者向け。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/08_ミスリルダガー.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_08.png"
+  },
+  {
+    "id": "knife_09",
+    "name": "暗殺者の短剣",
+    "description": "暗殺者の短剣。冒険で使うナイフ。熟練の冒険者が求める逸品。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/09_暗殺者の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_09.png"
+  },
+  {
+    "id": "knife_10",
+    "name": "王家の短剣",
+    "description": "王家の短剣。冒険で使うナイフ。熟練の冒険者が求める逸品。",
+    "typeId": "knife",
+    "source": "assets/equipment/09_ナイフ/10_王家の短剣.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/knife_10.png"
+  },
+  {
+    "id": "shield_01",
+    "name": "木の盾",
+    "description": "木の盾。攻撃を受け止める盾。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/01_木の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_01.png"
+  },
+  {
+    "id": "shield_11",
+    "name": "補強木盾",
+    "description": "補強木盾。攻撃を受け止める盾。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/02_補強木盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_11.png"
+  },
+  {
+    "id": "shield_12",
+    "name": "紋章の盾",
+    "description": "紋章の盾。攻撃を受け止める盾。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/03_紋章の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_12.png"
+  },
+  {
+    "id": "shield_04",
+    "name": "鉄の盾",
+    "description": "鉄の盾。攻撃を受け止める盾。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/04_鉄の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_04.png"
+  },
+  {
+    "id": "shield_13",
+    "name": "宝玉の盾",
+    "description": "宝玉の盾。攻撃を受け止める盾。経験を積んだ冒険者向け。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/05_宝玉の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_13.png"
+  },
+  {
+    "id": "shield_14",
+    "name": "鷲紋の盾",
+    "description": "鷲紋の盾。攻撃を受け止める盾。経験を積んだ冒険者向け。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/06_鷲紋の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_14.png"
+  },
+  {
+    "id": "shield_07",
+    "name": "銀の盾",
+    "description": "銀の盾。攻撃を受け止める盾。経験を積んだ冒険者向け。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/07_銀の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_07.png"
+  },
+  {
+    "id": "shield_08",
+    "name": "ミスリルシールド",
+    "description": "ミスリルシールド。攻撃を受け止める盾。経験を積んだ冒険者向け。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/08_ミスリルシールド.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_08.png"
+  },
+  {
+    "id": "shield_15",
+    "name": "竜紋の盾",
+    "description": "竜紋の盾。攻撃を受け止める盾。熟練の冒険者が求める逸品。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/09_竜紋の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_15.png"
+  },
+  {
+    "id": "shield_16",
+    "name": "王家の盾",
+    "description": "王家の盾。攻撃を受け止める盾。熟練の冒険者が求める逸品。",
+    "typeId": "shield",
+    "source": "assets/equipment/10_盾/10_王家の盾.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/shield_16.png"
+  },
+  {
+    "id": "arrow_11",
+    "name": "木の矢筒",
+    "description": "木の矢筒。矢を収める装備。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/01_木の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_11.png"
+  },
+  {
+    "id": "arrow_12",
+    "name": "革の矢筒",
+    "description": "革の矢筒。矢を収める装備。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/02_革の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_12.png"
+  },
+  {
+    "id": "arrow_13",
+    "name": "騎士の矢筒",
+    "description": "騎士の矢筒。矢を収める装備。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/03_騎士の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_13.png"
+  },
+  {
+    "id": "arrow_14",
+    "name": "銀装飾の矢筒",
+    "description": "銀装飾の矢筒。矢を収める装備。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/04_銀装飾の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_14.png"
+  },
+  {
+    "id": "arrow_15",
+    "name": "王家の矢筒",
+    "description": "王家の矢筒。矢を収める装備。経験を積んだ冒険者向け。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/05_王家の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_15.png"
+  },
+  {
+    "id": "arrow_16",
+    "name": "影狩りの矢筒",
+    "description": "影狩りの矢筒。矢を収める装備。経験を積んだ冒険者向け。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/06_影狩りの矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_16.png"
+  },
+  {
+    "id": "arrow_17",
+    "name": "銀の矢筒",
+    "description": "銀の矢筒。矢を収める装備。経験を積んだ冒険者向け。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/07_銀の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_17.png"
+  },
+  {
+    "id": "arrow_18",
+    "name": "ミスリルの矢筒",
+    "description": "ミスリルの矢筒。矢を収める装備。経験を積んだ冒険者向け。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/08_ミスリルの矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_18.png"
+  },
+  {
+    "id": "arrow_19",
+    "name": "竜狩りの矢筒",
+    "description": "竜狩りの矢筒。矢を収める装備。熟練の冒険者が求める逸品。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/09_竜狩りの矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_19.png"
+  },
+  {
+    "id": "arrow_20",
+    "name": "英雄の矢筒",
+    "description": "英雄の矢筒。矢を収める装備。熟練の冒険者が求める逸品。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/10_英雄の矢筒.png",
+    "size": [
+      256,
+      512
+    ],
+    "output": "assets/equipment/warm/arrow_20.png"
+  },
+  {
+    "id": "arrow_element_fire",
+    "name": "炎の矢筒",
+    "description": "炎の矢筒。火属性の矢筒。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/属性/炎の矢筒_1x2_透過.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/arrow_element_fire.png"
+  },
+  {
+    "id": "arrow_element_water",
+    "name": "氷の矢筒",
+    "description": "氷の矢筒。水属性の矢筒。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/属性/氷の矢筒_1x2_透過.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/arrow_element_water.png"
+  },
+  {
+    "id": "arrow_element_wind",
+    "name": "疾風の矢筒",
+    "description": "疾風の矢筒。風属性の矢筒。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/属性/疾風の矢筒_1x2_透過.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/arrow_element_wind.png"
+  },
+  {
+    "id": "arrow_element_earth",
+    "name": "岩石の矢筒",
+    "description": "岩石の矢筒。土属性の矢筒。",
+    "typeId": "arrow",
+    "source": "assets/equipment/11_矢/属性/岩石の矢筒_1x2_透過.png",
+    "size": [
+      512,
+      1024
+    ],
+    "output": "assets/equipment/warm/arrow_element_earth.png"
+  },
+  {
+    "id": "spellbook_13",
+    "name": "火術師の魔導書",
+    "description": "火術師の魔導書。火の力を帯びた術式を記した魔導書。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/01_火術師の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_13.png"
+  },
+  {
+    "id": "spellbook_14",
+    "name": "炎帝の魔導書",
+    "description": "炎帝の魔導書。火の力を帯びた術式を記した魔導書。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/02_炎帝の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_14.png"
+  },
+  {
+    "id": "spellbook_15",
+    "name": "火竜の魔導書",
+    "description": "火竜の魔導書。火の力を帯びた術式を記した魔導書。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/03_火竜の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_15.png"
+  },
+  {
+    "id": "spellbook_16",
+    "name": "水術師の魔導書",
+    "description": "水術師の魔導書。水の力を帯びた術式を記した魔導書。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/04_水術師の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_16.png"
+  },
+  {
+    "id": "spellbook_17",
+    "name": "水精の魔導書",
+    "description": "水精の魔導書。水の力を帯びた術式を記した魔導書。経験を積んだ冒険者向け。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/05_水精の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_17.png"
+  },
+  {
+    "id": "spellbook_18",
+    "name": "水龍の魔導書",
+    "description": "水龍の魔導書。水の力を帯びた術式を記した魔導書。経験を積んだ冒険者向け。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/06_水龍の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_18.png"
+  },
+  {
+    "id": "spellbook_19",
+    "name": "風術師の魔導書",
+    "description": "風術師の魔導書。風の力を帯びた術式を記した魔導書。経験を積んだ冒険者向け。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/07_風術師の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_19.png"
+  },
+  {
+    "id": "spellbook_20",
+    "name": "風精の魔導書",
+    "description": "風精の魔導書。風の力を帯びた術式を記した魔導書。経験を積んだ冒険者向け。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/08_風精の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_20.png"
+  },
+  {
+    "id": "spellbook_21",
+    "name": "風王の魔導書",
+    "description": "風王の魔導書。風の力を帯びた術式を記した魔導書。経験を積んだ冒険者向け。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/09_風王の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_21.png"
+  },
+  {
+    "id": "spellbook_22",
+    "name": "土術師の魔導書",
+    "description": "土術師の魔導書。土の力を帯びた術式を記した魔導書。熟練の冒険者が求める逸品。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/10_土術師の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_22.png"
+  },
+  {
+    "id": "spellbook_23",
+    "name": "地霊の魔導書",
+    "description": "地霊の魔導書。土の力を帯びた術式を記した魔導書。熟練の冒険者が求める逸品。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/11_地霊の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_23.png"
+  },
+  {
+    "id": "spellbook_24",
+    "name": "大地王の魔導書",
+    "description": "大地王の魔導書。土の力を帯びた術式を記した魔導書。熟練の冒険者が求める逸品。",
+    "typeId": "spellbook",
+    "source": "assets/equipment/12_魔導書/12_大地王の魔導書.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/spellbook_24.png"
+  },
+  {
+    "id": "head_heavy_03",
+    "name": "鉄の兜",
+    "description": "鉄の兜。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/01_鉄の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_03.png"
+  },
+  {
+    "id": "head_heavy_04",
+    "name": "鋼の兜",
+    "description": "鋼の兜。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/02_鋼の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_04.png"
+  },
+  {
+    "id": "head_heavy_11",
+    "name": "翼飾りの兜",
+    "description": "翼飾りの兜。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/03_翼飾りの兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_11.png"
+  },
+  {
+    "id": "head_heavy_12",
+    "name": "角付きの兜",
+    "description": "角付きの兜。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/04_角付きの兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_12.png"
+  },
+  {
+    "id": "head_heavy_13",
+    "name": "近衛騎士の兜",
+    "description": "近衛騎士の兜。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/05_近衛騎士の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_13.png"
+  },
+  {
+    "id": "head_heavy_05",
+    "name": "騎士の兜",
+    "description": "騎士の兜。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/06_騎士の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_05.png"
+  },
+  {
+    "id": "head_heavy_14",
+    "name": "竜鱗の兜",
+    "description": "竜鱗の兜。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/07_竜鱗の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_14.png"
+  },
+  {
+    "id": "head_heavy_15",
+    "name": "聖騎士の兜",
+    "description": "聖騎士の兜。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/08_聖騎士の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_15.png"
+  },
+  {
+    "id": "head_heavy_16",
+    "name": "魔将の兜",
+    "description": "魔将の兜。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/09_魔将の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_16.png"
+  },
+  {
+    "id": "head_heavy_17",
+    "name": "王家の兜",
+    "description": "王家の兜。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_heavy",
+    "source": "assets/equipment/13_頭_重装備/10_王家の兜.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_heavy_17.png"
+  },
+  {
+    "id": "head_light_11",
+    "name": "革のフード",
+    "description": "革のフード。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/01_革のフード.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_11.png"
+  },
+  {
+    "id": "head_light_12",
+    "name": "ゴーグル付き革帽",
+    "description": "ゴーグル付き革帽。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/02_ゴーグル付き革帽.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_12.png"
+  },
+  {
+    "id": "head_light_13",
+    "name": "羽根飾りの帽子",
+    "description": "羽根飾りの帽子。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/03_羽根飾りの帽子.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_13.png"
+  },
+  {
+    "id": "head_light_14",
+    "name": "旅人のバンダナ",
+    "description": "旅人のバンダナ。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/04_旅人のバンダナ.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_14.png"
+  },
+  {
+    "id": "head_light_15",
+    "name": "宝石飾りのターバン",
+    "description": "宝石飾りのターバン。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/05_宝石飾りのターバン.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_15.png"
+  },
+  {
+    "id": "head_light_02",
+    "name": "狩人の帽子",
+    "description": "狩人の帽子。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/06_狩人の帽子.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_02.png"
+  },
+  {
+    "id": "head_light_16",
+    "name": "月影の魔女帽",
+    "description": "月影の魔女帽。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/07_月影の魔女帽.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_16.png"
+  },
+  {
+    "id": "head_light_17",
+    "name": "錬金術師の帽子",
+    "description": "錬金術師の帽子。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/08_錬金術師の帽子.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_17.png"
+  },
+  {
+    "id": "head_light_18",
+    "name": "翼飾りのサークレット",
+    "description": "翼飾りのサークレット。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/09_翼飾りのサークレット.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_18.png"
+  },
+  {
+    "id": "head_light_19",
+    "name": "王家のサークレット",
+    "description": "王家のサークレット。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_light",
+    "source": "assets/equipment/14_頭_軽装備/10_王家のサークレット.png",
+    "size": [
+      512,
+      256
+    ],
+    "output": "assets/equipment/warm/head_light_19.png"
+  },
+  {
+    "id": "head_cloth_11",
+    "name": "見習い魔術師の帽子",
+    "description": "見習い魔術師の帽子。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/01_見習い魔術師の帽子.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_11.png"
+  },
+  {
+    "id": "head_cloth_12",
+    "name": "星詠みの帽子",
+    "description": "星詠みの帽子。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/02_星詠みの帽子.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_12.png"
+  },
+  {
+    "id": "head_cloth_13",
+    "name": "神官のフード",
+    "description": "神官のフード。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/03_神官のフード.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_13.png"
+  },
+  {
+    "id": "head_cloth_14",
+    "name": "森のフード",
+    "description": "森のフード。頭部を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/04_森のフード.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_14.png"
+  },
+  {
+    "id": "head_cloth_15",
+    "name": "旅のフード",
+    "description": "旅のフード。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/05_旅のフード.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_15.png"
+  },
+  {
+    "id": "head_cloth_16",
+    "name": "賢者のヴェール",
+    "description": "賢者のヴェール。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/06_賢者のヴェール.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_16.png"
+  },
+  {
+    "id": "head_cloth_17",
+    "name": "花冠のヴェール",
+    "description": "花冠のヴェール。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/07_花冠のヴェール.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_17.png"
+  },
+  {
+    "id": "head_cloth_18",
+    "name": "吟遊詩人の帽子",
+    "description": "吟遊詩人の帽子。頭部を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/08_吟遊詩人の帽子.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_18.png"
+  },
+  {
+    "id": "head_cloth_19",
+    "name": "リボンの帽子",
+    "description": "リボンの帽子。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/09_リボンの帽子.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_19.png"
+  },
+  {
+    "id": "head_cloth_20",
+    "name": "王家のヴェール",
+    "description": "王家のヴェール。頭部を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "head_cloth",
+    "source": "assets/equipment/15_頭_服/10_王家のヴェール.png",
+    "size": [
+      512,
+      512
+    ],
+    "output": "assets/equipment/warm/head_cloth_20.png"
+  },
+  {
+    "id": "body_heavy_02",
+    "name": "鉄の鎧",
+    "description": "鉄の鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/01_鉄の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_02.png"
+  },
+  {
+    "id": "body_heavy_03",
+    "name": "鋼の鎧",
+    "description": "鋼の鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/02_鋼の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_03.png"
+  },
+  {
+    "id": "body_heavy_11",
+    "name": "獅子紋の鎧",
+    "description": "獅子紋の鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/03_獅子紋の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_11.png"
+  },
+  {
+    "id": "body_heavy_12",
+    "name": "戦士の重鎧",
+    "description": "戦士の重鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/04_戦士の重鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_12.png"
+  },
+  {
+    "id": "body_heavy_13",
+    "name": "近衛騎士の鎧",
+    "description": "近衛騎士の鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/05_近衛騎士の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_13.png"
+  },
+  {
+    "id": "body_heavy_14",
+    "name": "竜鱗の鎧",
+    "description": "竜鱗の鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/06_竜鱗の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_14.png"
+  },
+  {
+    "id": "body_heavy_07",
+    "name": "ミスリルアーマー",
+    "description": "ミスリルアーマー。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/07_ミスリルアーマー.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_07.png"
+  },
+  {
+    "id": "body_heavy_15",
+    "name": "魔将の鎧",
+    "description": "魔将の鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/08_魔将の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_15.png"
+  },
+  {
+    "id": "body_heavy_16",
+    "name": "聖騎士の鎧",
+    "description": "聖騎士の鎧。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/09_聖騎士の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_16.png"
+  },
+  {
+    "id": "body_heavy_17",
+    "name": "王家の鎧",
+    "description": "王家の鎧。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_heavy",
+    "source": "assets/equipment/16_体_重装備/10_王家の鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_heavy_17.png"
+  },
+  {
+    "id": "body_light_01",
+    "name": "革の服",
+    "description": "革の服。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/01_革の服.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_01.png"
+  },
+  {
+    "id": "body_light_11",
+    "name": "傭兵の軽鎧",
+    "description": "傭兵の軽鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/02_傭兵の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_11.png"
+  },
+  {
+    "id": "body_light_12",
+    "name": "森番の服",
+    "description": "森番の服。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/03_森番の服.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_12.png"
+  },
+  {
+    "id": "body_light_13",
+    "name": "旅人の軽鎧",
+    "description": "旅人の軽鎧。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/04_旅人の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_13.png"
+  },
+  {
+    "id": "body_light_14",
+    "name": "騎士見習いの軽鎧",
+    "description": "騎士見習いの軽鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/05_騎士見習いの軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_14.png"
+  },
+  {
+    "id": "body_light_15",
+    "name": "影歩きの軽鎧",
+    "description": "影歩きの軽鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/06_影歩きの軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_15.png"
+  },
+  {
+    "id": "body_light_16",
+    "name": "狩人の軽鎧",
+    "description": "狩人の軽鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/07_狩人の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_16.png"
+  },
+  {
+    "id": "body_light_17",
+    "name": "錬金術師の軽鎧",
+    "description": "錬金術師の軽鎧。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/08_錬金術師の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_17.png"
+  },
+  {
+    "id": "body_light_18",
+    "name": "魔法戦士の軽鎧",
+    "description": "魔法戦士の軽鎧。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/09_魔法戦士の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_18.png"
+  },
+  {
+    "id": "body_light_19",
+    "name": "王国の軽鎧",
+    "description": "王国の軽鎧。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_light",
+    "source": "assets/equipment/17_体_軽装備/10_王国の軽鎧.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_light_19.png"
+  },
+  {
+    "id": "body_cloth_03",
+    "name": "見習いのローブ",
+    "description": "見習いのローブ。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/01_見習いのローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_03.png"
+  },
+  {
+    "id": "body_cloth_06",
+    "name": "学者のローブ",
+    "description": "学者のローブ。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/02_学者のローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_06.png"
+  },
+  {
+    "id": "body_cloth_11",
+    "name": "神官の法衣",
+    "description": "神官の法衣。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/03_神官の法衣.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_11.png"
+  },
+  {
+    "id": "body_cloth_12",
+    "name": "森のローブ",
+    "description": "森のローブ。身を守る防具。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/04_森のローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_12.png"
+  },
+  {
+    "id": "body_cloth_13",
+    "name": "旅のローブ",
+    "description": "旅のローブ。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/05_旅のローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_13.png"
+  },
+  {
+    "id": "body_cloth_14",
+    "name": "星詠みのローブ",
+    "description": "星詠みのローブ。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/06_星詠みのローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_14.png"
+  },
+  {
+    "id": "body_cloth_15",
+    "name": "錬金術師のローブ",
+    "description": "錬金術師のローブ。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/07_錬金術師のローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_15.png"
+  },
+  {
+    "id": "body_cloth_09",
+    "name": "賢者のローブ",
+    "description": "賢者のローブ。身を守る防具。経験を積んだ冒険者向け。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/08_賢者のローブ.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_09.png"
+  },
+  {
+    "id": "body_cloth_16",
+    "name": "花の祭服",
+    "description": "花の祭服。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/09_花の祭服.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_16.png"
+  },
+  {
+    "id": "body_cloth_17",
+    "name": "王家の法衣",
+    "description": "王家の法衣。身を守る防具。熟練の冒険者が求める逸品。",
+    "typeId": "body_cloth",
+    "source": "assets/equipment/18_体_服/10_王家の法衣.png",
+    "size": [
+      512,
+      768
+    ],
+    "output": "assets/equipment/warm/body_cloth_17.png"
+  },
+  {
+    "id": "accessory_01",
+    "name": "紅玉の指輪",
+    "description": "紅玉の指輪。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/01_紅玉の指輪.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_01.png"
+  },
+  {
+    "id": "accessory_02",
+    "name": "蒼翼の指輪",
+    "description": "蒼翼の指輪。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/02_蒼翼の指輪.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_02.png"
+  },
+  {
+    "id": "accessory_03",
+    "name": "翠葉の指輪",
+    "description": "翠葉の指輪。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/03_翠葉の指輪.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_03.png"
+  },
+  {
+    "id": "accessory_04",
+    "name": "紫晶の指輪",
+    "description": "紫晶の指輪。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/04_紫晶の指輪.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_04.png"
+  },
+  {
+    "id": "accessory_05",
+    "name": "竜牙の指輪",
+    "description": "竜牙の指輪。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/05_竜牙の指輪.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_05.png"
+  },
+  {
+    "id": "accessory_06",
+    "name": "水滴の首飾り",
+    "description": "水滴の首飾り。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/06_水滴の首飾り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_06.png"
+  },
+  {
+    "id": "accessory_07",
+    "name": "炎石の首飾り",
+    "description": "炎石の首飾り。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/07_炎石の首飾り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_07.png"
+  },
+  {
+    "id": "accessory_08",
+    "name": "水流の首飾り",
+    "description": "水流の首飾り。身につける小物。駆け出しの冒険者にも扱いやすい。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/08_水流の首飾り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_08.png"
+  },
+  {
+    "id": "accessory_09",
+    "name": "若葉のお守り",
+    "description": "若葉のお守り。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/09_若葉のお守り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_09.png"
+  },
+  {
+    "id": "accessory_10",
+    "name": "太陽の首飾り",
+    "description": "太陽の首飾り。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/10_太陽の首飾り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_10.png"
+  },
+  {
+    "id": "accessory_11",
+    "name": "天翼のお守り",
+    "description": "天翼のお守り。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/11_天翼のお守り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_11.png"
+  },
+  {
+    "id": "accessory_12",
+    "name": "月星の首飾り",
+    "description": "月星の首飾り。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/12_月星の首飾り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_12.png"
+  },
+  {
+    "id": "accessory_13",
+    "name": "氷晶のブローチ",
+    "description": "氷晶のブローチ。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/13_氷晶のブローチ.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_13.png"
+  },
+  {
+    "id": "accessory_14",
+    "name": "幸運の四つ葉",
+    "description": "幸運の四つ葉。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/14_幸運の四つ葉.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_14.png"
+  },
+  {
+    "id": "accessory_15",
+    "name": "紅薔薇のブローチ",
+    "description": "紅薔薇のブローチ。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/15_紅薔薇のブローチ.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_15.png"
+  },
+  {
+    "id": "accessory_16",
+    "name": "獅子紋のお守り",
+    "description": "獅子紋のお守り。身につける小物。経験を積んだ冒険者向け。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/16_獅子紋のお守り.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_16.png"
+  },
+  {
+    "id": "accessory_17",
+    "name": "旅立ちの護符",
+    "description": "旅立ちの護符。身につける小物。熟練の冒険者が求める逸品。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/17_旅立ちの護符.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_17.png"
+  },
+  {
+    "id": "accessory_18",
+    "name": "生命の小瓶",
+    "description": "生命の小瓶。身につける小物。熟練の冒険者が求める逸品。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/18_生命の小瓶.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_18.png"
+  },
+  {
+    "id": "accessory_19",
+    "name": "導きの羅針盤",
+    "description": "導きの羅針盤。身につける小物。熟練の冒険者が求める逸品。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/19_導きの羅針盤.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_19.png"
+  },
+  {
+    "id": "accessory_20",
+    "name": "星術の小魔導書",
+    "description": "星術の小魔導書。身につける小物。熟練の冒険者が求める逸品。",
+    "typeId": "accessory",
+    "source": "assets/equipment/19_装飾品/20_星術の小魔導書.png",
+    "size": [
+      256,
+      256
+    ],
+    "output": "assets/equipment/warm/accessory_20.png"
+  }
+]

@@ -143,8 +143,9 @@ function resolveExpeditions(){
   applyExpeditionHealth(trip);
   for(const id of trip.members){
    const c=characters.find(c=>c.id===id);
-   const member={name:c?.name||id,image:c?.images?.normal||'',events:[]};
    const health=trip.health?.[id];
+   const status=health?.status==='dead'?'dead':['injured','severe'].includes(health?.status)?'recovering':'waiting';
+   const member={id,name:c?.name||id,...companionPortrait(c,status),events:[]};
    if(health?.status==='injured'||health?.status==='severe')member.events.push(`${health.status==='severe'?'重傷':'負傷'} · 回復まで${health.recoveryDays}日（${gameDate(day+health.recoveryDays)}朝）`);
    else if(health?.status==='dead')member.events.push('死亡');
    const before=Object.values(gear(id)).filter(Boolean);

@@ -14,11 +14,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/kyle.png",
-      "icon": "assets/characters/kyle.png",
-      "battle": "assets/characters/battle/kyle.png",
-      "resting": "assets/characters/resting/kyle.png",
-      "dead": "assets/characters/dead/kyle.png"
+      "normal": "assets/characters/warm/kyle.png",
+      "icon": "assets/characters/warm/kyle.png",
+      "battle": "assets/characters/warm/battle/kyle.png",
+      "resting": "assets/characters/warm/resting/kyle.png"
     },
     "name": "カイル",
     "jobName": "冒険者"
@@ -38,11 +37,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/gareth.png",
-      "icon": "assets/characters/gareth.png",
-      "battle": "assets/characters/battle/gareth.png",
-      "resting": "assets/characters/resting/gareth.png",
-      "dead": "assets/characters/dead/gareth.png"
+      "normal": "assets/characters/warm/gareth.png",
+      "icon": "assets/characters/warm/gareth.png",
+      "battle": "assets/characters/warm/battle/gareth.png",
+      "resting": "assets/characters/warm/resting/gareth.png"
     },
     "name": "ガレス",
     "jobName": "戦士"
@@ -64,11 +62,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/mira.png",
-      "icon": "assets/characters/mira.png",
-      "battle": "assets/characters/battle/mira.png",
-      "resting": "assets/characters/resting/mira.png",
-      "dead": "assets/characters/dead/mira.png"
+      "normal": "assets/characters/warm/mira.png",
+      "icon": "assets/characters/warm/mira.png",
+      "battle": "assets/characters/warm/battle/mira.png",
+      "resting": "assets/characters/warm/resting/mira.png"
     },
     "name": "ミラ",
     "jobName": "魔法使い"
@@ -88,11 +85,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/leon.png",
-      "icon": "assets/characters/leon.png",
-      "battle": "assets/characters/battle/leon.png",
-      "resting": "assets/characters/resting/leon.png",
-      "dead": "assets/characters/dead/leon.png"
+      "normal": "assets/characters/warm/leon.png",
+      "icon": "assets/characters/warm/leon.png",
+      "battle": "assets/characters/warm/battle/leon.png",
+      "resting": "assets/characters/warm/resting/leon.png"
     },
     "name": "レオン",
     "jobName": "戦士"
@@ -114,11 +110,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/sena.png",
-      "icon": "assets/characters/sena.png",
-      "battle": "assets/characters/battle/sena.png",
-      "resting": "assets/characters/resting/sena.png",
-      "dead": "assets/characters/dead/sena.png"
+      "normal": "assets/characters/warm/sena.png",
+      "icon": "assets/characters/warm/sena.png",
+      "battle": "assets/characters/warm/battle/sena.png",
+      "resting": "assets/characters/warm/resting/sena.png"
     },
     "name": "セナ",
     "jobName": "冒険者"
@@ -141,11 +136,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/elma.png",
-      "icon": "assets/characters/elma.png",
-      "battle": "assets/characters/battle/elma.png",
-      "resting": "assets/characters/resting/elma.png",
-      "dead": "assets/characters/dead/elma.png"
+      "normal": "assets/characters/warm/elma.png",
+      "icon": "assets/characters/warm/elma.png",
+      "battle": "assets/characters/warm/battle/elma.png",
+      "resting": "assets/characters/warm/resting/elma.png"
     },
     "name": "エルマ",
     "jobName": "魔法使い"
@@ -165,11 +159,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/dario.png",
-      "icon": "assets/characters/dario.png",
-      "battle": "assets/characters/battle/dario.png",
-      "resting": "assets/characters/resting/dario.png",
-      "dead": "assets/characters/dead/dario.png"
+      "normal": "assets/characters/warm/dario.png",
+      "icon": "assets/characters/warm/dario.png",
+      "battle": "assets/characters/warm/battle/dario.png",
+      "resting": "assets/characters/warm/resting/dario.png"
     },
     "name": "ダリオ",
     "jobName": "戦士"
@@ -191,11 +184,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/finn.png",
-      "icon": "assets/characters/finn.png",
-      "battle": "assets/characters/battle/finn.png",
-      "resting": "assets/characters/resting/finn.png",
-      "dead": "assets/characters/dead/finn.png"
+      "normal": "assets/characters/warm/finn.png",
+      "icon": "assets/characters/warm/finn.png",
+      "battle": "assets/characters/warm/battle/finn.png",
+      "resting": "assets/characters/warm/resting/finn.png"
     },
     "name": "フィン",
     "jobName": "冒険者"
@@ -217,11 +209,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/rose.png",
-      "icon": "assets/characters/rose.png",
-      "battle": "assets/characters/battle/rose.png",
-      "resting": "assets/characters/resting/rose.png",
-      "dead": "assets/characters/dead/rose.png"
+      "normal": "assets/characters/warm/rose.png",
+      "icon": "assets/characters/warm/rose.png",
+      "battle": "assets/characters/warm/battle/rose.png",
+      "resting": "assets/characters/warm/resting/rose.png"
     },
     "name": "ロゼ",
     "jobName": "魔法使い"
@@ -241,11 +232,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/volk.png",
-      "icon": "assets/characters/volk.png",
-      "battle": "assets/characters/battle/volk.png",
-      "resting": "assets/characters/resting/volk.png",
-      "dead": "assets/characters/dead/volk.png"
+      "normal": "assets/characters/warm/volk.png",
+      "icon": "assets/characters/warm/volk.png",
+      "battle": "assets/characters/warm/battle/volk.png",
+      "resting": "assets/characters/warm/resting/volk.png"
     },
     "name": "ボルク",
     "jobName": "戦士"
@@ -267,11 +257,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/nina.png",
-      "icon": "assets/characters/nina.png",
-      "battle": "assets/characters/battle/nina.png",
-      "resting": "assets/characters/resting/nina.png",
-      "dead": "assets/characters/dead/nina.png"
+      "normal": "assets/characters/warm/nina.png",
+      "icon": "assets/characters/warm/nina.png",
+      "battle": "assets/characters/warm/battle/nina.png",
+      "resting": "assets/characters/warm/resting/nina.png"
     },
     "name": "ニーナ",
     "jobName": "冒険者"
@@ -293,11 +282,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/toma.png",
-      "icon": "assets/characters/toma.png",
-      "battle": "assets/characters/battle/toma.png",
-      "resting": "assets/characters/resting/toma.png",
-      "dead": "assets/characters/dead/toma.png"
+      "normal": "assets/characters/warm/toma.png",
+      "icon": "assets/characters/warm/toma.png",
+      "battle": "assets/characters/warm/battle/toma.png",
+      "resting": "assets/characters/warm/resting/toma.png"
     },
     "name": "トーマ",
     "jobName": "魔法使い"
@@ -317,11 +305,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/adel.png",
-      "icon": "assets/characters/adel.png",
-      "battle": "assets/characters/battle/adel.png",
-      "resting": "assets/characters/resting/adel.png",
-      "dead": "assets/characters/dead/adel.png"
+      "normal": "assets/characters/warm/adel.png",
+      "icon": "assets/characters/warm/adel.png",
+      "battle": "assets/characters/warm/battle/adel.png",
+      "resting": "assets/characters/warm/resting/adel.png"
     },
     "name": "アデル",
     "jobName": "戦士"
@@ -343,11 +330,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/raz.png",
-      "icon": "assets/characters/raz.png",
-      "battle": "assets/characters/battle/raz.png",
-      "resting": "assets/characters/resting/raz.png",
-      "dead": "assets/characters/dead/raz.png"
+      "normal": "assets/characters/warm/raz.png",
+      "icon": "assets/characters/warm/raz.png",
+      "battle": "assets/characters/warm/battle/raz.png",
+      "resting": "assets/characters/warm/resting/raz.png"
     },
     "name": "ラズ",
     "jobName": "冒険者"
@@ -369,11 +355,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/iris.png",
-      "icon": "assets/characters/iris.png",
-      "battle": "assets/characters/battle/iris.png",
-      "resting": "assets/characters/resting/iris.png",
-      "dead": "assets/characters/dead/iris.png"
+      "normal": "assets/characters/warm/iris.png",
+      "icon": "assets/characters/warm/iris.png",
+      "battle": "assets/characters/warm/battle/iris.png",
+      "resting": "assets/characters/warm/resting/iris.png"
     },
     "name": "イリス",
     "jobName": "魔法使い"
@@ -393,11 +378,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/bast.png",
-      "icon": "assets/characters/bast.png",
-      "battle": "assets/characters/battle/bast.png",
-      "resting": "assets/characters/resting/bast.png",
-      "dead": "assets/characters/dead/bast.png"
+      "normal": "assets/characters/warm/bast.png",
+      "icon": "assets/characters/warm/bast.png",
+      "battle": "assets/characters/warm/battle/bast.png",
+      "resting": "assets/characters/warm/resting/bast.png"
     },
     "name": "バスト",
     "jobName": "戦士"
@@ -419,11 +403,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/sara.png",
-      "icon": "assets/characters/sara.png",
-      "battle": "assets/characters/battle/sara.png",
-      "resting": "assets/characters/resting/sara.png",
-      "dead": "assets/characters/dead/sara.png"
+      "normal": "assets/characters/warm/sara.png",
+      "icon": "assets/characters/warm/sara.png",
+      "battle": "assets/characters/warm/battle/sara.png",
+      "resting": "assets/characters/warm/resting/sara.png"
     },
     "name": "サラ",
     "jobName": "冒険者"
@@ -445,11 +428,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/nadim.png",
-      "icon": "assets/characters/nadim.png",
-      "battle": "assets/characters/battle/nadim.png",
-      "resting": "assets/characters/resting/nadim.png",
-      "dead": "assets/characters/dead/nadim.png"
+      "normal": "assets/characters/warm/nadim.png",
+      "icon": "assets/characters/warm/nadim.png",
+      "battle": "assets/characters/warm/battle/nadim.png",
+      "resting": "assets/characters/warm/resting/nadim.png"
     },
     "name": "ナディム",
     "jobName": "魔法使い"
@@ -471,11 +453,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/dina.png",
-      "icon": "assets/characters/dina.png",
-      "battle": "assets/characters/battle/dina.png",
-      "resting": "assets/characters/resting/dina.png",
-      "dead": "assets/characters/dead/dina.png"
+      "normal": "assets/characters/warm/dina.png",
+      "icon": "assets/characters/warm/dina.png",
+      "battle": "assets/characters/warm/battle/dina.png",
+      "resting": "assets/characters/warm/resting/dina.png"
     },
     "name": "ディナ",
     "jobName": "戦士"
@@ -497,11 +478,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/ork.png",
-      "icon": "assets/characters/ork.png",
-      "battle": "assets/characters/battle/ork.png",
-      "resting": "assets/characters/resting/ork.png",
-      "dead": "assets/characters/dead/ork.png"
+      "normal": "assets/characters/warm/ork.png",
+      "icon": "assets/characters/warm/ork.png",
+      "battle": "assets/characters/warm/battle/ork.png",
+      "resting": "assets/characters/warm/resting/ork.png"
     },
     "name": "オルク",
     "jobName": "冒険者"
@@ -524,11 +504,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/luca.png",
-      "icon": "assets/characters/luca.png",
-      "battle": "assets/characters/battle/luca.png",
-      "resting": "assets/characters/resting/luca.png",
-      "dead": "assets/characters/dead/luca.png"
+      "normal": "assets/characters/warm/luca.png",
+      "icon": "assets/characters/warm/luca.png",
+      "battle": "assets/characters/warm/battle/luca.png",
+      "resting": "assets/characters/warm/resting/luca.png"
     },
     "name": "ルカ",
     "jobName": "魔法使い"
@@ -548,11 +527,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/zek.png",
-      "icon": "assets/characters/zek.png",
-      "battle": "assets/characters/battle/zek.png",
-      "resting": "assets/characters/resting/zek.png",
-      "dead": "assets/characters/dead/zek.png"
+      "normal": "assets/characters/warm/zek.png",
+      "icon": "assets/characters/warm/zek.png",
+      "battle": "assets/characters/warm/battle/zek.png",
+      "resting": "assets/characters/warm/resting/zek.png"
     },
     "name": "ゼク",
     "jobName": "戦士"
@@ -574,11 +552,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/lize.png",
-      "icon": "assets/characters/lize.png",
-      "battle": "assets/characters/battle/lize.png",
-      "resting": "assets/characters/resting/lize.png",
-      "dead": "assets/characters/dead/lize.png"
+      "normal": "assets/characters/warm/lize.png",
+      "icon": "assets/characters/warm/lize.png",
+      "battle": "assets/characters/warm/battle/lize.png",
+      "resting": "assets/characters/warm/resting/lize.png"
     },
     "name": "リゼ",
     "jobName": "冒険者"
@@ -601,11 +578,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/mel.png",
-      "icon": "assets/characters/mel.png",
-      "battle": "assets/characters/battle/mel.png",
-      "resting": "assets/characters/resting/mel.png",
-      "dead": "assets/characters/dead/mel.png"
+      "normal": "assets/characters/warm/mel.png",
+      "icon": "assets/characters/warm/mel.png",
+      "battle": "assets/characters/warm/battle/mel.png",
+      "resting": "assets/characters/warm/resting/mel.png"
     },
     "name": "メル",
     "jobName": "魔法使い"
@@ -625,11 +601,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/oswald.png",
-      "icon": "assets/characters/oswald.png",
-      "battle": "assets/characters/battle/oswald.png",
-      "resting": "assets/characters/resting/oswald.png",
-      "dead": "assets/characters/dead/oswald.png"
+      "normal": "assets/characters/warm/oswald.png",
+      "icon": "assets/characters/warm/oswald.png",
+      "battle": "assets/characters/warm/battle/oswald.png",
+      "resting": "assets/characters/warm/resting/oswald.png"
     },
     "name": "オズワルド",
     "jobName": "重騎士"
@@ -651,11 +626,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/vera.png",
-      "icon": "assets/characters/vera.png",
-      "battle": "assets/characters/battle/vera.png",
-      "resting": "assets/characters/resting/vera.png",
-      "dead": "assets/characters/dead/vera.png"
+      "normal": "assets/characters/warm/vera.png",
+      "icon": "assets/characters/warm/vera.png",
+      "battle": "assets/characters/warm/battle/vera.png",
+      "resting": "assets/characters/warm/resting/vera.png"
     },
     "name": "ヴェーラ",
     "jobName": "狙撃手"
@@ -678,11 +652,10 @@
     },
     "initialEquipment": null,
     "images": {
-      "normal": "assets/characters/hakim.png",
-      "icon": "assets/characters/hakim.png",
-      "battle": "assets/characters/battle/hakim.png",
-      "resting": "assets/characters/resting/hakim.png",
-      "dead": "assets/characters/dead/hakim.png"
+      "normal": "assets/characters/warm/hakim.png",
+      "icon": "assets/characters/warm/hakim.png",
+      "battle": "assets/characters/warm/battle/hakim.png",
+      "resting": "assets/characters/warm/resting/hakim.png"
     },
     "name": "ハキム",
     "jobName": "大魔術師"

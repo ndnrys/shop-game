@@ -347,3 +347,6 @@ main:has(.warehouse-tabs){gap:6px}
 .preparation-nav svg{width:17px;height:17px;flex-shrink:0;color:currentColor}
 .preparation-nav button.active,.preparation-nav button:active{transform:translateY(2px);box-shadow:inset 0 2px 5px #26180f66,inset 0 0 0 1px #d6ae6c55,0 1px 0 #684322}
 @media(max-height:700px){.preparation-nav{gap:6px;padding-bottom:4px}.preparation-nav button{min-height:34px;font-size:12px;gap:4px}.preparation-nav svg{width:15px;height:15px}}
+
+/* Fallen companions use their normal portrait in grayscale. */
+.companion-grayscale{filter:grayscale(1)}

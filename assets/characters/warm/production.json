@@ -1,0 +1,114 @@
+{
+  "normalPrompt": "One isolated transparent PNG character sprite for a cozy painted Japanese fantasy shop game. Match style reference's warm muted watercolor and gouache, delicate brown linework and tactile material texture, not its character identity. Natural adult proportions, face and chest clearly visible, head to waist, 2:3 composition, no cropping of head, no scene or lettering. Clearly distinctive individual facial anatomy. Normal portrait. Subject: ",
+  "rules": "No patchwork, no repair patches, no stitched repairs, no torn garments or broken armor. Ordinary construction seams are fine. Role-appropriate dust, soot and dirt are permitted. No modern adhesive bandages, plasters, medical tape or other anachronisms. Recovering portraits convey injury with fatigue and pained expression only. Weapons have sound continuous sharp edges without chips, notches or breakage. Only rusted-named items may show rust. All imagery must fit a handcrafted medieval fantasy world. No text. True alpha transparency outside the silhouette, no backdrop or halo. Some adult female characters may have tasteful open-neck clothing and mature allure, appropriate to personality. All portraits use a 1024x1536 vertical canvas with consistent head-to-waist framing. Adult feminine allure varies by individual, including full bust suggested through modest opaque clothing as well as open-neck outfits.",
+  "characters": [
+    [
+      "kyle",
+      "19-year-old male hunter apprentice, curious hazel eyes, lean round jaw, short brown hair, unpatched green jacket and handcrafted hunting bow"
+    ],
+    [
+      "gareth",
+      "34-year-old broad-shouldered former road guard, square heavy jaw, cropped dark hair, short boxed beard, gentle deep-set brown eyes and old temple scar, worn scarred leather cuirass, honest calm expression"
+    ],
+    [
+      "mira",
+      "22-year-old female village apothecary's daughter, round face and soft downturned dark eyes, black hair pinned into an asymmetric bun, cream linen dress, herb pouch and old spellbook, cautious attentive expression"
+    ],
+    [
+      "leon",
+      "24-year-old male disciplined guard, narrow diamond face, blue eyes and flat blond brows, short golden hair, neat blue uniform, polished shield"
+    ],
+    [
+      "sena",
+      "26-year-old female road courier, sun-browned skin, broad cheekbones, green eyes, nose freckles, dark wavy short hair, saffron short cloak and map tube, social knowing smile"
+    ],
+    [
+      "elma",
+      "29-year-old female scholarly military archivist mage, long oval face, pointed nose, sharp dark eyes behind round glasses, long neat braid, dusky teal robes, battered annotated tome with no legible text"
+    ],
+    [
+      "dario",
+      "42-year-old male stoic veteran gate guard, bald, large angular head, heavy brow and broad nose, short salt and pepper beard, unpatched armor, massive shield"
+    ],
+    [
+      "finn",
+      "18-year-old adult male agile refugee, lean angular face, very pale olive skin, ash-brown long bangs, narrow gray eyes, unpatched charcoal and ochre clothes, guarded expression"
+    ],
+    [
+      "rose",
+      "31-year-old female fire workshop mage, strong square chin, vivid red curly hair, warm green eyes, thick eyebrows, leather gloves and soot-marked rust work clothes, hearty laugh"
+    ],
+    [
+      "volk",
+      "38-year-old male broad mountain sentry, huge build, red-brown beard, long wide nose, tiny alert eyes, heavy fur collar and large two-handed axe carried at rest"
+    ],
+    [
+      "nina",
+      "23-year-old female snow guide, petite face with high cheekbones, pale warm skin, narrow dark eyes, white hood and short bow, competitive guarded expression"
+    ],
+    [
+      "toma",
+      "27-year-old male tall stooped weather observer, thin elongated face, prominent ears, worried amber eyes and soft eyebrows, oversized slate coat and brass wind vane instrument"
+    ],
+    [
+      "adel",
+      "30-year-old female decisive squad leader, silver-gray short cropped hair, straight broad brows, angular mature face, pale gray eyes, scratched breastplate and long spear held upright"
+    ],
+    [
+      "raz",
+      "25-year-old male slender scout, warm olive skin, narrow face with crooked grin, wavy black hair, short dark leather cloak and sheathed one-handed sword, mischievous but attentive"
+    ],
+    [
+      "iris",
+      "20-year-old adult female quiet earth mage, pale flaxen hair, heart-shaped face, broad-set moss eyes, muted ochre robe with large sleeves and carved earthen staff"
+    ],
+    [
+      "bast",
+      "33-year-old male cheerful harbor guard, brown skin, sturdy round face, short tight curls, thick brows, welcoming dimpled smile, rolled sleeves and broad sword carried at rest"
+    ],
+    [
+      "sara",
+      "28-year-old female daring pilot, indigo headscarf, old curved scar across cheek, angular jaw, brown eyes, weathered sailor layers, bow and coiled rope"
+    ],
+    [
+      "nadim",
+      "35-year-old male water mage, olive-brown skin, long aquiline face, dark softly hooded eyes, thin mustache, white robe and blue sash, water-pattern spellbook"
+    ],
+    [
+      "dina",
+      "36-year-old female proud ruins guard, dark brown skin, long braided black hair, tall athletic build, stately triangular face with strong nose, red cloth and spear"
+    ],
+    [
+      "ork",
+      "46-year-old male weathered excavator, large hooked nose, deep-set blue eyes, rough stubble, battered hat and many belt tools, sheathed sword, appraising expression"
+    ],
+    [
+      "luca",
+      "21-year-old adult male small scholar, freckled round cheeks, cropped sandy hair, close-set amber eyes, sand goggles pushed onto forehead, huge ancient spellbook and buff utility clothes"
+    ],
+    [
+      "zek",
+      "32-year-old male resistance fighter, rough-cut black hair, asymmetric stern brow, prominent square chin, hollow gray eyes, armor with scraped-off crest"
+    ],
+    [
+      "lize",
+      "24-year-old female stealth guide, narrow soft face, dark cropped ash-brown hair, heavy-lidded blue eyes, muted gray cloak, light pack and worn bow, patient calm"
+    ],
+    [
+      "mel",
+      "39-year-old female community mage, full cheeks and finely lined eyes, silver-streaked black hair, sober wine-colored layered clothing and old wooden staff, gentle grave expression"
+    ],
+    [
+      "oswald",
+      "50-year-old male stern heavy knight commander, short swept-back white hair, clean-shaven strong broad jaw, high straight nose and icy eyes, blue-white uniform and great shield"
+    ],
+    [
+      "vera",
+      "43-year-old female composed northern marksman commander, gray braided hair, high cheekbones, narrow hazel eyes, dark green fur-lined cloak, longbow held at rest"
+    ],
+    [
+      "hakim",
+      "47-year-old male genial archmage commander, dark brown skin, wide face, short greying curly beard, smiling deep-set dark eyes, white and indigo robes, staff and spellbook"
+    ]
+  ]
+}

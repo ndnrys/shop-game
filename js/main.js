@@ -76,9 +76,21 @@ function startPartyDrag(event,id){
  function key(e){if(e.key==='Escape')cancel()}
  window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);window.addEventListener('blur',cancel);window.addEventListener('keydown',key);
 }
+function companionPortrait(c,status,kind='normal'){
+ const state=status==='dead'?'normal':status==='recovering'?'resting':status==='away'?'battle':kind;
+ return {image:c?.images?.[state]||c?.images?.normal||'',grayscale:status==='dead'};
+}
+function returnMemberPortrait(member){
+ const filename=member.image?.split('/').pop();
+ const character=characters.find(c=>c.id===member.id||c.images.normal?.split('/').pop()===filename);
+ if(!character)return member;
+ const status=member.grayscale||member.image?.includes('/dead/')?'dead':'waiting';
+ const kind=member.image?.includes('/resting/')?'resting':member.image?.includes('/battle/')?'battle':'normal';
+ return companionPortrait(character,status,kind);
+}
 function characterArt(c,kind='icon'){
- const status=companionStatus(c.id),state=status==='recovering'?'resting':status==='away'?'battle':status==='dead'?'dead':kind;
- return `<img class="character-art" src="${esc(c.images[state]||c.images.normal)}" alt="" draggable="false">`;
+ const portrait=companionPortrait(c,companionStatus(c.id),kind);
+ return `<img class="character-art${portrait.grayscale?' companion-grayscale':''}" src="${esc(portrait.image)}" alt="" draggable="false">`;
 }
 let partyRosterOpen=false;
 function partyFormation(){
@@ -199,7 +211,7 @@ function report(review=false){
  const returnEntries=groups.flatMap(g=>g.members.map(member=>({...g,members:[member]})));
  const returnPages=Math.max(1,returnEntries.length);if(sub===2)page=Math.max(0,Math.min(page,returnPages-1));
  const returnEntry=returnEntries[page];
- const returnSpeech=returnEntry?`<h2>${esc(returnEntry.destination)} · 攻略 ${returnEntry.totalProgress}%</h2><p>第${returnEntry.party+1}パーティ · ${esc(returnEntry.progress)}</p>${returnEntry.members.map(m=>`<div class="return-member"><img class="return-member-art" src="${esc(m.image)}" alt=""><div><b>${esc(m.name)}</b><p>${m.events.length?m.events.map(esc).join(' ／ '):'無事に帰還しました。'}</p></div></div>`).join('')}${returnPages>1?`<div class="page">${btn('‹','page=Math.max(0,page-1);render()','mini')}<small>${page+1} / ${returnPages}</small>${btn('›',`page=Math.min(${returnPages-1},page+1);render()`,'mini')}</div>`:''}`:'<p>今回は帰還したパーティはありません。仕入れの準備を進めましょう。</p>';
+ const returnSpeech=returnEntry?`<h2>${esc(returnEntry.destination)} · 攻略 ${returnEntry.totalProgress}%</h2><p>第${returnEntry.party+1}パーティ · ${esc(returnEntry.progress)}</p>${returnEntry.members.map(m=>{const portrait=returnMemberPortrait(m);return `<div class="return-member"><img class="return-member-art${portrait.grayscale?' companion-grayscale':''}" src="${esc(portrait.image)}" alt=""><div><b>${esc(m.name)}</b><p>${m.events.length?m.events.map(esc).join(' ／ '):'無事に帰還しました。'}</p></div></div>`}).join('')}${returnPages>1?`<div class="page">${btn('‹','page=Math.max(0,page-1);render()','mini')}<small>${page+1} / ${returnPages}</small>${btn('›',`page=Math.min(${returnPages-1},page+1);render()`,'mini')}</div>`:''}`:'<p>今回は帰還したパーティはありません。仕入れの準備を進めましょう。</p>';
  const reportPage=Math.min(3,Math.max(0,sub));
  const reportDay=tradingState.report?.day??bill?.day??day-1;
  const purchaseCost=ledgerHistory.find(entry=>entry.day===reportDay)?.purchases||0;

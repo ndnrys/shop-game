@@ -5,11 +5,11 @@ frame.addEventListener('load',async()=>{
  try{
   for(let i=0;i<100&&!d.querySelector('#date').textContent;i++)await new Promise(resolve=>setTimeout(resolve,20));
   run("saveReady=false;reset(false);go('adventurers');partyRosterOpen=true;render()");
-  const allPortraits=run("characters.flatMap(c=>['normal','battle','resting'].map(state=>({id:c.id,state,src:c.images[state]})))");
-  assert(allPortraits.length===81,'all 27 companions have three portraits');
+  const allPortraits=run("characters.flatMap(c=>['normal','battle','resting','full'].map(state=>({id:c.id,state,src:c.images[state]})))");
+  assert(allPortraits.length===108,'all 27 companions have three expressions and full body art');
   const images=allPortraits.map(p=>{assert(p.src.includes('assets/characters/warm/'),'new portrait '+p.id+' '+p.state);const image=new w.Image();image.src=p.src;return image});
   for(let i=0;i<200&&!images.every(image=>image.complete);i++)await new Promise(resolve=>setTimeout(resolve,20));
-  assert(images.every(image=>image.naturalWidth===1024&&image.naturalHeight===1536),'81 portraits load with matching dimensions');
+  assert(images.every(image=>image.naturalWidth===1024&&image.naturalHeight===1536),'108 portraits load with matching dimensions');
   const legacy=run("returnMemberPortrait({image:'assets/characters/dead/kyle.png'})");
   assert(legacy.image==='assets/characters/warm/kyle.png'&&legacy.grayscale,'legacy report uses updated grayscale portrait');
   const portrait=()=>d.querySelector('.party-slots .character-art');
@@ -26,7 +26,7 @@ frame.addEventListener('load',async()=>{
   run("economyState.companions.kyle={dead:true};render()");
   assert(portrait().getAttribute('src')===base&&w.getComputedStyle(portrait()).filter==='grayscale(1)','death reuses normal with grayscale');
   assert(d.querySelector('#view').scrollHeight<=d.querySelector('#view').clientHeight+1,'mobile formation fits');
-  output.textContent='PASS 81 portraits, matching dimensions, normal, dispatch, recovery, grayscale';
+  output.textContent='PASS 108 portraits, matching dimensions, normal, dispatch, recovery, grayscale';
  }catch(e){output.textContent='FAIL '+e.stack}
 },{once:true});
 </script>

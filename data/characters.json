@@ -17,7 +17,8 @@
       "normal": "assets/characters/warm/kyle.png",
       "icon": "assets/characters/warm/kyle.png",
       "battle": "assets/characters/warm/battle/kyle.png",
-      "resting": "assets/characters/warm/resting/kyle.png"
+      "resting": "assets/characters/warm/resting/kyle.png",
+      "full": "assets/characters/warm/full/kyle.png"
     },
     "name": "カイル",
     "jobName": "冒険者"
@@ -40,7 +41,8 @@
       "normal": "assets/characters/warm/gareth.png",
       "icon": "assets/characters/warm/gareth.png",
       "battle": "assets/characters/warm/battle/gareth.png",
-      "resting": "assets/characters/warm/resting/gareth.png"
+      "resting": "assets/characters/warm/resting/gareth.png",
+      "full": "assets/characters/warm/full/gareth.png"
     },
     "name": "ガレス",
     "jobName": "戦士"
@@ -65,7 +67,8 @@
       "normal": "assets/characters/warm/mira.png",
       "icon": "assets/characters/warm/mira.png",
       "battle": "assets/characters/warm/battle/mira.png",
-      "resting": "assets/characters/warm/resting/mira.png"
+      "resting": "assets/characters/warm/resting/mira.png",
+      "full": "assets/characters/warm/full/mira.png"
     },
     "name": "ミラ",
     "jobName": "魔法使い"
@@ -88,7 +91,8 @@
       "normal": "assets/characters/warm/leon.png",
       "icon": "assets/characters/warm/leon.png",
       "battle": "assets/characters/warm/battle/leon.png",
-      "resting": "assets/characters/warm/resting/leon.png"
+      "resting": "assets/characters/warm/resting/leon.png",
+      "full": "assets/characters/warm/full/leon.png"
     },
     "name": "レオン",
     "jobName": "戦士"
@@ -113,7 +117,8 @@
       "normal": "assets/characters/warm/sena.png",
       "icon": "assets/characters/warm/sena.png",
       "battle": "assets/characters/warm/battle/sena.png",
-      "resting": "assets/characters/warm/resting/sena.png"
+      "resting": "assets/characters/warm/resting/sena.png",
+      "full": "assets/characters/warm/full/sena.png"
     },
     "name": "セナ",
     "jobName": "冒険者"
@@ -139,7 +144,8 @@
       "normal": "assets/characters/warm/elma.png",
       "icon": "assets/characters/warm/elma.png",
       "battle": "assets/characters/warm/battle/elma.png",
-      "resting": "assets/characters/warm/resting/elma.png"
+      "resting": "assets/characters/warm/resting/elma.png",
+      "full": "assets/characters/warm/full/elma.png"
     },
     "name": "エルマ",
     "jobName": "魔法使い"
@@ -162,7 +168,8 @@
       "normal": "assets/characters/warm/dario.png",
       "icon": "assets/characters/warm/dario.png",
       "battle": "assets/characters/warm/battle/dario.png",
-      "resting": "assets/characters/warm/resting/dario.png"
+      "resting": "assets/characters/warm/resting/dario.png",
+      "full": "assets/characters/warm/full/dario.png"
     },
     "name": "ダリオ",
     "jobName": "戦士"
@@ -187,7 +194,8 @@
       "normal": "assets/characters/warm/finn.png",
       "icon": "assets/characters/warm/finn.png",
       "battle": "assets/characters/warm/battle/finn.png",
-      "resting": "assets/characters/warm/resting/finn.png"
+      "resting": "assets/characters/warm/resting/finn.png",
+      "full": "assets/characters/warm/full/finn.png"
     },
     "name": "フィン",
     "jobName": "冒険者"
@@ -212,7 +220,8 @@
       "normal": "assets/characters/warm/rose.png",
       "icon": "assets/characters/warm/rose.png",
       "battle": "assets/characters/warm/battle/rose.png",
-      "resting": "assets/characters/warm/resting/rose.png"
+      "resting": "assets/characters/warm/resting/rose.png",
+      "full": "assets/characters/warm/full/rose.png"
     },
     "name": "ロゼ",
     "jobName": "魔法使い"
@@ -235,7 +244,8 @@
       "normal": "assets/characters/warm/volk.png",
       "icon": "assets/characters/warm/volk.png",
       "battle": "assets/characters/warm/battle/volk.png",
-      "resting": "assets/characters/warm/resting/volk.png"
+      "resting": "assets/characters/warm/resting/volk.png",
+      "full": "assets/characters/warm/full/volk.png"
     },
     "name": "ボルク",
     "jobName": "戦士"
@@ -260,7 +270,8 @@
       "normal": "assets/characters/warm/nina.png",
       "icon": "assets/characters/warm/nina.png",
       "battle": "assets/characters/warm/battle/nina.png",
-      "resting": "assets/characters/warm/resting/nina.png"
+      "resting": "assets/characters/warm/resting/nina.png",
+      "full": "assets/characters/warm/full/nina.png"
     },
     "name": "ニーナ",
     "jobName": "冒険者"
@@ -285,7 +296,8 @@
       "normal": "assets/characters/warm/toma.png",
       "icon": "assets/characters/warm/toma.png",
       "battle": "assets/characters/warm/battle/toma.png",
-      "resting": "assets/characters/warm/resting/toma.png"
+      "resting": "assets/characters/warm/resting/toma.png",
+      "full": "assets/characters/warm/full/toma.png"
     },
     "name": "トーマ",
     "jobName": "魔法使い"
@@ -308,7 +320,8 @@
       "normal": "assets/characters/warm/adel.png",
       "icon": "assets/characters/warm/adel.png",
       "battle": "assets/characters/warm/battle/adel.png",
-      "resting": "assets/characters/warm/resting/adel.png"
+      "resting": "assets/characters/warm/resting/adel.png",
+      "full": "assets/characters/warm/full/adel.png"
     },
     "name": "アデル",
     "jobName": "戦士"
@@ -333,7 +346,8 @@
       "normal": "assets/characters/warm/raz.png",
       "icon": "assets/characters/warm/raz.png",
       "battle": "assets/characters/warm/battle/raz.png",
-      "resting": "assets/characters/warm/resting/raz.png"
+      "resting": "assets/characters/warm/resting/raz.png",
+      "full": "assets/characters/warm/full/raz.png"
     },
     "name": "ラズ",
     "jobName": "冒険者"
@@ -358,7 +372,8 @@
       "normal": "assets/characters/warm/iris.png",
       "icon": "assets/characters/warm/iris.png",
       "battle": "assets/characters/warm/battle/iris.png",
-      "resting": "assets/characters/warm/resting/iris.png"
+      "resting": "assets/characters/warm/resting/iris.png",
+      "full": "assets/characters/warm/full/iris.png"
     },
     "name": "イリス",
     "jobName": "魔法使い"
@@ -381,7 +396,8 @@
       "normal": "assets/characters/warm/bast.png",
       "icon": "assets/characters/warm/bast.png",
       "battle": "assets/characters/warm/battle/bast.png",
-      "resting": "assets/characters/warm/resting/bast.png"
+      "resting": "assets/characters/warm/resting/bast.png",
+      "full": "assets/characters/warm/full/bast.png"
     },
     "name": "バスト",
     "jobName": "戦士"
@@ -406,7 +422,8 @@
       "normal": "assets/characters/warm/sara.png",
       "icon": "assets/characters/warm/sara.png",
       "battle": "assets/characters/warm/battle/sara.png",
-      "resting": "assets/characters/warm/resting/sara.png"
+      "resting": "assets/characters/warm/resting/sara.png",
+      "full": "assets/characters/warm/full/sara.png"
     },
     "name": "サラ",
     "jobName": "冒険者"
@@ -431,7 +448,8 @@
       "normal": "assets/characters/warm/nadim.png",
       "icon": "assets/characters/warm/nadim.png",
       "battle": "assets/characters/warm/battle/nadim.png",
-      "resting": "assets/characters/warm/resting/nadim.png"
+      "resting": "assets/characters/warm/resting/nadim.png",
+      "full": "assets/characters/warm/full/nadim.png"
     },
     "name": "ナディム",
     "jobName": "魔法使い"
@@ -456,7 +474,8 @@
       "normal": "assets/characters/warm/dina.png",
       "icon": "assets/characters/warm/dina.png",
       "battle": "assets/characters/warm/battle/dina.png",
-      "resting": "assets/characters/warm/resting/dina.png"
+      "resting": "assets/characters/warm/resting/dina.png",
+      "full": "assets/characters/warm/full/dina.png"
     },
     "name": "ディナ",
     "jobName": "戦士"
@@ -481,7 +500,8 @@
       "normal": "assets/characters/warm/ork.png",
       "icon": "assets/characters/warm/ork.png",
       "battle": "assets/characters/warm/battle/ork.png",
-      "resting": "assets/characters/warm/resting/ork.png"
+      "resting": "assets/characters/warm/resting/ork.png",
+      "full": "assets/characters/warm/full/ork.png"
     },
     "name": "オルク",
     "jobName": "冒険者"
@@ -507,7 +527,8 @@
       "normal": "assets/characters/warm/luca.png",
       "icon": "assets/characters/warm/luca.png",
       "battle": "assets/characters/warm/battle/luca.png",
-      "resting": "assets/characters/warm/resting/luca.png"
+      "resting": "assets/characters/warm/resting/luca.png",
+      "full": "assets/characters/warm/full/luca.png"
     },
     "name": "ルカ",
     "jobName": "魔法使い"
@@ -530,7 +551,8 @@
       "normal": "assets/characters/warm/zek.png",
       "icon": "assets/characters/warm/zek.png",
       "battle": "assets/characters/warm/battle/zek.png",
-      "resting": "assets/characters/warm/resting/zek.png"
+      "resting": "assets/characters/warm/resting/zek.png",
+      "full": "assets/characters/warm/full/zek.png"
     },
     "name": "ゼク",
     "jobName": "戦士"
@@ -555,7 +577,8 @@
       "normal": "assets/characters/warm/lize.png",
       "icon": "assets/characters/warm/lize.png",
       "battle": "assets/characters/warm/battle/lize.png",
-      "resting": "assets/characters/warm/resting/lize.png"
+      "resting": "assets/characters/warm/resting/lize.png",
+      "full": "assets/characters/warm/full/lize.png"
     },
     "name": "リゼ",
     "jobName": "冒険者"
@@ -581,7 +604,8 @@
       "normal": "assets/characters/warm/mel.png",
       "icon": "assets/characters/warm/mel.png",
       "battle": "assets/characters/warm/battle/mel.png",
-      "resting": "assets/characters/warm/resting/mel.png"
+      "resting": "assets/characters/warm/resting/mel.png",
+      "full": "assets/characters/warm/full/mel.png"
     },
     "name": "メル",
     "jobName": "魔法使い"
@@ -604,7 +628,8 @@
       "normal": "assets/characters/warm/oswald.png",
       "icon": "assets/characters/warm/oswald.png",
       "battle": "assets/characters/warm/battle/oswald.png",
-      "resting": "assets/characters/warm/resting/oswald.png"
+      "resting": "assets/characters/warm/resting/oswald.png",
+      "full": "assets/characters/warm/full/oswald.png"
     },
     "name": "オズワルド",
     "jobName": "重騎士"
@@ -629,7 +654,8 @@
       "normal": "assets/characters/warm/vera.png",
       "icon": "assets/characters/warm/vera.png",
       "battle": "assets/characters/warm/battle/vera.png",
-      "resting": "assets/characters/warm/resting/vera.png"
+      "resting": "assets/characters/warm/resting/vera.png",
+      "full": "assets/characters/warm/full/vera.png"
     },
     "name": "ヴェーラ",
     "jobName": "狙撃手"
@@ -655,7 +681,8 @@
       "normal": "assets/characters/warm/hakim.png",
       "icon": "assets/characters/warm/hakim.png",
       "battle": "assets/characters/warm/battle/hakim.png",
-      "resting": "assets/characters/warm/resting/hakim.png"
+      "resting": "assets/characters/warm/resting/hakim.png",
+      "full": "assets/characters/warm/full/hakim.png"
     },
     "name": "ハキム",
     "jobName": "大魔術師"

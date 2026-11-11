@@ -110,5 +110,6 @@
       "hakim",
       "47-year-old male genial archmage commander, dark brown skin, wide face, short greying curly beard, smiling deep-set dark eyes, white and indigo robes, staff and spellbook"
     ]
-  ]
+  ],
+  "fullBodyPrompt": "Extend the referenced adult character into a full-body standing portrait from head to boots with both feet visible. Preserve exact face, age, hair, outfit colors, neckline, body type and props. Complete lower garments and boots to match the role. Warm watercolor/gouache, vertical 1024x1536 transparent PNG, no background, floor, shadow, halo, repairs, modern items or chipped blades. Generate opaque character colors. Equipment and growth screens apply 22% opacity using CSS."
 }

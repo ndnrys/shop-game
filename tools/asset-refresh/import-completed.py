@@ -24,6 +24,10 @@ for c in data:
     if all(p.exists() for p in (normal, battle, resting)):
         for p in (normal, battle, resting): check(p)
         c['images'].update(normal=str(normal), icon=str(normal), battle=str(battle), resting=str(resting))
+        full = root/'full'/name
+        if full.exists():
+            check(full)
+            c['images']['full'] = str(full)
         c['images'].pop('dead', None)
         integrated.append(c['id'])
 chars.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')

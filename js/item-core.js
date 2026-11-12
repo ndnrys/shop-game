@@ -11,7 +11,7 @@
   if(p.initialItemIds.some(id=>!ids.has(id)))throw Error('初期アイテムIDが不正');return true;
  }
  function dimensions(item,types,rotation=item.rotation||0){let t=types[item.typeId];if(!t||t.width===null)return null;return rotation%2?{width:t.height,height:t.width}:{width:t.width,height:t.height};}
- function canPlace(item,x,y,rotation,inventory,types,board){const d=dimensions(item,types,rotation);if(!d||!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x+d.width>board.width||y+d.height>board.height)return false;return inventory.every(other=>{if(other.uid===item.uid||other.x===null||other.x===undefined)return true;const od=dimensions(other,types);return !od||x+d.width<=other.x||other.x+od.width<=x||y+d.height<=other.y||other.y+od.height<=y;});}
+ function canPlace(item,x,y,rotation,inventory,types,board){const d=dimensions(item,types,rotation);if(!d||!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x+d.width>board.width||y+d.height>board.height)return false;return inventory.every(other=>{if((other.warehousePage??0)!==(item.warehousePage??0)||other.uid===item.uid||other.x===null||other.x===undefined)return true;const od=dimensions(other,types);return !od||x+d.width<=other.x||other.x+od.width<=x||y+d.height<=other.y||other.y+od.height<=y;});}
  function fitsBoard(item,types,board){const d=dimensions(item,types);return !!d&&((d.width<=board.width&&d.height<=board.height)||(d.height<=board.width&&d.width<=board.height))}
  function findSpace(item,inventory,types,board){for(const rotation of [0,1])for(let y=0;y<board.height;y++)for(let x=0;x<board.width;x++)if(canPlace(item,x,y,rotation,inventory,types,board))return{x,y,rotation};return null;}
  // Keep the requested placement when valid, otherwise choose the nearest free

@@ -285,5 +285,9 @@
       "nextName": "第1章・エルディアへの道",
       "memberLimit": 1
     }
+  },
+  "warehousePageExpansion": {
+    "cost": 2000,
+    "size": 5
   }
 }

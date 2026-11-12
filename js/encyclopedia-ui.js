@@ -3,6 +3,21 @@ let encyclopediaDefinitions={sets:[],people:[]};
 let encyclopedia=EncyclopediaCore.create(), encyclopediaTab='items', encyclopediaSelection=null;
 const encyclopediaText={title:'図鑑',items:'商品',sets:'セット装備',people:'人物',unknown:'？？？',discovered:'発見済み',undiscovered:'未発見',back:'一覧へ戻る'};
 function openEncyclopedia(){encyclopediaSelection=null;page=0;screen='encyclopedia';render()}
+function encyclopediaTiles(entries,records){
+ const text=encyclopediaText;
+ return entries.slice(page*9,(page+1)*9).map(d=>btn(`${records[d.id]&&encyclopediaTab==='items'?shape(d):'<span class="unknown-art">？</span>'}<b>${esc(records[d.id]?d.name:text.unknown)}</b><small>${records[d.id]?text.discovered:text.undiscovered}</small>`,`encyclopediaSelection='${d.id}';render()`,'encyclopedia-tile')).join('');
+}
+function slideEncyclopediaPage(value){
+ if(screen!=='encyclopedia'||encyclopediaSelection)return;
+ const entries=encyclopediaTab==='items'?catalog.items:encyclopediaDefinitions[encyclopediaTab],pages=Math.max(1,Math.ceil(entries.length/9)),next=Number(value);
+ if(!Number.isFinite(next))return;
+ page=Math.max(0,Math.min(pages-1,Math.round(next)));
+ const grid=document.querySelector('.encyclopedia-grid'),slider=document.querySelector('#encyclopediaPageSlider'),output=document.querySelector('#encyclopediaPageNumber');
+ if(grid)grid.innerHTML=encyclopediaTiles(entries,encyclopedia[encyclopediaTab]);
+ if(slider){slider.value=page;slider.setAttribute('aria-valuetext',`${page+1} / ${pages}`)}
+ if(output)output.textContent=`${page+1} / ${pages}`;
+ translateVisibleText();
+}
 function encyclopediaView(){
  const t=encyclopediaText;
  const entries=encyclopediaTab==='items'?catalog.items:encyclopediaDefinitions[encyclopediaTab];
@@ -23,7 +38,7 @@ function encyclopediaView(){
   }
   return heading+tabs+`<section class="encyclopedia-detail">${content}</section>`+`<div class="bottom">${btn(t.back,'encyclopediaSelection=null;render()')}</div>`;
  }
- const size=window.innerHeight<700?6:9;page=Math.min(page,Math.max(0,Math.ceil(entries.length/size)-1));
+ const size=9,pages=Math.max(1,Math.ceil(entries.length/size));page=Math.max(0,Math.min(page,pages-1));
  const discovered=entries.filter(d=>records[d.id]).length;
- return heading+`<progress aria-label="図鑑の発見率" value="${discovered}" max="${Math.max(1,entries.length)}"></progress>`+tabs+`<div class="encyclopedia-grid">${entries.slice(page*size,(page+1)*size).map(d=>btn(`${records[d.id]&&encyclopediaTab==='items'?shape(d):'<span class="unknown-art">？</span>'}<b>${esc(records[d.id]?d.name:t.unknown)}</b><small>${records[d.id]?t.discovered:t.undiscovered}</small>`,`encyclopediaSelection='${d.id}';render()`,'encyclopedia-tile')).join('')}</div>`+(entries.length?pager(entries.length,size):note('まだ出会った人物はいません。'))+`<div class="bottom">${btn('記録に戻る',"go('records')",'mini')}</div>`;
+ return heading+`<progress aria-label="図鑑の発見率" value="${discovered}" max="${Math.max(1,entries.length)}"></progress>`+tabs+`<div class="encyclopedia-grid">${encyclopediaTiles(entries,records)}</div><div class="encyclopedia-page-slider"><input id="encyclopediaPageSlider" type="range" min="0" max="${pages-1}" step="1" value="${page}" ${pages===1?'disabled':''} aria-label="図鑑のページ" aria-valuetext="${page+1} / ${pages}" oninput="slideEncyclopediaPage(this.value)"><output id="encyclopediaPageNumber" for="encyclopediaPageSlider" aria-live="polite">${page+1} / ${pages}</output></div>`+`<div class="bottom">${btn('記録に戻る',"go('records')",'mini')}</div>`;
 }

@@ -30,11 +30,12 @@ function expandShelf(){const cost=economyConfig.chapters[economyChapterId(chapte
 function validateWarehouseConfig(){
  const w=config.warehouseExpansion;
  if(!w||JSON.stringify(w.sizes)!=='[5,6,7,8]'||!Array.isArray(w.costs)||w.costs.length!==3||w.costs.some(n=>!Number.isSafeInteger(n)||n<0)||w.legacySize!==8||config.warehouse.width!==config.warehouse.height||!w.sizes.includes(config.warehouse.width))throw Error('倉庫拡張設定が不正です');
+ const pages=config.warehousePageExpansion;if(pages&&(pages.cost!==null||pages.size!==null)&&(!Number.isSafeInteger(pages.cost)||pages.cost<0||!w.sizes.includes(pages.size)))throw Error('倉庫ページ追加設定が不正です');
 }
 function warehouseUpgrade(){const i=config.warehouseExpansion.sizes.indexOf(warehouseSize.width);return i>=0&&i<3?{size:config.warehouseExpansion.sizes[i+1],cost:config.warehouseExpansion.costs[i]}:null}
 function expandWarehouse(){
  const upgrade=warehouseUpgrade();if(!upgrade||gold<upgrade.cost)return;
- cancelEquipmentDrag();gold-=upgrade.cost;ledgerMoney('expenses',upgrade.cost);warehouseSize={width:upgrade.size,height:upgrade.size};render();
+ cancelEquipmentDrag();gold-=upgrade.cost;ledgerMoney('expenses',upgrade.cost);warehouseSize={width:upgrade.size,height:upgrade.size};warehouseBoards();render();
 }
 function carpenterView(){
  const cost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost,upgrade=warehouseUpgrade();
@@ -65,4 +66,14 @@ function validateEconomySave(s,fail){
  }
  const b=e.bill;
  if(b!==null){if(!b||!int(b.day,1)||b.day!==s.day-1||!economyConfig.chapters[b.chapterId]||!['paid','unpaid'].includes(b.status)||!['shelfCount','companionCount','shop','companions','tax','total'].every(k=>int(b[k]))||b.shelfCount<1||b.total!==b.shop+b.companions+b.tax)fail()}
+}
+
+function warehousePageUpgrade(){const rule=config.warehousePageExpansion;return rule&&Number.isSafeInteger(rule.cost)&&rule.cost>=0&&config.warehouseExpansion.sizes.includes(rule.size)?rule:null}
+function addWarehousePage(){const rule=warehousePageUpgrade();if(!rule||gold<rule.cost)return;cancelWarehouseDrag();warehouseBoards().push({width:rule.size,height:rule.size});gold-=rule.cost;ledgerMoney('expenses',rule.cost);switchWarehousePage(warehousePages.length-1)}
+function openWarehouseExpansionDialog(){renderWarehouseExpansionDialog();document.querySelector('#warehouseExpansionDialog').showModal()}
+function renderWarehouseExpansionDialog(){
+ const dialog=document.querySelector('#warehouseExpansionDialog');if(!dialog)return;
+ const pageUpgrade=warehousePageUpgrade(),upgrade=warehouseUpgrade(),shelfCost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost;
+ dialog.innerHTML=`<div class="warehouse-expansion-heading"><h2 id="warehouseExpansionTitle">拡張</h2><button class="wood-control" aria-label="閉じる" onclick="this.closest('dialog').close()">×</button></div><p class="warehouse-expansion-gold">所持金 ${money(gold)}</p><div class="warehouse-expansion-choices"><button class="wood-control" data-expansion="grid" onclick="expandWarehouse()" ${!upgrade||gold<upgrade.cost?'disabled':''}>${uiIcon('box')}<span><b>枠の拡張</b><small>${upgrade?`${warehouseSize.width}×${warehouseSize.height} → ${upgrade.size}×${upgrade.size}`:'最大の8×8まで拡張済み'}</small></span><strong>${upgrade?money(upgrade.cost):'最大'}</strong></button><button class="wood-control" data-expansion="shelf" onclick="expandShelf()" ${shelfCost==null||gold<shelfCost?'disabled':''}>${uiIcon('shelf')}<span><b>棚の増設</b><small>棚を1つ追加 · 現在${economyState.shelfCount}棚</small></span><strong>${shelfCost==null?'未設定':money(shelfCost)}</strong></button><button class="wood-control" data-expansion="page" onclick="addWarehousePage()" ${!pageUpgrade||gold<pageUpgrade.cost?'disabled':''}>${uiIcon('book')}<span><b>倉庫のページを増やす</b><small>${pageUpgrade?`${pageUpgrade.size}×${pageUpgrade.size}の倉庫を追加 · 現在${warehouseBoards().length}ページ`:'追加条件は未設定'}</small></span><strong>${pageUpgrade?money(pageUpgrade.cost):'未設定'}</strong></button></div>`;
+ translateVisibleText();formatCurrencyUnits(dialog);
 }

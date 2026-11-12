@@ -44,3 +44,22 @@ function startEquipmentDrag(event,uid,sourceSlot=null){
 document.addEventListener('click',event=>{
  if(Date.now()<equipmentSuppressClick&&event.target.closest('.character-equipment')){event.preventDefault();event.stopImmediatePropagation()}
 },true);
+
+// Character navigation uses free space; equipment controls keep their own pointer gestures.
+let characterSwipeCancel=null;
+function startCharacterSwipe(event){
+ if(screen!=='equipment'||equipmentDrag||event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0)||event.target.closest('button,input,label,select,a'))return;
+ characterSwipeCancel?.();
+ const pointerId=event.pointerId,startX=event.clientX,startY=event.clientY,startCharacter=equipCharacter,startPanel=characterPanel;
+ function cleanup(){window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);window.removeEventListener('blur',cleanup);characterSwipeCancel=null}
+ function move(e){if(e.pointerId===pointerId&&Math.abs(e.clientX-startX)>12&&Math.abs(e.clientX-startX)>Math.abs(e.clientY-startY)*1.4)e.preventDefault()}
+ function cancel(e){if(e.pointerId===pointerId)cleanup()}
+ function up(e){
+  if(e.pointerId!==pointerId)return;
+  const dx=e.clientX-startX,dy=e.clientY-startY;cleanup();
+  if(screen!=='equipment'||equipCharacter!==startCharacter||characterPanel!==startPanel||equipmentDrag||Math.abs(dx)<45||Math.abs(dx)<Math.abs(dy)*1.4)return;
+  equipmentSuppressClick=Date.now()+400;moveEquipmentCharacter(dx<0?1:-1);
+ }
+ characterSwipeCancel=cleanup;
+ window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);window.addEventListener('blur',cleanup);
+}

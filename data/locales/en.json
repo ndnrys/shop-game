@@ -258,5 +258,6 @@
   "ui.nav.encyclopedia": "Codex",
   "ui.nav.broker": "Info",
   "text.呼び戻す": "Recall",
-  "text.攻略・経験値は獲得しません。使用した物資費用は戻りません。": "No progress or experience earned. Supply costs are not refunded."
+  "text.攻略・経験値は獲得しません。使用した物資費用は戻りません。": "No progress or experience earned. Supply costs are not refunded.",
+  "ui.headerDate": "Year {year} {season} {date}"
 }

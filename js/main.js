@@ -27,8 +27,8 @@ function translateVisibleText(){
 const phases=['報告','仕入れ','倉庫整理','陳列','探索','営業'];const navs=[['home','shop','お店'],['journal','ledger','帳簿'],['encyclopedia','book','図鑑'],['broker','information','情報']];
 function uiIcon(name){
  const art={
- ledger:'<path d="M4 2h16v20H4z"/><path d="M8 6h8M8 10h8M8 14h8M8 18h5" fill="none" stroke="var(--paper)" stroke-width="1.5"/>',
- information:'<path d="M4 4h16v13H10l-5 4v-4H4z"/><circle cx="12" cy="8" r="1" fill="var(--paper)"/><path d="M12 10v4" stroke="var(--paper)" stroke-width="2"/>',
+ ledger:'<path d="M7 2.5Q12 4 17 2.5L14.5 7h-5zM9.5 8h5c1 2 5.8 4.5 6.3 8.5.5 4.5-3.7 5.5-8.8 5.5s-9.3-1-8.8-5.5C3.7 12.5 8.5 10 9.5 8z"/><path d="M9 7.5h6M14.5 8c2 0 3 1 3.3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+ information:'<path d="M4 4h16v13H10l-5 4v-4H4z"/>',
  shelf:'<path d="M3 3h2v18H3zM19 3h2v18h-2zM5 9h14v2H5zM5 19h14v2H5zM7 3h3v5H7zM12 2h4v6h-4zM8 13h7v5H8z"/>',
  shop:'<path d="M4 12h4v7h8v-7h4v10H4z M5 3h3l-2 7H2z M9 3h3v7H7z M13 3h3l1 7h-4z M17 3h2l3 7h-4z"/>',
  box:'<g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l10-4 10 4v13l-10 3-10-3z M2 7l10 4 10-4 M12 11v12 M7 5l10 4 M3 12l8 3 M13 15l8-3 M3 16l8 3 M13 19l8-3"/></g>',
@@ -38,10 +38,10 @@ function uiIcon(name){
  return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">${art[name]||art.menu}</svg>`;
 }
 function renderHeader(){
- const season=Math.floor(((day-1)%20)/5),date=(day-1)%5+1,seasonKeys=['spring','summer','autumn','winter'],seasonNames=['春','夏','秋','冬'];
+ const year=Math.floor((day-1)/20)+1,season=Math.floor(((day-1)%20)/5),date=(day-1)%5+1,seasonKeys=['spring','summer','autumn','winter'],seasonNames=['春','夏','秋','冬'];
  $('header strong').textContent=t('ui.shopTitle','村のよろず屋');$('header strong').title=t('ui.shopTitle','村のよろず屋');
  $('.header-shop-icon').innerHTML=uiIcon('shop');$('#seasonIcon').textContent=['🌸','☀️','🍂','❄️'][season];
- $('#date').textContent=t('ui.season.'+seasonKeys[season],seasonNames[season])+(language==='en'?' ':'')+date+(language==='ja'?'日':'');
+ $('#date').textContent=t('ui.headerDate','{year}年目{season}{date}日').replace('{year}',year).replace('{season}',t('ui.season.'+seasonKeys[season],seasonNames[season])).replace('{date}',date);
  $('.header-date').title=gameDate()+' · '+phases[phase];$('#gold').textContent=money(gold);
 }
 
@@ -51,7 +51,7 @@ function preparationAttention(stage){
  return '';
 }
 const preparationAttentionMark=reason=>reason?'<i class="preparation-attention" aria-hidden="true"></i>':'';
-function renderNavigation(){const current=screen==='equipment'?equipmentOrigin?.screen:screen;return navs.map(([id,icon,label])=>{const reason=preparationAttention(id==='warehouse'?2:id==='adventurers'?4:0),active=id===current||id==='home'&&['trade','dailyReport','shelfOverview'].includes(current);return `<button ${reason?`aria-label="${esc(t('ui.nav.'+id,label)+' · '+reason)}" title="${esc(reason)}"`: ''} class="${active?'active':''}" ${active?'aria-current="page"':''} onclick="${id==='encyclopedia'?'encyclopediaSelection=null;':''}go('${id}')">${preparationAttentionMark(reason)}${uiIcon(icon)}<span class="nav-label" title="${esc(t('ui.nav.'+id,label))}">${esc(t('ui.nav.'+id,label))}</span></button>`}).join('')+`<button onclick="toggleMenu()" aria-label="メニューを開閉" aria-expanded="${$('#nav').classList.contains('is-open')}">${uiIcon('menu')}<span class="nav-label">${esc(t('ui.nav.menu','メニュー'))}</span></button><div class="nav-more">${btn('設定',"go('settings')")}${btn('住人・施設',"go('residents')")}${developmentMenu()}</div>`}
+function renderNavigation(){const current=screen==='equipment'?equipmentOrigin?.screen:screen;return navs.map(([id,icon,label])=>{const active=id===current||id==='home'&&['trade','dailyReport','shelfOverview'].includes(current),name=esc(t('ui.nav.'+id,label));return `<button aria-label="${name}" title="${name}" class="${active?'active':''}" ${active?'aria-current="page"':''} onclick="${id==='encyclopedia'?'encyclopediaSelection=null;':''}go('${id}')">${uiIcon(icon)}</button>`}).join('')+`<button onclick="toggleMenu()" title="${esc(t('ui.nav.menu','メニュー'))}" aria-label="${esc(t('ui.nav.menu','メニュー'))}" aria-expanded="${$('#nav').classList.contains('is-open')}">${uiIcon('menu')}</button><div class="nav-more">${btn('設定',"go('settings')")}${btn('住人・施設',"go('residents')")}${developmentMenu()}</div>`}
 
 let day=1,phase=0,screen='home',gold=0,counts=[0,0,0],pending=[],stock=[],shelf=[],selected=0,page=0,sub=0,party=0,funds=[0,0,0],away=false;const prices=[];
 const merchantPrice=index=>chapter===0?config.development.prologueMerchantCosts[index]:prices[index];let characters=[];const villageCharacters=()=>characters.filter(c=>c.joinChapter===0);
@@ -618,3 +618,26 @@ function initializeBalance(){
  apply();window.addEventListener('storage',event=>{if(event.key===Balance.key||event.key===null){apply();document.title='Shop Game · 開発調整反映済み';}});
  document.title='Shop Game · 開発調整モード';
 }
+
+// Preparation screen swipes use free space; nested drag/scroll controls own their gestures.
+let preparationSwipeCancel=null,preparationSwipeSuppressClick=0;
+document.addEventListener('pointerdown',event=>{
+ const view=event.target.closest('#view'),nav=view?.querySelector(':scope > .preparation-nav');
+ if(!nav||document.querySelector('dialog[open]')||$('#nav').classList.contains('is-open')||event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0)||event.target.closest('button,input,label,select,a,[onpointerdown],.real-board,.incoming-draggable,.destination-carousel,.shelf-switcher,[data-party-roster]'))return;
+ preparationSwipeCancel?.();
+ const current=Number(nav.querySelector('[aria-current="page"]')?.dataset.stage),originScreen=screen,pointerId=event.pointerId,x=event.clientX,y=event.clientY;
+ if(current<1||current>4)return;
+ function cleanup(){window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);window.removeEventListener('blur',cleanup);preparationSwipeCancel=null}
+ function move(e){if(e.pointerId===pointerId&&Math.abs(e.clientX-x)>12&&Math.abs(e.clientX-x)>Math.abs(e.clientY-y)*1.5)e.preventDefault()}
+ function cancel(e){if(e.pointerId===pointerId)cleanup()}
+ function up(e){
+  if(e.pointerId!==pointerId)return;
+  const dx=e.clientX-x,dy=e.clientY-y;cleanup();
+  if(screen!==originScreen||!view.contains(nav)||document.querySelector('dialog[open]')||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;
+  preparationSwipeSuppressClick=Date.now()+400;
+  goStage(((current-1+(dx<0?1:-1)+4)%4)+1);
+ }
+ preparationSwipeCancel=cleanup;
+ window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);window.addEventListener('blur',cleanup);
+});
+document.addEventListener('click',event=>{if(Date.now()<preparationSwipeSuppressClick&&event.target.closest('#view')){event.preventDefault();event.stopImmediatePropagation()}},true);

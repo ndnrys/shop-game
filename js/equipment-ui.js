@@ -141,6 +141,7 @@ function resolveExpeditions(){
  const due=expeditions.filter(e=>e.returnDay<=day);
  for(const trip of due){
   const destination=config.dungeons.find(d=>d.id===trip.dungeonId);
+  const previousLevels=Object.fromEntries(trip.members.map(id=>[id,companionLevel(id)]));
   const group={destination:destination?.name||'派遣先未記録',dungeonId:trip.dungeonId,party:trip.party,members:[],progress:'',totalProgress:0,cleared:false};
   if(destination){
    const d=destination,before=dungeonProgress[d.id]||0;
@@ -156,7 +157,7 @@ function resolveExpeditions(){
    const c=characters.find(c=>c.id===id);
    const health=trip.health?.[id];
    const status=health?.status==='dead'?'dead':['injured','severe'].includes(health?.status)?'recovering':'waiting';
-   const member={id,name:c?.name||id,...companionPortrait(c,status),events:[]};
+   const member={id,name:c?.name||id,...companionPortrait(c,status),levelUps:companionLevel(id)-previousLevels[id],events:[]};
    if(health?.status==='injured'||health?.status==='severe')member.events.push(`${health.status==='severe'?'重傷':'負傷'} · 回復まで${health.recoveryDays}日（${gameDate(day+health.recoveryDays)}朝）`);
    else if(health?.status==='dead')member.events.push('死亡');
    const before=Object.values(gear(id)).filter(Boolean);

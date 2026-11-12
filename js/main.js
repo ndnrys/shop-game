@@ -202,6 +202,22 @@ function customerImage(customer,visitIndex=0,reportDay=tradingState.report?.day?
 }
 function dailyReport(){return report(true)}
 function home(){if(economyState.bill?.status==='unpaid')return report();if(phase===0)return report();return (phase===1?purchase():phase===2?warehouse(true):phase===3?stocking():phase===4?support(true):sales())}
+function returnMemberMessages(member){
+ const events=member.events||[],equipment=/破損|激しく損傷|損傷|摩耗/;
+ const messages=events.filter(text=>!equipment.test(text));
+ if(member.levelUps>0)messages.unshift('レベルアップしました。おめでとうございます。');
+ const severity=['破損しています','激しく損傷しています','損傷しています','摩耗しています'].find((label,index)=>events.some(text=>index===0?/破損/.test(text):index===1?/激しく損傷/.test(text):index===2?/損傷/.test(text):/摩耗/.test(text)));
+ if(severity)messages.push('装備が'+severity+'。');
+ return messages.length?messages:['無事に帰還しました。'];
+}
+function morningReportPages(){
+ const hasVoices=!!tradingState.report?.visits?.length,hasReturns=groupedReturnReport.some(group=>group.members?.length);
+ return [0,...(hasVoices?[1]:[]),...(hasReturns?[2]:[]),3];
+}
+function moveMorningReportPage(direction){
+ const pages=morningReportPages(),index=Math.max(0,pages.indexOf(sub));
+ sub=pages[Math.max(0,Math.min(pages.length-1,index+direction))];page=0;render();
+}
 function report(review=false){
  const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
  const bill=economyState.bill,visits=tradingState.report?.visits;
@@ -218,11 +234,12 @@ function report(review=false){
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id]?.name||id)).join(' ＋ '):'購入なし';
   return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customerImage(customer,page*voiceSize+index))}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(customer?.name||visit.customerId)}</b><p>「${purchased?'いい買い物ができた！':'今日は見送ろうかな'}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
  }).join('')+(voicePages>1?`<div class="report-voice-pages">${btn('前のお客様','page=Math.max(0,page-1);render()','mini')}<span>${page+1} / ${voicePages}</span>${btn('次のお客様',`page=Math.min(${voicePages-1},page+1);render()`,'mini')}</div>`:''):'<p>今回はお客様の声は届いていません。</p>');
- const returnEntries=groups.flatMap(g=>g.members.map(member=>({...g,members:[member]})));
+ const returnEntries=groups.filter(group=>group.members?.length);
  const returnPages=Math.max(1,returnEntries.length);if(sub===2)page=Math.max(0,Math.min(page,returnPages-1));
  const returnEntry=returnEntries[page];
- const returnSpeech=returnEntry?`<h2>${esc(returnEntry.destination)} · 攻略 ${returnEntry.totalProgress}%</h2><p>第${returnEntry.party+1}パーティ · ${esc(returnEntry.progress)}</p>${returnEntry.members.map(m=>{const portrait=returnMemberPortrait(m);return `<div class="return-member"><img class="return-member-art${portrait.grayscale?' companion-grayscale':''}" src="${esc(portrait.image)}" alt=""><div><b>${esc(m.name)}</b><p>${m.events.length?m.events.map(esc).join(' ／ '):'無事に帰還しました。'}</p></div></div>`}).join('')}${returnPages>1?`<div class="page">${btn('‹','page=Math.max(0,page-1);render()','mini')}<small>${page+1} / ${returnPages}</small>${btn('›',`page=Math.min(${returnPages-1},page+1);render()`,'mini')}</div>`:''}`:'<p>今回は帰還したパーティはありません。仕入れの準備を進めましょう。</p>';
- const reportPage=Math.min(3,Math.max(0,sub));
+ const returnSpeech=returnEntry?`<div class="return-party-heading"><h2>第${returnEntry.party+1}パーティ · ${esc(returnEntry.destination)}</h2><p>${esc(returnEntry.progress)} · 累計 ${returnEntry.totalProgress}%</p></div><div class="return-party-members">${returnEntry.members.map(m=>{const portrait=returnMemberPortrait(m);return `<div class="return-party-member"><span class="return-party-face"><img class="${portrait.grayscale?'companion-grayscale':''}" src="${esc(portrait.image)}" alt=""></span><b>${esc(m.name)}</b><div class="return-party-messages">${returnMemberMessages(m).map(message=>`<p>${esc(message)}</p>`).join('')}</div></div>`}).join('')}</div>${returnPages>1?`<div class="return-party-pages">${btn('‹','page=Math.max(0,page-1);render()','mini')}<small>${page+1} / ${returnPages}</small>${btn('›',`page=Math.min(${returnPages-1},page+1);render()`,'mini')}</div>`:''}`:'';
+ const reportPages=morningReportPages(),reportPage=reportPages.includes(sub)?sub:reportPages.find(n=>n>=sub)??reportPages.at(-1);sub=reportPage;
+ const reportIndex=reportPages.indexOf(reportPage);
  const reportDay=tradingState.report?.day??bill?.day??day-1;
  const purchaseCost=ledgerHistory.find(entry=>entry.day===reportDay)?.purchases||0;
  const maintenance=bill?.total||0,net=lastSales-purchaseCost-maintenance;
@@ -230,9 +247,9 @@ function report(review=false){
  const ledgerMoneyText=amount=>`${amount.toLocaleString()} <small class="ledger-unit">G</small>`;
  const reportLedger=`<div class="morning-ledger"><div class="morning-sales">${ledgerIcon('receipt')}<div><span>${esc(t('ui.report.sales','昨日の売上'))}</span><strong>${ledgerMoneyText(lastSales)}</strong></div></div><div class="morning-entry">${ledgerIcon('crate')}<span>${esc(t('ui.report.purchase','仕入れ'))}</span><b>−${ledgerMoneyText(purchaseCost)}</b></div><div class="morning-entry" title="${esc(costDetails.replaceAll('<br>',' / '))}">${ledgerIcon('wrench')}<span>${esc(t('ui.report.maintenance','維持費'))}${bill?.status==='unpaid'?`<small>（${esc(t('ui.report.unpaid','未払い'))}）</small>`:''}</span><b>−${ledgerMoneyText(maintenance)}</b></div><div class="morning-entry morning-net${net<0?' is-negative':''}">${ledgerIcon('balance')}<span>${esc(t('ui.report.net','収支'))}</span><b>${net>=0?'+':'−'}${ledgerMoneyText(Math.abs(net))}</b></div></div>`;
 
- const clerk=`<section class="report-clerk" aria-label="店員からの報告"><div class="report-clerk-speech"><div class="report-speech-reference" aria-hidden="true" inert>${reportLedger}<div class="morning-greeting">${salesSpeech}</div></div><div class="report-speech-content">${[reportLedger+`<div class="morning-greeting">${salesSpeech}</div>`,voicesSpeech,returnSpeech,'<p>今日も一日がんばりましょう！</p><p>仕入れにいってきまーす！</p>'][reportPage]}</div><span class="speech-tail-join" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M25 1C28 13 19 25 0 33C31 27 49 13 70 1"/></svg></span></div><div class="report-clerk-art${reportPage===3?' report-clerk-farewell':''}"><div class="report-clerk-portrait"><img src="${shopkeeperImage(reportPage===3?'oh':'normal')}" alt="${reportPage===3?'仕入れに向かう店員':'報告する店員'}" onerror="this.hidden=true"><img class="report-clerk-talking" ${reportPage===3?'hidden':''} src="${shopkeeperImage('talking')}" alt="" onerror="this.hidden=true"></div></div></section>`;
- return title(['朝の営業報告','お客様の声','パーティ報告','今日も一日'][reportPage],`${reportPage+1} / 4`)+clerk+
- `<div class="bottom"><div class="actions">${reportPage?btn('前へ','sub--;page=0;render()','mini'):''}${btn(reportPage<3?'次のページ':review?'準備に戻る':'仕入れへ',reportPage<3?'sub++;page=0;render()':review?"go('home')":'advance()','primary')}</div>${steps()}</div>`;
+ const clerk=`<section class="report-clerk" aria-label="店員からの報告"><div class="report-clerk-speech"><div class="report-speech-reference" aria-hidden="true" inert>${reportLedger}<div class="morning-greeting">${salesSpeech}</div></div><div class="report-speech-content${reportPage===3?' report-speech-farewell':''}">${[reportLedger+`<div class="morning-greeting">${salesSpeech}</div>`,voicesSpeech,returnSpeech,'<p>今日も一日がんばりましょう！</p><p>仕入れにいってきまーす！</p>'][reportPage]}</div><span class="speech-tail-join" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M25 1C28 13 19 25 0 33C31 27 49 13 70 1"/></svg></span></div><div class="report-clerk-art${reportPage===3?' report-clerk-farewell':''}"><div class="report-clerk-portrait"><img src="${shopkeeperImage(reportPage===3?'oh':'normal')}" alt="${reportPage===3?'仕入れに向かう店員':'報告する店員'}" onerror="this.hidden=true"><img class="report-clerk-talking" ${reportPage===3?'hidden':''} src="${shopkeeperImage('talking')}" alt="" onerror="this.hidden=true"></div></div></section>`;
+ return clerk+
+ `<div class="bottom"><div class="actions">${reportIndex?btn('前へ','moveMorningReportPage(-1)','mini'):''}${btn(reportPage<3?'次のページ':review?'準備に戻る':'仕入れへ',reportPage<3?'moveMorningReportPage(1)':review?"go('home')":'advance()','primary')}</div>${steps()}</div>`;
 }
 function shelfOverview(){const capacity=config.development.shelfCapacity;return title('棚の中身')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`))+Array.from({length:economyState.shelfCount},(_,index)=>{const items=shelf.filter(item=>item.shelfId===index);return card('<h2>棚 '+(index+1)+' · '+items.length+' / '+capacity+' 点</h2>'+(items.length?items.map(item=>row(esc(itemName(item)),money(saleValue(item)))).join(''):note('商品なし')))}).join('')+`<div class="bottom">${btn('仕入れへ戻る',"go('home')",'primary')}</div>`}
 // Transient presentation state; never included in game saves.

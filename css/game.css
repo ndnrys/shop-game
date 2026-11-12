@@ -233,16 +233,16 @@ nav .development-options button{min-height:44px;padding:10px;font-size:13px;bord
 @media(prefers-reduced-motion:reduce){.game-effect *{animation:none!important}}
 
 /* One portrait frame aligns expressions; the speaking overlay only reveals the mouth. */
-.report-clerk{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(270px,1fr) 56%;align-items:end;gap:0;flex:1;min-height:0;min-width:0;background:linear-gradient(var(--paper),transparent 65%),url("../assets/backgrounds/shop-interior-open.webp") center bottom/cover;border-radius:12px;overflow:hidden}.report-clerk::after{content:"";position:absolute;bottom:0;left:0;right:0;aspect-ratio:3/1;background:url("../assets/backgrounds/shop-counter.webp") center bottom/100% 100% no-repeat;z-index:2;pointer-events:none;transform:translateY(42%)}
-.report-clerk-art{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,360px);height:40%;min-height:0;margin:0 auto;background:transparent;z-index:1}
-.report-clerk-portrait{position:absolute;left:50%;bottom:-60%;height:200%;aspect-ratio:2/3;transform:translateX(-50%)}
+.report-clerk{position:relative;isolation:isolate;display:grid;grid-template-rows:auto minmax(0,1fr);align-items:stretch;container-type:size;gap:0;flex:1;min-height:0;min-width:0;background:linear-gradient(var(--paper),transparent 65%),url("../assets/backgrounds/shop-interior-open.webp") center bottom/cover;border-radius:12px;overflow:hidden}.report-clerk::after{content:"";position:absolute;bottom:0;left:0;right:0;aspect-ratio:3/1;background:url("../assets/backgrounds/shop-counter.webp") center bottom/100% 100% no-repeat;z-index:2;pointer-events:none;transform:translateY(42%)}
+.report-clerk-art{position:relative;grid-row:2;left:auto;bottom:auto;transform:none;width:100%;height:100%;min-height:0;margin:0 auto;background:transparent;z-index:1}
+.report-clerk-portrait{position:absolute;left:50%;bottom:-45%;height:145%;max-width:100%;aspect-ratio:2/3;transform:translateX(-50%)}
 .report-clerk-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
 .report-clerk-art img[hidden]{display:none}
 .report-clerk-talking{animation:report-speaking .8s steps(1,end) 6;opacity:0;clip-path:ellipse(5% 2% at 51% 21.5%)}
-.report-clerk-speech{position:relative;isolation:isolate;z-index:3;align-self:end;margin-bottom:12px;flex:0 0 auto;min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:0 4px 12px #4935261a,inset 0 0 0 3px #fff4d122}.speech-tail-join{position:absolute;left:calc(50% + 52px);bottom:-31px;width:70px;height:34px;z-index:1;pointer-events:none;background:transparent}.speech-tail-join svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--bubble-tip);stroke:var(--line);stroke-width:1;stroke-linejoin:round}.report-clerk-speech>p:first-child{margin-top:0}.report-clerk-speech strong{color:var(--accent);font-size:1.2em;font-variant-numeric:tabular-nums}
+.report-clerk-speech{position:relative;isolation:isolate;z-index:3;align-self:start;margin-bottom:12px;flex:0 0 auto;min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:0 4px 12px #4935261a,inset 0 0 0 3px #fff4d122}.speech-tail-join{position:absolute;left:calc(50% + 52px);bottom:-31px;width:70px;height:34px;z-index:1;pointer-events:none;background:transparent}.speech-tail-join svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--bubble-tip);stroke:var(--line);stroke-width:1;stroke-linejoin:round}.report-clerk-speech>p:first-child{margin-top:0}.report-clerk-speech strong{color:var(--accent);font-size:1.2em;font-variant-numeric:tabular-nums}
 .report-clerk-speech p{margin-top:8px;line-height:1.5}
 @keyframes report-speaking{0%,55%{opacity:1}35%,85%,100%{opacity:0}}
-@media(max-width:600px){.report-clerk-art{width:min(100%,240px);height:30%}.report-clerk{grid-template-rows:minmax(0,1fr) 42%;gap:0}.report-clerk-speech{padding:7px;font-size:12px}}
+@media(max-width:600px){.report-clerk-speech{padding:7px;font-size:12px}}
 @media(prefers-reduced-motion:reduce){.report-clerk-talking{animation:none}}
 
 .report-customer{display:flex;align-items:center;gap:8px;margin-top:10px;min-width:0}
@@ -428,3 +428,6 @@ input[type="checkbox"]{appearance:none;-webkit-appearance:none;display:inline-gr
 .equipment-name-line{display:flex;align-items:baseline;justify-content:center;gap:8px;min-width:0;padding:3px 0 5px}.character-equipment .equipment-information .equipment-name-line h2{font-size:24px;line-height:1.2;margin:0}.equipment-name-line .equipment-job{font-size:11px;line-height:1.2;white-space:nowrap}.equipment-status{display:block;font-size:10px;line-height:1.2;margin-bottom:3px}
 
 main:has(>.preparation-nav){touch-action:pan-y}
+
+.report-speech-reference{visibility:hidden;pointer-events:none}.report-speech-content{position:absolute;inset:12px;display:block}.report-speech-content>p:first-child{margin-top:0}.report-clerk::after{height:clamp(52px,15cqh,110px);aspect-ratio:auto;transform:translateY(30%)}
+@media(max-width:600px){.report-speech-content{inset:7px}}

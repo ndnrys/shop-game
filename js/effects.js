@@ -55,5 +55,19 @@ const GameEffects=(()=>{
   }
   root.addEventListener('cancel',e=>{e.preventDefault();results()});arrival();return()=>clearTimeout(timer);
  });
- return{register,play,get active(){return active}};
+ let clearMorning=()=>{};
+ function morning(){
+  clearMorning();
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return false;
+  const shell=document.querySelector('.shell');if(!shell)return false;
+  const year=Math.floor((day-1)/20)+1,season=Math.floor(((day-1)%20)/5),date=(day-1)%5+1,seasonKeys=['spring','summer','autumn','winter'],seasonNames=['春','夏','秋','冬'];
+  const label=document.createElement('div');label.className='morning-date';label.setAttribute('aria-hidden','true');
+  const yearLabel=document.createElement('span'),dateLabel=document.createElement('strong');
+  yearLabel.textContent=t('ui.morning.year','{year}年目').replace('{year}',year);dateLabel.textContent=t('ui.morning.date','{season}{date}日').replace('{season}',t('ui.season.'+seasonKeys[season],seasonNames[season])).replace('{date}',date);label.append(yearLabel,dateLabel);shell.append(label);
+  let timer;
+  const cleanup=()=>{clearTimeout(timer);label.remove();shell.classList.remove('morning-reveal');shell.removeEventListener('animationend',ended);clearMorning=()=>{}};
+  const ended=event=>{if(event.animationName==='morning-light')cleanup()};
+  clearMorning=cleanup;shell.classList.add('morning-reveal');shell.addEventListener('animationend',ended);timer=setTimeout(cleanup,2000);return true;
+ }
+ return{register,play,morning,get active(){return active}};
 })();

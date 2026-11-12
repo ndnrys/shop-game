@@ -30,14 +30,16 @@ const TradingCore=(()=>{
  }
  function weights(settings,chapter,rumors,day){return settings.customers.map(customer=>({customer,weight:chapter.customers[customer.id].weight*rumors.filter(r=>r.startDay<=day&&day<r.endDay).reduce((w,r)=>w*(settings.rumors.find(d=>d.id===r.id).weights[customer.id]??1),1)}))}
  function simulate({items,sets,definitions,types,settings,chapter,rumors,day,price,random=Math.random}){
-  let remaining=[...items],revenue=0;const visits=[],count=range(chapter.visitors,random),pool=weights(settings,chapter,rumors,day),total=pool.reduce((n,c)=>n+c.weight,0);
+  let remaining=[...items],revenue=0;const visits=[],count=range(chapter.visitors,random),pool=weights(settings,chapter,rumors,day).map(entry=>({...entry,usedVariants:0,variantCount:entry.customer.images?.length||1}));
   for(let v=0;v<count;v++){
+   const available=pool.filter(entry=>entry.weight>0&&entry.usedVariants<entry.variantCount),total=available.reduce((n,entry)=>n+entry.weight,0);
    if(total<=0)break;
-   let draw=random()*total;const customer=(pool.find(c=>(draw-=c.weight)<0)||pool[pool.length-1]).customer;
+   let draw=random()*total;const entry=available.find(c=>(draw-=c.weight)<0)||available[available.length-1],customer=entry.customer;
+   const customerVariant=((day-1)%entry.variantCount+entry.usedVariants++)%entry.variantCount;
    const money=range(chapter.customers[customer.id].money,random),options=candidates(remaining,sets,definitions,types,settings,price).filter(c=>c.price<=money);
    const candidate=options.length?options[Math.floor(random()*options.length)]:null;
    const purchased=candidate&&random()<probability(candidate,customer,definitions,settings)?candidate:null;
-   visits.push({customerId:customer.id,money,price:purchased?.price??0,itemIds:purchased?purchased.items.map(i=>i.itemId):[],uids:purchased?purchased.items.map(i=>i.uid):[],setId:purchased?.setId??null});
+   visits.push({customerId:customer.id,customerVariant,money,price:purchased?.price??0,itemIds:purchased?purchased.items.map(i=>i.itemId):[],uids:purchased?purchased.items.map(i=>i.uid):[],setId:purchased?.setId??null});
    if(purchased){revenue+=purchased.price;const sold=new Set(purchased.items.map(i=>i.uid));remaining=remaining.filter(i=>!sold.has(i.uid))}
   }
   return {remaining,revenue,visits};

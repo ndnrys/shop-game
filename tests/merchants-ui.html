@@ -3,12 +3,12 @@ const q=new URLSearchParams(location.search),width=+(q.get('width')||360),height
 f.onload=async()=>{const w=f.contentWindow,d=f.contentDocument,run=s=>w.eval(s),wait=n=>new Promise(r=>setTimeout(r,n)),assert=(v,m)=>{if(!v)throw Error(m)};try{
 while(!d.querySelector('#date').textContent)await wait(20);
 run('reset();gold=10000;phase=1;counts=[1,1,1];go("home")');
-await wait(100);assert([...d.querySelectorAll('[data-merchant-icon]')].every(im=>im.complete&&im.naturalWidth>0),'icons loaded');
-assert(d.querySelectorAll('[data-merchant-icon]').length===3,'three icons');
+await wait(100);assert([...d.querySelectorAll('[data-merchant-icon]:not([hidden])')].every(im=>im.complete&&im.naturalWidth>0),'icons loaded');
+assert(d.querySelectorAll('[data-merchant-icon]:not([hidden])').length===3,'three icons');
 assert(d.documentElement.scrollWidth<=width+1,'no horizontal overflow');
 assert(d.querySelector('#view').scrollHeight<=d.querySelector('#view').clientHeight+1,'purchase content fits');
-for(const im of d.querySelectorAll('[data-merchant-icon]')){const r=im.getBoundingClientRect();assert(r.left>=0&&r.right<=width&&r.bottom<=height,'icon fits');assert(w.getComputedStyle(im).objectFit==='cover','icon aspect preserved')}
-const icons=()=>[...d.querySelectorAll('[data-merchant-icon]')];
+for(const im of d.querySelectorAll('[data-merchant-icon]:not([hidden])')){const r=im.getBoundingClientRect();assert(r.left>=0&&r.right<=width&&r.bottom<=height,'icon fits');assert(w.getComputedStyle(im).objectFit==='cover','icon aspect preserved')}
+const icons=()=>[...d.querySelectorAll('[data-merchant-icon]:not([hidden])')];
 assert(icons().every(im=>im.src.split('?')[0].endsWith('-normal.webp')),'right column default');
 for(let i=0;i<3;i++){
  d.querySelectorAll('.counter button')[i*2+1].click();

@@ -1,3 +1,25 @@
+/* Retain loaded/decoded chapter images so expression changes never start a fetch. */
+const ChapterImages=(()=>{
+ const records=new Map();let preparation=0;
+ function load(src){
+  if(records.has(src))return records.get(src).promise;
+  const record={image:null,ready:false,promise:null};records.set(src,record);
+  record.promise=new Promise(resolve=>{
+   if(typeof Image==='undefined'){resolve(false);return}
+   const image=new Image();record.image=image;image.decoding='async';let finished=false;
+   const finish=ready=>{if(finished)return;finished=true;clearTimeout(timer);record.ready=ready;resolve(ready)};
+   const timer=setTimeout(()=>finish(false),15000);
+   image.onload=()=>{finish(image.naturalWidth>0);image.decode?.().then(()=>{record.decoded=true},()=>{})};
+   image.onerror=()=>finish(false);image.src=src;
+  });return record.promise;
+ }
+ async function prepare(sources,onProgress=()=>{}){
+  const token=++preparation,unique=[...new Set(sources.filter(Boolean))];let index=0,done=0;onProgress(done,unique.length);
+  async function worker(){while(index<unique.length&&token===preparation){const src=unique[index++];await load(src);onProgress(++done,unique.length)}}
+  await Promise.all(Array.from({length:Math.min(8,unique.length)},worker));return unique.filter(src=>!records.get(src)?.ready);
+ }
+ return {prepare,retain:sources=>{const keep=new Set(sources);for(const src of records.keys())if(!keep.has(src))records.delete(src)},ready:src=>!!records.get(src)?.ready,image:src=>records.get(src)?.image,get size(){return records.size}};
+})();
 /* Presentation only: callers commit and save game results before playing. */
 const GameEffects=(()=>{
  const scenes=new Map();let active=false;
@@ -13,24 +35,27 @@ const GameEffects=(()=>{
   dialog.addEventListener('close',finish,{once:true});
   document.body.append(dialog);dialog.showModal();dialog.querySelector('button')?.focus();return true;
  }
- register('purchase',(root,{items=[],merchants=[]}={},finish)=>{
-  let timer,page=0;const size=4;
+ register('purchase',(root,{items=[],merchants=[],additionalPurchase=null,availableGold=()=>0}={},finish)=>{
+  let timer;
   const button=(text,action)=>{const b=document.createElement('button');b.textContent=text;b.addEventListener('click',action);return b};
   function base(title){root.replaceChildren();root.dataset.stage='delivery';const h=document.createElement('h2');h.textContent=title;root.append(h)}
   function results(){
-   clearTimeout(timer);base(text('results','仕入れた商品'));root.dataset.stage='results';const count=document.createElement('p');count.textContent=`${text('received','届いた品物')} ${items.length} · ${page+1} / ${Math.max(1,Math.ceil(items.length/size))}`;root.append(count);
-   const grid=document.createElement('div');grid.className='effect-products';
-   items.slice(page*size,(page+1)*size).forEach(item=>{const card=document.createElement('article'),img=document.createElement('img'),label=document.createElement('b');img.src=item.image;img.alt='';label.textContent=item.name;card.append(img,label);grid.append(card)});root.append(grid);
-   const controls=document.createElement('div');controls.className='effect-controls';
-   const back=button(text('back','前へ'),()=>{page--;results()});back.disabled=page===0;controls.append(back);
-   if((page+1)*size<items.length)controls.append(button(text('next','次へ'),()=>{page++;results()}));else controls.append(button(text('warehouse','倉庫整理へ'),finish));root.append(controls);controls.querySelector('button:not(:disabled)')?.focus();
+   clearTimeout(timer);base(text('results','仕入れた商品'));root.dataset.stage='results';const count=document.createElement('p');count.textContent=`${text('received','届いた品物')} ${items.length}品`;const meta=document.createElement('div');meta.className='effect-results-meta';meta.append(count);if(additionalPurchase){const gold=document.createElement('p');gold.className='effect-current-gold';gold.innerHTML='所持金 <strong>'+availableGold().toLocaleString()+' <span class="currency-unit">G</span></strong>';meta.append(gold)}root.append(meta);
+   const grid=document.createElement('div');grid.className='effect-products effect-products-list';
+   const grouped=new Map();for(const item of items){const key=item.id||item.name;if(grouped.has(key))grouped.get(key).owned++;else grouped.set(key,{...item,owned:1,quantity:0})}
+   const lines=[...grouped.values()];let purchaseButton;
+   const update=()=>{const total=lines.reduce((sum,item)=>sum+item.quantity*item.price,0);purchaseButton.textContent='選んだ商品を追加購入 '+total+' G';purchaseButton.disabled=total<=0||total>availableGold()};
+   lines.forEach(item=>{const card=document.createElement('article'),img=document.createElement('img'),label=document.createElement('b'),owned=document.createElement('small');img.src=item.image;img.alt='';label.textContent=item.name;owned.textContent='取得 '+item.owned+'個';card.append(img,label,owned);
+    if(additionalPurchase){const controls=document.createElement('div');controls.className='effect-item-quantity';const count=document.createElement('span');count.textContent='0';const minus=button('−',()=>{item.quantity=Math.max(0,item.quantity-1);count.textContent=item.quantity;update()}),plus=button('＋',()=>{item.quantity++;count.textContent=item.quantity;update()});controls.append(minus,count,plus);const price=document.createElement('small');price.innerHTML='1個 '+item.price.toLocaleString()+' <span class="currency-unit">G</span>';card.append(price,controls)}grid.append(card)});root.append(grid);
+   if(additionalPurchase){purchaseButton=button('',()=>{const selected=lines.filter(item=>item.quantity>0);if(additionalPurchase(selected)){for(const item of selected)for(let i=0;i<item.quantity;i++)items.push({...item});results()}});purchaseButton.className='effect-additional-purchase';root.append(purchaseButton);update()}
+   root.append(button(text('warehouse','倉庫整理へ'),finish));
   }
+
   function box(){
    base(text('unpack','届いた品物を確かめましょう'));root.dataset.stage='unpack';
    const scene=document.createElement('div');scene.className='effect-box-scene';
    items.slice(0,3).forEach((item,i)=>{const img=document.createElement('img');img.src=item.image;img.alt=item.name;img.style.setProperty('--order',i);scene.append(img)});
-   const note=document.createElement('p');note.className='effect-note';note.textContent=text('care','ひとつずつ、大切にお店へ。');
-   root.append(scene,note,button(text('show','商品を見る'),results));timer=setTimeout(results,1920);
+   root.append(scene,button(text('show','商品を見る'),results));timer=setTimeout(results,1920);
   }
   function character(title,src,alt,clerk,next){
    base(title);

@@ -36,6 +36,7 @@
     },
     {
       "id": "two_hand_sword",
+      "allowedOffhandTypes": [],
       "label": "両手剣",
       "slot": "weapon",
       "width": 2,
@@ -45,6 +46,7 @@
     },
     {
       "id": "two_hand_axe",
+      "allowedOffhandTypes": [],
       "label": "両手斧",
       "slot": "weapon",
       "width": 2,
@@ -54,6 +56,7 @@
     },
     {
       "id": "bow",
+      "allowedOffhandTypes": ["arrow"],
       "label": "弓",
       "slot": "weapon",
       "width": 2,
@@ -81,6 +84,7 @@
     },
     {
       "id": "spear",
+      "allowedOffhandTypes": [],
       "label": "両手槍",
       "slot": "weapon",
       "width": 1,
@@ -108,6 +112,7 @@
     },
     {
       "id": "arrow",
+      "allowedWeaponTypes": ["bow"],
       "label": "矢",
       "slot": "offhand",
       "width": 1,

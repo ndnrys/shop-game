@@ -44,11 +44,11 @@ const GameEffects=(()=>{
    const grid=document.createElement('div');grid.className='effect-products effect-products-list';
    const grouped=new Map();for(const item of items){const key=item.id||item.name;if(grouped.has(key))grouped.get(key).owned++;else grouped.set(key,{...item,owned:1,quantity:0})}
    const lines=[...grouped.values()];let purchaseButton;
-   const update=()=>{const total=lines.reduce((sum,item)=>sum+item.quantity*item.price,0);purchaseButton.textContent='選んだ商品を追加購入 '+total+' G';purchaseButton.disabled=total<=0||total>availableGold()};
+   const update=()=>{const total=lines.reduce((sum,item)=>sum+item.quantity*item.price,0);purchaseButton.textContent='追加購入して倉庫整理をする（'+total.toLocaleString()+' G）';purchaseButton.disabled=total>availableGold()};
    lines.forEach(item=>{const card=document.createElement('article'),img=document.createElement('img'),label=document.createElement('b'),owned=document.createElement('small');img.src=item.image;img.alt='';label.textContent=item.name;owned.textContent='取得 '+item.owned+'個';card.append(img,label,owned);
     if(additionalPurchase){const controls=document.createElement('div');controls.className='effect-item-quantity';const count=document.createElement('span');count.textContent='0';const minus=button('−',()=>{item.quantity=Math.max(0,item.quantity-1);count.textContent=item.quantity;update()}),plus=button('＋',()=>{item.quantity++;count.textContent=item.quantity;update()});controls.append(minus,count,plus);const price=document.createElement('small');price.innerHTML='1個 '+item.price.toLocaleString()+' <span class="currency-unit">G</span>';card.append(price,controls)}grid.append(card)});root.append(grid);
-   if(additionalPurchase){purchaseButton=button('',()=>{const selected=lines.filter(item=>item.quantity>0);if(additionalPurchase(selected)){for(const item of selected)for(let i=0;i<item.quantity;i++)items.push({...item});results()}});purchaseButton.className='effect-additional-purchase';root.append(purchaseButton);update()}
-   root.append(button(text('warehouse','倉庫整理へ'),finish));
+   if(additionalPurchase){purchaseButton=button('',()=>{const selected=lines.filter(item=>item.quantity>0);if(!selected.length||additionalPurchase(selected))finish()});purchaseButton.className='effect-additional-purchase';root.append(purchaseButton);update()}
+   if(!additionalPurchase)root.append(button('追加購入して倉庫整理をする（0 G）',finish));
   }
 
   function box(){

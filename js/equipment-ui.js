@@ -5,7 +5,13 @@ let equipCharacter=null,equipmentSlot='weapon',equipPage=0,equipmentOrigin=null,
 const partyAway=index=>expeditions.some(e=>e.party===index);
 const isAway=id=>expeditions.some(e=>e.members.includes(id));
 function gear(id){return equipment[id]??={}}
-function canEquip(id,item){const c=characters.find(c=>c.id===id);return !!c&&config.adventurers.jobEquipment[c.initialJobId]?.includes(item.typeId)===true}
+function canEquip(id,item){
+ const c=characters.find(c=>c.id===id);
+ if(!c||config.adventurers.jobEquipment[c.initialJobId]?.includes(item.typeId)!==true)return false;
+ const slot=type(item).slot,current=gear(id);
+ const weapon=slot==='weapon'?item:current.weapon,offhand=slot==='offhand'?item:current.offhand;
+ return EquipmentCore.compatibleHands(weapon?type(weapon):null,offhand?type(offhand):null);
+}
 function companionBaseStats(id){
  const character=characters.find(c=>c.id===id);
  return AdventurerCore.stats(character.initialStats,economyState.companions[id]?.growth);

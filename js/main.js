@@ -1,6 +1,8 @@
 
 const $=s=>document.querySelector(s);
 let language=localStorage.getItem('shop-game-language')==='en'?'en':'ja',translations={ja:{},en:{}};
+const openingChecks={unsorted:localStorage.getItem('shop-game-confirm-unsorted')!=='off',destinations:localStorage.getItem('shop-game-confirm-destinations')!=='off'};
+function toggleOpeningCheck(key){if(!Object.hasOwn(openingChecks,key))return;openingChecks[key]=!openingChecks[key];localStorage.setItem('shop-game-confirm-'+key,openingChecks[key]?'on':'off');render()}
 const t=(key,fallback='')=>translations[language]?.[key]??translations.ja?.[key]??fallback;
 // Keep money() plain text for labels and calculations; style only rendered currency units.
 function formatCurrencyUnits(root=document.body){
@@ -126,8 +128,28 @@ function gameDate(n=day){const seasons=['春','夏','秋','冬'],year=Math.floor
 function toggleMenu(){const opening=$('#nav').classList.toggle('is-open');$('#menuToggle').setAttribute('aria-expanded',String(opening));$('#nav>button:last-of-type')?.setAttribute('aria-expanded',String(opening))}
 function go(id){document.querySelector('#warehouseExpansionDialog')?.close();closeSupportDialog();$('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');partyRosterOpen=false;shopPanelOpen=false;shopSelectedShelf.clear();shopSelectedStock.clear();cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(storyState.migrationPending||storyState.departed)return;if(phase===0&&storyPending()){beginStoryReport();return}if(phase===4){openShop();return}if(pending.length&&phase!==2){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){if(tradingState.report?.day!==day||salesShown<tradingState.report.visits.length)return;ledgerDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions();collectStoryEvents()}else phase++;go('home')}
 function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
-function openShop(){if(storyPending()||storyState.migrationPending||storyState.departed||phase===0)return;if(pending.length)return confirmUnsortedItems();phase=5;go('home')}
-function goStage(target){if(storyPending()||storyState.migrationPending||storyState.departed)return;if(phase<1||phase>5||target<1||target>5)return;if(target===5&&pending.length)return confirmUnsortedItems();phase=target;go('home')}
+function openShop(){
+ if(storyPending()||storyState.migrationPending||storyState.departed||phase===0)return;
+ const unsorted=pending.length>0&&openingChecks.unsorted;
+ const destinations=openingChecks.destinations&&!expeditions.length&&availableDestinations().some(d=>dungeonProgressPercent(d)<100);
+ if(unsorted||destinations){
+  $('#confirmUnsortedTitle').textContent='お店を開けますか？';
+  $('#openingUnsortedMessage').hidden=!unsorted;
+  $('#openingUnsortedMessage').textContent='[倉庫] 未収納の仕入れ商品があります';
+  $('#openingDestinationsMessage').hidden=!destinations;
+  $('#confirmOpeningButton').textContent='お店を開く';
+  return $('#confirmUnsortedDialog').showModal();
+ }
+ completeShopOpening();
+}
+function completeShopOpening(){
+ if(storyPending()||storyState.migrationPending||storyState.departed||phase===0)return;
+ $('#confirmUnsortedDialog').close();
+ const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);
+ if(pending.length){gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false}
+ phase=5;go('home');
+}
+function goStage(target){if(storyPending()||storyState.migrationPending||storyState.departed)return;if(phase<1||phase>5||target<1||target>5)return;if(target===5)return openShop();phase=target;go('home')}
 function openResidentService(tab){go('residents');sub=tab;render()}
 function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-nav" role="group" aria-label="準備画面">'+[1,2,3,4].map(n=>{const reason=preparationAttention(n),label=['','仕入れ','倉庫','陳列','支援'][n];return `<button type="button" data-stage="${n}" aria-current="${current===n?'page':'false'}" ${reason?`aria-label="${esc(t('text.'+label,label)+' · '+reason)}" title="${esc(reason)}"`:''} class="${current===n?'active':''}" onclick="goStage(${n})">${preparationAttentionMark(reason)}${uiIcon(['','shop','box','shelf','party'][n])}<span>${label}</span></button>`}).join('')+'</div>'}
 
@@ -150,9 +172,6 @@ function executeStockAction(){
  selected=index;
  if(pendingAction.action==='buyback')buybackStock();
 }
-
-function confirmUnsortedItems(){document.querySelector('#confirmUnsortedDialog').showModal()}
-function acceptUnsortedItems(){if(storyPending()||storyState.migrationPending||storyState.departed||phase===0)return;document.querySelector('#confirmUnsortedDialog').close();const amount=pending.reduce((sum,item)=>sum+buybackValue(item),0);gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false;phase=5;go('home')}
 
 function villageCompletion(){
  const rules=config.chapterProgression.prologue;
@@ -576,12 +595,13 @@ function downloadConfig(kind){const data=kind==='items'?catalog:config;const url
 function confirmResetGame(){const dialog=$('#confirmResetDialog');dialog.showModal()}
 let settingsTab=0;
 function settings(){
- const tabs=`<div class="tabs">${['表示','セーブ','設定データ'].map((label,i)=>btn(label,`settingsTab=${i};render()`,settingsTab===i?'active':'')).join('')}</div>`;
+ const tabs=`<div class="tabs">${['表示','セーブ','設定データ','開店確認'].map((label,i)=>btn(label,`settingsTab=${i};render()`,settingsTab===i?'active':'')).join('')}</div>`;
  const panels=[
  card(`<h2>${t('ui.language','言語')}</h2><div class="actions">${btn('日本語',"changeLanguage('ja')",language==='ja'?'active':'')}${btn('English',"changeLanguage('en')",language==='en'?'active':'')}</div>`)+card(`<h2>表示スキン</h2><div class="actions">${[['','標準'],['paper','紙'],['night','夜']].map(([id,label])=>btn(label,`document.documentElement.dataset.skin='${id}';render()`)).join('')}</div>`),
  card(`<h2>進行データ</h2><p>今の進行をファイルに保存・復元します。</p><div class="actions">${btn('JSON書き出し','exportGame()')}${btn('JSON読み込み',"document.querySelector('#saveInput').click()")}</div><input id="saveInput" type="file" accept="application/json,.json" hidden onchange="importGame(this.files[0])">${note(catalogMigrationNotice||saveError||'操作ごとにこのブラウザへ自動保存します。')}`)+card(`<h2>進行の初期化</h2>${btn('最初から','confirmResetGame()')}`),
  card(`<h2>アイテム設定 · ${catalog.items.length}種類</h2>${btn('設定されたアイテムを確認',"openCatalog('settings')")}${note('JSONを編集して再読み込みすると反映されます。')}`)+card(`<h2>設定JSONの書き出し</h2><div class="actions">${btn('アイテム定義',"downloadConfig('items')")}${btn('確認用設定',"downloadConfig('settings')")}</div>`)+note('正式価格・能力は未設定。耐久度は個体ごとに管理。')
  ];
+ panels.push(card(`<h2>お店を開けるときの確認</h2>${Object.entries({unsorted:'未収納の仕入れ商品がある場合',destinations:'100%攻略済みではない派遣先がある場合'}).map(([key,label])=>`<p>${label}</p><button class="wood-control" aria-pressed="${openingChecks[key]}" onclick="toggleOpeningCheck('${key}')">${openingChecks[key]?'ON':'OFF'}</button>`).join('')}${note('初期設定は両方ONです。未収納品の確認をOFFにすると、未収納品は自動で商人に引き取られます。')}`));
  return title(t('nav.settings','設定'))+tabs+panels[settingsTab]+`<div class="bottom">${btn('経営に戻る',"go('home')",'primary')}</div>`;
 }
 

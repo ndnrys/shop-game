@@ -759,6 +759,65 @@ test('donation draw excludes items too large for the warehouse and empty pools c
  const used=g.run('donationState.used');await g.run('watchDonation()');assert.equal(g.run('donationState.used'),used);assert.equal(g.run('pending.length'),0);
 });
 
+ test('opening confirmations default on, cancel without changes, and independently switch off',async()=>{
+ const {run,elements,storage}=await game();
+ for(const id of ['#confirmUnsortedDialog'])elements[id]={open:false,showModal(){this.open=true},close(){this.open=false}};
+ run("pending=[newItem('shield_01')];phase=4");
+ const before=run('JSON.stringify({pending,gold,phase})');
+ run('openShop()');assert.equal(elements['#confirmUnsortedDialog'].open,true);
+ assert.equal(elements['#openingUnsortedMessage'].hidden,false);
+ assert.equal(elements['#openingDestinationsMessage'].hidden,false);
+ assert.equal(run('JSON.stringify({pending,gold,phase})'),before);
+ elements['#confirmUnsortedDialog'].close();
+ run('openShop();completeShopOpening()');
+ assert.equal(run('phase'),5);assert.equal(run('pending.length'),0);
+ run("phase=4;pending=[newItem('shield_01')]");
+ run("toggleOpeningCheck('unsorted');toggleOpeningCheck('destinations');openShop()");
+ assert.equal(run('phase'),5);assert.equal(run('pending.length'),0);
+ assert.equal(storage.get('shop-game-confirm-unsorted'),'off');
+ assert.equal(storage.get('shop-game-confirm-destinations'),'off');
+ run("phase=4;toggleOpeningCheck('destinations');for(const d of availableDestinations())dungeonProgress[d.id]=d.requiredProgress;openShop()");
+ assert.equal(run('phase'),5);assert.equal(elements['#confirmUnsortedDialog'].open,false);
+ });
+
+test('opening skips dispatch confirmation while an expedition is active',async()=>{
+ const {run,elements}=await game();
+ elements['#confirmUnsortedDialog']={open:false,showModal(){this.open=true},close(){this.open=false}};
+ run("phase=4;pending=[];expeditions=[{party:0,members:[...parties[0]],dungeonId:selectedDungeon,returnDay:day+1}];openShop()");
+ assert.equal(run('phase'),5);
+ assert.equal(elements['#confirmUnsortedDialog'].open,false);
+ run("phase=4;pending=[newItem('shield_01')];openShop()");
+ assert.equal(elements['#confirmUnsortedDialog'].open,true);
+ assert.equal(elements['#openingUnsortedMessage'].hidden,false);
+ assert.equal(elements['#openingDestinationsMessage'].hidden,true);
+});
+
+test('hand equipment restrictions apply to manual and automatic equipment',async()=>{
+ const {run}=await game();
+ run("globalThis.handId=availableCharacterIds[0];equipCharacter=handId;config.adventurers.jobEquipment[characters.find(c=>c.id===handId).initialJobId]=Object.keys(types);equipment[handId]={};stock=[];pending=[];phase=4");
+ for(const weapon of ['two_hand_sword','two_hand_axe','spear']){
+  run(`equipment[handId]={weapon:newItem('${weapon}_01')}`);
+  assert.equal(run("canEquip(handId,newItem('shield_01'))"),false);
+  assert.equal(run("canEquip(handId,newItem('arrow_01'))"),false);
+ }
+ run("equipment[handId]={weapon:newItem('bow_01')}");
+ assert.equal(run("canEquip(handId,newItem('arrow_01'))"),true);
+ assert.equal(run("canEquip(handId,newItem('shield_01'))"),false);
+ run("equipment[handId]={offhand:newItem('arrow_01')}");
+ assert.equal(run("canEquip(handId,newItem('bow_01'))"),true);
+ assert.equal(run("canEquip(handId,newItem('one_hand_sword_01'))"),false);
+ run("stock=[newItem('one_hand_sword_01')]");
+ const before=run('JSON.stringify({stock,equipment})');
+ run("changeEquipment(stock[0].uid,'weapon',true)");
+ assert.equal(run('JSON.stringify({stock,equipment})'),before);
+ run("equipment[handId]={weapon:newItem('two_hand_sword_01')};stock=[newItem('shield_01')];autoEquip[handId]={offhand:true};brokenTargets[handId]={offhand:'shield_01'};prepareEquipment([handId])");
+ assert.equal(run('stock.length'),1);assert.equal(run('!!gear(handId).offhand'),false);
+ run("equipment[handId]={weapon:newItem('one_hand_sword_01')}");
+ assert.equal(run("canEquip(handId,newItem('shield_01'))"),true);
+ run("equipment[handId]={}");
+ assert.equal(run("canEquip(handId,newItem('arrow_01'))"),true);
+});
+
 function storyRules(){
  const story=JSON.parse(read('data/story.json')),progress={},context=vm.createContext({config:settings,chapter:0,day:2,phase:0,characters:JSON.parse(read('data/characters.json')),dungeonProgress:progress,
  dungeonProgressPercent:d=>Math.min(100,Math.floor((progress[d.id]||0)/d.requiredProgress*100))});

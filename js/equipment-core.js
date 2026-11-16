@@ -11,5 +11,9 @@ const EquipmentCore = (() => {
  function price(item,newPrice,minimumRatio=.1){if(item.forged||item.durability<=0)return 0;return Math.floor(newPrice*Math.max(minimumRatio,item.durability/item.maxDurability))}
  function replacement(stock,itemId){return stock.filter(i=>i.itemId===itemId&&!i.forged&&i.durability>0).sort((a,b)=>a.maxDurability-b.maxDurability||a.durability-b.durability||a.uid-b.uid)[0]||null}
  function wear(equipment,amount=1){const broken=[];for(const [slot,item] of Object.entries(equipment)){if(!item)continue;item.durability-=amount;if(item.durability<=0){broken.push({slot,itemId:item.itemId,uid:item.uid});equipment[slot]=null}}return broken}
- return {version,roll,normalize,price,replacement,wear};
+ function compatibleHands(weaponType,offhandType){
+  if(!weaponType||!offhandType)return true;
+  return (!weaponType.allowedOffhandTypes||weaponType.allowedOffhandTypes.includes(offhandType.id))&&(!offhandType.allowedWeaponTypes||offhandType.allowedWeaponTypes.includes(weaponType.id));
+ }
+ return {version,roll,normalize,price,replacement,wear,compatibleHands};
 })();

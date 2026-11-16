@@ -503,3 +503,7 @@ main:has(.warehouse-board-layout){container-type:size;--warehouse-spare:clamp(0p
 @media(max-width:600px){.story-panel{gap:8px;font-size:12px}.story-panel h1{font-size:20px}.story-panel .clerk-dialogue>img{width:64px;height:100px}.story-panel .clerk-dialogue p{font-size:14px;line-height:1.65}.story-panel .departure-roster .character-art{height:46px}.story-panel .clerk-dialogue .card{padding:10px}.story-panel>.card{padding:8px;margin:0}.story-panel .bottom .actions{gap:4px}}
 
 .report-speech-content.report-speech-requirements{font-family:var(--font);font-size:14px;font-weight:400;gap:6px}
+
+.story-report-copy{font-size:14px;line-height:1.65}.story-report-copy>small{display:block;margin-bottom:8px}.report-clerk-speech .story-report-copy>p{margin:0}
+/* Long visitor dialogue must not widen the shared shop frame on phones. */
+main,.sales-scene{min-width:0}

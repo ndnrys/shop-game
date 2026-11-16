@@ -1,6 +1,6 @@
 // Story progression is separate from shop calculations and customer-weight rumors.
 let storyConfig,storyState;
-function createStoryState(){return {version:1,occurred:[],read:[],queue:[],page:0,capitalParty:[],departed:false,migrationPending:false}}
+function createStoryState(){return {version:1,occurred:[],read:[],queue:[],page:0,capitalParty:[],departed:false,migrationPending:false,morningReportPending:false}}
 function storyRead(id){return storyState.read.includes(id)}
 function storyPercent(id){const d=config.dungeons.find(d=>d.id===id);return d?dungeonProgressPercent(d):0}
 function collectStoryEvents(){
@@ -8,7 +8,7 @@ function collectStoryEvents(){
  for(const event of storyConfig.events){
   const c=event.condition;
   if(event.chapter!==chapter||storyState.occurred.includes(event.id)||(c.day&&day<c.day)||(c.after&&!storyState.occurred.includes(c.after))||(c.merchantVisited&&!storyState.merchantVisited)||(c.allAfter&&c.allAfter.some(id=>!storyState.occurred.includes(id)))||(c.progress&&storyPercent(c.progress[0])<c.progress[1]))continue;
-  storyState.occurred.push(event.id);storyState.queue.push(event.id);
+  storyState.occurred.push(event.id);storyState.queue.push(event.id);storyState.morningReportPending=true;
  }
 }
 function storyDestinationAvailable(d){return !d.legacy&&!storyState.migrationPending&&!storyState.departed&&day>=2&&storyRead(storyConfig.destinationReports[d.id])}
@@ -36,8 +36,17 @@ function storyDialogue(p){
 }
 function storyReportView(){
  const event=storyConfig.events.find(e=>e.id===storyState.queue[0]);if(!event)return report();
- const p=event.pages[storyState.page];
- return `<section class="story-panel" aria-label="朝の重要報告"><small>朝の重要報告 · ${storyState.page+1} / ${event.pages.length}</small><h1>${esc(p.speaker)}</h1>${storyDialogue(p)}<div class="bottom">${btn('次へ','nextStoryPage()','primary')}</div></section>`;
+ const p=event.pages[storyState.page],last=storyState.queue.length===1&&storyState.page===event.pages.length-1;
+ const controls=`<div class="bottom">${btn(last?'毎日の報告へ':'次へ','nextStoryPage()','primary')}</div>`;
+ const visitor=p.speakerId?characters.find(c=>c.id===p.speakerId):null;
+ const image=visitor?.images.normal||(p.speaker==='商人'?'assets/merchants/warm/weapon-normal.webp':null);
+ if(image)return title(p.speaker)+customerScene(p.text,image,p.speaker)+controls;
+ return report(false,{...p,controls});
+}
+function finishMorningReport(review=false){
+ if(storyPending()){beginStoryReport();return}
+ storyState.morningReportPending=false;
+ if(review||villageCompletion().ready||storyTravelReady())go('home');else advance();
 }
 // Re-evaluate current funds and every active companion; never latch a past achievement.
 function chapterClearConditions(){
@@ -53,7 +62,7 @@ function chapterClearGuidance(){
  if(!state.conquered||state.ready)return '<p>今日も一日がんばりましょう！</p><p>仕入れにいってきまーす！</p>';
  return `<p>メイン派遣先は攻略済みです。出発には目標金額と全員生存が必要です。</p><p>所持金 ${money(gold)} / 目標 ${money(state.targetGold)}</p>${state.allAlive?'':`<p>蘇生が必要な仲間：${state.deadIds.length}人</p>`}`;
 }
-function storyTravelReady(){return chapter===1&&phase===0&&!storyState.migrationPending&&!storyState.departed&&chapterClearConditions().ready&&storyRead('chapter_one_clear')&&!storyPending()&&!expeditions.length&&!pending.length&&economyState.bill?.status!=='unpaid'}
+function storyTravelReady(){return chapter===1&&phase===0&&!storyState.morningReportPending&&!storyState.migrationPending&&!storyState.departed&&chapterClearConditions().ready&&storyRead('chapter_one_clear')&&!storyPending()&&!expeditions.length&&!pending.length&&economyState.bill?.status!=='unpaid'}
 function toggleCapitalCompanion(id){
  if(!storyTravelReady()||!availableCharacterIds.includes(id)||companionStatus(id)==='dead')return;
  const ids=storyState.capitalParty;storyState.capitalParty=ids.includes(id)?ids.filter(x=>x!==id):ids.length<2?[...ids,id]:ids;render();
@@ -87,6 +96,7 @@ function validateStorySave(s,fail){
  if(s.storyState===undefined){s.storyState=createStoryState();s.storyState.migrationPending=true;s.storyState.legacyChapter=s.chapter;}
  const state=s.storyState,ids=new Set(storyConfig.events.map(e=>e.id));
  if(!state||state.version!==1||!['occurred','read','queue','capitalParty'].every(k=>Array.isArray(state[k])&&new Set(state[k]).size===state[k].length)||['occurred','read','queue'].some(k=>state[k].some(id=>!ids.has(id)))||state.read.some(id=>!state.occurred.includes(id))||state.queue.some(id=>!state.occurred.includes(id)||state.read.includes(id))||state.occurred.some(id=>!state.read.includes(id)&&!state.queue.includes(id))||!Number.isSafeInteger(state.page)||state.page<0||typeof state.departed!=='boolean'||typeof state.migrationPending!=='boolean')fail();
+ state.morningReportPending??=state.queue.length>0;if(typeof state.morningReportPending!=='boolean')fail();
  const event=storyConfig.events.find(e=>e.id===state.queue[0]);if(event?state.page>=event.pages.length:state.page!==0)fail();
  if(state.capitalParty.length>2||state.capitalParty.some(id=>!s.availableCharacterIds.includes(id))||(state.departed&&(s.chapter!==1||state.capitalParty.length!==2||!state.read.includes('chapter_one_clear'))))fail();
  if(state.occurred.some(id=>storyConfig.events.find(e=>e.id===id).chapter>s.chapter)||state.queue.some(id=>storyConfig.events.find(e=>e.id===id).chapter!==s.chapter))fail();

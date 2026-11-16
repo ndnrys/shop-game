@@ -13,12 +13,21 @@ async function run(){
  const w=frame.contentWindow,ev=code=>w.eval(code);
  for(let i=0;i<200&&!ev('typeof storyConfig!=="undefined"&&!!storyConfig&&!!storyState');i++)await pause();
  w.addEventListener('error',e=>errors.push(e.message));
- const drain=()=>ev('while(storyPending())nextStoryPage()');
+ // Most fixtures acknowledge daily reports explicitly; the initial scenario tests the actual UI flow.
+ const drain=()=>ev('while(storyPending())nextStoryPage();storyState.morningReportPending=false');
  const settle=()=>ev("phase=0;collectStoryEvents();go('home')");
  check('settings loaded',ev('!!storyState&&!!storyConfig'));
+ check('important report opens before daily report',ev("screen==='storyReport'&&!!document.querySelector('.report-clerk-speech')"));
+ ev('globalThis.importantBounds=document.querySelector(".report-clerk-speech").getBoundingClientRect().toJSON();while(storyPending())nextStoryPage()');
+ check('daily report follows important report from first page',ev("screen==='home'&&sub===0&&storyState.morningReportPending&&!!document.querySelector('.morning-ledger')"));
+ check('important and daily report share bubble composition',ev('(()=>{const b=document.querySelector(".report-clerk-speech").getBoundingClientRect();return Math.abs(b.top-importantBounds.top)<1&&Math.abs(b.height-importantBounds.height)<1&&Math.abs(b.width-importantBounds.width)<1})()'));
+ ev('applySave(snapshot());go("home")');check('reload after important report preserves pending daily report',ev('storyState.morningReportPending&&screen==="home"&&!storyPending()'));
+ ev('sub=3;render();finishMorningReport()');check('daily report completes into preparation',ev('phase===1&&!storyState.morningReportPending'));
+ check('support disabled without destinations',ev('document.querySelector(".preparation-nav>button:last-child").disabled&&!preparationAttention(4)'));ev('goStage(4)');check('cannot enter disabled support stage',ev('phase===1'));ev('phase=0;go("home")');
  check('first day cannot dispatch',ev("availableDestinations().length===0"));
  drain();check('opening read persists',ev("storyRead('opening')"));ev('persist()');await new Promise(resolve=>{frame.onload=resolve;frame.contentWindow.location.reload()});for(let i=0;i<200&&!ev('typeof storyState!=="undefined"&&!!storyState');i++)await pause();check('browser reload preserves read and no duplicates',ev("storyRead('opening')&&!storyPending()"));
  ev("advance();openShop();salesShown=tradingState.report.visits.length;finishDay()");check('actual first day ends into second morning',ev('day===2&&phase===0'));drain();
+ ev('phase=1;go("home")');check('support enabled after destination unlock',ev('!document.querySelector(".preparation-nav>button:last-child").disabled'));
  check('day two forest only',ev("availableDestinations().map(d=>d.id).join(',')==='harbor_forest'"));
  ev("phase=4;screen='home';selectedDungeon='harbor_forest';depart()");
  check('next morning scheduled',ev('expeditions.length===1&&expeditions[0].returnDay===day+1'));
@@ -35,7 +44,7 @@ async function run(){
  check('green eyes before repelled',ev("storyState.queue.join(',')==='green_eyes,harbor_repelled'"));drain();
  ev("gold=10000;phase=0;go('home')");check('escort choice shown',ev("screen==='villageClear'"));
  for(const escort of ['kyle','gares','mira']){
-  ev(`reset(false);day=2;gold=10000;phase=0;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];dungeonProgress.harbor=300;selectedCompanion='${escort}';travelToNextChapter()`);
+  ev(`reset(false);day=2;gold=10000;phase=0;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];storyState.morningReportPending=false;dungeonProgress.harbor=300;selectedCompanion='${escort}';travelToNextChapter()`);
   check('arrival report '+escort,ev("chapter===1&&storyPending()"));
   ev('applySave(snapshot())');drain();
   check('four companions '+escort,ev(`availableCharacterIds.length===4&&availableCharacterIds.includes('${escort}')&&['leon','sena','elma'].every(id=>availableCharacterIds.includes(id))`));
@@ -57,6 +66,7 @@ async function run(){
  ev("dungeonProgress.old_checkpoint=300;collectStoryEvents()");drain();
  check('main clear without optional clear',ev("storyRead('chapter_one_clear')&&!dungeonCleared('herb_hill')&&!dungeonCleared('quarry')"));
  ev('gold=clearFunds()');const end=ev('snapshot()'),ids=ev('[...availableCharacterIds]');
+ ev('storyState.morningReportPending=true;go("home")');check('chapter departure waits for daily report after important events',ev('screen==="home"&&!storyTravelReady()'));ev('sub=3;finishMorningReport()');check('chapter departure follows completion of daily report',ev('screen==="capitalDeparture"'));
  for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
   ev(`applySave(${JSON.stringify(end)});toggleCapitalCompanion('${ids[i]}');toggleCapitalCompanion('${ids[j]}');confirmCapitalDeparture()`);
   check('capital pair '+ids[i]+' '+ids[j],ev(`storyState.departed&&storyState.capitalParty.length===2&&availableCharacterIds.length===4&&chapter===1`));
@@ -74,7 +84,7 @@ async function run(){
  ev('economyState.companions.elma.recoveryDay=day+3');check('recovering companion counts as alive',ev('storyTravelReady()'));
  ev('gold--;confirmCapitalDeparture()');check('confirmation rechecks funds after selection',ev('!storyState.departed'));
  ev('gold=clearFunds();confirmCapitalDeparture()');check('saving again allows departure',ev('storyState.departed'));
- ev('reset(false);day=2;gold=clearFunds();dungeonProgress.harbor=300;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];economyState.companions.mira??={};economyState.companions.mira.dead=true;selectedCompanion="kyle";travelToNextChapter()');
+ ev('reset(false);day=2;gold=clearFunds();dungeonProgress.harbor=300;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];storyState.morningReportPending=false;economyState.companions.mira??={};economyState.companions.mira.dead=true;selectedCompanion="kyle";travelToNextChapter()');
  check('prologue requires all three alive',ev('chapter===0&&!villageCompletion().ready'));
  ev('delete economyState.companions.mira.dead;gold=clearFunds()-1;travelToNextChapter()');check('prologue rechecks funds after revival',ev('chapter===0&&!villageCompletion().ready'));
  ev('gold=clearFunds();travelToNextChapter()');check('prologue resumes after replenishing funds',ev('chapter===1'));
@@ -108,21 +118,28 @@ async function run(){
  check('treatment pays current quote exactly and preserves XP',ev('gold===0&&ledgerDay().expenses===90&&companionStatus("kyle")==="waiting"&&economyState.companions.kyle.experience===12'));
  ev('healCompanion("kyle")');check('healthy companion cannot be charged again',ev('gold===0&&ledgerDay().expenses===90'));ev('closeSupportDialog();applySave(snapshot())');check('treatment survives save reload',ev('gold===0&&companionStatus("kyle")==="waiting"'));
  ev('economyState.companions.kyle.dead=true');check('revival remains level times 200',ev('companionCareCost("kyle")===600'));
+ // Morning voices omit stock shopping lines and preserve the original visit record.
+ ev('reset(false);storyState.queue=[];storyState.morningReportPending=false;tradingState.report={day:day-1,revenue:0,visits:[{customerId:"villager",customerVariant:0,itemIds:[],uids:[],price:0,dialogue:"いい買い物ができた！"},{customerId:"villager",customerVariant:1,itemIds:[],uids:[],price:0,dialogue:"今日は見送ろうかな"},{customerId:"villager",customerVariant:2,itemIds:[],uids:[],price:0,dialogue:"港の工事が忙しいそうだね。"},{customerId:"villager",customerVariant:3,itemIds:[],uids:[],price:0,dialogue:"港の工事が忙しいそうだね。"}]};sub=1;screen="home";render()');
+ check('morning excludes generic shopping comments and merges repeated rumor',ev('morningCustomerVoices().length===1&&document.querySelectorAll(".report-customer").length===1&&!document.querySelector(".report-voices").textContent.includes("見送ろう")'));
+ check('morning grouping preserves sales records',ev('tradingState.report.visits.length===4&&morningCustomerVoices()[0]===tradingState.report.visits[2]'));
+ ev('tradingState.report.visits=tradingState.report.visits.slice(0,2)');check('empty voices page is skipped',ev('!morningReportPages().includes(1)'));
  // Inspect every story page and all selection screens for clipping at the chosen viewport.
  ev('reset(false);day=2');
  for(const e of ev('storyConfig.events'))for(let p=0;p<e.pages.length;p++){
   ev(`chapter=${e.chapter};storyState.queue=['${e.id}'];storyState.occurred=['${e.id}'];storyState.read=[];storyState.page=${p};screen='storyReport';render()`);
-  const fit=ev("(()=>{const v=document.querySelector('#view'),p=document.querySelector('.story-panel');return p.scrollHeight<=p.clientHeight+2&&v.scrollHeight<=v.clientHeight+2&&p.getBoundingClientRect().right<=v.getBoundingClientRect().right+1})()");
-  check('page fits '+e.id+' '+p,fit);
+  const fit=ev("(()=>{const v=document.querySelector('#view'),p=document.querySelector('.report-speech-content')||document.querySelector('.sales-bubble');return p.scrollHeight<=p.clientHeight+2&&v.scrollHeight<=v.clientHeight+2&&p.getBoundingClientRect().right<=v.getBoundingClientRect().right+1})()");
+  check('page fits '+e.id+' '+p,fit);check('shop frame fits viewport '+e.id+' '+p,ev('document.querySelector("header").getBoundingClientRect().right<=innerWidth+1'));
+  if(e.pages[p].speakerId||e.pages[p].speaker==='商人')check('visitor uses shopping customer composition '+e.id+' '+p,ev('!!document.querySelector(".sales-scene>img")&&!document.querySelector(".effect-merchant-stage")'));
  }
  ev('reset(false);loadDevelopmentStage("prologueClear")');
  check('escort layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));
- ev(`applySave(${JSON.stringify(end)});screen='capitalDeparture';render()`);
+ ev(`applySave(${JSON.stringify(end)});storyState.morningReportPending=false;screen='capitalDeparture';render()`);
  check('capital layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));
  ev('storyState.migrationPending=true;render()');check('migration layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));ev('storyState.migrationPending=false;screen="capitalDeparture";render()');
  ev(`applySave(${JSON.stringify(end)});economyState.companions.elma??={};economyState.companions.elma.dead=true;gold=clearFunds()-1;screen="home";sub=3;render()`);check('blocked departure guidance fits bubble',ev('(()=>{const p=document.querySelector(".report-speech-content");return p.scrollHeight<=p.clientHeight+2})()'));
  const scene=params.get('scene');
  if(scene==='report')ev("storyState.queue=['harbor_incident'];storyState.page=0;screen='storyReport';render()");
+ if(scene==='visitor')ev('reset(false);day=2;storyState.queue=["forest_request"];storyState.occurred=["opening","forest_request"];storyState.read=["opening"];storyState.page=1;screen="storyReport";render()');
  if(scene==='migration')ev('storyState.migrationPending=true;render()');
  document.querySelector('#results').textContent='PASS '+checks.length+' checks\n'+checks.join('\n');
  document.body.dataset.status='PASS';

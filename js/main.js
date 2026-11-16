@@ -62,7 +62,7 @@ function renderHeader(){
 
 function preparationAttention(stage){
  if(stage===2&&pending.length)return t('text.未収納の商品があります','未収納の商品があります')+' ('+pending.length+')';
- if(stage===4&&phase>=1&&phase<=4&&parties.some((members,index)=>!partyAway(index)&&members.some(id=>id&&companionStatus(id)==='waiting')))return t('text.未派遣のパーティがあります','未派遣のパーティがあります');
+ if(stage===4&&availableDestinations().length&&phase>=1&&phase<=4&&parties.some((members,index)=>!partyAway(index)&&members.some(id=>id&&companionStatus(id)==='waiting')))return t('text.未派遣のパーティがあります','未派遣のパーティがあります');
  return '';
 }
 const preparationAttentionMark=reason=>reason?'<i class="preparation-attention" aria-hidden="true"></i>':'';
@@ -126,7 +126,7 @@ const title=(label,detail='')=>`<div class="heading"><h1>${esc(label)}</h1>${det
 function gameDate(n=day){const seasons=['春','夏','秋','冬'],year=Math.floor((n-1)/20)+1,season=seasons[Math.floor(((n-1)%20)/5)],date=(n-1)%5+1;return `${year}年 ${season}${date}日`}
 
 function toggleMenu(){const opening=$('#nav').classList.toggle('is-open');$('#menuToggle').setAttribute('aria-expanded',String(opening));$('#nav>button:last-of-type')?.setAttribute('aria-expanded',String(opening))}
-function go(id){document.querySelector('#warehouseExpansionDialog')?.close();closeSupportDialog();$('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');partyRosterOpen=false;shopPanelOpen=false;shopSelectedShelf.clear();shopSelectedStock.clear();cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(storyState.migrationPending||storyState.departed)return;if(phase===0&&storyPending()){beginStoryReport();return}if(phase===4){openShop();return}if(pending.length&&phase!==2){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){if(tradingState.report?.day!==day||salesShown<tradingState.report.visits.length)return;ledgerDay();closeEconomyDay();day++;phase=0;recoverCompanions();resolveExpeditions();collectStoryEvents()}else phase++;go('home')}
+function go(id){if(id==='adventurers'&&!availableDestinations().length)return;document.querySelector('#warehouseExpansionDialog')?.close();closeSupportDialog();$('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');partyRosterOpen=false;shopPanelOpen=false;shopSelectedShelf.clear();shopSelectedStock.clear();cancelEquipmentDrag();equipmentSelectedUid=null;if(screen==='equipment'&&id!=='equipment')equipmentOrigin=null;screen=id;page=0;sub=0;render()}function advance(){if(storyState.migrationPending||storyState.departed)return;if(phase===0&&storyPending()){beginStoryReport();return}if(phase===0)storyState.morningReportPending=false;if(phase===4){openShop();return}if(pending.length&&phase!==2){go('trade');return}if(economyState.bill?.status==='unpaid')return;if(phase===5){if(tradingState.report?.day!==day||salesShown<tradingState.report.visits.length)return;ledgerDay();closeEconomyDay();day++;phase=0;storyState.morningReportPending=true;recoverCompanions();resolveExpeditions();collectStoryEvents()}else phase++;go('home')}
 function reviewDailyReport(){screen='dailyReport';sub=0;page=0;render()}
 function openShop(){
  if(storyPending()||storyState.migrationPending||storyState.departed||phase===0)return;
@@ -149,9 +149,9 @@ function completeShopOpening(){
  if(pending.length){gold+=amount;ledgerMoney('otherIncome',amount);pending=[];warehouseShowStock=false}
  phase=5;go('home');
 }
-function goStage(target){if(storyPending()||storyState.migrationPending||storyState.departed)return;if(phase<1||phase>5||target<1||target>5)return;if(target===5)return openShop();phase=target;go('home')}
+function goStage(target){if(target===4&&!availableDestinations().length)return;if(storyPending()||storyState.migrationPending||storyState.departed)return;if(phase<1||phase>5||target<1||target>5)return;if(target===5)return openShop();phase=target;go('home')}
 function openResidentService(tab){go('residents');sub=tab;render()}
-function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-nav" role="group" aria-label="準備画面">'+[1,2,3,4].map(n=>{const reason=preparationAttention(n),label=['','仕入れ','倉庫','陳列','支援'][n];return `<button type="button" data-stage="${n}" aria-current="${current===n?'page':'false'}" ${reason?`aria-label="${esc(t('text.'+label,label)+' · '+reason)}" title="${esc(reason)}"`:''} class="${current===n?'active':''}" onclick="goStage(${n})">${preparationAttentionMark(reason)}${uiIcon(['','shop','box','shelf','party'][n])}<span>${label}</span></button>`}).join('')+'</div>'}
+function stageNavigation(){const current=screen==='warehouse'||screen==='trade'?2:screen==='adventurers'?4:phase;return '<div class="preparation-nav" role="group" aria-label="準備画面">'+[1,2,3,4].map(n=>{const reason=preparationAttention(n),label=['','仕入れ','倉庫','陳列','支援'][n];return `<button type="button" data-stage="${n}" ${n===4&&!availableDestinations().length?'disabled title="派遣できる目的地がありません"':''} aria-current="${current===n?'page':'false'}" ${reason?`aria-label="${esc(t('text.'+label,label)+' · '+reason)}" title="${esc(reason)}"`:''} class="${current===n?'active':''}" onclick="goStage(${n})">${preparationAttentionMark(reason)}${uiIcon(['','shop','box','shelf','party'][n])}<span>${label}</span></button>`}).join('')+'</div>'}
 
 function info(a,b){$('#modalTitle').textContent=a;$('#modalBody').textContent=b;formatCurrencyUnits($('#modal'));$('#modal').showModal()}
 let pendingStockAction=null;
@@ -176,7 +176,7 @@ function executeStockAction(){
 function villageCompletion(){
  const rules=config.chapterProgression.prologue;
  const {conquered,funded,allAlive}=chapterClearConditions();
- const settled=economyState.bill?.status!=='unpaid',ready=chapter===0&&phase===0&&storyRead('harbor_repelled')&&!storyPending()&&!storyState.migrationPending&&conquered&&funded&&allAlive&&settled&&!pending.length&&!expeditions.length;
+ const settled=economyState.bill?.status!=='unpaid',ready=chapter===0&&phase===0&&!storyState.morningReportPending&&storyRead('harbor_repelled')&&!storyPending()&&!storyState.migrationPending&&conquered&&funded&&allAlive&&settled&&!pending.length&&!expeditions.length;
  return {rules,conquered,funded,allAlive,ready};
 }
 function villageClearView(){
@@ -206,7 +206,7 @@ function loadDevelopmentStage(stage){
  if(!['prologue','prologueEnd','prologueClear','chapter1'].includes(stage))return;
  $('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false');
  // Build the complete checkpoint before allowing any automatic save.
- saveReady=false;reset(false);storyState.queue=[];storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];
+ saveReady=false;reset(false);storyState.morningReportPending=false;storyState.queue=[];storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];
  if(stage!=='prologue'){
   day=2;
   const target=config.dungeons.find(d=>d.id===config.chapterProgression.prologue.clearDungeonId);
@@ -239,20 +239,28 @@ function returnMemberMessages(member){
  if(severity)messages.push('装備が'+severity+'。');
  return messages.length?messages:['無事に帰還しました。'];
 }
+function morningCustomerVoices(){
+ const seen=new Set();
+ return (tradingState.report?.visits||[]).filter(visit=>{
+  const line=visit.dialogue?.trim();
+  if(!line||/^(いい買い物ができた[！!。]?|今日は見送ろうかな[？?。]?)$/.test(line)||seen.has(line))return false;
+  seen.add(line);return true;
+ });
+}
 function morningReportPages(){
- const hasVoices=!!tradingState.report?.visits?.length,hasReturns=groupedReturnReport.some(group=>group.members?.length);
+ const hasVoices=morningCustomerVoices().length>0,hasReturns=groupedReturnReport.some(group=>group.members?.length);
  return [0,...(hasVoices?[1]:[]),...(hasReturns?[2]:[]),3];
 }
 function moveMorningReportPage(direction){
  const pages=morningReportPages(),index=Math.max(0,pages.indexOf(sub));
  sub=pages[Math.max(0,Math.min(pages.length-1,index+direction))];page=0;render();
 }
-function report(review=false){
+function report(review=false,storyPage=null){
  const groups=typeof groupedReturnReport!=='undefined'?groupedReturnReport:[];
- const bill=economyState.bill,visits=tradingState.report?.visits;
- const buyers=visits?.filter(v=>v.uids.length).length||0;
+ const bill=economyState.bill,rawVisits=tradingState.report?.visits,visits=morningCustomerVoices();
+ const buyers=rawVisits?.filter(v=>v.uids.length).length||0;
  const costDetails=bill?[['店舗管理費',bill.shop],['仲間維持費',bill.companions],['季節税',bill.tax]].filter(([,amount])=>amount>0).map(([label,amount])=>esc(label)+'：'+money(amount)).join('<br>'):'';
- const salesSpeech=(visits&&!buyers?'<p>購入された方はいらっしゃいませんでした。</p>':'')+
+ const salesSpeech=(rawVisits&&!buyers?'<p>購入された方はいらっしゃいませんでした。</p>':'')+
  (!bill?'<p>初回の朝なので、固定費のお支払いはありません。</p>':bill.status==='paid'?'':'<p>所持金が足りず、まだお支払いができていません。</p>'+btn('支払いを再確認','retryEconomyBill()','mini'))+
  (rescueState.last?.day===day?`<p>国から${money(rescueState.last.amount)}の資金提供を受けました。</p>`:'');
  const voiceSize=2,voicePages=Math.max(1,Math.ceil((visits?.length||0)/voiceSize));
@@ -261,7 +269,7 @@ function report(review=false){
  (visits?.length?'<div class="report-voice-list">'+visits.slice(page*voiceSize,(page+1)*voiceSize).map((visit,index)=>{
   const customer=tradingConfig.customers.find(c=>c.id===visit.customerId),purchased=visit.uids.length>0;
   const products=purchased?visit.itemIds.map(id=>esc(definitions[id]?.name||id)).join(' ＋ '):'購入なし';
-  return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customerImage(customer,page*voiceSize+index))}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(visit.storyMerchant?'商人':customer?.name||visit.customerId)}</b><p>「${esc(visit.dialogue||(purchased?'いい買い物ができた！':'今日は見送ろうかな'))}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
+  return `<div class="report-customer"><div class="report-customer-art">${customer?.image?`<img src="${esc(customerImage(customer,tradingState.report.visits.indexOf(visit)))}" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>${customerIcons[visit.customerId]||'🧑'}</span>`:customerIcons[visit.customerId]||'🧑'}</div><div><b>${esc(visit.storyMerchant?'商人':customer?.name||visit.customerId)}</b><p>「${esc(visit.dialogue||(purchased?'いい買い物ができた！':'今日は見送ろうかな'))}」</p><small>${products}${purchased?' · '+money(visit.price):''}</small></div></div>`;
  }).join('')+'</div>'+(voicePages>1?`<div class="report-voice-pages">${btn('前のお客様','page=Math.max(0,page-1);render()','mini')}<span>${page+1} / ${voicePages}</span>${btn('次のお客様',`page=Math.min(${voicePages-1},page+1);render()`,'mini')}</div>`:''):'<p>今回はお客様の声は届いていません。</p>')+'</section>';
  const returnEntries=groups.filter(group=>group.members?.length);
  const returnPages=Math.max(1,returnEntries.length);if(sub===2)page=Math.max(0,Math.min(page,returnPages-1));
@@ -276,10 +284,14 @@ function report(review=false){
  const ledgerMoneyText=amount=>`${amount.toLocaleString()} <small class="ledger-unit">G</small>`;
  const reportLedger=`<div class="morning-ledger"><div class="morning-sales">${ledgerIcon('receipt')}<div><span>${esc(t('ui.report.sales','昨日の売上'))}</span><strong>${ledgerMoneyText(lastSales)}</strong></div></div><div class="morning-entry">${ledgerIcon('crate')}<span>${esc(t('ui.report.purchase','仕入れ'))}</span><b>−${ledgerMoneyText(purchaseCost)}</b></div><div class="morning-entry" title="${esc(costDetails.replaceAll('<br>',' / '))}">${ledgerIcon('wrench')}<span>${esc(t('ui.report.maintenance','維持費'))}${bill?.status==='unpaid'?`<small>（${esc(t('ui.report.unpaid','未払い'))}）</small>`:''}</span><b>−${ledgerMoneyText(maintenance)}</b></div><div class="morning-entry morning-net${net<0?' is-negative':''}">${ledgerIcon('balance')}<span>${esc(t('ui.report.net','収支'))}</span><b>${net>=0?'+':'−'}${ledgerMoneyText(Math.abs(net))}</b></div></div>`;
 
- const clerk=`<section class="report-clerk" aria-label="店員からの報告"><div class="report-clerk-speech"><div class="report-speech-reference" aria-hidden="true" inert>${reportLedger}<div class="morning-greeting">${salesSpeech}</div></div><div class="report-speech-content${reportPage===3?' report-speech-farewell'+(chapterClearConditions().conquered&&!chapterClearConditions().ready?' report-speech-requirements':''):''}">${[reportLedger+`<div class="morning-greeting">${salesSpeech}</div>`,voicesSpeech,returnSpeech,chapterClearGuidance()][reportPage]}</div><span class="speech-tail-join" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M25 1C28 13 19 25 0 33C31 27 49 13 70 1"/></svg></span></div><div class="report-clerk-art${reportPage===3?' report-clerk-farewell':''}"><div class="report-clerk-portrait" data-sprite-key="shopkeeper-report" data-expression="${reportPage===3?'oh':'normal'}"><img data-expression="normal" ${reportPage===3?'hidden':''} src="${shopkeeperImage('normal')}" alt="報告する店員" onerror="this.dataset.failed='true';this.hidden=true"><img data-expression="talking" class="report-clerk-talking" ${reportPage===3?'hidden':''} src="${shopkeeperImage('talking')}" alt="" onerror="this.dataset.failed='true';this.hidden=true"><img data-expression="oh" ${reportPage===3?'':'hidden'} src="${shopkeeperImage('oh')}" alt="仕入れに向かう店員" onerror="this.dataset.failed='true';this.hidden=true"></div></div></section>`;
+ const farewell=!storyPage&&reportPage===3;
+ const speech=storyPage?`<div class="story-report-copy"><small>朝の重要報告</small><p>${esc(storyPage.text)}</p></div>`:[reportLedger+`<div class="morning-greeting">${salesSpeech}</div>`,voicesSpeech,returnSpeech,chapterClearGuidance()][reportPage];
+ const clerk=`<section class="report-clerk" aria-label="店員からの報告"><div class="report-clerk-speech"><div class="report-speech-reference" aria-hidden="true" inert>${reportLedger}<div class="morning-greeting">${salesSpeech}</div></div><div class="report-speech-content${farewell?' report-speech-farewell'+(chapterClearConditions().conquered&&!chapterClearConditions().ready?' report-speech-requirements':''):''}">${speech}</div><span class="speech-tail-join" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M25 1C28 13 19 25 0 33C31 27 49 13 70 1"/></svg></span></div><div class="report-clerk-art${farewell?' report-clerk-farewell':''}"><div class="report-clerk-portrait" data-sprite-key="shopkeeper-report" data-expression="${farewell?'oh':'normal'}"><img data-expression="normal" ${farewell?'hidden':''} src="${shopkeeperImage('normal')}" alt="報告する店員" onerror="this.dataset.failed='true';this.hidden=true"><img data-expression="talking" class="report-clerk-talking" ${farewell?'hidden':''} src="${shopkeeperImage('talking')}" alt="" onerror="this.dataset.failed='true';this.hidden=true"><img data-expression="oh" ${farewell?'':'hidden'} src="${shopkeeperImage('oh')}" alt="仕入れに向かう店員" onerror="this.dataset.failed='true';this.hidden=true"></div></div></section>`;
+ if(storyPage)return clerk+storyPage.controls;
  return clerk+
- `<div class="bottom"><div class="actions">${reportIndex?btn('前へ','moveMorningReportPage(-1)','mini'):''}${btn(reportPage<3?'次のページ':storyPending()?'重要報告へ':review?'準備に戻る':'仕入れへ',reportPage<3?'moveMorningReportPage(1)':storyPending()?"go('storyReport')":review?"go('home')":'advance()','primary')}</div>${steps()}</div>`;
+ `<div class="bottom"><div class="actions">${reportIndex?btn('前へ','moveMorningReportPage(-1)','mini'):''}${btn(reportPage<3?'次のページ':review?'準備に戻る':'仕入れへ',reportPage<3?'moveMorningReportPage(1)':`finishMorningReport(${review})`,'primary')}</div>${steps()}</div>`;
 }
+
 function shelfOverview(){const capacity=config.development.shelfCapacity;return title('棚の中身')+card(row('棚の空き',`${Math.max(0,shelfCapacity()-shelf.length)} / ${shelfCapacity()} 点`))+Array.from({length:economyState.shelfCount},(_,index)=>{const items=shelf.filter(item=>item.shelfId===index);return card('<h2>棚 '+(index+1)+' · '+items.length+' / '+capacity+' 点</h2>'+(items.length?items.map(item=>row(esc(itemName(item)),money(saleValue(item)))).join(''):note('商品なし')))}).join('')+`<div class="bottom">${btn('仕入れへ戻る',"go('home')",'primary')}</div>`}
 // Transient presentation state; never included in game saves.
 const merchantExpressions=['normal','normal','normal'],merchantExpressionTimers=[null,null,null];
@@ -574,6 +586,9 @@ function buy(){if(pending.length){phase=2;go('trade');return}const total=counts.
 function receive(){const item=incomingWarehouseItem();if(!item||!storeItem(item))return;warehouseBoards();warehousePageIndex=item.warehousePage??0;warehouseSize={...warehousePages[warehousePageIndex]};selected=stock.length-1;pending.splice(pending.indexOf(item),1);warehouseShowStock=false;render()}
 function replenish(){if(selectedShelf<0||selectedShelf>=economyState.shelfCount)return;if(!stock.length||shelfItems().length>=config.development.shelfCapacity)return info('補充できません','在庫と棚の空きを確認してください。');if(stock[selected]?.forged)return info('陳列できません','鍛冶済み装備は手動で装備してください。');if(!stock[selected])return;const item=stock.splice(selected,1)[0];item.shelfId=selectedShelf;shelf.push(item);selected=0;page=0;discoverShelfSets();render()};
 function returnShelf(){const item=shelfItems().at(-1);if(!item)return;if(!storeItem(item))return info('倉庫に入りません','倉庫を整理してください。');shelf.splice(shelf.indexOf(item),1);delete item.shelfId;render()}
+function customerScene(message,image='',name=''){
+ return `<div class="sales-scene"><div class="sales-bubble" role="status">${esc(message)}</div>${image?`<img src="${esc(image)}" alt="${esc(name)}">`:''}</div>`;
+}
 let salesShown=0,salesTimer=null,salesDay=0;
 const customerIcons={villager:'🧑',warrior:'⚔️',archer:'🏹',mage:'🧙',priest:'⛪',rogue:'🥷',traveler:'🎒'};
 function sales(){
@@ -587,7 +602,7 @@ function sales(){
  const latest=shown.at(-1),guest=latest&&tradingConfig.customers.find(c=>c.id===latest.customerId);
  const finished=salesShown>=visits.length;
  return title('本日の営業')+
- `<div class="sales-scene"><div class="sales-bubble" role="status">${latest?esc((latest.storyMerchant?'商人：':'')+(latest.dialogue||(latest.itemIds.length?'いい買い物ができた！':'今日は見送ろうかな'))):'いらっしゃいませ！'}</div>${guest?.image?`<img src="${esc(customerImage(guest,shown.length-1))}" alt="${esc(guest.name)}">`:''}</div>`+`<section class="card sales-summary">${row('来店',`${salesShown}<span class="count-unit">人</span>`)+row('本日の売上',money(shown.reduce((sum,v)=>sum+v.price,0)))}</section>`+
+ customerScene(latest?(latest.storyMerchant?'商人：':'')+(latest.dialogue||(latest.itemIds.length?'いい買い物ができた！':'今日は見送ろうかな')):'いらっしゃいませ！',guest?.image?customerImage(guest,shown.length-1):'',guest?.name||'')+`<section class="card sales-summary">${row('来店',`${salesShown}<span class="count-unit">人</span>`)+row('本日の売上',money(shown.reduce((sum,v)=>sum+v.price,0)))}</section>`+
  `<div class="bottom"><button class="primary wood-control" onclick="finishDay()" ${finished?'':'disabled'}>${finished?'営業終了 · 翌日へ':'接客中…'}</button></div>`;
 }
 
@@ -610,7 +625,7 @@ function render(){
  if(storyState.migrationPending&&screen!=='settings'){screen='storyMigration';sub=0}
  else if(storyState.departed&&!['settings','storyLog'].includes(screen)){screen='capitalDeparture';sub=0}
  else if(storyPending()){
-  if(!['home','dailyReport','storyReport','settings'].includes(screen)){screen='home';sub=0}
+  if(screen!=='settings'){screen='storyReport';sub=0}
  }else{
   const clearReady=villageCompletion().ready;
   if(clearReady&&screen!=='villageClear'){screen='villageClear';sub=0;page=0;selectedCompanion=null}
@@ -618,7 +633,7 @@ function render(){
   if(storyTravelReady()&&!['settings','storyLog'].includes(screen))screen='capitalDeparture';
   else if(screen==='capitalDeparture'&&!storyState.departed){screen='home';sub=3}
  }
- const transitioning=['villageClear','chapterArrival','storyReport','storyMigration','capitalDeparture'].includes(screen);
+ const transitioning=['villageClear','chapterArrival','storyMigration','capitalDeparture'].includes(screen);
  $('.shell').classList.toggle('chapter-transition',transitioning);
  if(transitioning){$('#nav').classList.remove('is-open');$('#menuToggle').setAttribute('aria-expanded','false')}
  renderBase();if($('#supportDialog')?.open)renderSupportDialog();if($('#warehouseExpansionDialog')?.open)renderWarehouseExpansionDialog();persist()
@@ -744,7 +759,7 @@ document.addEventListener('pointerdown',event=>{
   const dx=e.clientX-x,dy=e.clientY-y;cleanup();
   if(screen!==originScreen||!view.contains(nav)||document.querySelector('dialog[open]')||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;
   preparationSwipeSuppressClick=Date.now()+400;
-  goStage(((current-1+(dx<0?1:-1)+4)%4)+1);
+  const stages=availableDestinations().length?[1,2,3,4]:[1,2,3],index=stages.indexOf(current);goStage(stages[(index+(dx<0?1:-1)+stages.length)%stages.length]);
  }
  preparationSwipeCancel=cleanup;
  window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cancel);window.addEventListener('blur',cleanup);

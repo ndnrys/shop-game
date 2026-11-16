@@ -1,0 +1,131 @@
+<!doctype html><meta charset="utf-8"><title>Story integration checks</title>
+<style>body{margin:0}iframe{border:0;display:block}#results{white-space:pre-wrap}</style>
+<iframe id="game"></iframe><pre id="results">RUNNING</pre>
+<script>
+const params=new URLSearchParams(location.search),frame=document.querySelector('iframe');
+frame.width=params.get('width')||360;frame.height=params.get('height')||640;
+const checks=[],errors=[];
+const check=(name,yes)=>{checks.push((yes?'PASS ':'FAIL ')+name);if(!yes)throw Error(name)};
+const pause=()=>new Promise(resolve=>setTimeout(resolve,20));
+async function run(){
+ localStorage.removeItem('shop-game-save');frame.src='../index.html?story-tests';
+ await new Promise(resolve=>frame.onload=resolve);
+ const w=frame.contentWindow,ev=code=>w.eval(code);
+ for(let i=0;i<200&&!ev('typeof storyConfig!=="undefined"&&!!storyConfig&&!!storyState');i++)await pause();
+ w.addEventListener('error',e=>errors.push(e.message));
+ const drain=()=>ev('while(storyPending())nextStoryPage()');
+ const settle=()=>ev("phase=0;collectStoryEvents();go('home')");
+ check('settings loaded',ev('!!storyState&&!!storyConfig'));
+ check('first day cannot dispatch',ev("availableDestinations().length===0"));
+ drain();check('opening read persists',ev("storyRead('opening')"));ev('persist()');await new Promise(resolve=>{frame.onload=resolve;frame.contentWindow.location.reload()});for(let i=0;i<200&&!ev('typeof storyState!=="undefined"&&!!storyState');i++)await pause();check('browser reload preserves read and no duplicates',ev("storyRead('opening')&&!storyPending()"));
+ ev("advance();openShop();salesShown=tradingState.report.visits.length;finishDay()");check('actual first day ends into second morning',ev('day===2&&phase===0'));drain();
+ check('day two forest only',ev("availableDestinations().map(d=>d.id).join(',')==='harbor_forest'"));
+ ev("phase=4;screen='home';selectedDungeon='harbor_forest';depart()");
+ check('next morning scheduled',ev('expeditions.length===1&&expeditions[0].returnDay===day+1'));
+ ev('phase=5;resolveTradingDay();salesShown=tradingState.report.visits.length;finishDay()');
+ check('return and actual progress',ev("expeditions.length===0&&groupedReturnReport.length===1&&dungeonProgress.harbor_forest>0"));
+ ev('applySave(snapshot())');check('structured return survives load',ev('groupedReturnReport.length===1'));
+ ev("dungeonProgress.harbor_forest=200;collectStoryEvents()");
+ check('forest thresholds ordered',ev("storyState.queue.join(',')==='suspicious_ship,forest_safe,harbor_incident'"));
+ check('harbor locked before report',ev("!availableDestinations().some(d=>d.id==='harbor')"));
+ ev('storyState.page=0;nextStoryPage();applySave(snapshot())');
+ check('mid report cursor survives',ev("storyState.queue[0]==='forest_safe'&&storyState.page===0"));drain();
+ check('harbor unlocked after report',ev("availableDestinations().some(d=>d.id==='harbor')"));
+ ev("dungeonProgress.harbor=300;collectStoryEvents()");
+ check('green eyes before repelled',ev("storyState.queue.join(',')==='green_eyes,harbor_repelled'"));drain();
+ ev("gold=10000;phase=0;go('home')");check('escort choice shown',ev("screen==='villageClear'"));
+ for(const escort of ['kyle','gares','mira']){
+  ev(`reset(false);day=2;gold=10000;phase=0;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];dungeonProgress.harbor=300;selectedCompanion='${escort}';travelToNextChapter()`);
+  check('arrival report '+escort,ev("chapter===1&&storyPending()"));
+  ev('applySave(snapshot())');drain();
+  check('four companions '+escort,ev(`availableCharacterIds.length===4&&availableCharacterIds.includes('${escort}')&&['leon','sena','elma'].every(id=>availableCharacterIds.includes(id))`));
+  ev('applySave(snapshot());collectStoryEvents()');check('no duplicate recruits '+escort,ev('availableCharacterIds.length===4&&!storyPending()'));
+ }
+ check('trade route initially only',ev("availableDestinations().map(d=>d.id).join(',')==='trade_route'"));
+ ev("dungeonProgress.trade_route=180;collectStoryEvents()");drain();
+ check('pass and optional hill unlocked',ev("['wagon_pass','herb_hill'].every(id=>availableDestinations().some(d=>d.id===id))"));
+ ev("phase=5;resolveTradingDay(()=>0.5)");
+ check('merchant present during sales',ev('tradingState.report.visits.some(v=>v.storyMerchant&&v.dialogue.includes("王都"))'));
+ const line=ev('tradingState.report.visits.find(v=>v.storyMerchant).dialogue');
+ ev('day++;phase=0;collectStoryEvents()');drain();
+ check('merchant introduced before invitation',ev("storyRead('merchant_intro')"));
+ check('same sales quote next morning',ev(`report().includes(${JSON.stringify(line)})||((sub=1),report().includes(${JSON.stringify(line)}))`));
+ ev("dungeonProgress.wagon_pass=300;dungeonProgress.herb_hill=17;collectStoryEvents()");
+ check('north before pass resolution',ev("storyState.queue.join(',')==='northern_report,pass_safe'"));drain();
+ check('old checkpoint unlocked',ev("availableDestinations().some(d=>d.id==='old_checkpoint')"));
+ ev("selectedDungeon='quarry';applySave(snapshot())");check('optional progress preserved',ev('dungeonProgress.herb_hill===17&&dungeonProgress.trade_route===180'));
+ ev("dungeonProgress.old_checkpoint=300;collectStoryEvents()");drain();
+ check('main clear without optional clear',ev("storyRead('chapter_one_clear')&&!dungeonCleared('herb_hill')&&!dungeonCleared('quarry')"));
+ ev('gold=clearFunds()');const end=ev('snapshot()'),ids=ev('[...availableCharacterIds]');
+ for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
+  ev(`applySave(${JSON.stringify(end)});toggleCapitalCompanion('${ids[i]}');toggleCapitalCompanion('${ids[j]}');confirmCapitalDeparture()`);
+  check('capital pair '+ids[i]+' '+ids[j],ev(`storyState.departed&&storyState.capitalParty.length===2&&availableCharacterIds.length===4&&chapter===1`));
+  ev('applySave(snapshot());collectStoryEvents()');check('departure survives reload '+i+j,ev('storyState.departed&&!storyPending()'));
+ }
+ // Both chapters require all active companions, including those who will stay behind.
+ ev(`applySave(${JSON.stringify(end)});economyState.companions.elma??={};economyState.companions.elma.dead=true;storyState.capitalParty=['leon','sena'];confirmCapitalDeparture()`);
+ check('living pair cannot leave a dead companion behind',ev('!storyTravelReady()&&!storyState.departed'));
+ ev('go("home");sub=3;render()');check('death blocks departure and shows guidance',ev('screen==="home"&&document.querySelector("#view").textContent.includes("蘇生が必要")'));
+ ev('globalThis.beforeRevivalGold=gold;globalThis.revivalCost=companionCareCost("elma");globalThis.beforeRevivalExpenses=ledgerDay().expenses;go("residents");page=1;render()');check('church offers revival',ev('!!document.querySelector("[data-revive=elma]")'));ev('document.querySelector("[data-revive=elma]").click();confirmCapitalDeparture()');check('revival costs level times 200 and is ledgered',ev('revivalCost===companionLevel("elma")*200&&gold===beforeRevivalGold-revivalCost&&ledgerDay().expenses===beforeRevivalExpenses+revivalCost'));ev('globalThis.onceGold=gold;reviveCompanion("elma")');check('revival cannot charge twice',ev('gold===onceGold'));
+ check('restored life but insufficient current funds blocks departure',ev('chapterClearConditions().allAlive&&!storyTravelReady()&&!storyState.departed'));
+ ev('applySave(snapshot())');check('reloading does not latch earlier funds achievement',ev('!storyTravelReady()'));
+ ev('gold=clearFunds();economyState.companions.kyle??={};economyState.companions.kyle.dead=true');
+ check('previous town companion excluded',ev('storyTravelReady()'));
+ ev('economyState.companions.elma.recoveryDay=day+3');check('recovering companion counts as alive',ev('storyTravelReady()'));
+ ev('gold--;confirmCapitalDeparture()');check('confirmation rechecks funds after selection',ev('!storyState.departed'));
+ ev('gold=clearFunds();confirmCapitalDeparture()');check('saving again allows departure',ev('storyState.departed'));
+ ev('reset(false);day=2;gold=clearFunds();dungeonProgress.harbor=300;storyState.occurred=storyConfig.events.filter(e=>e.chapter===0).map(e=>e.id);storyState.read=[...storyState.occurred];storyState.queue=[];economyState.companions.mira??={};economyState.companions.mira.dead=true;selectedCompanion="kyle";travelToNextChapter()');
+ check('prologue requires all three alive',ev('chapter===0&&!villageCompletion().ready'));
+ ev('delete economyState.companions.mira.dead;gold=clearFunds()-1;travelToNextChapter()');check('prologue rechecks funds after revival',ev('chapter===0&&!villageCompletion().ready'));
+ ev('gold=clearFunds();travelToNextChapter()');check('prologue resumes after replenishing funds',ev('chapter===1'));
+ ev('reset(false);day=2;storyState.read=["opening","forest_request"];storyState.occurred=[...storyState.read];storyState.queue=[];phase=4;economyState.companions.kyle={dead:true,experience:12,recoveryDay:day+4};gold=200;openSupportDialog()');
+ check('supplies dialog offers revival',ev('!!document.querySelector("[data-revive=kyle]")'));
+ ev('document.querySelector("[data-revive=kyle]").click()');
+ check('supplies revival restores life and clears old recovery',ev('gold===0&&companionStatus("kyle")==="waiting"&&economyState.companions.kyle.experience===12&&!economyState.companions.kyle.recoveryDay'));
+ ev('applySave(snapshot())');check('revival and expense survive save reload',ev('gold===0&&!economyState.companions.kyle.dead&&ledgerDay().expenses===200'));
+ ev('economyState.companions.kyle.dead=true;renderSupportDialog()');check('insufficient funds disables revival',ev('document.querySelector("[data-revive=kyle]").disabled'));
+ ev('economyState.companions.gares??={};economyState.companions.gares.dead=true;economyState.companions.mira??={};economyState.companions.mira.dead=true;renderSupportDialog()');check('three revival rows fit supplies dialog',ev('(()=>{const d=document.querySelector("#supportDialog");return d.scrollHeight<=d.clientHeight+2})()'));ev('closeSupportDialog();go("residents");page=0;render()');check('church revival layout fits',ev('document.querySelector("#view").scrollHeight<=document.querySelector("#view").clientHeight+2'));
+
+ ev(`applySave(${JSON.stringify(end)});storyState.capitalParty=['leon','leon']`);
+ check('duplicate pair rejected',ev('(()=>{try{validateSave(snapshot());return false}catch{return true}})()'));
+ ev("reset(false);day=4;gold=7890;dungeonProgress.camp=300;phase=4;gear('gares').weapon=newItem('one_hand_sword_01');economyState.companions.gares={experience:12,growth:{attack:1,defense:1,hp:1},recoveryDay:6,level:2}");
+ ev("expeditions=[{party:0,members:['kyle'],returnDay:day+1,dungeonId:'camp',power:{attack:7,bonus:0}}]");
+ const old=ev('snapshot()');delete old.storyState;delete old.groupedReturnReport;
+ ev(`applySave(${JSON.stringify(old)});go('home')`);check('legacy migration explicit',ev("screen==='storyMigration'&&gold===7890&&dungeonProgress.camp===300"));
+ ev('acceptStoryMigration()');drain();check('legacy victory not new harbor victory',ev("!dungeonCleared('harbor')&&gold===7890&&dungeonProgress.camp===300"));
+ check('no forbidden reveal',ev("!storyConfig.events.flatMap(e=>e.pages).some(p=>/ガド|宝石|侵攻を開始|襲撃者はヴァルガード/.test(p.text))"));
+ check('legacy person equipment and growth preserved',ev("gear('gares').weapon.itemId==='one_hand_sword_01'&&economyState.companions.gares.experience===12&&economyState.companions.gares.recoveryDay===6"));
+ check('legacy trip retained',ev("expeditions.length===1&&expeditions[0].dungeonId==='camp'"));ev('day++;resolveExpeditions()');check('legacy trip returns without new progress',ev("expeditions.length===0&&groupedReturnReport[0].dungeonId==='camp'&&!dungeonCleared('harbor')"));
+ check('legacy locations hidden',ev('availableDestinations().every(d=>!d.legacy)'));
+ check('no runtime errors',errors.length===0);
+ // Treatment uses one current quote in both UIs and at payment time.
+ ev('reset(false);day=2;phase=4;storyState.queue=[];storyState.read=["opening","forest_request"];storyState.occurred=[...storyState.read];economyState.companions.kyle={level:3,recoveryDay:day+2,experience:12};gold=1000;go("residents")');
+ check('level three two-day treatment quote',ev('companionCareCost("kyle")===120'));
+ check('church shows same treatment quote',ev('document.querySelector("[data-support-control=healkyle]").textContent.includes("120")'));
+ ev('day++;openSupportDialog()');check('next morning treatment is 30 cheaper',ev('companionCareCost("kyle")===90&&document.querySelector("#supportDialog [data-support-control=healkyle]").textContent.includes("90")'));
+ ev('gold=89;renderSupportDialog()');check('insufficient treatment funds disables button',ev('document.querySelector("#supportDialog [data-support-control=healkyle]").disabled'));
+ ev('gold=90;renderSupportDialog();document.querySelector("#supportDialog [data-support-control=healkyle]").click()');
+ check('treatment pays current quote exactly and preserves XP',ev('gold===0&&ledgerDay().expenses===90&&companionStatus("kyle")==="waiting"&&economyState.companions.kyle.experience===12'));
+ ev('healCompanion("kyle")');check('healthy companion cannot be charged again',ev('gold===0&&ledgerDay().expenses===90'));ev('closeSupportDialog();applySave(snapshot())');check('treatment survives save reload',ev('gold===0&&companionStatus("kyle")==="waiting"'));
+ ev('economyState.companions.kyle.dead=true');check('revival remains level times 200',ev('companionCareCost("kyle")===600'));
+ // Inspect every story page and all selection screens for clipping at the chosen viewport.
+ ev('reset(false);day=2');
+ for(const e of ev('storyConfig.events'))for(let p=0;p<e.pages.length;p++){
+  ev(`chapter=${e.chapter};storyState.queue=['${e.id}'];storyState.occurred=['${e.id}'];storyState.read=[];storyState.page=${p};screen='storyReport';render()`);
+  const fit=ev("(()=>{const v=document.querySelector('#view'),p=document.querySelector('.story-panel');return p.scrollHeight<=p.clientHeight+2&&v.scrollHeight<=v.clientHeight+2&&p.getBoundingClientRect().right<=v.getBoundingClientRect().right+1})()");
+  check('page fits '+e.id+' '+p,fit);
+ }
+ ev('reset(false);loadDevelopmentStage("prologueClear")');
+ check('escort layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));
+ ev(`applySave(${JSON.stringify(end)});screen='capitalDeparture';render()`);
+ check('capital layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));
+ ev('storyState.migrationPending=true;render()');check('migration layout fits',ev("document.querySelector('#view').scrollHeight<=document.querySelector('#view').clientHeight+2"));ev('storyState.migrationPending=false;screen="capitalDeparture";render()');
+ ev(`applySave(${JSON.stringify(end)});economyState.companions.elma??={};economyState.companions.elma.dead=true;gold=clearFunds()-1;screen="home";sub=3;render()`);check('blocked departure guidance fits bubble',ev('(()=>{const p=document.querySelector(".report-speech-content");return p.scrollHeight<=p.clientHeight+2})()'));
+ const scene=params.get('scene');
+ if(scene==='report')ev("storyState.queue=['harbor_incident'];storyState.page=0;screen='storyReport';render()");
+ if(scene==='migration')ev('storyState.migrationPending=true;render()');
+ document.querySelector('#results').textContent='PASS '+checks.length+' checks\n'+checks.join('\n');
+ document.body.dataset.status='PASS';
+}
+run().catch(error=>{document.querySelector('#results').textContent='FAIL '+error.stack+'\n'+checks.join('\n');document.body.dataset.status='FAIL'});
+</script>

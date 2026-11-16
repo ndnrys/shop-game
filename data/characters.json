@@ -21,7 +21,12 @@
       "full": "assets/characters/warm/full/kyle.png"
     },
     "name": "カイル",
-    "jobName": "冒険者"
+    "jobName": "冒険者",
+    "storyProfile": {
+      "age": 19,
+      "background": "村の猟師見習い。好奇心旺盛で、外の世界に憧れる。",
+      "appearance": "細身、短い茶髪、緑の上着、手直しした弓。"
+    }
   },
   {
     "id": "gares",
@@ -45,7 +50,12 @@
       "full": "assets/characters/warm/full/gareth.png"
     },
     "name": "ガレス",
-    "jobName": "戦士"
+    "jobName": "戦士",
+    "storyProfile": {
+      "age": 34,
+      "background": "元街道警備兵。負傷を機に村へ戻った。実直で穏やか。",
+      "appearance": "大柄、短い髭、傷のある革鎧。"
+    }
   },
   {
     "id": "mira",
@@ -71,7 +81,12 @@
       "full": "assets/characters/warm/full/mira.png"
     },
     "name": "ミラ",
-    "jobName": "魔法使い"
+    "jobName": "魔法使い",
+    "storyProfile": {
+      "age": 22,
+      "background": "村の薬師の娘。慎重だが、危機では思い切りがよい。",
+      "appearance": "まとめた黒髪、生成りの服、薬袋、古い魔導書。"
+    }
   },
   {
     "id": "leon",
@@ -95,7 +110,12 @@
       "full": "assets/characters/warm/full/leon.png"
     },
     "name": "レオン",
-    "jobName": "戦士"
+    "jobName": "戦士",
+    "storyProfile": {
+      "age": 24,
+      "background": "警備隊員。規律を重んじ、融通は利かないが約束を守る。",
+      "appearance": "短い金髪、青い制服、磨かれた盾。"
+    }
   },
   {
     "id": "sena",
@@ -121,7 +141,12 @@
       "full": "assets/characters/warm/full/sena.png"
     },
     "name": "セナ",
-    "jobName": "冒険者"
+    "jobName": "冒険者",
+    "storyProfile": {
+      "age": 26,
+      "background": "街の住人で配達人。街道を知り尽くし、人当たりがよく損得に敏感。",
+      "appearance": "日焼けした肌、短い外套、地図筒。"
+    }
   },
   {
     "id": "elma",
@@ -148,7 +173,12 @@
       "full": "assets/characters/warm/full/elma.png"
     },
     "name": "エルマ",
-    "jobName": "魔法使い"
+    "jobName": "魔法使い",
+    "storyProfile": {
+      "age": 29,
+      "background": "警備隊員で、軍の記録係だった術師。理屈っぽいが面倒見がよい。",
+      "appearance": "丸眼鏡、編んだ髪、書き込みだらけの魔導書。"
+    }
   },
   {
     "id": "dario",

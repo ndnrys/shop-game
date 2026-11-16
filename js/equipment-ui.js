@@ -1,6 +1,6 @@
 // Equipment operations and the compact, paginated support screen.
 let equipment={},autoEquip={},brokenTargets={},expeditions=[],returnReport=[],lastSales=0;
-let dungeonProgress={},selectedDungeon='forest';
+let dungeonProgress={},selectedDungeon='harbor_forest';
 let equipCharacter=null,equipmentSlot='weapon',equipPage=0,equipmentOrigin=null,characterPanel='equipment',equipmentSelectedUid=null,equipmentSelectedSlot=null,equipmentUndo=null;
 const partyAway=index=>expeditions.some(e=>e.party===index);
 const isAway=id=>expeditions.some(e=>e.members.includes(id));
@@ -83,7 +83,7 @@ function validateDungeonConfig(){
 }
 function dungeonCleared(id){const d=config.dungeons.find(d=>d.id===id);return !!d&&(dungeonProgress[id]||0)>=d.requiredProgress}
 function dungeonProgressPercent(d,progress=dungeonProgress[d.id]||0){return Math.min(100,Math.max(0,Math.floor(progress/d.requiredProgress*100)))}
-function dungeonAvailable(d){return d.chapter===chapter&&d.requires.every(dungeonCleared)}
+function dungeonAvailable(d){return d.chapter===chapter&&d.requires.every(dungeonCleared)&&storyDestinationAvailable(d)}
 function expeditionPower(members,d){
  let attack=0;const attributes={};
  for(const id of members){attack+=companionStats(id).attack;

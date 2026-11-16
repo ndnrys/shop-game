@@ -487,3 +487,17 @@ main:has(.warehouse-board-layout){container-type:size;--warehouse-spare:clamp(0p
 .gear-item-art .normalized-item-art{align-items:flex-start;justify-content:center;overflow:visible}
 .normalized-item-art .item-art-crop{position:relative;display:block;flex:none;width:min(100cqw,calc(100cqh * var(--art-ratio) * var(--art-scale)));height:auto;aspect-ratio:var(--art-ratio)}
 .gear-item-art .normalized-item-art .item-art-crop img{position:absolute;display:block;left:var(--art-left);top:var(--art-top);width:var(--art-width);height:auto;max-width:none;max-height:none;transform:none;object-fit:fill}
+
+/* Story pages use a bounded, paginated panel; no long report is squeezed into a bubble. */
+.story-panel{display:flex;flex-direction:column;gap:10px;min-height:0;height:100%;font-size:14px}
+.story-panel h1,.story-panel h2,.story-panel p{margin:0}
+.story-panel .clerk-dialogue{flex:1;min-height:0;align-items:center}
+.story-panel .clerk-dialogue .card{margin:0;padding:14px}
+.story-panel .clerk-dialogue>.card>h2{display:none}
+.story-panel .bottom{margin-top:auto;flex-shrink:0}
+.story-panel .departure-roster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.story-panel .departure-roster .character-art{height:64px}
+.story-panel .departure-roster button.active{outline:3px solid var(--accent);outline-offset:-3px}
+@media(max-width:600px){.story-panel{gap:8px;font-size:12px}.story-panel h1{font-size:20px}.story-panel .clerk-dialogue>img{width:64px;height:100px}.story-panel .clerk-dialogue p{font-size:14px;line-height:1.65}.story-panel .departure-roster .character-art{height:46px}.story-panel .clerk-dialogue .card{padding:10px}.story-panel>.card{padding:8px;margin:0}.story-panel .bottom .actions{gap:4px}}
+
+.report-speech-content.report-speech-requirements{font-family:var(--font);font-size:14px;font-weight:400;gap:6px}

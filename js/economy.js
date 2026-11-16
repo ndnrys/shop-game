@@ -2,8 +2,9 @@
 let economyConfig,economyState;
 const economyChapterId=number=>number===0?'prologue':number===8?'finale':`chapter_${number}`;
 function validateEconomyConfig(data){
+ if(!Number.isSafeInteger(data?.revival?.costPerLevel)||data.revival.costPerLevel<0)throw Error('蘇生費の設定が不正です');
  const valid=n=>Number.isSafeInteger(n)&&n>=0;
- if(!data?.chapters||!valid(data.maximumShelves)||data.maximumShelves<2||!valid(data.healing?.costPerLevel))throw Error('治療単価が未設定または不正です');
+ if(!data?.chapters||!valid(data.maximumShelves)||data.maximumShelves<2||!['baseCost','costPerLevel','costPerRemainingDay'].every(key=>valid(data.healing?.[key])))throw Error('治療単価が未設定または不正です');
  for(const values of Object.values(data.chapters))for(const key of ['seasonTax','shopMaintenancePerShelf','companionMaintenancePerPerson','shelfExpansionCost'])if(!valid(values[key]))throw Error('経済設定が未設定または不正です');
 }
 function resetEconomy(){economyState={version:1,shelfCount:2,companions:{},bill:null,shelfLayout:[null,null]}}
@@ -25,7 +26,23 @@ function bankruptcyExpense(){const b=economyState.bill;return b?.status==='unpai
 function retryEconomyBill(){settleEconomyBill();render()}
 function economyReport(){return rescueReport()+economyBillReport()}
 function economyBillReport(){const b=economyState.bill;if(!b)return note('初回の朝は固定費の徴収なし。');return row('店舗管理費',money(b.shop))+row('仲間維持費',money(b.companions))+row('季節税',money(b.tax))+row('固定費',money(b.total))+(b.status==='paid'?note('支払済み'):note('所持金不足・未払い。支払いが済むまで経営を進められません。')+btn('支払いを再確認','retryEconomyBill()','mini'))}
-function healCompanion(id){if(!availableCharacterIds.includes(id)||companionStatus(id)!=='recovering')return;const cost=companionLevel(id)*economyConfig.healing.costPerLevel;if(gold<cost)return info('所持金不足','治療費が足りません。');gold-=cost;ledgerMoney('expenses',cost);delete economyState.companions[id].recoveryDay;render()}
+function companionCareCost(id){
+ if(companionStatus(id)==='dead')return companionLevel(id)*economyConfig.revival.costPerLevel;
+ const rates=economyConfig.healing,remainingDays=Math.max(0,(economyState.companions[id]?.recoveryDay??day)-day);
+ return rates.baseCost+companionLevel(id)*rates.costPerLevel+remainingDays*rates.costPerRemainingDay;
+}
+function companionCareButton(id){
+ const dead=companionStatus(id)==='dead',cost=companionCareCost(id),action=dead?'reviveCompanion':'healCompanion',label=dead?'蘇生':'治療';
+ return `<button class="wood-control" data-support-control="${dead?'revive':'heal'}${id}" ${dead?`data-revive="${id}"`:''} onclick="${action}('${id}')" ${gold<cost||isAway(id)?'disabled':''}>${label} ${money(cost)}</button>`;
+}
+function reviveCompanion(id){
+ if(!availableCharacterIds.includes(id)||companionStatus(id)!=='dead'||isAway(id))return;
+ const cost=companionCareCost(id);if(gold<cost)return info('所持金不足','蘇生費が足りません。');
+ gold-=cost;ledgerMoney('expenses',cost);
+ delete economyState.companions[id].dead;delete economyState.companions[id].recoveryDay;
+ render();
+}
+function healCompanion(id){if(!availableCharacterIds.includes(id)||companionStatus(id)!=='recovering')return;const cost=companionCareCost(id);if(gold<cost)return info('所持金不足','治療費が足りません。');gold-=cost;ledgerMoney('expenses',cost);delete economyState.companions[id].recoveryDay;render()}
 function expandShelf(){if(economyState.shelfCount>=economyConfig.maximumShelves)return;const cost=economyConfig.chapters[economyChapterId(chapter)]?.shelfExpansionCost;if(cost==null)return info('増設できません','この章の増設費が未設定です。');if(gold<cost)return info('所持金不足','棚の増設費が足りません。');gold-=cost;ledgerMoney('expenses',cost);economyState.shelfCount++;economyState.shelfLayout.push(null);render()}
 function validateWarehouseConfig(){
  const w=config.warehouseExpansion;
@@ -43,7 +60,7 @@ function carpenterView(){
 }
 function residents(){
  const all=availableCharacters(),size=2;page=Math.min(page,Math.max(0,Math.ceil(all.length/size)-1));
- return title('村の住人')+btn('‹ 経営に戻る',"go('home')",'mini')+`<div class="tabs">${btn('教会 · 治療','sub=0;page=0;render()',sub!==1?'active':'')}${btn('大工 · 拡張','sub=1;page=0;render()',sub===1?'active':'')}</div>`+(sub===1?carpenterView():card('<h2>教会 · 治療</h2>'+all.slice(page*size,(page+1)*size).map(c=>{const status=companionStatus(c.id),cost=companionLevel(c.id)*economyConfig.healing.costPerLevel;return row(esc(c.name)+' · Lv.'+companionLevel(c.id),{waiting:'待機中',away:'遠征中',recovering:'療養中',dead:'死亡中'}[status])+(status==='recovering'?`<div class="actions"><small>${economyState.companions[c.id].recoveryDay}日朝に自然回復</small>${btn('治療 '+money(cost),`healCompanion('${c.id}')`,'mini')}</div>`:'')}).join('')+pager(all.length,size))+note(`治療は1人につきLv×${economyConfig.healing.costPerLevel} G。自然回復は無料。`))+'';
+ return title('町の住人')+btn('‹ 経営に戻る',"go('home')",'mini')+`<div class="tabs">${btn('教会 · 治療・蘇生','sub=0;page=0;render()',sub!==1?'active':'')}${btn('大工 · 拡張','sub=1;page=0;render()',sub===1?'active':'')}</div>`+(sub===1?carpenterView():card('<h2>教会 · 治療・蘇生</h2>'+all.slice(page*size,(page+1)*size).map(c=>{const status=companionStatus(c.id);return row(esc(c.name)+' · Lv.'+companionLevel(c.id),{waiting:'待機中',away:'遠征中',recovering:'療養中',dead:'死亡中'}[status])+(['recovering','dead'].includes(status)?`<div class="actions">${status==='recovering'?`<small>${economyState.companions[c.id].recoveryDay}日朝に自然回復</small>`:''}${companionCareButton(c.id)}</div>`:'')}).join('')+pager(all.length,size))+note(`治療：${economyConfig.healing.baseCost}G＋Lv×${economyConfig.healing.costPerLevel}G＋残り療養日数×${economyConfig.healing.costPerRemainingDay}G。蘇生：Lv×${economyConfig.revival.costPerLevel}G。自然回復は無料。`))+'';
 }
 function validateEconomySave(s,fail){
  s.economyState??={version:1,shelfCount:1,companions:{},bill:null};

@@ -58,10 +58,16 @@
     }
   },
   "healing": {
-    "costPerLevel": 200
+    "baseCost": 30,
+    "costPerLevel": 10,
+    "costPerRemainingDay": 30
   },
   "notes": [
-    "治療単価200Gは合意済み暫定値。章別金額は調整用仮値。後で自動プレイにより調整する。"
+    "治療費は30G＋現在Lv×10G＋残り療養日数×30G。章別金額は調整用仮値。後で自動プレイにより調整する。",
+    "蘇生は教会・物資画面でLv×200G。費用支払い後の現在所持金と全員生存を章クリア時に再判定する。"
   ],
-  "maximumShelves": 4
+  "maximumShelves": 4,
+  "revival": {
+    "costPerLevel": 200
+  }
 }

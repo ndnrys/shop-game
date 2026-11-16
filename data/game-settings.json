@@ -9,7 +9,8 @@
   },
   "notes": [
     "development内の数値は開発中のゲームの動作確認用。アイテムの正式な価格・抽選率ではありません。",
-    "入荷抽選は動作確認用の一様抽選。正式な抽選率は未設定。"
+    "入荷抽選は動作確認用の一様抽選。正式な抽選率は未設定。",
+    "新ストーリーの派遣先数値・画像は既存開発設定の仮流用。正式難易度・報酬ではない。legacy定義は旧セーブの帰還と帳簿の互換専用。"
   ],
   "development": {
     "initialGold": 1000,
@@ -80,7 +81,7 @@
   "dungeons": [
     {
       "id": "forest",
-      "name": "周辺の森",
+      "name": "旧版の派遣記録 1",
       "chapter": 0,
       "requiredProgress": 200,
       "danger": 3,
@@ -89,11 +90,12 @@
         "fire": 1
       },
       "attributeBonus": 1,
-      "image": "assets/backgrounds/destinations/forest.png"
+      "image": "assets/backgrounds/destinations/forest.png",
+      "legacy": true
     },
     {
       "id": "camp",
-      "name": "野営地",
+      "name": "旧版の派遣記録 2",
       "chapter": 0,
       "requiredProgress": 300,
       "danger": 5,
@@ -104,22 +106,24 @@
         "wind": 1
       },
       "attributeBonus": 1,
-      "image": "assets/backgrounds/destinations/camp.png"
+      "image": "assets/backgrounds/destinations/camp.png",
+      "legacy": true
     },
     {
       "id": "eldia_road",
-      "name": "エルディア街道",
+      "name": "旧版の派遣記録 3",
       "chapter": 1,
       "requiredProgress": 180,
       "danger": 5,
       "requires": [],
       "recommendedAttributes": {},
       "attributeBonus": 0,
-      "image": "assets/backgrounds/destinations/eldia_road.png"
+      "image": "assets/backgrounds/destinations/eldia_road.png",
+      "legacy": true
     },
     {
       "id": "velk_blockade",
-      "name": "街道の封鎖陣・ヴェルク",
+      "name": "旧版の派遣記録 4",
       "chapter": 1,
       "requiredProgress": 300,
       "danger": 6,
@@ -128,7 +132,120 @@
       ],
       "recommendedAttributes": {},
       "attributeBonus": 0,
-      "image": "assets/backgrounds/destinations/velk_blockade.png"
+      "image": "assets/backgrounds/destinations/velk_blockade.png",
+      "legacy": true
+    },
+    {
+      "id": "harbor_forest",
+      "name": "港町近くの森",
+      "chapter": 0,
+      "requiredProgress": 200,
+      "danger": 3,
+      "requires": [],
+      "recommendedAttributes": {
+        "fire": 1
+      },
+      "attributeBonus": 1,
+      "image": "assets/backgrounds/destinations/forest.png",
+      "legacy": false,
+      "optional": false,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "harbor",
+      "name": "港",
+      "chapter": 0,
+      "requiredProgress": 300,
+      "danger": 5,
+      "requires": [
+        "harbor_forest"
+      ],
+      "recommendedAttributes": {
+        "wind": 1
+      },
+      "attributeBonus": 1,
+      "image": "assets/backgrounds/destinations/camp.png",
+      "legacy": false,
+      "optional": false,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "trade_route",
+      "name": "街外れの交易路",
+      "chapter": 1,
+      "requiredProgress": 180,
+      "danger": 5,
+      "requires": [],
+      "recommendedAttributes": {},
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/eldia_road.png",
+      "legacy": false,
+      "optional": false,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "wagon_pass",
+      "name": "荷馬車の峠道",
+      "chapter": 1,
+      "requiredProgress": 300,
+      "danger": 6,
+      "requires": [
+        "trade_route"
+      ],
+      "recommendedAttributes": {},
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/velk_blockade.png",
+      "legacy": false,
+      "optional": false,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "old_checkpoint",
+      "name": "王都街道の旧関所",
+      "chapter": 1,
+      "requiredProgress": 300,
+      "danger": 6,
+      "requires": [
+        "wagon_pass"
+      ],
+      "recommendedAttributes": {},
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/velk_blockade.png",
+      "legacy": false,
+      "optional": false,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "herb_hill",
+      "name": "薬草採りの丘",
+      "chapter": 1,
+      "requiredProgress": 180,
+      "danger": 5,
+      "requires": [
+        "trade_route"
+      ],
+      "recommendedAttributes": {},
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/eldia_road.png",
+      "legacy": false,
+      "optional": true,
+      "balanceStatus": "development-template"
+    },
+    {
+      "id": "quarry",
+      "name": "放棄された石切り場",
+      "chapter": 1,
+      "requiredProgress": 300,
+      "danger": 6,
+      "requires": [
+        "wagon_pass"
+      ],
+      "recommendedAttributes": {},
+      "attributeBonus": 0,
+      "image": "assets/backgrounds/destinations/velk_blockade.png",
+      "legacy": false,
+      "optional": true,
+      "balanceStatus": "development-template"
     }
   ],
   "adventurers": {
@@ -278,11 +395,11 @@
   },
   "chapterProgression": {
     "prologue": {
-      "name": "プロローグ・村",
-      "clearDungeonId": "camp",
-      "enemyName": "襲撃隊長 ガド",
+      "name": "プロローグ・港町",
+      "clearDungeonId": "harbor",
+      "enemyName": "港の襲撃者",
       "nextChapter": 1,
-      "nextName": "第1章・エルディアへの道",
+      "nextName": "第一章・街道の街",
       "memberLimit": 1
     }
   },

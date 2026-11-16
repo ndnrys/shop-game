@@ -37,7 +37,7 @@ async function game(saved=null,boardSize=8){
  vm.runInContext(read('js/item-core.js'),context);
  vm.runInContext(read('js/encyclopedia-core.js'),context);
  vm.runInContext(read('js/encyclopedia-ui.js'),context);
- for(const path of ['js/balance.js','js/adventurer-core.js','js/equipment-core.js','js/equipment-ui.js','js/equipment-input.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/main.js'])vm.runInContext(read(path),context);
+ for(const path of ['js/balance.js','js/adventurer-core.js','js/equipment-core.js','js/equipment-ui.js','js/equipment-input.js','js/economy.js','js/rescue.js','js/trading-core.js','js/trading.js','js/save-game.js','js/story.js','js/main.js'])vm.runInContext(read(path),context);
  await vm.runInContext('loadItemSettings()',context);
  const run=code=>vm.runInContext(code,context);
  const event=(x,y,pointerType='mouse',incoming=false)=>({
@@ -401,11 +401,12 @@ test('departed companions incur no maintenance even when they return that mornin
  const g=await game();g.run("phase=4;screen='home';depart();phase=5;finishDay()");
  assert.equal(g.run('economyState.bill.companions'),0);assert.equal(g.run('gold'),1245);assert.equal(g.run('expeditions.length'),0);
 });
-test('healing costs level times 200, excludes dead, and natural recovery is free',async()=>{
- const g=await game();g.run("economyState.companions[availableCharacterIds[0]]={level:3,recoveryDay:5};healCompanion(availableCharacterIds[0])");
- assert.equal(g.run('gold'),650);assert.equal(g.run('companionStatus(availableCharacterIds[0])'),'waiting');
- g.run("healCompanion(availableCharacterIds[0]);economyState.companions[availableCharacterIds[0]]={level:3,recoveryDay:5,dead:true};healCompanion(availableCharacterIds[0])");assert.equal(g.run('gold'),650);
- g.run("economyState.companions[availableCharacterIds[1]]={recoveryDay:3};phase=5;finishDay()");assert.equal(g.run('gold'),635);assert.equal(g.run('companionStatus(availableCharacterIds[1])'),'waiting');
+test('healing uses base, current level and remaining days; natural recovery is free',async()=>{
+ const g=await game();g.run("globalThis.beforeGold=gold;economyState.companions.kyle={level:3,recoveryDay:day+2};healCompanion('kyle')");
+ assert.equal(g.run('gold'),g.run('beforeGold')-120);assert.equal(g.run("companionStatus('kyle')"),'waiting');
+ g.run("healCompanion('kyle');economyState.companions.kyle={level:3,recoveryDay:day+2,dead:true};healCompanion('kyle')");assert.equal(g.run('gold'),g.run('beforeGold')-120);
+ g.run("economyState.companions.gares={recoveryDay:day+2};globalThis.quote=companionCareCost('gares');day++");assert.equal(g.run("companionCareCost('gares')"),g.run('quote')-30);
+ g.run('globalThis.recoveryGold=gold;day++;recoverCompanions()');assert.equal(g.run('gold'),g.run('recoveryGold'));assert.equal(g.run("companionStatus('gares')"),'waiting');
 });
 test('carpenter expands real capacity, persists shelves, migrates old saves without backcharging',async()=>{
  const g=await game();g.run('expandShelf()');assert.equal(g.run('gold'),950);assert.equal(g.run('shelfCapacity()'),16);
@@ -440,8 +441,8 @@ test('30-day cashflow simulation covers trading, no sales and expansion without 
 });
 
 test('healing and expansion reject insufficient funds without changing state',async()=>{
- const g=await game();g.run("document.querySelector('#modal').showModal=()=>{};gold=199;economyState.companions[availableCharacterIds[0]]={level:1,recoveryDay:5};healCompanion(availableCharacterIds[0]);expandShelf()");
- assert.equal(g.run('gold'),199);assert.equal(g.run('economyState.shelfCount'),1);assert.equal(g.run('companionStatus(availableCharacterIds[0])'),'recovering');
+ const g=await game();g.run("document.querySelector('#modal').showModal=()=>{};gold=159;economyState.companions[availableCharacterIds[0]]={level:1,recoveryDay:5};healCompanion(availableCharacterIds[0]);expandShelf()");
+ assert.equal(g.run('gold'),159);assert.equal(g.run('economyState.shelfCount'),1);assert.equal(g.run('companionStatus(availableCharacterIds[0])'),'recovering');
 });
 test('chapter transition and next-morning edits do not recalculate the previous bill',async()=>{
  const g=await game();g.run('day=5;chapter=1;phase=5;finishDay();chapter=2;expandShelf();render()');
@@ -756,4 +757,67 @@ test('donation draw excludes items too large for the warehouse and empty pools c
  await g.run('watchDonation()');assert(g.run('pending.every(i=>fitsWarehouse(definitions[i.itemId]))'));assert.equal(g.run('pending.length'),3);
  g.run("pending=[];catalog.items.forEach(d=>d.status='planned');counts=[1,0,0];document.querySelector('#modal').showModal=()=>{};globalThis.beforeGold=gold;buy()");assert.equal(g.run('gold'),g.run('beforeGold'));assert.equal(g.run('pending.length'),0);
  const used=g.run('donationState.used');await g.run('watchDonation()');assert.equal(g.run('donationState.used'),used);assert.equal(g.run('pending.length'),0);
+});
+
+function storyRules(){
+ const story=JSON.parse(read('data/story.json')),progress={},context=vm.createContext({config:settings,chapter:0,day:2,phase:0,characters:JSON.parse(read('data/characters.json')),dungeonProgress:progress,
+ dungeonProgressPercent:d=>Math.min(100,Math.floor((progress[d.id]||0)/d.requiredProgress*100))});
+ vm.runInContext(read('js/story.js'),context);
+ vm.runInContext(`storyConfig=${JSON.stringify(story)};storyState=createStoryState()`,context);
+ return code=>vm.runInContext(code,context);
+}
+test('story queues forest milestones in order and gates harbor on reading the incident',()=>{
+ const run=storyRules();run('dungeonProgress.harbor_forest=200;collectStoryEvents()');
+ assert.deepEqual(JSON.parse(run('JSON.stringify(storyState.queue)')),['opening','forest_request','suspicious_ship','forest_safe','harbor_incident']);
+ assert.equal(run("storyDestinationAvailable(config.dungeons.find(d=>d.id==='harbor'))"),false);
+ run("storyState.read.push('harbor_incident')");assert.equal(run("storyDestinationAvailable(config.dungeons.find(d=>d.id==='harbor'))"),true);
+ run('collectStoryEvents()');assert.equal(run('storyState.queue.length'),5);
+});
+test('story never exposes dispatch on day one or legacy destinations',()=>{
+ const run=storyRules();run("day=1;storyState.read=['forest_request']");
+ assert.equal(run("storyDestinationAvailable(config.dungeons.find(d=>d.id==='harbor_forest'))"),false);
+ run('day=2');assert.equal(run("storyDestinationAvailable(config.dungeons.find(d=>d.id==='harbor_forest'))"),true);
+ assert.equal(run("storyDestinationAvailable(config.dungeons.find(d=>d.id==='camp'))"),false);
+});
+test('story does not require optional destinations and waits for merchant introduction',()=>{
+ const run=storyRules();run("chapter=1;dungeonProgress.trade_route=180;dungeonProgress.wagon_pass=300;dungeonProgress.old_checkpoint=300;collectStoryEvents()");
+ assert.equal(run("storyState.occurred.includes('chapter_one_clear')"),false);
+ run('storyState.merchantVisited=true;collectStoryEvents()');assert.equal(run("storyState.occurred.includes('chapter_one_clear')"),true);
+ assert.equal(run('dungeonProgress.herb_hill||0'),0);
+});
+test('customer story dialogue does not grant customer-weight rumor effects',()=>{
+ const run=storyRules();run("storyState.read=['opening'];storyConfig.dialogueWeights={normal:0,daily:0,story:1}");
+ assert.match(run('customerStoryLine({itemIds:[]},()=>0)'),/港/);
+ assert.equal(run("storyState.read.includes('green_eyes')"),false);
+ run("storyConfig.dialogueWeights={normal:1,daily:0,story:0}");assert.equal(run('customerStoryLine({itemIds:[]},()=>0)'),'今日は見送ろうかな');
+});
+
+test('chapter completion requires current funds, main clear and every active companion alive',()=>{
+ const run=storyRules();
+ run(`gold=5000;availableCharacterIds=['mira','leon','sena','elma'];chapter=1;economyState={companions:{}};
+ function clearFunds(){return 5000}function companionStatus(id){return economyState.companions[id]?.dead?'dead':'waiting'}
+ function dungeonCleared(id){return id==='old_checkpoint'}
+ economyState.companions.elma={dead:true};`);
+ assert.equal(run('chapterClearConditions().ready'),false);
+ run('delete economyState.companions.elma.dead;gold-=600');
+ assert.equal(run('chapterClearConditions().allAlive'),true);
+ assert.equal(run('chapterClearConditions().ready'),false);
+ run('gold=5000;economyState.companions.kyle={dead:true}');
+ assert.equal(run('chapterClearConditions().ready'),true);
+});
+test('revival spends level times configured cost once and preserves personal progression',()=>{
+ const context=vm.createContext({});vm.runInContext(read('js/economy.js'),context);
+ const run=code=>vm.runInContext(code,context);
+ run(`economyConfig={healing:{costPerLevel:200},revival:{costPerLevel:200}};
+ economyState={companions:{mira:{dead:true,recoveryDay:10,experience:12,growth:{attack:1,defense:1,hp:1}}}};
+ let gold=1000,day=1,availableCharacterIds=['mira'],spent=0;
+ function companionLevel(){return 3}function isAway(){return false}function render(){}
+ function ledgerMoney(kind,n){spent+=n}function info(){throw Error('insufficient')}`);
+ run("reviveCompanion('mira')");assert.equal(run('gold'),400);assert.equal(run('spent'),600);
+ assert.equal(run('economyState.companions.mira.dead'),undefined);
+ assert.equal(run('economyState.companions.mira.recoveryDay'),undefined);
+ assert.equal(run('economyState.companions.mira.experience'),12);
+ run("reviveCompanion('mira')");assert.equal(run('gold'),400);
+ run('economyState.companions.mira.dead=true');assert.throws(()=>run("reviveCompanion('mira')"),/insufficient/);
+ assert.equal(run('gold'),400);assert.equal(run('economyState.companions.mira.dead'),true);
 });

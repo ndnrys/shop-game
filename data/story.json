@@ -1,0 +1,388 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "opening",
+      "chapter": 0,
+      "condition": {},
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "ここはアルヴェイン王国の南東、レインフォルト家が管理する港町です。港の補強工事で警備隊も忙しいそうですよ。"
+        },
+        {
+          "speaker": "店員",
+          "text": "近くの森で魔物が増えているそうです。今日はお店を開いて、町の様子を聞いてみましょう。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "forest_request",
+      "chapter": 0,
+      "condition": {
+        "day": 2
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "港町から森の討伐依頼を受けたガレスさんが、装備を整えにいらっしゃいました。"
+        },
+        {
+          "speaker": "ガレス",
+          "text": "元街道警備兵として、できることを引き受けました。装備の相談に乗ってもらえますか。",
+          "speakerId": "gares"
+        },
+        {
+          "speaker": "カイル",
+          "text": "僕も一緒に行きたい。猟師見習いの腕が役に立つなら、外の世界を見てみたいんだ。",
+          "speakerId": "kyle"
+        },
+        {
+          "speaker": "ミラ",
+          "text": "カイルだけでは心配です。私も薬師の娘として手当てを手伝います。",
+          "speakerId": "mira"
+        },
+        {
+          "speaker": "店員",
+          "text": "三人とも活動した翌朝には戻るそうです。店では装備や物資の準備をお手伝いしましょう。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "suspicious_ship",
+      "chapter": 0,
+      "condition": {
+        "progress": [
+          "harbor_forest",
+          80
+        ]
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "森から戻った皆さんの話では、沖合に不審な船がいるそうです。どこの船なのかは、まだ分からないとのことです。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "forest_safe",
+      "chapter": 0,
+      "condition": {
+        "progress": [
+          "harbor_forest",
+          100
+        ],
+        "after": "suspicious_ship"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "森の討伐で大半の魔物を減らし、安全を確保できたと報告がありました。皆さん、今朝もお帰りです。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "harbor_incident",
+      "chapter": 0,
+      "condition": {
+        "after": "forest_safe"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "港の警備兵が不審船の一団を発見し、小競り合いになったそうです。森の討伐を終えた三人も、港の戦いに加わるとのことです。"
+        },
+        {
+          "speaker": "店員",
+          "text": "港では人間と魔物が一緒に戦っているそうです。所属も、その理由も分かっていません。戻ってきた皆さんの装備を支えましょう。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "green_eyes",
+      "chapter": 0,
+      "condition": {
+        "progress": [
+          "harbor",
+          50
+        ],
+        "after": "harbor_incident"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "港から戻った人の間で、敵兵の目がぼんやり緑に光っていたという噂があるそうです。確かな理由は、まだ分かりません。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "harbor_repelled",
+      "chapter": 0,
+      "condition": {
+        "progress": [
+          "harbor",
+          100
+        ],
+        "after": "green_eyes"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "港の敵を一時的に撃退できたそうです。全滅させたわけではなく、また襲ってくるかもしれません。敵の所属も不明のままです。"
+        },
+        {
+          "speaker": "店員",
+          "text": "警備隊は港に残って備えるそうです。次の街への出店準備を兼ねて、援軍要請の書状を届けてほしいと頼まれました。護衛を一人お願いしましょう。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "road_arrival",
+      "chapter": 1,
+      "condition": {},
+      "pages": [
+        {
+          "speaker": "レオン",
+          "text": "援軍要請の書状ですね。警備隊長へ取り次ぎます。",
+          "speakerId": "leon"
+        },
+        {
+          "speaker": "店員",
+          "text": "書状を受けた隊長が、港町へ増援を送るよう指示したそうです。レオンさんとエルマさんは、この街に残ります。ここでお店を始めましょう。"
+        },
+        {
+          "speaker": "セナ",
+          "text": "配達に来たセナです。この街道ならよく知ってるよ。店と荷馬車の行き来、お互い役に立てそうだね。",
+          "speakerId": "sena"
+        },
+        {
+          "speaker": "エルマ",
+          "text": "港の襲撃について、補足のお話を聞かせてください。私は警備隊の術師で、以前は軍の記録係でした。",
+          "speakerId": "elma"
+        },
+        {
+          "speaker": "レオン",
+          "text": "増援が出た後の街周辺も守る必要があります。私たちの装備と物資の相談をお願いします。",
+          "speakerId": "leon"
+        },
+        {
+          "speaker": "店員",
+          "text": "レオンさん、セナさん、エルマさんが協力してくださいます。港町からの護衛の方と、四人で支度を整えましょう。"
+        }
+      ],
+      "effect": "recruit"
+    },
+    {
+      "id": "trade_route_safe",
+      "chapter": 1,
+      "condition": {
+        "progress": [
+          "trade_route",
+          100
+        ],
+        "after": "road_arrival"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "交易路から戻った皆さんによると、荷馬車を襲う魔物に対応できたそうです。ただ、王都方面から来る荷馬車は減っているとのことです。"
+        },
+        {
+          "speaker": "店員",
+          "text": "峠道では荷馬車が立ち往生しているそうです。薬草採りの丘でも、採取に来る住民が魔物に困っていると聞きました。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "merchant_intro",
+      "chapter": 1,
+      "condition": {
+        "after": "trade_route_safe",
+        "merchantVisited": true
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "昨日いらした商人さんは、街道の安全を待って王都へ向かうそうです。旅の支度を見に、また来るとおっしゃっていました。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "northern_report",
+      "chapter": 1,
+      "condition": {
+        "progress": [
+          "wagon_pass",
+          1
+        ],
+        "after": "trade_route_safe"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "北方から報告が届いたそうです。ヴァルガード領とエルンハルト領の境界付近で、小競り合いが起きたとのことです。"
+        },
+        {
+          "speaker": "店員",
+          "text": "どちらが仕掛けたのか、規模や原因は分かっていません。港の襲撃との関係も不明だそうです。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "pass_safe",
+      "chapter": 1,
+      "condition": {
+        "progress": [
+          "wagon_pass",
+          100
+        ],
+        "after": "northern_report"
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "峠道から戻った皆さんの調査で、旧関所周辺の魔物が通行を阻んでいると分かったそうです。王都への輸送路を確保するには、関所と周辺への対応が必要ですね。"
+        },
+        {
+          "speaker": "店員",
+          "text": "放棄された石切り場にも魔物が居ついているそうです。こちらは地域の困り事として、余裕があれば力を貸しましょう。"
+        }
+      ],
+      "effect": null
+    },
+    {
+      "id": "chapter_one_clear",
+      "chapter": 1,
+      "condition": {
+        "progress": [
+          "old_checkpoint",
+          100
+        ],
+        "after": "pass_safe",
+        "allAfter": [
+          "merchant_intro"
+        ]
+      },
+      "pages": [
+        {
+          "speaker": "店員",
+          "text": "旧関所と周辺の魔物を討伐し、王都への輸送路を確保できたそうです。目標金額と仲間全員の生存を確認して、出発の支度を整えましょう。"
+        },
+        {
+          "speaker": "商人",
+          "text": "街道の安全を待っていました。皆さんの働きを見込んで、王都までの護衛を取り次いでもらえませんか。"
+        },
+        {
+          "speaker": "商人",
+          "text": "店長も、王都で商売をしてみませんか。出店に力を貸してくれる知人を紹介しますよ。"
+        },
+        {
+          "speaker": "店員",
+          "text": "警備隊長から、港の襲撃と北方の小競り合いについての報告書を託されたそうです。仲間のうち二人に、商人の護衛として同行をお願いしましょう。"
+        }
+      ],
+      "effect": null
+    }
+  ],
+  "destinationReports": {
+    "harbor_forest": "forest_request",
+    "harbor": "harbor_incident",
+    "trade_route": "road_arrival",
+    "wagon_pass": "trade_route_safe",
+    "old_checkpoint": "pass_safe",
+    "herb_hill": "trade_route_safe",
+    "quarry": "pass_safe"
+  },
+  "dialogueWeights": {
+    "normal": 4,
+    "daily": 2,
+    "story": 1
+  },
+  "dialogueNotes": "抽選比率は調整用の仮設定。正式な比率ではない。",
+  "dailyLines": [
+    "港から届く品物は、旅の支度にも役立ちそうだね。",
+    "丈夫な道具は、長い旅ほどありがたいよ。",
+    "天気のいいうちに、荷物を運んでおきたいね。"
+  ],
+  "rumors": [
+    {
+      "after": "opening",
+      "chapter": 0,
+      "text": "港の工事で、警備隊は忙しそうだね。"
+    },
+    {
+      "after": "forest_request",
+      "chapter": 0,
+      "text": "森へ出る人には、しっかり支度をしてほしいね。"
+    },
+    {
+      "after": "suspicious_ship",
+      "chapter": 0,
+      "text": "沖の船、どこの船なんだろうね。"
+    },
+    {
+      "after": "green_eyes",
+      "chapter": 0,
+      "text": "目が緑に光る兵士を見た、という噂を聞いたよ。"
+    },
+    {
+      "after": "road_arrival",
+      "chapter": 1,
+      "text": "港への増援が出たそうだね。"
+    },
+    {
+      "after": "trade_route_safe",
+      "chapter": 1,
+      "text": "王都からの荷馬車が少ないのが気になるよ。"
+    },
+    {
+      "after": "northern_report",
+      "chapter": 1,
+      "text": "北方の境界で小競り合いがあったそうだね。事情はまだ分からないって。"
+    }
+  ],
+  "implementationNotes": [
+    "緑の目は港50%、北方情勢は峠道で進捗発生時の仮条件。",
+    "加入は街道の街の到着報告完了時。任意先は交易路/峠道の報告完了時に解放。",
+    "会話は今回の確定した物語方針に基づく初稿。経済・報酬の新設なし。"
+  ],
+  "world": {
+    "continent": "アルセリア大陸",
+    "kingdom": "アルヴェイン王国",
+    "royalHouse": "アルヴェイン家",
+    "nobleHouses": [
+      {
+        "id": "reinfort",
+        "name": "レインフォルト家",
+        "region": "中央地方・南東の港町",
+        "role": "王の護衛"
+      },
+      {
+        "id": "valguard",
+        "name": "ヴァルガード家",
+        "region": "北西地方",
+        "history": "かつて島全体を支配していた"
+      },
+      {
+        "id": "belford",
+        "name": "ベルフォード家",
+        "region": "南西地方"
+      },
+      {
+        "id": "ernhardt",
+        "name": "エルンハルト家",
+        "region": "北東地方"
+      }
+    ]
+  }
+}

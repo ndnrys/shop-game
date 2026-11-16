@@ -27,7 +27,7 @@
   "customers": [
     {
       "id": "villager",
-      "name": "村人",
+      "name": "町の人",
       "probability": 0.5,
       "items": {},
       "categories": {},

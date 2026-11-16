@@ -1,6 +1,6 @@
 // Rescue state is independent of the unimplemented chapter-completion flow.
 let rescueState,donationState,donationAdapter=null,donationBusy=false;
-const rescueText={title:'国からの借入',donation:'村人からの寄付',unavailable:'広告は準備中です。実広告SDKは未接続です。'};
+const rescueText={title:'国からの借入',donation:'町の人からの寄付',unavailable:'広告は準備中です。実広告SDKは未接続です。'};
 function resetRescue(){rescueState={count:0,totalLoans:0,chapters:{},last:null};donationState={date:null,used:0,rewards:[]}}
 function validateRescueConfig(){
  const b=config.bankruptcy,d=config.donation,int=n=>Number.isSafeInteger(n)&&n>0;
